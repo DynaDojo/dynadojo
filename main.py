@@ -1,16 +1,26 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+import dynascale as ds
+import numpy as np
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+def main():
+    model = ds.baselines.NaiveLinearRegression
+    # factory = bn.lds.classes.LDSFactory()
+    factory = ds.ca.classes.CAFactory()
+    task = ds.Task(
+        N=[100],
+        L=[3, 4, 5, 6],
+        E=[12],
+        T=[10],
+        reps=3,
+        factory=factory,
+        supepochs=10,
+    )
+    scores = task.evaluate(model)
+    # task = bn.abstractions.Task(N=[100], low=-5, high=5, L=[3], E=[4], T=[10], reps=3, factory=factory, supepochs=10)
+    # task = bn.abstractions.FixedExamplesTask(num_ex=100, low=-4, high=3, L=[2, 3, 4, 5], E=[64], T=[10], reps=1, factory=factory, metrics=ca_eval_func)
+    # TODO: add flag for in our out of dist (that will be overridden)
+    print(scores)
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    main()
