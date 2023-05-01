@@ -1,4 +1,6 @@
-import seaborn as sns 
+import seaborn as sns
+import numpy as np
+import matplotlib.pyplot as plt
 
 def plotMetric(df, xDim, yDim, hue=None, estimator=np.mean, errorbar="sd"):
   ax = sns.catplot(data=df, x=xDim, y=yDim, hue=hue, estimator=estimator, kind="point", errorbar=errorbar)
