@@ -1,11 +1,9 @@
 import itertools
 
+from tqdm.auto import tqdm
 import numpy as np
 import pandas as pd
 
-from . import metrics
-
-from inspect import signature
 
 class Model(object):
     def __init__(self, latent_dim, embed_dim, timesteps, **kwargs):
@@ -45,7 +43,7 @@ class Model(object):
 
 
 
-class Factory(object):
+class Challenge(object):
     def __init__(self, latent_dim, embed_dim):
         self._latent_dim = latent_dim
         self._embed_dim = embed_dim
@@ -82,21 +80,31 @@ class Factory(object):
         assert data.shape == (n, timesteps, self.embed_dim)
         return data, init_conds
 
+    def _calc_error(self, x, y) -> float:
+        raise NotImplementedError
+
+    def calc_error(self, x, y):
+        assert x.shape == y.shape
+        return self._calc_error(x, y)
+
+
 
 class Task(object):
-    def __init__(self, N: list[int], L: list[int], E: list[int], T: list[int],
-                 supepochs: int, factory_cls: type[Factory], metric=metrics.mean_squared_error):
+    def __init__(self, N: list[int], L: list[int], E: list[int], T: list[int], supepochs: int, factory_cls: type[Challenge],
+                 trials: int, test_size: int):
+        self._id = itertools.count()
         self._N = N
         self._L = L
         self._E = E
         self._T = T
         self._factory_cls = factory_cls
-        self._metric = metric
         self._supepochs = supepochs
+        self._trials = trials
+        self._test_size = test_size
 
-    def evaluate(self, model_cls: type[Model], trials: int = 1, test_size: int = 1, in_dist=True, **kwargs):
-        data = {"n": [], "latent_dim": [], "embed_dim": [], "timesteps": [], "supepoch": [], "score": []}
-        for _ in range(trials):
+    def evaluate(self, model_cls: type[Model], in_dist=True, **kwargs):
+        data = {"n": [], "latent_dim": [], "embed_dim": [], "timesteps": [], "error": []}
+        for _ in tqdm(range(self._trials)):
             factory = None
             for n, latent_dim, embed_dim, timesteps in itertools.product(self._N, self._L, self._E, self._T):
                 if factory is None:
@@ -110,19 +118,23 @@ class Task(object):
 
                 # Create and train model
                 model = model_cls(latent_dim, embed_dim, timesteps, **kwargs)
-                test, _ = factory.make_data(test_size, timesteps, in_dist=in_dist)
+                test, _ = factory.make_data(self._test_size, timesteps, in_dist=in_dist)
                 control = None
                 init_conds = None
+                pred = None
                 for i in range(self._supepochs):
                     x, init_conds = factory.make_data(n, timesteps, control=control, init_conds=init_conds)
                     model.fit(x)
                     model.act(x)
                     pred = model.predict(test[:, 0], timesteps)
-                    score = self._metric(pred, test)
-                    data["n"].append(n)
-                    data["latent_dim"].append(latent_dim)
-                    data["embed_dim"].append(embed_dim)
-                    data["timesteps"].append(timesteps)
-                    data["supepoch"].append(i)
-                    data["score"].append(score)
+                err = factory.calc_error(pred, test)
+                data["n"].append(n)
+                data["latent_dim"].append(latent_dim)
+                data["embed_dim"].append(embed_dim)
+                data["timesteps"].append(timesteps)
+                data["error"].append(err)  # TODO: change this to "loss"
+        data["id"] = next(self._id)
         return pd.DataFrame(data)
+
+    def plot(self, frames: list[pd.DataFrame], labels: list[str]):
+        raise NotImplementedError

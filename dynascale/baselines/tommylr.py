@@ -1,5 +1,5 @@
 import numpy as np
-from ..abstractions import Model
+from ..abstractions import Model as MyModel
 
 class TommyLinearRegression(MyModel):
     def __init__(self):

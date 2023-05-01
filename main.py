@@ -7,7 +7,7 @@ def main():
         L=[2],
         E=[4],
         T=[5],
-        factory_cls=ds.lds.LDSFactory,
+        factory_cls=ds.lds.LDSChallenge,
         supepochs=2,
     )
     scores = task.evaluate(ds.baselines.NaiveLinearRegression)

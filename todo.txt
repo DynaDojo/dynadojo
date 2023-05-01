@@ -5,3 +5,5 @@ implement fixed accuracy
 github
 write fixed accuracy logic in evaluate
 requirements.txt?
+
+add metric to factory and update task
