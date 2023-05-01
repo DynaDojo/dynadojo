@@ -21,7 +21,8 @@ class LDSFactory(Factory):
     @Factory.embed_dim.setter
     def embed_dim(self, value):
         self._embed_dim = value
-        self.B = RNG.uniform(*self._B_range, (self.latent_dim, self.embed_dim))  # TODO: verify that embed dim is updated
+        self.B = RNG.uniform(*self._B_range,
+                             (self.latent_dim, self.embed_dim))  # TODO: verify that embed dim is updated
         self.C = RNG.uniform(*self._C_range, (self.latent_dim, self.embed_dim))
 
     @Factory.latent_dim.setter
@@ -31,26 +32,29 @@ class LDSFactory(Factory):
         self.B = RNG.uniform(*self._B_range, (self.latent_dim, self.embed_dim))
         self.C = RNG.uniform(*self._C_range, (self.latent_dim, self.embed_dim))
 
-    def _make_staircase(self, timesteps: int, control: np.ndarray) -> Callable:
+    @staticmethod
+    def _make_staircase_func(timesteps: int, control: np.ndarray) -> Callable:
         time = np.linspace(0, 1, endpoint=True, num=timesteps)
 
-        def u(t):
+        def staircase_func(t):
             i = np.argmin(np.abs(t - time))
             return control[i]
 
-        return u
+        return staircase_func
 
-    def _make_data(self, n: int, timesteps: int, control: np.ndarray = None,
-                   init_cond_range=(-10, 10), *args, **kwargs) -> np.ndarray:
-        # TODO: add init conditions generated from last output (manual init cond control)
-        init_conds = RNG.uniform(*init_cond_range, (n, self.latent_dim))
+    def _make_init_conds(self, n: int, in_dist=True, *args, **kwargs):
+        bounds = (0, 10) if in_dist else (-10, 0)
+        return RNG.uniform(*bounds, (n, self.latent_dim))
+
+    def _make_data(self, init_conds: np.ndarray, timesteps: int, control=None) -> np.ndarray:
         control = np.zeros((timesteps, self.embed_dim)) if control is None else control
-        u = self._make_staircase(timesteps, control)
-        fun = lambda t, y: self.A @ y + self.B @ u(t)
+        control_func = self._make_staircase_func(timesteps, control)
+        def dynamics(t, y): return self.A @ y + self.B @ control_func(t)
         data = []
         for y0 in init_conds:
-            sol = solve_ivp(fun, t_span=[0, 1], y0=y0, vectorized=False,
+            sol = solve_ivp(dynamics, t_span=[0, 1], y0=y0, vectorized=False,
                             t_eval=np.linspace(0, 1, endpoint=True, num=timesteps))  # TODO: add vectorization
             data.append(sol.y)
         data = np.transpose(np.array(data), axes=(0, 2, 1)) @ self.C
-        return data
+        final_conds = data[:, -1] @ np.linalg.pinv(self.C)
+        return data, final_conds

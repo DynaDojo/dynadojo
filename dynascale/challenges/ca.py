@@ -6,8 +6,7 @@ import cellpylib as cpl
 from dynascale.abstractions import Factory
 
 RNG = np.random.default_rng()
-def _make_data(n: int, timesteps: int, latent_dim: int = 1, embed_dim: int = 64, control: Callable = None,
-               *args, **kwargs) -> np.ndarray:
+def _make_data(n: int, timesteps: int, latent_dim: int = 1, embed_dim: int = 64, control: Callable = None) -> np.ndarray:
     u = control or (lambda t: np.zeros(embed_dim, dtype='int32'))
 
     data = []

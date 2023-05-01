@@ -66,15 +66,21 @@ class Factory(object):
     def embed_dim(self, value):
         self._embed_dim = value
 
-    def _make_data(self, n: int, timesteps: int, control=None, in_dist=True, *args, **kwargs) -> np.ndarray:
+    def _make_data(self, init_conds: np.ndarray, timesteps: int, control=None) -> np.ndarray:
         raise NotImplementedError
 
-    def make_data(self, n: int, timesteps, control=None, in_dist=True, *args, **kwargs):
+    def _make_init_conds(self, n: int, in_dist=True) -> (np.ndarray, np.ndarray):
+        raise NotImplementedError
+
+    def make_data(self, n: int, timesteps, control=None, in_dist=True, init_conds: np.ndarray = None):
         assert n > 0
         assert timesteps > 1
-        data = self._make_data(n, timesteps, control, in_dist, *args, **kwargs)
+        init_conds = self._make_init_conds(n, in_dist) if init_conds is None else init_conds
+        assert init_conds.shape == (n, self.latent_dim)
+        data, final_conds = self._make_data(init_conds, timesteps, control)
+        assert final_conds.shape == (n, self.latent_dim)  # NOTE: the final condition should be in LATENT SPACE
         assert data.shape == (n, timesteps, self.embed_dim)
-        return data
+        return data, init_conds
 
 
 class Task(object):
@@ -88,7 +94,7 @@ class Task(object):
         self._metric = metric
         self._supepochs = supepochs
 
-    def evaluate(self, model_cls: type[Model], trials: int = 1, in_dist=True, **kwargs):
+    def evaluate(self, model_cls: type[Model], trials: int = 1, test_size: int = 1, in_dist=True, **kwargs):
         data = {"n": [], "latent_dim": [], "embed_dim": [], "timesteps": [], "supepoch": [], "score": []}
         for _ in range(trials):
             factory = None
@@ -96,7 +102,7 @@ class Task(object):
                 if factory is None:
                     factory = self._factory_cls(latent_dim, embed_dim)
                 if latent_dim != factory.latent_dim:
-                    factory.latent_dim = latent_dim  # TODO: how to use setter method?
+                    factory.latent_dim = latent_dim
                 if embed_dim < latent_dim:
                     continue
                 if embed_dim != factory.embed_dim:
@@ -104,13 +110,14 @@ class Task(object):
 
                 # Create and train model
                 model = model_cls(latent_dim, embed_dim, timesteps, **kwargs)
-                test = factory.make_data(n, timesteps)  # TODO: figure out how to size the test dataset
+                test, _ = factory.make_data(test_size, timesteps, in_dist=in_dist)
                 control = None
+                init_conds = None
                 for i in range(self._supepochs):
-                    train = factory.make_data(n, timesteps, control)
-                    model.fit(train, **kwargs)  # TODO: add closed loop control
-                    model.act(train)
-                    pred = model.predict(test[:, 0], timesteps)  # TODO: add evaluation method
+                    x, init_conds = factory.make_data(n, timesteps, control=control, init_conds=init_conds)
+                    model.fit(x)
+                    model.act(x)
+                    pred = model.predict(test[:, 0], timesteps)
                     score = self._metric(pred, test)
                     data["n"].append(n)
                     data["latent_dim"].append(latent_dim)
@@ -118,6 +125,4 @@ class Task(object):
                     data["timesteps"].append(timesteps)
                     data["supepoch"].append(i)
                     data["score"].append(score)
-                # TODO: figure out how to modify control size (ratio of n? fixed argument to method?)
-                # TODO: add OOD
         return pd.DataFrame(data)

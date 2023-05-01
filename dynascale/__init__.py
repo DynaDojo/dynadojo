@@ -1,2 +1,3 @@
 from .challenges import lds
-from . import baselines, abstractions
+from .abstractions import Task, Factory, Model
+from . import baselines

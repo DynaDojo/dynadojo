@@ -4,33 +4,12 @@ from tensorflow.python.keras import Input, Model
 from tensorflow.python.keras.layers import Dense, Layer
 from tensorflow.python.keras.losses import mean_squared_error
 
-from .abstractions import Model as MyModel
-
-
-class NaiveLinearRegression(MyModel):
-    def __init__(self, latent_dim, embed_dim, timesteps):
-        super().__init__(latent_dim, embed_dim, timesteps)
-        self.exp_At = np.zeros((embed_dim, embed_dim))
-
-
-    def fit(self, x: np.ndarray, **kwargs):
-        head = x[:, :-1].reshape(self.embed_dim, -1)
-        tail = x[:, 1:].reshape(self.embed_dim, -1)
-        self.exp_At = tail @ np.linalg.pinv(head)
-
-    def predict(self, x0: np.ndarray, timesteps: int, **kwargs):
-        preds = [x0]
-        for _ in range(timesteps - 1):  # TODO: add general extensions for timesteps that are longer or shorter
-            xi = preds[-1] @ self.exp_At  # TODO: check if multiplication should be other way
-            preds.append(xi)
-        preds = np.array(preds)
-        preds = np.transpose(preds, axes=(1, 0, 2))
-        return preds
+from ..abstractions import Model as MyModel
 
 
 class _KoopmanLayer(Layer):
     def __init__(self, dim, timesteps):
-        super(_KoopmanLayer, self).__init__()
+        super().__init__()
         self.dim = dim
         self.timesteps = timesteps
         self.kernel = None
@@ -48,8 +27,8 @@ class _KoopmanLayer(Layer):
         return trajs
 
 class Koopman(MyModel):
-    def __init__(self, latent_dim, embed_dim, timesteps, encoder_hidden_widths=(80, 80),
-                 decoder_hidden_widths=(80, 80), alpha1=0.01, alpha2=0.01):
+    def __init__(self, latent_dim, embed_dim, timesteps, encoder_hidden_widths=(10, 10),
+                 decoder_hidden_widths=(10, 10), alpha1=0.01, alpha2=0.01):
         super().__init__(latent_dim, embed_dim, timesteps)
 
         self._encoder = self._build_coder("encoder", (None, self.embed_dim), encoder_hidden_widths,
@@ -59,8 +38,10 @@ class Koopman(MyModel):
         self.autoencoder = self._build_autoencoder()
         self._koopman = self._build_koopman(self.latent_dim)
         self.model = self._build_model(alpha1, alpha2)
-        self.autoencoder.compile(optimizer="Adam", loss="mse")
-        self.model.compile(optimizer="Adam", loss=None)
+        # self.autoencoder.compile(optimizer="Adam", loss="mse")
+        # self.model.compile(optimizer="Adam", loss=None)
+        self.autoencoder.compile(optimizer="Adam", loss="mse", run_eagerly=True)  # TODO: remove eager execution
+        self.model.compile(optimizer="Adam", loss=None, run_eagerly=True)
 
     @staticmethod
     def _build_coder(name: str, input_dim, hidden_widths, output_dim):
@@ -112,15 +93,14 @@ class Koopman(MyModel):
         return model
 
     def _fit_autoencoder(self, x: np.ndarray, epochs, batch_size, verbose="auto"):
-        x = tf.convert_to_tensor(x)
         self.autoencoder.fit(x, x, epochs=epochs, batch_size=batch_size, verbose=verbose)
 
     def _fit_model(self, x: np.ndarray, epochs, batch_size, verbose="auto"):
-        x = tf.convert_to_tensor(x)
         x0 = x[:, :1, :]
         self.model.fit([x, x0], x, epochs=epochs, batch_size=batch_size, verbose=verbose)
 
-    def fit(self, x: np.ndarray, autoencoder_epochs: int = 10, model_epochs: int = 10, batch_size: int = 100, verbose="auto", **kwargs):
+    def fit(self, x: np.ndarray, autoencoder_epochs: int = 1, model_epochs: int = 1, batch_size: int = 100, verbose="auto", **kwargs):
+        x = tf.convert_to_tensor(x)
         self._fit_autoencoder(x, autoencoder_epochs, batch_size, verbose)
         self._fit_model(x, model_epochs, batch_size, verbose)
 
