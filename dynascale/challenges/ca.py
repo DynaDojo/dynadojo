@@ -23,3 +23,25 @@ def _make_data(n: int, timesteps: int, latent_dim: int = 1, embed_dim: int = 64,
         data.append(traj)
     data = np.array(data)
     return data
+
+'''
+def evaluate():
+    for testSample in testSamples:
+        #print(testSample)
+        actual = testSample[1]
+        predicted = model.predict(testSample[0])
+        
+      
+        # Append Hamming distance for each sample
+        nCorrect += np.count_nonzero(actual==predicted)
+
+        nTotal += len(actual)
+
+      currAcc = nCorrect / nTotal
+
+      # Add the sampled rules' accuracy to the radius
+      if radius not in yAllSamples:
+        yAllSamples[radius] = []
+
+      yAllSamples[radius].append(currAcc) 
+'''
