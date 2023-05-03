@@ -47,7 +47,7 @@ class TommyLinearRegression(MyModel):
         else:
             return (self.nextU)
     
-    def predict(self, x0, timesteps, **kwargs):
+    def _predict(self, x0, timesteps, **kwargs):
         allPredicted = []
         for sample in x0:
             trajectory = [sample]

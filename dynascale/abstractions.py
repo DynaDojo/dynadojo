@@ -37,10 +37,14 @@ class Model(object):
     def act(self, x: np.ndarray, *args, **kwargs) -> np.ndarray | None:
         return None
 
-    def predict(self, x0: np.ndarray, timesteps: int, *args, **kwargs) -> np.ndarray:
+    def _predict(self, x0: np.ndarray, timesteps: int, *args, **kwargs) -> np.ndarray:
         raise NotImplementedError
 
-
+    def predict(self, x0: np.ndarray, timesteps: int, *args, **kwargs) -> np.ndarray:
+        pred = self._predict(x0, timesteps, *args, **kwargs)
+        n = x0.shape[0]
+        assert pred.shape == (n, timesteps, self.embed_dim)
+        return pred
 
 
 class Challenge(object):
@@ -64,33 +68,33 @@ class Challenge(object):
     def embed_dim(self, value):
         self._embed_dim = value
 
-    def _make_data(self, init_conds: np.ndarray, timesteps: int, control=None) -> np.ndarray:
+    def _make_data(self, init_conds: np.ndarray, timesteps: int, control=None) -> (np.ndarray, np.ndarray):
         raise NotImplementedError
 
-    def _make_init_conds(self, n: int, in_dist=True) -> (np.ndarray, np.ndarray):
+    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         raise NotImplementedError
 
-    def make_data(self, n: int, timesteps, control=None, in_dist=True, init_conds: np.ndarray = None):
+    def make_data(self, n: int, timesteps, control=None, in_dist=True, init_conds: np.ndarray = None) -> (np.ndarray, np.ndarray):
         assert n > 0
         assert timesteps > 1
         init_conds = self._make_init_conds(n, in_dist) if init_conds is None else init_conds
-        assert init_conds.shape == (n, self.latent_dim)
+        assert init_conds.shape == (n, self.latent_dim) or init_conds.shape == (n, self.embed_dim)  # TODO: check w/ Max and Tommy
         data, final_conds = self._make_data(init_conds, timesteps, control)
-        assert final_conds.shape == (n, self.latent_dim)  # NOTE: the final condition should be in LATENT SPACE
+        assert final_conds.shape == (n, self.latent_dim) or final_conds.shape == (n, self.embed_dim)  # NOTE: the final condition should be in LATENT SPACE??
         assert data.shape == (n, timesteps, self.embed_dim)
         return data, init_conds
 
     def _calc_error(self, x, y) -> float:
         raise NotImplementedError
 
-    def calc_error(self, x, y):
+    def calc_error(self, x, y) -> float:
         assert x.shape == y.shape
         return self._calc_error(x, y)
 
 
-
 class Task(object):
-    def __init__(self, N: list[int], L: list[int], E: list[int], T: list[int], supepochs: int, factory_cls: type[Challenge],
+    def __init__(self, N: list[int], L: list[int], E: list[int], T: list[int], supepochs: int,
+                 factory_cls: type[Challenge],
                  trials: int, test_size: int):
         self._id = itertools.count()
         self._N = N
@@ -104,37 +108,41 @@ class Task(object):
 
     def evaluate(self, model_cls: type[Model], in_dist=True, **kwargs):
         data = {"n": [], "latent_dim": [], "embed_dim": [], "timesteps": [], "error": []}
-        for _ in tqdm(range(self._trials)):
-            factory = None
-            for n, latent_dim, embed_dim, timesteps in itertools.product(self._N, self._L, self._E, self._T):
-                if factory is None:
-                    factory = self._factory_cls(latent_dim, embed_dim)
-                if latent_dim != factory.latent_dim:
-                    factory.latent_dim = latent_dim
-                if embed_dim < latent_dim:
-                    continue
-                if embed_dim != factory.embed_dim:
-                    factory.embed_dim = embed_dim
+        total = len(self._N) * len(self._L) * len(self._E) * len(self._T) * self._trials
+        with tqdm(total=total, position=0, leave=False) as pbar:
+            for i in range(self._trials):
+                factory = None
+                for n, latent_dim, embed_dim, timesteps in itertools.product(self._N, self._L, self._E, self._T):
+                    pbar.set_description(f"Trial {i}/{self._trials}: {n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
+                    if factory is None:
+                        factory = self._factory_cls(latent_dim, embed_dim)
+                    if latent_dim != factory.latent_dim:
+                        factory.latent_dim = latent_dim
+                    if embed_dim < latent_dim:
+                        continue
+                    if embed_dim != factory.embed_dim:
+                        factory.embed_dim = embed_dim
 
-                # Create and train model
-                model = model_cls(latent_dim, embed_dim, timesteps, **kwargs)
-                test, _ = factory.make_data(self._test_size, timesteps, in_dist=in_dist)
-                control = None
-                init_conds = None
-                pred = None
-                for i in range(self._supepochs):
-                    x, init_conds = factory.make_data(n, timesteps, control=control, init_conds=init_conds)
-                    model.fit(x)
-                    model.act(x)
-                    pred = model.predict(test[:, 0], timesteps)
-                err = factory.calc_error(pred, test)
-                data["n"].append(n)
-                data["latent_dim"].append(latent_dim)
-                data["embed_dim"].append(embed_dim)
-                data["timesteps"].append(timesteps)
-                data["error"].append(err)  # TODO: change this to "loss"
-        data["id"] = next(self._id)
+                    # Create and train model
+                    model = model_cls(latent_dim, embed_dim, timesteps, **kwargs)
+                    test, _ = factory.make_data(self._test_size, timesteps, in_dist=in_dist)
+                    control = None
+                    final_conds = None
+                    err = None
+                    for _ in range(self._supepochs):
+                        x, final_conds = factory.make_data(n, timesteps, control=control, init_conds=final_conds)
+                        model.fit(x)
+                        model.act(x)
+                        pred = model.predict(test[:, 0], timesteps)
+                        err = factory.calc_error(pred, test)
+                    data["n"].append(n)
+                    data["latent_dim"].append(latent_dim)
+                    data["embed_dim"].append(embed_dim)
+                    data["timesteps"].append(timesteps)
+                    data["error"].append(err)
+                    pbar.update()
+                data["id"] = next(self._id)
         return pd.DataFrame(data)
 
-    def plot(self, frames: list[pd.DataFrame], labels: list[str]):
-        raise NotImplementedError
+        def plot(self, frames: list[pd.DataFrame], labels: list[str]):
+            raise NotImplementedError

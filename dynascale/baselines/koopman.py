@@ -104,7 +104,7 @@ class Koopman(MyModel):
         self._fit_autoencoder(x, autoencoder_epochs, batch_size, verbose)
         self._fit_model(x, model_epochs, batch_size, verbose)
 
-    def predict(self, x0: np.ndarray, timesteps: int, verbose="auto", **kwargs) -> np.ndarray:
+    def _predict(self, x0: np.ndarray, timesteps: int, verbose="auto", **kwargs) -> np.ndarray:
         assert x0.ndim == 2
         num_examples, dim = x0.shape
         x0 = tf.convert_to_tensor(np.expand_dims(x0, axis=1))

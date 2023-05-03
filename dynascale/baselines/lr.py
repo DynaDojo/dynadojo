@@ -12,11 +12,11 @@ class NaiveLinearRegression(Model):
         tail = x[:, 1:].reshape(self.embed_dim, -1)
         self.exp_At = tail @ np.linalg.pinv(head)
 
-    def predict(self, x0: np.ndarray, timesteps: int, **kwargs):
-        preds = [x0]
-        for _ in range(timesteps - 1):  # TODO: add general extensions for timesteps that are longer or shorter
-            xi = preds[-1] @ self.exp_At  # TODO: check if multiplication should be other way
+    def _predict(self, x0: np.ndarray, timesteps: int, **kwargs):
+        preds = [x0.T]
+        for _ in range(timesteps - 1):
+            xi = self.exp_At @ preds[-1]
             preds.append(xi)
         preds = np.array(preds)
-        preds = np.transpose(preds, axes=(1, 0, 2))
+        preds = np.transpose(preds, axes=(2, 0, 1))
         return preds
