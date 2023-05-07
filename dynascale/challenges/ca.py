@@ -27,11 +27,4 @@ class CAChallenge(Challenge):
         return data
 
     def _calc_error(self, x, y):
-        """
-        Return the hamming distance
-        # TODO: look up pytorch/tensorflow documentation and copy/paste and do superclass inheritance
-        :param x:
-        :param y:
-        :return:
-        """
         return np.count_nonzero(x == y) / self.latent_dim
