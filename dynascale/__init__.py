@@ -1,4 +1,5 @@
-from .challenges import lds, ca
+from .challenges.ca import CAChallenge
+from .challenges.lds import LDSChallenge
 from .abstractions import Task, Challenge, Model
-from . import baselines
-# from . import utils
+from .baselines.lr import NaiveLinearRegression
+from . import utils

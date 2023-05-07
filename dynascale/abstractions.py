@@ -68,21 +68,19 @@ class Challenge(object):
     def embed_dim(self, value):
         self._embed_dim = value
 
-    def _make_data(self, init_conds: np.ndarray, timesteps: int, control=None) -> (np.ndarray, np.ndarray):
+    def _make_data(self, timesteps, n: int = None, init_conds: np.ndarray = None, control=None, in_dist: bool = True) -> np.ndarray:
         raise NotImplementedError
 
-    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
-        raise NotImplementedError
-
-    def make_data(self, n: int, timesteps, control=None, in_dist=True, init_conds: np.ndarray = None) -> (np.ndarray, np.ndarray):
+    def make_data(self, timesteps, n: int = None, init_conds: np.ndarray = None, control=None, in_dist: bool = True) -> np.ndarray:
+        if init_conds is not None:
+            assert init_conds.ndim == 2
+            assert init_conds.shape[1] == self.embed_dim
+        n = n or init_conds.shape[0]
         assert n > 0
         assert timesteps > 1
-        init_conds = self._make_init_conds(n, in_dist) if init_conds is None else init_conds
-        assert init_conds.shape == (n, self.latent_dim) or init_conds.shape == (n, self.embed_dim)  # TODO: check w/ Max and Tommy
-        data, final_conds = self._make_data(init_conds, timesteps, control)
-        assert final_conds.shape == (n, self.latent_dim) or final_conds.shape == (n, self.embed_dim)  # NOTE: the final condition should be in LATENT SPACE??
+        data = self._make_data(timesteps, n, init_conds, control=control, in_dist=in_dist)
         assert data.shape == (n, timesteps, self.embed_dim)
-        return data, init_conds
+        return data
 
     def _calc_error(self, x, y) -> float:
         raise NotImplementedError
@@ -91,11 +89,18 @@ class Challenge(object):
         assert x.shape == y.shape
         return self._calc_error(x, y)
 
+    def _visualize(self, x, *args, **kwargs):
+        raise NotImplementedError
+
+    def visualize(self, x, *args, **kwargs):
+        self._visualize(x, *args, **kwargs)
+
 
 class Task(object):
     def __init__(self, N: list[int], L: list[int], E: list[int], T: list[int], supepochs: int,
                  factory_cls: type[Challenge],
                  trials: int, test_size: int):
+        assert supepochs > 0
         self._id = itertools.count()
         self._N = N
         self._L = L
@@ -125,16 +130,14 @@ class Task(object):
 
                     # Create and train model
                     model = model_cls(latent_dim, embed_dim, timesteps, **kwargs)
-                    test, _ = factory.make_data(self._test_size, timesteps, in_dist=in_dist)
+                    test = factory.make_data(timesteps, n=self._test_size, in_dist=in_dist)
                     control = None
-                    final_conds = None
-                    err = None
                     for _ in range(self._supepochs):
-                        x, final_conds = factory.make_data(n, timesteps, control=control, init_conds=final_conds)
+                        x = factory.make_data(timesteps, init_conds=x[:, 0], control=control)
                         model.fit(x)
                         model.act(x)
                         pred = model.predict(test[:, 0], timesteps)
-                        err = factory.calc_error(pred, test)
+                    err = factory.calc_error(pred, test)
                     data["n"].append(n)
                     data["latent_dim"].append(latent_dim)
                     data["embed_dim"].append(embed_dim)
@@ -143,6 +146,3 @@ class Task(object):
                     pbar.update()
                 data["id"] = next(self._id)
         return pd.DataFrame(data)
-
-        def plot(self, frames: list[pd.DataFrame], labels: list[str]):
-            raise NotImplementedError

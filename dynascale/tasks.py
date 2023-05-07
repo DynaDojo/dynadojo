@@ -1,8 +1,7 @@
-from .abstractions import Task, Challenge, Model
-import itertools
+from .abstractions import Task, Challenge
 import pandas as pd
 
-from .utils.plotting import plotMetric, plotFixedError, plot_metric
+from dynascale.utils.plotting import plotMetric, plotFixedError, plot_metric
 class TargetError(Task):
     def __init__(self, N: list[int], L: list[int], E: list[int], T: list[int], supepochs: int,
                  factory_cls: type[Challenge], trials: int, test_size: int, target_err: float):
