@@ -15,7 +15,7 @@ class CAChallenge(Challenge):
 
     def _make_data(self, timesteps: int, n: int = None, init_conds: np.ndarray = None, control=None, in_dist: bool = True) -> np.ndarray:
         data = []
-        init_conds = init_conds or RNG.integers(0, 1, endpoint=True, size=(n, self.embed_dim))
+        init_conds = RNG.integers(0, 1, endpoint=True, size=(n, self.embed_dim)) if init_conds is None else init_conds
         control = np.zeros((timesteps, self.embed_dim)) if control is None else control
         for x0 in init_conds:
             cellular_automata = np.clip([x0 + control[0]], 0, 1).astype(np.int32)

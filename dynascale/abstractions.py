@@ -132,8 +132,11 @@ class Task(object):
                     model = model_cls(latent_dim, embed_dim, timesteps, **kwargs)
                     test = factory.make_data(timesteps, n=self._test_size, in_dist=in_dist)
                     control = None
-                    for _ in range(self._supepochs):
-                        x = factory.make_data(timesteps, init_conds=x[:, 0], control=control)
+                    for j in range(self._supepochs):
+                        if j == 0:
+                            x = factory.make_data(timesteps, n=n, control=control)
+                        else:
+                            x = factory.make_data(timesteps, init_conds=x[:, 0], control=control)
                         model.fit(x)
                         model.act(x)
                         pred = model.predict(test[:, 0], timesteps)
