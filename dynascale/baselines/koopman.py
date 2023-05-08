@@ -38,8 +38,6 @@ class Koopman(MyModel):
         self.autoencoder = self._build_autoencoder()
         self._koopman = self._build_koopman(self.latent_dim)
         self.model = self._build_model(alpha1, alpha2)
-        # self.autoencoder.compile(optimizer="Adam", loss="mse")
-        # self.model.compile(optimizer="Adam", loss=None)
         self.autoencoder.compile(optimizer="Adam", loss="mse", run_eagerly=True)  # TODO: remove eager execution
         self.model.compile(optimizer="Adam", loss=None, run_eagerly=True)
 
