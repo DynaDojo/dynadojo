@@ -1,7 +1,7 @@
 from .abstractions import Task, Challenge
 import pandas as pd
 
-from dynascale.utils.plotting import plotMetric, plotFixedError, plot_metric
+from dynascale.utils.plotting import plotMetric, plot_target_error, plot_metric
 class TargetError(Task):
     def __init__(self, N: list[int], L: list[int], E: list[int], T: list[int], supepochs: int,
                  factory_cls: type[Challenge], trials: int, test_size: int, target_err: float):
@@ -10,10 +10,7 @@ class TargetError(Task):
         super().__init__(N, L, E, T, supepochs, factory_cls, trials, test_size)
 
     def plot(self, data: pd.DataFrame):
-        plotFixedError(data, "latent_dim", "n", self._target_err)
-
-
-
+        plot_target_error(data, "latent_dim", "n", target_error=self._target_err)
 
 class FixedComplexity(Task):
     def __init__(self, N: list[int], l: int, E: list[int], T: list[int], supepochs: int,
