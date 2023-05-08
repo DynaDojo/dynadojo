@@ -52,17 +52,8 @@ class Model(object):
         """
         raise NotImplementedError
 
-    def act(self, x: np.ndarray, *args, **kwargs) -> np.ndarray | None:
-        """
-        act takes in a dataset and returns and associated control. Model subclasses should overload
-        act if they plan on using non-trivial control during training. act is only called during training.
-
-        :param x: a NumPy array of trajectories with shape (n, timesteps, embed_dim)
-        :param args:
-        :param kwargs:
-        :return: control (None by default)
-        """
-        return None
+    def act(self, x: np.ndarray, *args, **kwargs) -> np.ndarray:
+        return np.zeros_like(x)
 
     def _predict(self, x0: np.ndarray, timesteps: int, *args, **kwargs) -> np.ndarray:
         raise NotImplementedError
@@ -110,37 +101,33 @@ class Challenge(object):
     def embed_dim(self, value):
         self._embed_dim = value
 
-    def _make_data(self, timesteps, n: int = None, init_conds: np.ndarray = None, control=None, in_dist: bool = True) -> np.ndarray:
+    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         raise NotImplementedError
 
-    def make_data(self, timesteps, n: int = None, init_conds: np.ndarray = None, control=None, in_dist: bool = True) -> np.ndarray:
-        """
-        wrapper for _make_data(...)
+    def make_init_conds(self, n: int, in_dist=True):
+        init_conds = self._make_init_conds(n, in_dist)
+        assert init_conds.shape == (n, self.embed_dim)
+        return init_conds
 
-        generate n random trajectories or extend given initial conditions by timesteps
-        (precedence determined by subclass implementation)
+    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int) -> np.ndarray:
+        raise NotImplementedError
 
-        :param timesteps: timesteps in each trajectory
-        :param n: number of trajectories to generate
-        :param init_conds: initial conditions that make_data extends
-        :param control: control for the dynamical system
-        :param in_dist: generate in distribution trajectories if True; otherwise generate out of distribution trajectories
-        :return: a dataset of trajectories
-        """
-        if init_conds is not None:
-            assert init_conds.ndim == 2
-            assert init_conds.shape[1] == self.embed_dim
-        n = n or init_conds.shape[0]
-        assert n > 0
-        assert timesteps > 1
-        data = self._make_data(timesteps, n, init_conds, control=control, in_dist=in_dist)
+
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray = None, timesteps: int = 1) -> np.ndarray:
+        assert timesteps > 0
+        assert init_conds.ndim == 2 and init_conds.shape[1] == self.embed_dim
+        n = init_conds.shape[0]
+        if control is None:
+            control = np.zeros((n, timesteps, self.embed_dim))
+        assert control.shape == (n, timesteps, self.embed_dim)
+        data = self._make_data(init_conds, control, timesteps)
         assert data.shape == (n, timesteps, self.embed_dim)
         return data
 
-    def _calc_error(self, x, y) -> float:
+    def _calc_loss(self, x, y) -> float:
         raise NotImplementedError
 
-    def calc_error(self, x, y) -> float:
+    def calc_loss(self, x, y) -> float:
         """
         Calculates the loss between two datasets x and y.
 
@@ -149,35 +136,24 @@ class Challenge(object):
         :return: a scalar loss
         """
         assert x.shape == y.shape
-        return self._calc_error(x, y)
+        return self._calc_loss(x, y)
 
     def _visualize(self, x, *args, **kwargs):
         raise NotImplementedError
 
 
 class Task(object):
-    def __init__(self, N: list[int], L: list[int], E: list[int], T: list[int], supepochs: int,
+    def __init__(self, N: list[int], L: list[int], E: list[int], T: list[int], control_horizons: int,
                  factory_cls: type[Challenge],
                  trials: int, test_size: int):
-        """
-
-        :param N: a list of n's
-        :param L: a list of latent dimensions
-        :param E: a list of embedding dimensions
-        :param T: a list of timesteps
-        :param supepochs: determines how many times to choose a control per experiment
-        :param factory_cls: the class constructor for a challenge
-        :param trials: number of repetitions per experiment
-        :param test_size: number of examples in test sets
-        """
-        assert supepochs > 0
+        assert control_horizons > 0
         self._id = itertools.count()
         self._N = N
         self._L = L
         self._E = E
         self._T = T
-        self._factory_cls = factory_cls
-        self._supepochs = supepochs
+        self._factory_cls = factory_cls  # TODO: change this to accept an actual instance
+        self._control_horizons = control_horizons
         self._trials = trials
         self._test_size = test_size
 
@@ -188,7 +164,7 @@ class Task(object):
         :param kwargs:
         :return:
         """
-        data = {"n": [], "latent_dim": [], "embed_dim": [], "timesteps": [], "error": []}
+        data = {"n": [], "latent_dim": [], "embed_dim": [], "timesteps": [], "loss": []}
         total = len(self._N) * len(self._L) * len(self._E) * len(self._T) * self._trials
         with tqdm(total=total, position=0, leave=False) as pbar:
             for i in range(self._trials):
@@ -206,22 +182,25 @@ class Task(object):
 
                     # Create and train model
                     model = model_cls(latent_dim, embed_dim, timesteps)
-                    test = factory.make_data(timesteps, n=self._test_size, in_dist=in_dist)
-                    control = None
-                    for j in range(self._supepochs):
+                    train_init_conds = factory.make_init_conds(n)
+                    for j in range(self._control_horizons):
                         if j == 0:
-                            x = factory.make_data(timesteps, n=n, control=control)
+                            x = factory.make_data(train_init_conds, timesteps=timesteps)
                         else:
-                            x = factory.make_data(timesteps, init_conds=x[:, 0], control=control)
-                        model.fit(x, **kwargs)
-                        model.act(x)
-                        pred = model.predict(test[:, 0], timesteps)
-                    err = factory.calc_error(pred, test)
+                            control = model.act(x)
+                            x = factory.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps)
+                        model.fit(x, **kwargs)  # TODO: is there a more elegant way of passing in epochs? perhaps w/ partial?
+
+                    # create test data
+                    test_init_conds = factory.make_init_conds(self._test_size, in_dist)
+                    test = factory.make_data(test_init_conds, timesteps=timesteps)
+                    pred = model.predict(test[:, 0], timesteps)
+                    loss = factory.calc_loss(pred, test)
                     data["n"].append(n)
                     data["latent_dim"].append(latent_dim)
                     data["embed_dim"].append(embed_dim)
                     data["timesteps"].append(timesteps)
-                    data["error"].append(err)
+                    data["loss"].append(loss)
                     pbar.update()
                 data["id"] = next(self._id)
         return pd.DataFrame(data)

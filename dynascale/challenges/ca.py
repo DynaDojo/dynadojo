@@ -9,22 +9,34 @@ RNG = np.random.default_rng()
 
 
 class CAChallenge(Challenge):
-    def __init__(self, latent_dim, embed_dim, C_range=(-10, 10)):
-        self.rule = RNG.integers(0, 255)  # TODO: make better RNG rule generator; investigate (https://cellpylib.org/reference.html?highlight=binaryrule#module-cellpylib.rule_tables)
+    def __init__(self, latent_dim, embed_dim):
         super().__init__(latent_dim, embed_dim)
+        lambda_val = RNG.uniform()
+        self.rule_table, _, _ = cpl.random_rule_table(lambda_val=lambda_val, k=2, r=self.latent_dim,
+                                                      strong_quiescence=True,
+                                                      isotropic=True)
+        self.in_dist_p = 0.25
+        self.out_dist_p = 0.75
 
-    def _make_data(self, timesteps: int, n: int = None, init_conds: np.ndarray = None, control=None, in_dist: bool = True) -> np.ndarray:
+    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+        if in_dist:
+            return RNG.binomial(1, self.in_dist_p, size=(n, self.embed_dim))
+        else:
+            return RNG.binomial(1, self.out_dist_p, size=(n, self.embed_dim))
+
+    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int) -> np.ndarray:
         data = []
-        init_conds = RNG.integers(0, 1, endpoint=True, size=(n, self.embed_dim)) if init_conds is None else init_conds
-        control = np.zeros((timesteps, self.embed_dim)) if control is None else control
-        for x0 in init_conds:
-            cellular_automata = np.clip([x0 + control[0]], 0, 1).astype(np.int32)
+        for x0, u in zip(init_conds, control):
+            cellular_automata = np.clip([x0 + u[0]], 0, 1).astype(np.int32)
             for t in range(1, timesteps):
-                cellular_automata = cpl.evolve(cellular_automata, timesteps=2, apply_rule=lambda n, c, t: cpl.nks_rule(n, 30), r=self.latent_dim)
-                cellular_automata[-1] = np.clip(cellular_automata[-1] + control[t], 0, 1).astype(np.int32)
+                cellular_automata = cpl.evolve(cellular_automata,
+                                               timesteps=2,
+                                               apply_rule=lambda n, c, t: cpl.table_rule(n, self.rule_table),
+                                               r=self.latent_dim)
+                cellular_automata[-1] = np.clip(cellular_automata[-1] + u[t], 0, 1).astype(np.int32)
             data.append(cellular_automata)
         data = np.array(data)
         return data
 
-    def _calc_error(self, x, y):
+    def _calc_loss(self, x, y):
         return np.count_nonzero(x == y) / self.latent_dim
