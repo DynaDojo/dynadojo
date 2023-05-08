@@ -38,6 +38,8 @@ class Koopman(MyModel):
         self.autoencoder = self._build_autoencoder()
         self._koopman = self._build_koopman(self.latent_dim)
         self.model = self._build_model(alpha1, alpha2)
+        # self.autoencoder.compile(optimizer="Adam", loss="mse")
+        # self.model.compile(optimizer="Adam", loss=None)
         self.autoencoder.compile(optimizer="Adam", loss="mse", run_eagerly=True)  # TODO: remove eager execution
         self.model.compile(optimizer="Adam", loss=None, run_eagerly=True)
 
@@ -102,7 +104,7 @@ class Koopman(MyModel):
         self._fit_autoencoder(x, autoencoder_epochs, batch_size, verbose)
         self._fit_model(x, model_epochs, batch_size, verbose)
 
-    def _predict(self, x0: np.ndarray, timesteps: int, verbose="auto", **kwargs) -> np.ndarray:
+    def predict(self, x0: np.ndarray, timesteps: int, verbose="auto", **kwargs) -> np.ndarray:
         assert x0.ndim == 2
         num_examples, dim = x0.shape
         x0 = tf.convert_to_tensor(np.expand_dims(x0, axis=1))

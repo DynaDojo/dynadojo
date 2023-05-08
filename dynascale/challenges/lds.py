@@ -24,8 +24,7 @@ class LDSChallenge(Challenge):
     @Challenge.embed_dim.setter
     def embed_dim(self, value):
         self._embed_dim = value
-        self.B = RNG.uniform(*self._B_range,
-                             (self.latent_dim, self.embed_dim))
+        self.B = RNG.uniform(*self._B_range, (self.latent_dim, self.embed_dim))
         self.C = RNG.uniform(*self._C_range, (self.latent_dim, self.embed_dim))
 
     @Challenge.latent_dim.setter

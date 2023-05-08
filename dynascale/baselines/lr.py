@@ -1,7 +1,7 @@
 import numpy as np
 from ..abstractions import Model
 
-class TommyLinearRegression(Model):
+class LinearRegression(Model):
     def __init__(self, latent_dim, embed_dim, timesteps):
         super().__init__(latent_dim, embed_dim, timesteps)
         self.A_hat = []
