@@ -15,6 +15,7 @@ def _plot2d(trajs_grid, labels: list = None):
         else:
             line_collection = LineCollection(trajs, color=f"C{i}", label=labels[i])
         ax.add_collection(line_collection)
+        ax.scatter(trajs[:, 0, 0], trajs[:, 0, 1], color=f"C{i}", marker="o")
     minima = trajs_grid.min(axis=(0, 1, 2))
     maxima = trajs_grid.max(axis=(0, 1, 2))
     ax.set_xlim(minima[0], maxima[0])
@@ -33,6 +34,7 @@ def _plot3d(grid, labels: list = None):
         else:
             line_collection = Line3DCollection(trajs, color=f"C{i}", label=labels[i])
         ax.add_collection(line_collection)
+        ax.scatter(trajs[:, 0, 0], trajs[:, 0, 1], trajs[:, 0, 2], color=f"C{i}", marker="o")
     minima = grid.min(axis=(0, 1, 2))
     maxima = grid.max(axis=(0, 1, 2))
     ax.set_xlim(minima[0], maxima[0])

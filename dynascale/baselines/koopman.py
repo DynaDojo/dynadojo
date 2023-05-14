@@ -7,6 +7,7 @@ from tensorflow.python.keras.losses import mean_squared_error
 from ..abstractions import Model as MyModel
 
 
+
 class _KoopmanLayer(Layer):
     def __init__(self, dim, timesteps):
         super().__init__()
@@ -18,11 +19,12 @@ class _KoopmanLayer(Layer):
         self.kernel = self.add_weight(
             "kernel",
             shape=[self.dim, self.dim],
-            regularizer="l2"
+            regularizer="l2",
+            trainable=True
         )
 
     def call(self, inputs, **kwargs):
-        matrix_exponentials = tf.convert_to_tensor([tf.linalg.expm(self.kernel * t) for t in range(self.timesteps)])
+        matrix_exponentials = tf.convert_to_tensor([tf.linalg.expm(self.kernel, t) for t in range(self.timesteps)])
         trajs = tf.einsum('ijk,lk->lij', matrix_exponentials, inputs[:, 0, :])
         return trajs
 
@@ -31,12 +33,12 @@ class Koopman(MyModel):
                  decoder_hidden_widths=(10, 10), alpha1=0.01, alpha2=0.01):
         super().__init__(latent_dim, embed_dim, timesteps)
 
-        self._encoder = self._build_coder("encoder", (None, self.embed_dim), encoder_hidden_widths,
-                                          self.latent_dim)
-        self._decoder = self._build_coder("decoder", (None, self.latent_dim), decoder_hidden_widths,
+        self._encoder = self._build_coder("encoder", (None, embed_dim), encoder_hidden_widths,
+                                          latent_dim)
+        self._decoder = self._build_coder("decoder", (None, latent_dim), decoder_hidden_widths,
                                           self.embed_dim)
         self.autoencoder = self._build_autoencoder()
-        self._koopman = self._build_koopman(self.latent_dim)
+        self._koopman = self._build_koopman(latent_dim)
         self.model = self._build_model(alpha1, alpha2)
         # self.autoencoder.compile(optimizer="Adam", loss="mse")
         # self.model.compile(optimizer="Adam", loss=None)
@@ -104,7 +106,7 @@ class Koopman(MyModel):
         self._fit_autoencoder(x, autoencoder_epochs, batch_size, verbose)
         self._fit_model(x, model_epochs, batch_size, verbose)
 
-    def predict(self, x0: np.ndarray, timesteps: int, verbose="auto", **kwargs) -> np.ndarray:
+    def _predict(self, x0: np.ndarray, timesteps: int, verbose="auto", **kwargs) -> np.ndarray:
         assert x0.ndim == 2
         num_examples, dim = x0.shape
         x0 = tf.convert_to_tensor(np.expand_dims(x0, axis=1))

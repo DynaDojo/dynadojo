@@ -2,6 +2,7 @@ from dynascale.utils.lds import plot
 from dynascale.challenges.lds import LDSChallenge
 from dynascale.challenges.ca import CAChallenge
 from dynascale.baselines.new_koopman import Koopman
+import time
 
 import numpy as np
 
@@ -12,12 +13,15 @@ def main():
     # x_mut = challenge.make_data(x0, timesteps=50, noisy=True)
     # plot([x, x_mut], labels=["in", "OOD"])
 
-    challenge = LDSChallenge(20, 100)
-    x0 = challenge.make_init_conds(5000)
-    y0 = challenge.make_init_conds(5000, in_dist=False)
+    start = time.time()
+    challenge = LDSChallenge(50, 100)
+    x0 = challenge.make_init_conds(100)
+    y0 = challenge.make_init_conds(100, in_dist=False)
     x = challenge.make_data(x0, timesteps=50)
     y = challenge.make_data(y0, timesteps=50)
     plot([x, y], target_dim=2, labels=["in", "out"])
+
+    print(time.time() - start)
 
 
 if __name__ == '__main__':
