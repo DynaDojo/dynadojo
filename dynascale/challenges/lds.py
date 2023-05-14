@@ -116,5 +116,5 @@ class LDSChallenge(Challenge):
         return data
 
     def _calc_loss(self, x, y) -> float:
-        error = np.linalg.norm(x - y, axis=0)
-        return np.mean(error ** 2)
+        error = np.sqrt(np.mean((x-y)**2))
+        return error
