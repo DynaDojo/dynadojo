@@ -36,13 +36,13 @@ class LinearRegression(Model):
         return self.nextU
     
     def _predict(self, x0, timesteps, **kwargs):
-        allPredicted = []
-        trajectory = [x0]
+        preds = []
+        traj = [x0.T]
         for _ in range(timesteps-1):
-            print(self.A_hat)
-            print(trajectory[-1])
-            trajectory.append(self.A_hat @ trajectory[-1])
-        allPredicted.append(trajectory)
-        return np.array(allPredicted)
+            traj.append(self.A_hat @ traj[-1])
+        preds.append(traj)
+        preds = np.squeeze(np.array(preds), 0)
+        preds = np.transpose(preds, (2, 0, 1))
+        return preds
 
 
