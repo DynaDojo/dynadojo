@@ -3,70 +3,56 @@ import tensorflow as tf
 from tensorflow.python import keras
 from tensorflow.python.keras import layers
 from tensorflow.python.keras.losses import mean_squared_error
-from functools import partial
-
 
 from ..abstractions import Model
 
 
-class KoopmanLayer(layers.Layer):
-    def __init__(self, dim, timesteps):
-        super().__init__()
-        self.dim = dim
-        self.timesteps = timesteps
-        self.kernel = None
-
-    def build(self, _):
-        self.kernel = self.add_weight(
-            "kernel",
-            shape=[self.dim, self.dim],
-            regularizer="l2",
-            trainable=True
-        )
-
-    def call(self, inputs, **kwargs):
-        matrix_powers = [self.kernel]
-        for _ in range(self.timesteps - 1):
-            matrix_powers.append(matrix_powers[-1] @ self.kernel)
-        matrix_powers = tf.convert_to_tensor(matrix_powers)
-        trajs = tf.einsum('ijk,lk->lij', matrix_powers, inputs[:, 0])
-        return trajs
+# class KoopmanLayer(layers.Layer):
+#     def __init__(self, dim, timesteps):
+#         super().__init__()
+#         self.dim = dim
+#         self.timesteps = timesteps
+#         self.kernel = None
+#
+#     def build(self, _):
+#         self.kernel = self.add_weight(
+#             "kernel",
+#             shape=[self.dim, self.dim],
+#             regularizer="l2",
+#             trainable=True
+#         )
+#
+#     def call(self, inputs, **kwargs):
+#         matrix_powers = [self.kernel]
+#         for _ in range(self.timesteps - 1):
+#             matrix_powers.append(matrix_powers[-1] @ self.kernel)
+#         matrix_powers = tf.convert_to_tensor(matrix_powers)
+#         trajs = tf.einsum('ijk,lk->lij', matrix_powers, inputs[:, 0])
+#         return trajs
 
 
 class Koopman(Model):
     def __init__(self, latent_dim, embed_dim, timesteps, h: int = 30, alpha1: int = 0.01, alpha2: int = 0.02, **kwargs):
         super().__init__(latent_dim, embed_dim, timesteps, **kwargs)
 
-        dense = partial(layers.Dense,
-                        activation="relu",
-                        kernel_initializer=tf.keras.initializers.Constant(1 / np.sqrt(h)),
-                        kernel_regularizer="l2"
-                        )
-
-        self.encoder = tf.keras.Sequential([
-            dense(h),
-            dense(h),
-            dense(h),
-            layers.Dense(latent_dim, activation="linear", kernel_regularizer="l2")
-        ])
-
-        self.decoder = tf.keras.Sequential([
-            dense(h),
-            dense(h),
-            dense(h),
-            layers.Dense(embed_dim, activation="linear", kernel_regularizer="l2")
-        ])
-
-        x = tf.keras.Input(shape=(None, embed_dim), name="autoencoder_input")
-        self.autoencoder = tf.keras.Model(x, self.decoder(self.encoder(x)))
-        self.autoencoder.compile(loss="mse", optimizer="Adam")
+        self.encoder = self._build_coder("encoder", (None, embed_dim), (h, h, h),
+                                         self.latent_dim)
+        self.decoder = self._build_coder("decoder", (None, latent_dim), (h, h, h),
+                                         self.embed_dim)
+        self.autoencoder = self._build_autoencoder()
 
         x0 = tf.keras.Input(shape=(1, embed_dim,))
         y = tf.keras.Input(shape=(timesteps, embed_dim))
-        self.K = KoopmanLayer(self.latent_dim, timesteps)
+
+        self.K = layers.Dense(latent_dim, activation="linear")
+        advanced = [x0]
+        for _ in range(timesteps - 1):
+            advanced.append(self.K(advanced[-1]))
+
+        advanced = tf.convert_to_tensor(advanced)
 
         encoded = self.encoder(x0)
-        advanced = self.K(encoded)
+        # advanced = self.K(encoded)
         x_pred = self.decoder(advanced)
 
         self.model = tf.keras.Model([x0, y], x_pred)
@@ -88,6 +74,23 @@ class Koopman(Model):
         self.model.add_metric(L_inf, name='infinity_norm')
 
         self.model.compile(loss=None, optimizer="Adam")
+
+    @staticmethod
+    def _build_coder(name: str, input_dim, hidden_widths, output_dim):
+        inp = layers.Input(shape=input_dim, name=f"{name}_input")
+        x = inp
+        for i, w in enumerate(hidden_widths):
+            x = layers.Dense(w, activation="relu", kernel_regularizer="l2", name=f"{name}_hidden{i}")(x)
+        out = layers.Dense(output_dim, activation="linear", kernel_regularizer="l2", name=f"{name}_output")(x)
+        return keras.Model(inp, out, name=name)
+
+    def _build_autoencoder(self):
+        """
+        encoder -> decoder
+        """
+        autoencoder_input = layers.Input(shape=(None, self.embed_dim), name="autoencoder_input")
+        autoencoder_output = self.decoder(self.encoder(autoencoder_input))
+        return tf.keras.Model(autoencoder_input, autoencoder_output, name="autoencoder")
 
     def fit(self,
             x: np.ndarray,

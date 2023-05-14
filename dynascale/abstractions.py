@@ -16,6 +16,8 @@ class Model(ABC):
         :param timesteps: the number of timesteps in each trajectory
         :param kwargs:
         """
+        # TODO: obscure latent dimension
+
         self._latent_dim = latent_dim
         self._embed_dim = embed_dim
         self._timesteps = timesteps
@@ -169,6 +171,7 @@ class Task(object):
         self._trials = trials
         self._test_size = test_size
         self._control_constraint = control_constraint
+        self._ord = "fro"  # TODO: add noorm to challenge and constraint to challenge by Monday
 
 
 def evaluate(self, model_cls: type[Model], model_kwargs: dict = None, in_dist=True, noisy=False):
@@ -196,7 +199,8 @@ def evaluate(self, model_cls: type[Model], model_kwargs: dict = None, in_dist=Tr
                         x = challenge.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
                     else:
                         control = model.act(x)
-                        assert np.norm(control) <= self._control_constraint, "control constraint violated"
+                        # TODO: use challenge.norm
+                        assert np.all(np.norm(control, axis=0) / timesteps <= self._control_constraint), "control constraint violated"
                         x = challenge.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps,
                                                 noisy=noisy)
                     model.fit(x, **model_kwargs)
