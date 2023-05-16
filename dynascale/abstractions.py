@@ -7,7 +7,7 @@ from tqdm.auto import tqdm
 
 
 class Model(ABC):
-    def __init__(self, latent_dim, embed_dim, timesteps, **kwargs):
+    def __init__(self, latent_dim, embed_dim, timesteps, control_constraint, **kwargs):
         """
         An abstract base class for custom models that will be evaluated by Task.
 
@@ -21,6 +21,7 @@ class Model(ABC):
         self._latent_dim = latent_dim
         self._embed_dim = embed_dim
         self._timesteps = timesteps
+        self._control_constraint = control_constraint
 
     @property
     def latent_dim(self):
@@ -33,6 +34,10 @@ class Model(ABC):
     @property
     def timesteps(self):
         return self._timesteps
+    
+    @property
+    def control_constraint(self):
+        return self._control_constraint
 
     @latent_dim.setter
     def latent_dim(self, value):
@@ -192,7 +197,7 @@ def evaluate(self, model_cls: type[Model], model_kwargs: dict = None, in_dist=Tr
                     challenge.embed_dim = embed_dim
 
                 # Create and train model
-                model = model_cls(latent_dim, embed_dim, timesteps)  # TODO: does timesteps need to be here?
+                model = model_cls(latent_dim, embed_dim, timesteps, self._control_constraint)  # TODO: does timesteps need to be here?
                 train_init_conds = challenge.make_init_conds(n)
                 for j in range(self._control_horizons):
                     if j == 0:

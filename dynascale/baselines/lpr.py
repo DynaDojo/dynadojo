@@ -3,13 +3,14 @@ from ..abstractions import Model
 
 
 
-class LowestPossibleRadius(MyModel):
-    def __init__(self, latent_dim, embed_dim, timesteps):
+class LowestPossibleRadius(Model):
+    def __init__(self, latent_dim, embed_dim, timesteps, control_constraint):
         super().__init__(latent_dim, embed_dim, timesteps)
-        self.validRadii = [1]
+        self.currRadius = 1
         self.radiiTables = {}
-        self.radiiTables[1] = self.generateRadiusTable(1)
-        self.ROW_LENGTH = 0
+        self.radiiTables[self.currRadius] = self.generateRadiusTable(self.currRadius)
+        self.ROW_LENGTH = embed_dim
+        self.control_constraint = control_constraint
 
     def generateCombos(self, n):
         if not n:
@@ -28,94 +29,119 @@ class LowestPossibleRadius(MyModel):
             tableDict[combo] = None
 
         return tableDict
-
-    def train(self, samples, silent = False):
-        #print(samples)
-        self.validRadii = [1]
-        self.radiiTables = {}
-        self.radiiTables[1] = self.generateRadiusTable(1)
-        self.ROW_LENGTH = len(samples[0][0])
-        
-
+    
+    def isValidRadius(self, radius, samples) -> bool:
         for sample in samples:
             for stepidx, step in enumerate(sample):
                 if stepidx == 0:
                     continue
 
                 for cellidx, cell in enumerate(step):
-                    for radius in self.validRadii:
-                        neighborhood = ""
+                    neighborhood = ""
 
-                        # to the left
-                        for neg_x in range(radius, 0, -1):
-                            neighborhood += str(sample[stepidx - 1][cellidx - neg_x])
+                    # to the left
+                    for neg_x in range(radius, 0, -1):
+                        neighborhood += str(sample[stepidx - 1][cellidx - neg_x])
 
-                        # directly above
-                        neighborhood += str(sample[stepidx - 1][cellidx])
+                    # directly above
+                    neighborhood += str(sample[stepidx - 1][cellidx])
 
-                        # to the right 
-                        for pos_x in range(1, radius+1):
-                            pos = (cellidx + pos_x) % self.ROW_LENGTH
-                            neighborhood += str(sample[stepidx - 1][pos])
+                    # to the right 
+                    for pos_x in range(1, radius+1):
+                        pos = (cellidx + pos_x) % self.ROW_LENGTH
+                        neighborhood += str(sample[stepidx - 1][pos])
 
-                        if(self.radiiTables[radius][neighborhood]) == None:
-                            self.radiiTables[radius][neighborhood] = cell
-                        else:
-                            if self.radiiTables[radius][neighborhood] != cell:
-                                if not silent:
-                                    print("knockout of radius:" + str(radius))
-                                # add a radius that is 1 larger
-                                newRadius = self.validRadii[-1]+1
-                                self.validRadii.remove(radius)
-                                self.validRadii.append(newRadius)
-                                self.radiiTables[newRadius] = self.generateRadiusTable(newRadius) 
+                    if(self.radiiTables[radius][neighborhood]) == None:
+                        self.radiiTables[radius][neighborhood] = cell
+                    else:
+                        if self.radiiTables[radius][neighborhood] != cell:
+                            return False
+        return True
+
+    def fit(self, samples, silent = False):
+        self.currRadius = 1
+        self.radiiTables = {}
+        self.radiiTables[self.currRadius] = self.generateRadiusTable(self.currRadius)
+        
+        while(not self.isValidRadius(self.currRadius, samples)):
+            newRadius = self.currRadius+1
+            self.radiiTables[newRadius] = self.generateRadiusTable(newRadius) 
+            self.currRadius = newRadius
         
     def act(self, x, **kwargs):
-        radius = self.validRadii[-1]
-
         control = []
+        lastState = x[:,-1,:]
+        control_mag = [] # constraint is for each sample
 
-        for sample in samples:
-            for stepidx, step in enumerate(sample):
-                if stepidx == len(sample) - 1:
-                    continue
+        # find a smart control for 1st next state of traj
+        for sample, sampleidx in enumerate(lastState):
+            tempControl = []
+            for _ in range(self.embed_dim / ((self.currRadius*2) + 1)):
+                cellidx = self.currRadius
+                neighborhood = ""
 
-                for y in range(self.latent_dim / ((radius*2) + 1)):
-                    for radius in self.validRadii:
-                        neighborhood = ""
+                # left of cell
+                for neg_x in range(self.currRadius, 0, -1):
+                    neighborhood += str(sample[0][cellidx - neg_x])
 
-                        # to the left
-                        for neg_x in range(radius, 0, -1):
-                            neighborhood += str(sample[stepidx - 1][cellidx - neg_x])
+                # the cell
+                neighborhood += str(sample[0][cellidx])
 
-                        # directly above
-                        neighborhood += str(sample[stepidx - 1][cellidx])
+                # right of cell
+                for pos_x in range(1, self.currRadius+1):
+                    pos = (cellidx + pos_x) % self.ROW_LENGTH
+                    neighborhood += str(sample[0][pos])
 
-                        # to the right 
-                        for pos_x in range(1, radius+1):
-                            pos = (cellidx + pos_x) % self.ROW_LENGTH
-                            neighborhood += str(sample[stepidx - 1][pos])
+                # if key is seen, replace with unseen
+                if(self.radiiTables[self.currRadius][neighborhood]) != None:
+                    unseenKeys = [key for key, value in self.radiiTables[self.currRadius].items() if value is None]
+                    desiredKey = np.random.choice(unseenKeys)
 
-                        if(self.radiiTables[radius][neighborhood]) != None:
-                            emptyKeys = [key for key, value in self.radiiTables[radius].items() if value is None]
-                            desiredKey = random.choice(emptyKeys)
+                    for idx, element in enumerate(neighborhood):
+                        if control_mag[sampleidx] > self.control_constraint:
+                            tempControl.append(0)
+                        else:
+                            if element == desiredKey[idx]:
+                                tempControl.append(0)
+                            elif element > desiredKey[idx]:
+                                tempControl.append(-1)
+                                control_mag[sampleidx] +=1
+                            elif element < desiredKey[idx]:
+                                tempControl.append(1)
+                                control_mag[sampleidx] += 1
+                cellidx += (self.currRadius*2)+1
+            
+            while(len(tempControl) < self.embed_dim):
+                tempControl.append(0)
+            
+            control.append(tempControl)
+            
 
-                             # edit neighborhood to be this 
-                            for idx, element in enumerate(neighborhood):
-                                if element == desiredKey[idx]:
-                                    control += 0
-                                elif element > desiredKey[idx]:
-                                    control += -1
-                                elif element < desiredKey[idx]:
-                                    control += 1
-                           
-
-       
+        for sampleidx in range(len(x[0])):
+            # for all other states of traj, choose random control
+            for timestep in range(1, self.timesteps):
+                # alternate with no control to see effect of even-numbered controls
+                if timestep % 2 == 1:
+                    control.append(np.zeros(self.embed_dim))
+                
+                else:
+                    tempControl = []
+                    for _ in range(self.embed_dim):
+                        if control_mag[sampleidx] > self.control_constraint:
+                            tempControl += 0
+                        else:
+                            element = np.random.choice([-1,0,1])
+                            tempControl.append(element)
+                            if element:
+                                control_mag[sampleidx] += 1
+                    control.append(tempControl)
+    
+        return control
     
     def predict(self, x0, timesteps, **kwargs):
         result = []
         # take the only still possible radius
-        predictedRadius = self.validRadii[-1]
+        predictedRadius = self.currRadius
 
         for cellidx in range(0, self.ROW_LENGTH):
             neighborhood = ""
