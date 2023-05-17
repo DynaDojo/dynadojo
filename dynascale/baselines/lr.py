@@ -27,7 +27,7 @@ class LinearRegression(Model):
             self.A_hat = Y@np.linalg.pinv(X)
 
     def act(self, x, **kwargs):
-        self.nextU = np.random.uniform(-1,1, [len(x[0]), self.embed_dim, self.timesteps])
+        self.nextU = np.random.uniform(-1, 1, [len(x[0]), self._embed_dim, self._timesteps])
         self.nextU = np.array(self.nextU)
 
         # We normalize U to mimic the limited current we can simulate in a neuron; a larger U would represent unrealistic neural control 

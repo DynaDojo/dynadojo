@@ -3,6 +3,8 @@ import numpy as np
 from scipy.integrate import solve_ivp
 import scipy as sp
 from tqdm.auto import tqdm
+from multiprocessing import Pool
+
 
 from dynascale.abstractions import Challenge
 
@@ -99,22 +101,23 @@ class LDSChallenge(Challenge):
         data = []
         init_conds = init_conds @ np.linalg.pinv(self.C)
         time = np.linspace(0, 1, num=timesteps)
-        for x0, u in tqdm(zip(init_conds, control), total=len(init_conds)):
-            def control_func(t):
-                i = np.argmin(np.abs(t - time))
-                return u[i]
 
-            def dynamics(t, x):
-                if noisy:
-                    return self.A @ x + self.B @ control_func(t) + RNG.normal(scale=self._scale, size=(self.latent_dim))
-                else:
-                    return self.A @ x + self.B @ control_func(t)
+        def dynamics(t, x, u):
+            i = np.argmin(np.abs(t - time))
+            if noisy:
+                return self.A @ x + self.B @ u[i] + RNG.normal(scale=self._scale, size=(self.latent_dim))
+            else:
+                return self.A @ x + self.B @ u[i]
 
-            sol = solve_ivp(dynamics, t_span=[0, 1], y0=x0, t_eval=time, dense_output=True)
+        for x0, u in tqdm(zip(init_conds, control), total=len(init_conds), leave=False):
+            sol = solve_ivp(dynamics, t_span=[0, 1], y0=x0, t_eval=time, dense_output=True, args=(u,))
             data.append(sol.y)
         data = np.transpose(np.array(data), axes=(0, 2, 1)) @ self.C
         return data
 
     def _calc_loss(self, x, y) -> float:
-        error = np.sqrt(np.mean((x-y)**2))
-        return error
+        error = x - y
+        return np.mean(error ** 2)
+
+    def _calc_control_cost(self, control: np.ndarray) -> float:
+        return np.linalg.norm(control, axis=(1, 2), ord=2).sum()  # TODO: check w/ others
