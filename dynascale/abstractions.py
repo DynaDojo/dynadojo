@@ -31,7 +31,7 @@ class Model(ABC):
     def predict(self, x0: np.ndarray, timesteps, *args, **kwargs) -> np.ndarray:
         pred = self._predict(x0, timesteps, *args, **kwargs)
         n = x0.shape[0]
-        assert pred.shape == (n, timesteps, self.embed_dim)
+        assert pred.shape == (n, timesteps, self._embed_dim)
         return pred
 
 
@@ -90,12 +90,13 @@ class Challenge(ABC):
         return self._calc_loss(x, y)
 
     @abstractmethod
-    def _calc_control_cost(self, control: np.ndarray) -> float:
+    def _calc_control_cost(self, control: np.ndarray) -> np.ndarray:
         raise NotImplementedError
 
-    def calc_control_cost(self, control: np.ndarray) -> float:
+    def calc_control_cost(self, control: np.ndarray) -> np.ndarray:
         assert control.shape[2] == self.embed_dim and control.ndim == 3
         cost = self._calc_control_cost(control)
+        assert cost.shape == (len(control),)
         return cost
 
 
@@ -160,19 +161,19 @@ class Task:
                     model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
                     train_init_conds = challenge.make_init_conds(n)
 
-                    total_control_cost = 0
+                    total_cost = 0
 
                     for j in range(self._control_horizons):
                         if j == 0:
                             x = challenge.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
                         else:
                             control = model.act(x, **act_kwargs)
-                            total_control_cost += challenge.calc_control_cost(control)
+                            cost = challenge.calc_control_cost(control)
+                            total_cost += cost
+                            assert np.all(cost <= max_control_cost), "Control cost exceeded!"
                             x = challenge.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps,
                                                     noisy=noisy)
                         model.fit(x, **fit_kwargs)
-
-                    assert total_control_cost <= max_control_cost, "Control cost exceeded!"
 
                     # create test data
                     test_init_conds = challenge.make_init_conds(self._test_examples, in_dist)
@@ -184,7 +185,7 @@ class Task:
                     data["embed_dim"].append(embed_dim)
                     data["timesteps"].append(timesteps)
                     data["loss"].append(loss)
-                    data["cost"].append(total_control_cost)
+                    data["cost"].append(total_cost)
                     pbar.update()
                 data["id"] = next(self._id)
         return pd.DataFrame(data)

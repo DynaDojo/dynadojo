@@ -1,6 +1,8 @@
 
 import numpy as np
 from tqdm.auto import tqdm
+from joblib import Parallel, delayed
+
 import cellpylib as cpl
 
 from dynascale.abstractions import Challenge
@@ -27,7 +29,8 @@ class CAChallenge(Challenge):
 
     def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
-        for x0, u in tqdm(zip(init_conds, control), total=len(init_conds)):
+
+        def get_trajectory(x0, u):
             cellular_automata = np.clip([x0 + u[0]], 0, 1).astype(np.int32)
             for t in range(1, timesteps):
                 cellular_automata = cpl.evolve(cellular_automata,
@@ -38,7 +41,11 @@ class CAChallenge(Challenge):
                 if noisy:
                     mask = RNG.binomial(1, self._mutation_p, size=(self.embed_dim,)).astype(bool)
                     cellular_automata[-1][mask] = (~cellular_automata[-1][mask].astype(bool)).astype(np.int32)
-            data.append(cellular_automata)
+            return cellular_automata
+
+        data = Parallel(n_jobs=4)(delayed(get_trajectory)(x0, u) for x0, u in zip(init_conds, control))
+
+
         data = np.array(data)
         return data
 
@@ -46,4 +53,4 @@ class CAChallenge(Challenge):
         return np.count_nonzero(x == y) / self.embed_dim
 
     def _calc_control_cost(self, control: np.ndarray) -> float:
-        return np.sum(np.abs(control))
+        return np.sum(control, axis=(1, 2))

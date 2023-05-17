@@ -1,12 +1,21 @@
-from dynascale.challenges.lds import LDSChallenge
+from dynascale.utils.lds import plot
+from dynascale.challenges.snn import SNNChallenge
 from dynascale.baselines.simple import Simple
 from dynascale.tasks import FixedTrainSize
+import numpy as np
+import scipy as sp
 
 def main():
-    task = FixedTrainSize(n=3000, L=[2, 3], E=[4], T=[50], C=[0], control_horizons=1, test_examples=10, reps=1,
-                          test_timesteps=50, challenge_cls=LDSChallenge)
-    data = task.evaluate(model_cls=Simple, fit_kwargs={"epochs": 5})
-    task.plot(data)
+    latent_dim = 3
+    embed_dim = 6
+    n = 3
+    timesteps = 50
+    challenge = SNNChallenge(latent_dim, embed_dim)
+    x0 = challenge.make_init_conds(n)
+    y0 = challenge.make_init_conds(30, in_dist=False)
+    x = challenge.make_data(x0, timesteps=timesteps)
+    y = challenge.make_data(y0, timesteps=timesteps)
+    plot([x, y], target_dim=3, labels=["in", "out"], max_lines=30)
 
 
 if __name__ == '__main__':

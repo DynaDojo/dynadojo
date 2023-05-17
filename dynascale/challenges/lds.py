@@ -120,4 +120,4 @@ class LDSChallenge(Challenge):
         return np.mean(error ** 2)
 
     def _calc_control_cost(self, control: np.ndarray) -> float:
-        return np.linalg.norm(control, axis=(1, 2), ord=2).sum()  # TODO: check w/ others
+        return np.linalg.norm(control, axis=(1, 2), ord=2)
