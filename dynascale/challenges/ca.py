@@ -42,7 +42,7 @@ class CAChallenge(Challenge):
         return data
 
     def _calc_loss(self, x, y):
-        return np.count_nonzero(x == y) / self.latent_dim
+        return np.count_nonzero(x == y) / self.embed_dim
 
     def _calc_control_cost(self, control: np.ndarray) -> float:
         return np.sum(np.abs(control))
