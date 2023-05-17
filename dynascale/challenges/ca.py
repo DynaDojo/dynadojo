@@ -43,9 +43,7 @@ class CAChallenge(Challenge):
                     cellular_automata[-1][mask] = (~cellular_automata[-1][mask].astype(bool)).astype(np.int32)
             return cellular_automata
 
-        data = Parallel(n_jobs=4)(delayed(get_trajectory)(x0, u) for x0, u in zip(init_conds, control))
-
-
+        data = Parallel(n_jobs=4)(delayed(get_trajectory)(x0, u) for x0, u in tqdm(zip(init_conds, control), total=len(init_conds)))
         data = np.array(data)
         return data
 
