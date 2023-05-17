@@ -15,7 +15,7 @@ class SNNChallenge(LDSChallenge):
                  init_cond_out_dist_range=(-1, 0)
                  ):
       assert embed_dim >= latent_dim, "REQUIRED: embed_dim ≥ 2 * latent_dim"
-      super().__init(latent_dim, embed_dim,
+      super().__init__(latent_dim, embed_dim,
                      init_cond_in_dist_range=init_cond_in_dist_range,
                      init_cond_out_dist_range=init_cond_out_dist_range,
                      )

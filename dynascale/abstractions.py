@@ -105,7 +105,7 @@ class Task:
                  L: list[int],
                  E: list[int],
                  T: list[int],
-                 C: list[float],
+                 max_control_cost_per_dim: int,
                  control_horizons: int,
                  challenge_cls: type[Challenge],
                  reps: int,
@@ -120,7 +120,7 @@ class Task:
         self._L = L
         self._E = E
         self._T = T
-        self._C = C
+        self._max_control_cost_per_dim = max_control_cost_per_dim
         self._challenge_cls = challenge_cls
         self._challenge_kwargs = challenge_kwargs or {}
         self._control_horizons = control_horizons
@@ -139,12 +139,12 @@ class Task:
         act_kwargs = act_kwargs or {}
 
         data = {"n": [], "latent_dim": [], "embed_dim": [], "timesteps": [], "loss": [], "cost": []}
-        total = len(self._N) * len(self._L) * len(self._E) * len(self._T) * len(self._C) * self._reps
+        total = len(self._N) * len(self._L) * len(self._E) * len(self._T) * self._reps
         with tqdm(total=total, position=0, leave=False) as pbar:
             for i in range(self._reps):
                 challenge = None
-                for n, latent_dim, embed_dim, timesteps, max_control_cost in itertools.product(self._N, self._L, self._E, self._T, self._C):
-                    pbar.set_description(f"Rep {i + 1}/{self._reps}: {n=}, {latent_dim=}, {embed_dim=}, {timesteps=}, {max_control_cost=}")
+                for n, latent_dim, embed_dim, timesteps in itertools.product(self._N, self._L, self._E, self._T):
+                    pbar.set_description(f"Rep {i + 1}/{self._reps}: {n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
                     if embed_dim < latent_dim:
                         continue
                     if challenge is None:
@@ -153,6 +153,8 @@ class Task:
                         challenge.latent_dim = latent_dim
                     if embed_dim != challenge.embed_dim:
                         challenge.embed_dim = embed_dim
+
+                    max_control_cost = self._max_control_cost_per_dim * latent_dim
 
                     # Create and train model
                     model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)

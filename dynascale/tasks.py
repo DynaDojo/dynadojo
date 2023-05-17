@@ -75,20 +75,20 @@ from dynascale.utils.plotting import plot_target_error, plot_metric
 #         plot_target_error(data, "latent_dim", "n", target_error=self._target_loss)
 
 class FixedComplexity(Task):
-    def __init__(self, N: list[int], l: int, E: list[int], T: list[int], C: list[float], control_horizons: int,
+    def __init__(self, N: list[int], l: int, E: list[int], T: list[int], max_control_cost_per_dim: int, control_horizons: int,
                  challenge_cls: type[Challenge], reps: int, test_examples: int, test_timesteps: int):
         L = [l] * len(N)
-        super().__init__(N, L, E, T, C, control_horizons, challenge_cls, reps, test_examples, test_timesteps)
+        super().__init__(N, L, E, T, max_control_cost_per_dim, control_horizons, challenge_cls, reps, test_examples, test_timesteps)
 
     @staticmethod
     def plot(data):
         plot_metric(data, x_col="n", y_col="loss")
 
 class FixedTrainSize(Task):
-    def __init__(self, n: int, L: list[int], E: list[int], T: list[int], C: list[float], control_horizons: int,
+    def __init__(self, n: int, L: list[int], E: list[int], T: list[int], max_control_cost_per_dim: int, control_horizons: int,
                  challenge_cls: type[Challenge], reps: int, test_examples: int, test_timesteps: int):
         N = [n] * len(L)
-        super().__init__(N, L, E, T, C, control_horizons, challenge_cls, reps, test_examples, test_timesteps)
+        super().__init__(N, L, E, T, max_control_cost_per_dim, control_horizons, challenge_cls, reps, test_examples, test_timesteps)
 
     @staticmethod
     def plot(data: pd.DataFrame):

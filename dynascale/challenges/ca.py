@@ -1,5 +1,6 @@
 
 import numpy as np
+from tqdm.auto import tqdm
 import cellpylib as cpl
 
 from dynascale.abstractions import Challenge
@@ -26,7 +27,7 @@ class CAChallenge(Challenge):
 
     def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
-        for x0, u in zip(init_conds, control):
+        for x0, u in tqdm(zip(init_conds, control), total=len(init_conds)):
             cellular_automata = np.clip([x0 + u[0]], 0, 1).astype(np.int32)
             for t in range(1, timesteps):
                 cellular_automata = cpl.evolve(cellular_automata,
