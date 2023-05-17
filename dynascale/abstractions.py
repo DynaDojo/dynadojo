@@ -31,7 +31,7 @@ class Model(ABC):
     def predict(self, x0: np.ndarray, timesteps, *args, **kwargs) -> np.ndarray:
         pred = self._predict(x0, timesteps, *args, **kwargs)
         n = x0.shape[0]
-        assert pred.shape == (n, self._timesteps, self._embed_dim)
+        assert pred.shape == (n, timesteps, self.embed_dim)
         return pred
 
 
