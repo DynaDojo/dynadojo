@@ -1,39 +1,67 @@
 import numpy as np
 from ..abstractions import Model
 
-class LinearRegression(Model):
-    def __init__(self, latent_dim, embed_dim, timesteps):
-        super().__init__(latent_dim, embed_dim, timesteps)
+from sklearn.linear_model import LinearRegression
+
+class MyLinearRegression(Model):
+    def __init__(self, embed_dim, timesteps, control_constraint):
+        super().__init__(embed_dim, timesteps, control_constraint)
         self.A_hat = []
-        self.nextU = []
         self.U = None
+        self.model = None
     
     def fit(self, x: np.ndarray, **kwargs):
-        X = x[:,:-1,:]
-        Y = x[:,1:,:]
-        U = self.U
-        
-        X = np.reshape(X, (X.shape[0] * X.shape[1], X.shape[2])).T
-        Y = np.reshape(Y, (Y.shape[0] * Y.shape[1], Y.shape[2])).T
 
-        if U is not None:
-            U = np.reshape(U, (U.shape[0] * U.shape[1], U.shape[2])).T
-        
-            d = X.shape[-1]
-            matrix = Y@(np.linalg.pinv(np.vstack((X, U))))
-            self.A_hat = matrix[:, :d]
+        N, T, D = x.shape
+        X_train = x[:, :-1, :].reshape(N * (T - 1), D)
+        y_train = x[:, 1:, :].reshape(N * (T - 1), D)
 
-        else:
-            self.A_hat = Y@np.linalg.pinv(X)
+        self.model = LinearRegression()
+        self.model.fit(X_train, y_train)
+        self.A_hat = self.model.coef_
+
+        # X = x[:,:-1,:]
+        # Y = x[:,1:,:]
+        # X = np.reshape(X, (X.shape[0] * (X.shape[1]), X.shape[2])).T
+        # Y = np.reshape(Y, (Y.shape[0] * (Y.shape[1]), Y.shape[2])).T
+
+      
+
+        # pinv = np.linalg.pinv(X)
+        # print(np.shape(X))
+        # print(np.shape(pinv))
+        # print(np.shape(Y))
+        # self.A_hat = np.dot(Y, pinv)
+        # print(np.shape(self.A_hat))
+
+        # print(f'X is: {X}')
+        # print(f'Y is: {Y}')
+        # print(f'self.A_hat is: {self.A_hat}')
+
+        # if self.U is not None:
+        #     print("using U")
+        #     U = np.reshape(U, (U.shape[0] * U.shape[1], U.shape[2])).T
+        
+        #     d = X.shape[-1]
+        #     matrix = Y@(np.linalg.pinv(np.vstack((X, U))))
+        #     self.A_hat = matrix[:, :d]
+            
+
+        # else:
+        #     print("NOT using U")
+        #     pinv = np.linalg.pinv(X)
+        #     self.A_hat = Y@pinv
+        
+        
 
     def act(self, x, **kwargs):
-        self.nextU = np.random.uniform(-1, 1, [len(x[0]), self._embed_dim, self._timesteps])
-        self.nextU = np.array(self.nextU)
+        self.U = np.random.uniform(-1,1, [len(x[0]), self.embed_dim, self.timesteps])
+        self.U = np.array(self.U)
 
         # We normalize U to mimic the limited current we can simulate in a neuron; a larger U would represent unrealistic neural control 
-        self.nextU =  self.nextU / np.linalg.norm(self.nextU, axis=-1)[:, :, np.newaxis]
+        self.U =  self.U / np.linalg.norm(self.U, axis=-1)[:, :, np.newaxis]
 
-        return self.nextU
+        return self.U
     
     def _predict(self, x0, timesteps, **kwargs):
         preds = []
