@@ -4,13 +4,13 @@ from ..abstractions import Model
 
 
 class LowestPossibleRadius(Model):
-    def __init__(self, latent_dim, embed_dim, timesteps, control_constraint):
-        super().__init__(latent_dim, embed_dim, timesteps)
+    def __init__(self, embed_dim, timesteps, max_control_cost):
+        super().__init__(embed_dim, timesteps, max_control_cost)
         self.currRadius = 1
         self.radiiTables = {}
         self.radiiTables[self.currRadius] = self.generateRadiusTable(self.currRadius)
         self.ROW_LENGTH = embed_dim
-        self.control_constraint = control_constraint
+        self._max_control_cost = max_control_cost
 
     def generateCombos(self, n):
         if not n:
@@ -98,14 +98,14 @@ class LowestPossibleRadius(Model):
                     desiredKey = np.random.choice(unseenKeys)
 
                     for idx, element in enumerate(neighborhood):
-                        if control_mag[sampleidx] > self.control_constraint:
+                        if control_mag[sampleidx] > self.max_control_cost:
                             tempControl.append(0)
                         else:
                             if element == desiredKey[idx]:
                                 tempControl.append(0)
                             elif element > desiredKey[idx]:
                                 tempControl.append(-1)
-                                control_mag[sampleidx] +=1
+                                control_mag[sampleidx] += 1
                             elif element < desiredKey[idx]:
                                 tempControl.append(1)
                                 control_mag[sampleidx] += 1
@@ -116,9 +116,8 @@ class LowestPossibleRadius(Model):
             
             control.append(tempControl)
             
-
+        # for all other states of traj, choose random control
         for sampleidx in range(len(x[0])):
-            # for all other states of traj, choose random control
             for timestep in range(1, self.timesteps):
                 # alternate with no control to see effect of even-numbered controls
                 if timestep % 2 == 1:
@@ -127,7 +126,7 @@ class LowestPossibleRadius(Model):
                 else:
                     tempControl = []
                     for _ in range(self.embed_dim):
-                        if control_mag[sampleidx] > self.control_constraint:
+                        if control_mag[sampleidx] > self.max_control_cost:
                             tempControl += 0
                         else:
                             element = np.random.choice([-1,0,1])
@@ -138,32 +137,44 @@ class LowestPossibleRadius(Model):
     
         return control
     
-    def predict(self, x0, timesteps, **kwargs):
-        result = []
-        # take the only still possible radius
-        predictedRadius = self.currRadius
+    def _evolve(self, x):
+        evolved = []
 
-        for cellidx in range(0, self.ROW_LENGTH):
-            neighborhood = ""
+        for sample in x:
+            sampleResult = []
+            for cellidx in range(0, self.ROW_LENGTH):
+                neighborhood = ""
 
-            # to the left
-            for neg_x in range(predictedRadius, 0, -1):
-                neighborhood += str(sample[cellidx - neg_x])
+                # to the left
+                for neg_x in range(self.currRadius, 0, -1):
+                    neighborhood += str(sample[cellidx - neg_x])
 
-            # directly above
-            neighborhood += str(sample[cellidx])
+                # directly above
+                neighborhood += str(sample[cellidx])
 
-            # to the right 
-            for pos_x in range(1, predictedRadius+1):
-                pos = (cellidx + pos_x) % self.ROW_LENGTH
-                neighborhood += str(sample[pos])
+                # to the right 
+                for pos_x in range(1, self.currRadius+1):
+                    pos = (cellidx + pos_x) % self.ROW_LENGTH
+                    neighborhood += str(sample[pos])
 
-            # if seen before
-            if(self.radiiTables[predictedRadius][neighborhood]) != None:
-                result.append(self.radiiTables[predictedRadius][neighborhood])
+                # if seen before
+                if(self.radiiTables[self.currRadius][neighborhood]) != None:
+                    sampleResult.append(self.radiiTables[self.currRadius][neighborhood])
 
-            # else -> random guess between 0/1
-            else:
-                result.append(random.randint(0, 1))
+                # else -> random guess between 0/1
+                else:
+                    sampleResult.append(np.random.randint(0, 1))
+            evolved.append(sampleResult)
+        return evolved
 
-        return result
+
+    def _predict(self, x0, timesteps, **kwargs):
+        preds = [x0]
+        
+        for _ in range(timesteps-1):
+            preds.append(self._evolve(preds[-1]))
+      
+        preds = np.array(preds)
+        preds = np.transpose(preds, (1, 0, 2))
+
+        return preds

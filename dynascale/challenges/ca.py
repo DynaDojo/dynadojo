@@ -48,7 +48,8 @@ class CAChallenge(Challenge):
         return data
 
     def _calc_loss(self, x, y):
-        return np.count_nonzero(x == y) / self.embed_dim
+        # averaged across all samples and all predicted timesteps
+        return (np.count_nonzero(x == y) / self.embed_dim) / len(y) / len(y[1])
 
     def _calc_control_cost(self, control: np.ndarray) -> float:
         return np.sum(control, axis=(1, 2))
