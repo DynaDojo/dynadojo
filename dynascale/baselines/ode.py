@@ -1,4 +1,4 @@
-class ODE(nn.Module):
+class ODE(nn.Module): #change inherit 
     def __init__(self, latent_dim, embed_dim, timesteps, lr = 3e-2, epochs = 100):
         super().__init__()
         self._latent_dim = latent_dim
