@@ -7,29 +7,76 @@ from tqdm.auto import tqdm
 
 
 class Model(ABC):
-    def __init__(self, embed_dim, timesteps, max_control_cost, **kwargs):
+    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
+        """
+        Base class for all models. Your models should subclass this class.
+
+        :param embed_dim: embedded dimension of the dynamics
+        :param timesteps: timesteps per training trajectory (per action horizon)
+        :param max_control_cost: maximum control cost per trajectory (per action horizon)
+        :param kwargs:
+        """
         self._embed_dim = embed_dim
         self._timesteps = timesteps  # NOTE: this is the timesteps of the training data; NOT the predicted trajectories
         self._max_control_cost = max_control_cost
 
     @abstractmethod
     def fit(self, x: np.ndarray, **kwargs):
+        """
+        Trains the model. Your models must implement this method.
+
+        :param x: (n, timesteps, embed_dim) a tensor of trajectories
+        :param kwargs:
+        :return:
+        """
         raise NotImplementedError
 
-    def _act(self, x: np.ndarray, *args, **kwargs) -> np.ndarray:
+    def _act(self, x: np.ndarray, **kwargs) -> np.ndarray:
+        """
+        Driver for act(). Your models should overload this method if they use non-trivial control.
+
+        :param x: (n, timesteps, embed_dim) a tensor of trajectories
+        :param kwargs:
+        :return: (n, timesteps, embed_dim) a tensor of controls
+        """
         return np.zeros_like(x)
 
-    def act(self, x: np.ndarray, *args, **kwargs) -> np.ndarray:
-        control = self._act(x, *args, **kwargs)
+    def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
+        """
+        # TODO: fill out
+
+        :param x: (n, timesteps, embed_dim) a tensor of trajectories
+        :param kwargs:
+        :return: (n, timesteps, embed_dim) a tensor of controls
+        """
+        control = self._act(x, **kwargs)
         assert control.shape == x.shape
         return control
 
     @abstractmethod
-    def _predict(self, x0: np.ndarray, timesteps: int, *args, **kwargs) -> np.ndarray:
+    def _predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
+        """
+        Driver for predict(). Your models must implement this method.
+
+        The timesteps argument can differ from the ._timesteps attribute. Allows models to predict trajectories
+        with more/less timesteps than their training data.
+
+        :param x0: (n, embed_dim) a matrix of initial conditions
+        :param timesteps: timesteps per predicted trajectory
+        :param kwargs:
+        :return:
+        """
         raise NotImplementedError
 
-    def predict(self, x0: np.ndarray, timesteps, *args, **kwargs) -> np.ndarray:
-        pred = self._predict(x0, timesteps, *args, **kwargs)
+    def predict(self, x0: np.ndarray, timesteps, **kwargs) -> np.ndarray:
+        """
+
+        :param x0: (n, embed_dim) a matrix of initial conditions
+        :param timesteps: timesteps per predicted trajectory
+        :param kwargs:
+        :return:
+        """
+        pred = self._predict(x0, timesteps, **kwargs)
         n = x0.shape[0]
         assert pred.shape == (n, timesteps, self._embed_dim)
         return pred
@@ -37,6 +84,12 @@ class Model(ABC):
 
 class Challenge(ABC):
     def __init__(self, latent_dim, embed_dim):
+        """
+        Base class for all challenges. Your challenges should subclass this class.
+
+        :param latent_dim: # TODO
+        :param embed_dim:  # TODO
+        """
         self._latent_dim = latent_dim
         self._embed_dim = embed_dim
 

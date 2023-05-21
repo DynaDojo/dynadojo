@@ -19,7 +19,7 @@ class Basic(Model):
         self.model.compile(optimizer="adam", loss="mse")
 
 
-    def fit(self, x: np.ndarray, epochs=20, verbose=0, *args, **kwargs) -> np.ndarray:
+    def fit(self, x: np.ndarray, epochs=20, verbose=0, **kwargs) -> np.ndarray:
         head = x[:, :-1, :]
         tail = x[:, 1:, :]
         self.model.fit(head.astype(float), tail.astype(float), epochs=epochs, verbose=verbose)
