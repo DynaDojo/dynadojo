@@ -1,6 +1,6 @@
-class CNN(nn.Module): #change to inherit from model instead
+class CNN(Model): #change to inherit from model instead
     def __init__(self, latent_dim, embed_dim, timesteps, lr = 6e-2, epochs = 100):
-        super().__init__()
+        super().__init__(latent_dim, embed_dim, timesteps)
         self._latent_dim = latent_dim
         self._embed_dim = embed_dim
         self._timesteps = timesteps
