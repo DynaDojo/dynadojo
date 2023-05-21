@@ -1,3 +1,8 @@
+import numpy as np
+from ..abstractions import Model
+import torch
+import torch.nn as nn
+
 class CNN(Model): #change to inherit from model instead
     def __init__(self, latent_dim, embed_dim, timesteps, lr = 6e-2, epochs = 100):
         super().__init__(latent_dim, embed_dim, timesteps)
