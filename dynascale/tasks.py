@@ -1,4 +1,4 @@
-from .abstractions import Task, Challenge
+from .abstractions import Task, System
 import pandas as pd
 import numpy as np
 
@@ -6,10 +6,10 @@ from dynascale.utils.plotting import plot_target_error, plot_metric
 
 # class TargetError(Task):
 #     def __init__(self, N: list[int], L: list[int], E: list[int], T: list[int], control_horizons: int,
-#                  challenge_cls: type[Challenge], trials: int, test_size: int, target_loss: float):
+#                  system_cls: type[Challenge], trials: int, test_size: int, target_loss: float):
 #         self._target_loss = target_loss
 #         # TODO: Tommy transfer summer code by overloading evaluate if necessary
-#         super().__init__(N, L, E, T, control_horizons, challenge_cls, trials, test_size)
+#         super().__init__(N, L, E, T, control_horizons, system_cls, trials, test_size)
 #
 #     # adaptive trying to fit previous samples and extrapolate to predict the best new value
 #
@@ -76,11 +76,11 @@ from dynascale.utils.plotting import plot_target_error, plot_metric
 
 class FixedComplexity(Task):
     def __init__(self, N: list[int], l: int, e: int, t: int, max_control_cost_per_dim: int, control_horizons: int,
-                 challenge_cls: type[Challenge], reps: int, test_examples: int, test_timesteps: int, challenge_kwargs: dict = None):
+                 system_cls: type[System], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
         L = [l] * len(N)
         E = [e] * len(N)
         T = [t] * len(N)
-        super().__init__(N, L, E, T, max_control_cost_per_dim, control_horizons, challenge_cls, reps, test_examples, test_timesteps, challenge_kwargs=challenge_kwargs)
+        super().__init__(N, L, E, T, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     @staticmethod
     def plot(data):
@@ -88,9 +88,9 @@ class FixedComplexity(Task):
 
 class FixedTrainSize(Task):
     def __init__(self, n: int, L: list[int], E: list[int], T: list[int], max_control_cost_per_dim: int, control_horizons: int,
-                 challenge_cls: type[Challenge], reps: int, test_examples: int, test_timesteps: int, challenge_kwargs: dict = None):
+                 system_cls: type[System], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
         N = [n] * len(L)
-        super().__init__(N, L, E, T, max_control_cost_per_dim, control_horizons, challenge_cls, reps, test_examples, test_timesteps, challenge_kwargs=challenge_kwargs)
+        super().__init__(N, L, E, T, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     @staticmethod
     def plot(data: pd.DataFrame):

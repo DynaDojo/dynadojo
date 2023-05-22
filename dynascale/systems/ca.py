@@ -5,12 +5,12 @@ from joblib import Parallel, delayed
 
 import cellpylib as cpl
 
-from dynascale.abstractions import Challenge
+from dynascale.abstractions import System
 
 RNG = np.random.default_rng()
 
 
-class CAChallenge(Challenge):
+class CASystem(System):
     def __init__(self, latent_dim, embed_dim, in_dist_p=0.25, out_dist_p=0.75, mutation_p=0.01):
         super().__init__(latent_dim, embed_dim)
         lambda_val = RNG.uniform()
@@ -21,7 +21,7 @@ class CAChallenge(Challenge):
         self._out_dist_p = out_dist_p
         self._mutation_p = mutation_p
 
-    @Challenge.latent_dim.setter
+    @System.latent_dim.setter
     def latent_dim(self, value):
         self._latent_dim = value
         lambda_val = RNG.uniform()

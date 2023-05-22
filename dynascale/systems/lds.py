@@ -6,12 +6,12 @@ from tqdm.auto import tqdm
 from multiprocessing import Pool
 
 
-from dynascale.abstractions import Challenge
+from dynascale.abstractions import System
 
 RNG = np.random.default_rng()
 
 
-class LDSChallenge(Challenge):
+class LDSSystem(System):
     def __init__(self, latent_dim, embed_dim,
                  # negative eigenvalues produce stable linear system (https://en.wikipedia.org/wiki/Stability_theory)
                  A_eigval_range=(-5, 0),
@@ -80,13 +80,13 @@ class LDSChallenge(Challenge):
     def _make_BC(self):
         return self._singular_values_to_matrix(self.latent_dim, self.embed_dim, self._BC_sv_range)
 
-    @Challenge.embed_dim.setter
+    @System.embed_dim.setter
     def embed_dim(self, value):
         self._embed_dim = value
         self.B = self._make_BC()
         self.C = self._make_BC()
 
-    @Challenge.latent_dim.setter
+    @System.latent_dim.setter
     def latent_dim(self, value):
         self._latent_dim = value
         self.A = self._make_A()
