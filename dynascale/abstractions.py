@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
+from joblib import Parallel, delayed
 
 
 class Model(ABC):
@@ -153,6 +154,102 @@ class Challenge(ABC):
         return cost
 
 
+# class Task:
+#     def __init__(self,
+#                  N: list[int],
+#                  L: list[int],
+#                  E: list[int],
+#                  T: list[int],
+#                  max_control_cost_per_dim: int,
+#                  control_horizons: int,
+#                  challenge_cls: type[Challenge],
+#                  reps: int,
+#                  test_examples: int,
+#                  test_timesteps: int,
+#                  challenge_kwargs: dict = None,
+#                  ):
+#         assert control_horizons > 0
+#
+#         self._id = itertools.count()
+#         self._N = N
+#         self._L = L
+#         self._E = E
+#         self._T = T
+#         self._max_control_cost_per_dim = max_control_cost_per_dim
+#         self._challenge_cls = challenge_cls
+#         self._challenge_kwargs = challenge_kwargs or {}
+#         self._control_horizons = control_horizons
+#         self._reps = reps
+#         self._test_examples = test_examples
+#         self._test_timesteps = test_timesteps
+#
+#     # def evaluate(self, model_cls: type[Model],
+#     #              model_kwargs: dict = None,
+#     #              fit_kwargs: dict = None,
+#     #              act_kwargs: dict = None,
+#     #              in_dist=True,
+#     #              noisy=False,
+#     #              id=None,
+#     #              ):
+#     #
+#     #     model_kwargs = model_kwargs or {}
+#     #     fit_kwargs = fit_kwargs or {}
+#     #     act_kwargs = act_kwargs or {}
+#     #
+#     #     data = {"n": [], "latent_dim": [], "embed_dim": [], "timesteps": [], "loss": [], "cost": []}
+#     #     total = len(self._N) * len(self._L) * len(self._E) * len(self._T) * self._reps
+#     #
+#     #
+#     #     with tqdm(total=total, position=0, leave=False) as pbar:
+#     #         for i in range(self._reps):
+#     #             challenge = None
+#     #             for n, latent_dim, embed_dim, timesteps in itertools.product(self._N, self._L, self._E, self._T):
+#     #                 pbar.set_description(f"Rep {i}/{self._reps}: {n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
+#     #                 if embed_dim < latent_dim:
+#     #                     continue
+#     #                 if challenge is None:
+#     #                     challenge = self._challenge_cls(latent_dim, embed_dim, **self._challenge_kwargs)
+#     #                 if latent_dim != challenge.latent_dim:
+#     #                     challenge.latent_dim = latent_dim
+#     #                 if embed_dim != challenge.embed_dim:
+#     #                     challenge.embed_dim = embed_dim
+#     #
+#     #                 max_control_cost = self._max_control_cost_per_dim * latent_dim
+#     #
+#     #                 # Create and train model
+#     #                 model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
+#     #                 train_init_conds = challenge.make_init_conds(n)
+#     #
+#     #                 total_cost = 0
+#     #
+#     #                 for j in range(self._control_horizons):
+#     #                     if j == 0:
+#     #                         x = challenge.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
+#     #                     else:
+#     #                         control = model.act(x, **act_kwargs)
+#     #                         cost = challenge.calc_control_cost(control)
+#     #                         total_cost += cost
+#     #                         assert np.all(cost <= max_control_cost), "Control cost exceeded!"
+#     #                         x = challenge.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps,
+#     #                                                 noisy=noisy)
+#     #                     model.fit(x, **fit_kwargs)
+#     #
+#     #                 # create test data
+#     #                 test_init_conds = challenge.make_init_conds(self._test_examples, in_dist)
+#     #                 test = challenge.make_data(test_init_conds, timesteps=self._test_timesteps)
+#     #                 pred = model.predict(test[:, 0], self._test_timesteps)
+#     #                 loss = challenge.calc_loss(pred, test)
+#     #                 data["n"].append(n)
+#     #                 data["latent_dim"].append(latent_dim)
+#     #                 data["embed_dim"].append(embed_dim)
+#     #                 data["timesteps"].append(timesteps)
+#     #                 data["loss"].append(loss)
+#     #                 data["cost"].append(total_cost)
+#     #                 pbar.update()
+#     #             data["id"] = id or next(self._id)
+#     #
+#     #     return pd.DataFrame(data)
+
 class Task:
     def __init__(self,
                  N: list[int],
@@ -182,63 +279,61 @@ class Task:
         self._test_examples = test_examples
         self._test_timesteps = test_timesteps
 
-    def evaluate(self, model_cls: type[Model],
+    def evaluate(self,
+                 model_cls: type[Model],
                  model_kwargs: dict = None,
                  fit_kwargs: dict = None,
                  act_kwargs: dict = None,
-                 in_dist=True, noisy=False):
+                 in_dist=True,
+                 noisy=False,
+                 id=None,
+                 ):
 
         model_kwargs = model_kwargs or {}
         fit_kwargs = fit_kwargs or {}
         act_kwargs = act_kwargs or {}
 
-        data = {"n": [], "latent_dim": [], "embed_dim": [], "timesteps": [], "loss": [], "cost": []}
-        total = len(self._N) * len(self._L) * len(self._E) * len(self._T) * self._reps
-        with tqdm(total=total, position=0, leave=False) as pbar:
-            for i in range(self._reps):
-                challenge = None
-                for n, latent_dim, embed_dim, timesteps in itertools.product(self._N, self._L, self._E, self._T):
-                    pbar.set_description(f"Rep {i + 1}/{self._reps}: {n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
-                    if embed_dim < latent_dim:
-                        continue
-                    if challenge is None:
-                        challenge = self._challenge_cls(latent_dim, embed_dim, **self._challenge_kwargs)
-                    if latent_dim != challenge.latent_dim:
-                        challenge.latent_dim = latent_dim
-                    if embed_dim != challenge.embed_dim:
-                        challenge.embed_dim = embed_dim
+        def do_rep():
+            challenge = None
+            for n, latent_dim, embed_dim, timesteps in itertools.product(self._N, self._L, self._E, self._T):
+                if embed_dim < latent_dim:
+                    continue
+                if challenge is None:
+                    challenge = self._challenge_cls(latent_dim, embed_dim, **self._challenge_kwargs)
+                if latent_dim != challenge.latent_dim:
+                    challenge.latent_dim = latent_dim
+                if embed_dim != challenge.embed_dim:
+                    challenge.embed_dim = embed_dim
 
-                    max_control_cost = self._max_control_cost_per_dim * latent_dim
+                max_control_cost = self._max_control_cost_per_dim * latent_dim
 
-                    # Create and train model
-                    model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
-                    train_init_conds = challenge.make_init_conds(n)
+                # Create and train model
+                model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
+                train_init_conds = challenge.make_init_conds(n)
 
-                    total_cost = 0
+                total_cost = 0
 
-                    for j in range(self._control_horizons):
-                        if j == 0:
-                            x = challenge.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
-                        else:
-                            control = model.act(x, **act_kwargs)
-                            cost = challenge.calc_control_cost(control)
-                            total_cost += cost
-                            assert np.all(cost <= max_control_cost), "Control cost exceeded!"
-                            x = challenge.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps,
-                                                    noisy=noisy)
-                        model.fit(x, **fit_kwargs)
+                for j in range(self._control_horizons):
+                    if j == 0:
+                        x = challenge.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
+                    else:
+                        control = model.act(x, **act_kwargs)
+                        cost = challenge.calc_control_cost(control)
+                        total_cost += cost
+                        assert np.all(cost <= max_control_cost), "Control cost exceeded!"
+                        x = challenge.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps,
+                                                noisy=noisy)
+                    model.fit(x, **fit_kwargs)
 
-                    # create test data
-                    test_init_conds = challenge.make_init_conds(self._test_examples, in_dist)
-                    test = challenge.make_data(test_init_conds, timesteps=self._test_timesteps)
-                    pred = model.predict(test[:, 0], timesteps)
-                    loss = challenge.calc_loss(pred, test)
-                    data["n"].append(n)
-                    data["latent_dim"].append(latent_dim)
-                    data["embed_dim"].append(embed_dim)
-                    data["timesteps"].append(timesteps)
-                    data["loss"].append(loss)
-                    data["cost"].append(total_cost)
-                    pbar.update()
-                data["id"] = next(self._id)
-        return pd.DataFrame(data)
+                # create test data
+                test_init_conds = challenge.make_init_conds(self._test_examples, in_dist)
+                test = challenge.make_data(test_init_conds, timesteps=self._test_timesteps)
+                pred = model.predict(test[:, 0], self._test_timesteps)
+                loss = challenge.calc_loss(pred, test)
+                return n, latent_dim, embed_dim, timesteps, loss, total_cost
+
+        data = Parallel(n_jobs=4)(delayed(do_rep)() for _ in tqdm(range(self._reps)))
+        data = pd.DataFrame(data)
+        data.columns = ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]
+        data["id"] = id or next(self._id)
+        return data

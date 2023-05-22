@@ -3,7 +3,11 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
+"""
+TODO:
+- add argument to control log scale
+- make labels latex
+"""
 def _assign_labels(data, labels):
     assert len(data) == len(labels)
     for frameidx, frame in enumerate(data):

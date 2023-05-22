@@ -76,7 +76,7 @@ class LowestPossibleRadius(Model):
         # find a smart control for 1st next state of traj
         for sample, sampleidx in enumerate(lastState):
             tempControl = []
-            for _ in range(self.embed_dim / ((self.currRadius*2) + 1)):
+            for _ in range(self._embed_dim / ((self.currRadius*2) + 1)):
                 cellidx = self.currRadius
                 neighborhood = ""
 
@@ -98,7 +98,7 @@ class LowestPossibleRadius(Model):
                     desiredKey = np.random.choice(unseenKeys)
 
                     for idx, element in enumerate(neighborhood):
-                        if control_mag[sampleidx] > self.max_control_cost:
+                        if control_mag[sampleidx] > self._max_control_cost:
                             tempControl.append(0)
                         else:
                             if element == desiredKey[idx]:
@@ -111,22 +111,22 @@ class LowestPossibleRadius(Model):
                                 control_mag[sampleidx] += 1
                 cellidx += (self.currRadius*2)+1
             
-            while(len(tempControl) < self.embed_dim):
+            while(len(tempControl) < self._embed_dim):
                 tempControl.append(0)
             
             control.append(tempControl)
             
         # for all other states of traj, choose random control
         for sampleidx in range(len(x[0])):
-            for timestep in range(1, self.timesteps):
+            for timestep in range(1, self._timesteps):
                 # alternate with no control to see effect of even-numbered controls
                 if timestep % 2 == 1:
-                    control.append(np.zeros(self.embed_dim))
+                    control.append(np.zeros(self._embed_dim))
                 
                 else:
                     tempControl = []
-                    for _ in range(self.embed_dim):
-                        if control_mag[sampleidx] > self.max_control_cost:
+                    for _ in range(self._embed_dim):
+                        if control_mag[sampleidx] > self._max_control_cost:
                             tempControl += 0
                         else:
                             element = np.random.choice([-1,0,1])

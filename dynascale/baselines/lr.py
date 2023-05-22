@@ -55,7 +55,7 @@ class MyLinearRegression(Model):
         
 
     def act(self, x, **kwargs):
-        self.U = np.random.uniform(-1,1, [len(x[0]), self.embed_dim, self.timesteps])
+        self.U = np.random.uniform(-1,1, [len(x[0]), self._embed_dim, self._timesteps])
         self.U = np.array(self.U)
 
         # We normalize U to mimic the limited current we can simulate in a neuron; a larger U would represent unrealistic neural control 

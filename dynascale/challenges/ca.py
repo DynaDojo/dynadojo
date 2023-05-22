@@ -21,6 +21,14 @@ class CAChallenge(Challenge):
         self._out_dist_p = out_dist_p
         self._mutation_p = mutation_p
 
+    @Challenge.latent_dim.setter
+    def latent_dim(self, value):
+        self._latent_dim = value
+        lambda_val = RNG.uniform()
+        self.rule_table, _, _ = cpl.random_rule_table(lambda_val=lambda_val, k=2, r=self.latent_dim,
+                                                      strong_quiescence=True,
+                                                      isotropic=True)
+
     def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         if in_dist:
             return RNG.binomial(1, self._in_dist_p, size=(n, self.embed_dim))
@@ -43,7 +51,7 @@ class CAChallenge(Challenge):
                     cellular_automata[-1][mask] = (~cellular_automata[-1][mask].astype(bool)).astype(np.int32)
             return cellular_automata
 
-        data = Parallel(n_jobs=4)(delayed(get_trajectory)(x0, u) for x0, u in tqdm(zip(init_conds, control), total=len(init_conds)))
+        data = Parallel(n_jobs=4)(delayed(get_trajectory)(x0, u) for x0, u in tqdm(zip(init_conds, control), total=len(init_conds), leave=False, position=1))
         data = np.array(data)
         return data
 
