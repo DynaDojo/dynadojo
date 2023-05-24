@@ -1,8 +1,9 @@
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
 
 from ..abstractions import Model
+
 
 class CNN(Model):
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, lr=6e-2, k=5, **kwargs):

@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 import pandas as pd
-from tqdm.auto import tqdm
 from joblib import Parallel, delayed
 
 
@@ -244,7 +243,7 @@ class Task:
                 result['total_cost'].append(total_cost)
             return pd.DataFrame(result)
 
-        data = Parallel(n_jobs=4)(delayed(do_rep)() for _ in tqdm(range(self._reps)))
+        data = Parallel(n_jobs=4)(delayed(do_rep)() for _ in range(self._reps))
 
         data = pd.concat(data)
         data["id"] = id or next(self._id)

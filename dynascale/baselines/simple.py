@@ -1,9 +1,7 @@
 import numpy as np
 import tensorflow as tf
-from tqdm.auto import tqdm
 
 from ..abstractions import Model
-
 
 
 class Simple(Model):
@@ -30,7 +28,7 @@ class Simple(Model):
 
     def _predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         preds = [x0]
-        for _ in tqdm(range(timesteps - 1), leave=False):
+        for _ in range(timesteps - 1):
             preds.append(self.model.predict(preds[-1], verbose=0))
         preds = np.array(preds).squeeze().transpose(1, 0, 2)
         return preds

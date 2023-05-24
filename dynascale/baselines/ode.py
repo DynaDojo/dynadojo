@@ -1,9 +1,11 @@
+import numpy as np
 import torch
 import torch.nn as nn
 from scipy.integrate import odeint
-import numpy as np
 
 from ..abstractions import Model
+
+
 class ODE(Model):
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, lr=3e-2, **kwargs):
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)

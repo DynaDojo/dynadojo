@@ -1,9 +1,8 @@
 import numpy as np
+from joblib import Parallel, delayed
 from scipy.integrate import solve_ivp
 from scipy.interpolate import interp1d
 from scipy.optimize import minimize, NonlinearConstraint
-from tqdm.auto import tqdm
-from joblib import Parallel, delayed
 
 from dynascale.systems.lds import LDSSystem
 

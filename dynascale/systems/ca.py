@@ -1,9 +1,8 @@
 
-import numpy as np
-from tqdm.auto import tqdm
-from joblib import Parallel, delayed
-
 import cellpylib as cpl
+import numpy as np
+from joblib import Parallel, delayed
+from tqdm.auto import tqdm
 
 from dynascale.abstractions import System
 

@@ -1,8 +1,9 @@
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
 from tqdm.auto import tqdm
 
 from ..abstractions import Model
+
 
 class Basic(Model):
 

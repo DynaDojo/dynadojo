@@ -1,6 +1,6 @@
 import numpy as np
-from ..abstractions import Model
 
+from ..abstractions import Model
 
 
 class LowestPossibleRadius(Model):

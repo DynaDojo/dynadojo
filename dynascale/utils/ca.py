@@ -1,6 +1,5 @@
 import cellpylib as cpl
 import numpy as np
-from matplotlib.colors import ListedColormap
 
 
 def plot(grid: list[np.ndarray], labels: list[str]):

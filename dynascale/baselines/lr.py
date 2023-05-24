@@ -1,7 +1,8 @@
 import numpy as np
+from sklearn.linear_model import LinearRegression
+
 from ..abstractions import Model
 
-from sklearn.linear_model import LinearRegression
 
 class MyLinearRegression(Model):
     def __init__(self, embed_dim, timesteps, control_constraint):

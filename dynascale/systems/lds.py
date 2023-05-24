@@ -1,10 +1,7 @@
-from scipy.stats import ortho_group
 import numpy as np
-from scipy.integrate import solve_ivp
 import scipy as sp
-from tqdm.auto import tqdm
-from multiprocessing import Pool
-
+from scipy.integrate import solve_ivp
+from scipy.stats import ortho_group
 
 from dynascale.abstractions import System
 
@@ -109,7 +106,6 @@ class LDSSystem(System):
             else:
                 return self.A @ x + self.B @ u[i]
 
-        # for x0, u in tqdm(zip(init_conds, control), total=len(init_conds), leave=False):
         for x0, u in zip(init_conds, control):
             sol = solve_ivp(dynamics, t_span=[0, 1], y0=x0, t_eval=time, dense_output=True, args=(u,))
             data.append(sol.y)
