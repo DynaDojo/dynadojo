@@ -46,6 +46,9 @@ class FixedTrainSize1(Task):
         # TODO: specify l, e, t
         plot_metric(data, "latent_dim", "loss")
 
+# TODO: constant, empty, list
+
+
 class FixedTrainSize2(Task):
     def __init__(self,
                  n: int,

@@ -212,22 +212,21 @@ class Task:
                 max_control_cost = self._max_control_cost_per_dim * latent_dim
                 print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
 
-                # Create and train model
+                # Create model and data
                 model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
                 train_init_conds = system.make_init_conds(n)
 
+                x = system.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
                 total_cost = 0
+                model.fit(x, **fit_kwargs)
 
-                for j in range(self._control_horizons):
-                    if j == 0:
-                        x = system.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
-                    else:
-                        control = model.act(x, **act_kwargs)
-                        cost = system.calc_control_cost(control)
-                        total_cost += cost
-                        assert np.all(cost <= max_control_cost), "Control cost exceeded!"
-                        x = system.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps,
-                                                noisy=noisy)
+                # change to generate init conds out of for loop
+                for _ in range(self._control_horizons):
+                    control = model.act(x, **act_kwargs)
+                    cost = system.calc_control_cost(control)
+                    total_cost += cost
+                    assert np.all(cost <= max_control_cost), "Control cost exceeded!"
+                    x = system.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps, noisy=noisy)
                     model.fit(x, **fit_kwargs)
 
                 # create test data
