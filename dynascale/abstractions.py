@@ -198,6 +198,7 @@ class Task:
         act_kwargs = act_kwargs or {}
 
         def do_rep():
+            result = {k: [] for k in ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
             system = None
             for n, latent_dim, embed_dim, timesteps in itertools.product(self._N, self._L, self._E, self._T):
                 if embed_dim < latent_dim:
@@ -210,6 +211,7 @@ class Task:
                     system.embed_dim = embed_dim
 
                 max_control_cost = self._max_control_cost_per_dim * latent_dim
+                print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
 
                 # Create and train model
                 model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
@@ -234,10 +236,16 @@ class Task:
                 test = system.make_data(test_init_conds, timesteps=self._test_timesteps)
                 pred = model.predict(test[:, 0], self._test_timesteps)
                 loss = system.calc_loss(pred, test)
-                return n, latent_dim, embed_dim, timesteps, loss, total_cost
+                result['n'].append(n)
+                result['latent_dim'].append(latent_dim)
+                result['embed_dim'].append(embed_dim)
+                result['timesteps'].append(timesteps)
+                result['loss'].append(loss)
+                result['total_cost'].append(total_cost)
+            return pd.DataFrame(result)
 
         data = Parallel(n_jobs=4)(delayed(do_rep)() for _ in tqdm(range(self._reps)))
-        data = pd.DataFrame(data)
-        data.columns = ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]
+
+        data = pd.concat(data)
         data["id"] = id or next(self._id)
         return data

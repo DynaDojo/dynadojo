@@ -77,9 +77,9 @@ from dynascale.utils.plotting import plot_target_error, plot_metric
 class FixedComplexity(Task):
     def __init__(self, N: list[int], l: int, e: int, t: int, max_control_cost_per_dim: int, control_horizons: int,
                  system_cls: type[System], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
-        L = [l] * len(N)
-        E = [e] * len(N)
-        T = [t] * len(N)
+        L = [l]
+        E = [e]
+        T = [t]
         super().__init__(N, L, E, T, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     @staticmethod
@@ -89,7 +89,7 @@ class FixedComplexity(Task):
 class FixedTrainSize(Task):
     def __init__(self, n: int, L: list[int], E: list[int], T: list[int], max_control_cost_per_dim: int, control_horizons: int,
                  system_cls: type[System], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
-        N = [n] * len(L)
+        N = [n]
         super().__init__(N, L, E, T, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     @staticmethod

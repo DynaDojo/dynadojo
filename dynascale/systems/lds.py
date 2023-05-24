@@ -109,7 +109,8 @@ class LDSSystem(System):
             else:
                 return self.A @ x + self.B @ u[i]
 
-        for x0, u in tqdm(zip(init_conds, control), total=len(init_conds), leave=False):
+        # for x0, u in tqdm(zip(init_conds, control), total=len(init_conds), leave=False):
+        for x0, u in zip(init_conds, control):
             sol = solve_ivp(dynamics, t_span=[0, 1], y0=x0, t_eval=time, dense_output=True, args=(u,))
             data.append(sol.y)
         data = np.transpose(np.array(data), axes=(0, 2, 1)) @ self.C
