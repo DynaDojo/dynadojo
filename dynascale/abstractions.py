@@ -43,7 +43,7 @@ class Model(ABC):
 
     def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
         """
-        # TODO: fill out
+        Wrapper for _act(). Determines the control for each
 
         :param x: (n, timesteps, embed_dim) a tensor of trajectories
         :param kwargs:
@@ -86,9 +86,6 @@ class System(ABC):
     def __init__(self, latent_dim, embed_dim):
         """
         Base class for all systems. Your systems should subclass this class.
-
-        :param latent_dim: # TODO
-        :param embed_dim:  # TODO
         """
         self._latent_dim = latent_dim
         self._embed_dim = embed_dim
@@ -157,7 +154,7 @@ class Task:
     def __init__(self,
                  N: list[int],
                  L: list[int],
-                 E: list[int],
+                 E: list[int] | int | None,
                  T: list[int],
                  max_control_cost_per_dim: int,
                  control_horizons: int,
@@ -167,7 +164,7 @@ class Task:
                  test_timesteps: int,
                  system_kwargs: dict = None,
                  ):
-        assert control_horizons > 0
+        assert control_horizons >= 0
 
         self._id = itertools.count()
         self._N = N
@@ -196,10 +193,14 @@ class Task:
         fit_kwargs = fit_kwargs or {}
         act_kwargs = act_kwargs or {}
 
-        def do_rep():
+        def do_rep1():
+            """
+            Handles case when E is an array
+            """
             result = {k: [] for k in ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
             system = None
-            for n, latent_dim, embed_dim, timesteps in itertools.product(self._N, self._L, self._E, self._T):
+            for n, d, timesteps in itertools.product(self._N, zip(self._L, self._E), self._T):
+                latent_dim, embed_dim = d
                 if embed_dim < latent_dim:
                     continue
                 if system is None:
@@ -242,8 +243,122 @@ class Task:
                 result['total_cost'].append(total_cost)
             return pd.DataFrame(result)
 
-        data = Parallel(n_jobs=4)(delayed(do_rep)() for _ in range(self._reps))
+        def do_rep2():
+            """
+            Handles case when E is a None
+            """
+            result = {k: [] for k in ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
+            system = None
+            for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
+                embed_dim = latent_dim
+                if system is None:
+                    system = self._system_cls(latent_dim, embed_dim, **self._system_kwargs)
+                if latent_dim != system.latent_dim:
+                    system.latent_dim = latent_dim
+                if embed_dim != system.embed_dim:
+                    system.embed_dim = embed_dim
+
+                max_control_cost = self._max_control_cost_per_dim * latent_dim
+                print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
+
+                # Create model and data
+                model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
+                train_init_conds = system.make_init_conds(n)
+
+                x = system.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
+                total_cost = 0
+                model.fit(x, **fit_kwargs)
+
+                # change to generate init conds out of for loop
+                for _ in range(self._control_horizons):
+                    control = model.act(x, **act_kwargs)
+                    cost = system.calc_control_cost(control)
+                    total_cost += cost
+                    assert np.all(cost <= max_control_cost), "Control cost exceeded!"
+                    x = system.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps, noisy=noisy)
+                    model.fit(x, **fit_kwargs)
+
+                # create test data
+                test_init_conds = system.make_init_conds(self._test_examples, in_dist)
+                test = system.make_data(test_init_conds, timesteps=self._test_timesteps)
+                pred = model.predict(test[:, 0], self._test_timesteps)
+                loss = system.calc_loss(pred, test)
+                result['n'].append(n)
+                result['latent_dim'].append(latent_dim)
+                result['embed_dim'].append(embed_dim)
+                result['timesteps'].append(timesteps)
+                result['loss'].append(loss)
+                result['total_cost'].append(total_cost)
+            return pd.DataFrame(result)
+
+        def do_rep3():
+            """
+            Handles case when E is a constant
+            """
+            result = {k: [] for k in ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
+            system = None
+            for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
+                embed_dim = self._E
+                self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs, act_kwargs, in_dist, noisy)
+            return pd.DataFrame(result)
+
+        data = Parallel(n_jobs=4, timeout=1e5)(delayed(do_rep1)() for _ in range(self._reps))
 
         data = pd.concat(data)
         data["id"] = id or next(self._id)
         return data
+
+    def _do_rep(self,
+                result: dict,
+                system: System,
+                n: int,
+                latent_dim: int,
+                embed_dim: int,
+                timesteps: int,
+                model_cls: type[Model],
+                model_kwargs: dict = None,
+                fit_kwargs: dict = None,
+                act_kwargs: dict = None,
+                in_dist=True,
+                noisy=False,
+                ):
+        if embed_dim < latent_dim:
+            return
+        if system is None:
+            system = self._system_cls(latent_dim, embed_dim, **self._system_kwargs)
+        if latent_dim != system.latent_dim:
+            system.latent_dim = latent_dim
+        if embed_dim != system.embed_dim:
+            system.embed_dim = embed_dim
+
+        max_control_cost = self._max_control_cost_per_dim * latent_dim
+        print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
+
+        # Create model and data
+        model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
+        train_init_conds = system.make_init_conds(n)
+
+        x = system.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
+        total_cost = 0
+        model.fit(x, **fit_kwargs)
+
+        # change to generate init conds out of for loop
+        for _ in range(self._control_horizons):
+            control = model.act(x, **act_kwargs)
+            cost = system.calc_control_cost(control)
+            total_cost += cost
+            assert np.all(cost <= max_control_cost), "Control cost exceeded!"
+            x = system.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps, noisy=noisy)
+            model.fit(x, **fit_kwargs)
+
+        # create test data
+        test_init_conds = system.make_init_conds(self._test_examples, in_dist)
+        test = system.make_data(test_init_conds, timesteps=self._test_timesteps)
+        pred = model.predict(test[:, 0], self._test_timesteps)
+        loss = system.calc_loss(pred, test)
+        result['n'].append(n)
+        result['latent_dim'].append(latent_dim)
+        result['embed_dim'].append(embed_dim)
+        result['timesteps'].append(timesteps)
+        result['loss'].append(loss)
+        result['total_cost'].append(total_cost)
