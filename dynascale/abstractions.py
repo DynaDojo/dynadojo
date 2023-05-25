@@ -202,45 +202,15 @@ class Task:
             for n, d, timesteps in itertools.product(self._N, zip(self._L, self._E), self._T):
                 latent_dim, embed_dim = d
                 if embed_dim < latent_dim:
-                    continue
+                    return
                 if system is None:
                     system = self._system_cls(latent_dim, embed_dim, **self._system_kwargs)
                 if latent_dim != system.latent_dim:
                     system.latent_dim = latent_dim
                 if embed_dim != system.embed_dim:
                     system.embed_dim = embed_dim
-
-                max_control_cost = self._max_control_cost_per_dim * latent_dim
-                print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
-
-                # Create model and data
-                model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
-                train_init_conds = system.make_init_conds(n)
-
-                x = system.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
-                total_cost = 0
-                model.fit(x, **fit_kwargs)
-
-                # change to generate init conds out of for loop
-                for _ in range(self._control_horizons):
-                    control = model.act(x, **act_kwargs)
-                    cost = system.calc_control_cost(control)
-                    total_cost += cost
-                    assert np.all(cost <= max_control_cost), "Control cost exceeded!"
-                    x = system.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps, noisy=noisy)
-                    model.fit(x, **fit_kwargs)
-
-                # create test data
-                test_init_conds = system.make_init_conds(self._test_examples, in_dist)
-                test = system.make_data(test_init_conds, timesteps=self._test_timesteps)
-                pred = model.predict(test[:, 0], self._test_timesteps)
-                loss = system.calc_loss(pred, test)
-                result['n'].append(n)
-                result['latent_dim'].append(latent_dim)
-                result['embed_dim'].append(embed_dim)
-                result['timesteps'].append(timesteps)
-                result['loss'].append(loss)
-                result['total_cost'].append(total_cost)
+                self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
+                             act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
 
         def do_rep2():
@@ -257,38 +227,8 @@ class Task:
                     system.latent_dim = latent_dim
                 if embed_dim != system.embed_dim:
                     system.embed_dim = embed_dim
-
-                max_control_cost = self._max_control_cost_per_dim * latent_dim
-                print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
-
-                # Create model and data
-                model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
-                train_init_conds = system.make_init_conds(n)
-
-                x = system.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
-                total_cost = 0
-                model.fit(x, **fit_kwargs)
-
-                # change to generate init conds out of for loop
-                for _ in range(self._control_horizons):
-                    control = model.act(x, **act_kwargs)
-                    cost = system.calc_control_cost(control)
-                    total_cost += cost
-                    assert np.all(cost <= max_control_cost), "Control cost exceeded!"
-                    x = system.make_data(init_conds=x[:, 0], control=control, timesteps=timesteps, noisy=noisy)
-                    model.fit(x, **fit_kwargs)
-
-                # create test data
-                test_init_conds = system.make_init_conds(self._test_examples, in_dist)
-                test = system.make_data(test_init_conds, timesteps=self._test_timesteps)
-                pred = model.predict(test[:, 0], self._test_timesteps)
-                loss = system.calc_loss(pred, test)
-                result['n'].append(n)
-                result['latent_dim'].append(latent_dim)
-                result['embed_dim'].append(embed_dim)
-                result['timesteps'].append(timesteps)
-                result['loss'].append(loss)
-                result['total_cost'].append(total_cost)
+                self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
+                             act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
 
         def do_rep3():
@@ -299,11 +239,28 @@ class Task:
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = self._E
-                self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs, act_kwargs, in_dist, noisy)
+                if embed_dim < latent_dim:
+                    return
+                if system is None:
+                    system = self._system_cls(latent_dim, embed_dim, **self._system_kwargs)
+                if latent_dim != system.latent_dim:
+                    system.latent_dim = latent_dim
+                if embed_dim != system.embed_dim:
+                    system.embed_dim = embed_dim
+                self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
+                             act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
 
-        data = Parallel(n_jobs=4, timeout=1e5)(delayed(do_rep1)() for _ in range(self._reps))
+        if isinstance(self._E, list):
+            do_rep = do_rep1
+        elif self._E is None:
+            do_rep = do_rep2
+        elif isinstance(self._E, int):
+            do_rep = do_rep3
+        else:
+            raise TypeError("E must of type List[int], int, or None.")
 
+        data = Parallel(n_jobs=4, timeout=1e5)(delayed(do_rep)() for _ in range(self._reps))
         data = pd.concat(data)
         data["id"] = id or next(self._id)
         return data
@@ -322,15 +279,6 @@ class Task:
                 in_dist=True,
                 noisy=False,
                 ):
-        if embed_dim < latent_dim:
-            return
-        if system is None:
-            system = self._system_cls(latent_dim, embed_dim, **self._system_kwargs)
-        if latent_dim != system.latent_dim:
-            system.latent_dim = latent_dim
-        if embed_dim != system.embed_dim:
-            system.embed_dim = embed_dim
-
         max_control_cost = self._max_control_cost_per_dim * latent_dim
         print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
 
@@ -342,7 +290,6 @@ class Task:
         total_cost = 0
         model.fit(x, **fit_kwargs)
 
-        # change to generate init conds out of for loop
         for _ in range(self._control_horizons):
             control = model.act(x, **act_kwargs)
             cost = system.calc_control_cost(control)
