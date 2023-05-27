@@ -30,7 +30,7 @@ class ODE(Model):
             loss.backward()
             self.opt.step()
 #
-# class _ODE(nn.Module):  # change inherit
+# class _ODE(Model):  # change inherit
 #     def __init__(self, embed_dim, timesteps, lr = 3e-2, epochs = 100):
 #         super().__init__()
 #         self._embed_dim = embed_dim
@@ -55,7 +55,7 @@ class ODE(Model):
 #         for i in range(self.epochs):
 #             opt.zero_grad()
 #
-#             pred = odeint(self, state, t, method='midpoint')
+#             pred = odeint(self.forward, state, t, method='midpoint')
 #             pred = pred.transpose(0, 1)
 #
 #             loss = loss_MSE(pred, x).float()
