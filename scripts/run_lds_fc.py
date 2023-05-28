@@ -9,15 +9,15 @@ from dynascale.tasks import FixedComplexity
 
 
 def main():
-    l = 50
-    task = FixedComplexity(N=range(100, 1010, 10),
+    l = 30
+    task = FixedComplexity(N=[1, 10, 100, 1000, 10000],
                            l=l,
                            e=l,
                            t=50,
-                           max_control_cost_per_dim=1e10,
+                           max_control_cost_per_dim=0,
                            control_horizons=0,
                            test_examples=100,
-                           reps=1,
+                           reps=30,
                            test_timesteps=50,
                            system_cls=LDSSystem
                            )
@@ -48,6 +48,7 @@ def main():
 
     task.plot(lr_data)
     task.plot(simple_data)
+    task.plot(pd.concat([lr_data, simple_data]))
 
 
 if __name__ == '__main__':

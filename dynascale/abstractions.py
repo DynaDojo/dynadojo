@@ -12,12 +12,12 @@ class Model(ABC):
         Base class for all models. Your models should subclass this class.
 
         :param embed_dim: embedded dimension of the dynamics
-        :param timesteps: timesteps per training trajectory (per action horizon), different than number of timesteps to predict
+        :param timesteps: timesteps per training trajectory (per action horizon)
         :param max_control_cost: maximum control cost per trajectory (per action horizon)
         :param kwargs:
         """
         self._embed_dim = embed_dim
-        self._timesteps = timesteps
+        self._timesteps = timesteps  # NOTE: this is the timesteps of the training data; NOT the predicted trajectories
         self._max_control_cost = max_control_cost
 
     @abstractmethod
@@ -31,7 +31,7 @@ class Model(ABC):
         """
         raise NotImplementedError
 
-    def _act(self, x: np.ndarray, **kwargs) -> np.ndarray:
+    def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
         """
         Driver for act(). Your models should overload this method if they use non-trivial control.
 
@@ -41,20 +41,20 @@ class Model(ABC):
         """
         return np.zeros_like(x)
 
-    def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
+    def act_wrapper(self, x: np.ndarray, **kwargs) -> np.ndarray:
         """
-        Wrapper for _act(). Determines the control for each
+        Wrapper for _act(). Determines the control for each action horizon. Your model should NOT overload this.
 
         :param x: (n, timesteps, embed_dim) a tensor of trajectories
         :param kwargs:
         :return: (n, timesteps, embed_dim) a tensor of controls
         """
-        control = self._act(x, **kwargs)
+        control = self.act(x, **kwargs)
         assert control.shape == x.shape
         return control
 
     @abstractmethod
-    def _predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
+    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         """
         Driver for predict(). Your models must implement this method.
 
@@ -68,7 +68,7 @@ class Model(ABC):
         """
         raise NotImplementedError
 
-    def predict(self, x0: np.ndarray, timesteps, **kwargs) -> np.ndarray:
+    def predict_wrapper(self, x0: np.ndarray, timesteps, **kwargs) -> np.ndarray:
         """
 
         :param x0: (n, embed_dim) a matrix of initial conditions
@@ -76,7 +76,7 @@ class Model(ABC):
         :param kwargs:
         :return:
         """
-        pred = self._predict(x0, timesteps, **kwargs)
+        pred = self.predict(x0, timesteps, **kwargs)
         n = x0.shape[0]
         assert pred.shape == (n, timesteps, self._embed_dim)
         return pred
@@ -107,46 +107,45 @@ class System(ABC):
         self._embed_dim = value
 
     @abstractmethod
-    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         raise NotImplementedError
 
-    def make_init_conds(self, n: int, in_dist=True):
-        init_conds = self._make_init_conds(n, in_dist)
+    def make_init_conds_wrapper(self, n: int, in_dist=True):
+        init_conds = self.make_init_conds(n, in_dist)
         assert init_conds.shape == (n, self.embed_dim)
         return init_conds
 
     @abstractmethod
-    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         raise NotImplementedError
 
-    def make_data(self, init_conds: np.ndarray, control: np.ndarray = None, timesteps: int = 1,
-                  noisy=False) -> np.ndarray:
+    def make_data_wrapper(self, init_conds: np.ndarray, control: np.ndarray = None, timesteps: int = 1,
+                          noisy=False) -> np.ndarray:
         assert timesteps > 0
         assert init_conds.ndim == 2 and init_conds.shape[1] == self.embed_dim
         n = init_conds.shape[0]
         if control is None:
             control = np.zeros((n, timesteps, self.embed_dim))
         assert control.shape == (n, timesteps, self.embed_dim)
-        data = self._make_data(
-            init_conds=init_conds, control=control, timesteps=timesteps, noisy=noisy)
+        data = self.make_data(init_conds=init_conds, control=control, timesteps=timesteps, noisy=noisy)
         assert data.shape == (n, timesteps, self.embed_dim)
         return data
 
     @abstractmethod
-    def _calc_loss(self, x, y) -> float:
+    def calc_loss(self, x, y) -> float:
         raise NotImplementedError
 
-    def calc_loss(self, x, y) -> float:
+    def calc_loss_wrapper(self, x, y) -> float:
         assert x.shape == y.shape
-        return self._calc_loss(x, y)
+        return self.calc_loss(x, y)
 
     @abstractmethod
-    def _calc_control_cost(self, control: np.ndarray) -> np.ndarray:
+    def calc_control_cost(self, control: np.ndarray) -> np.ndarray:
         raise NotImplementedError
 
-    def calc_control_cost(self, control: np.ndarray) -> np.ndarray:
+    def calc_control_cost_wrapper(self, control: np.ndarray) -> np.ndarray:
         assert control.shape[2] == self.embed_dim and control.ndim == 3
-        cost = self._calc_control_cost(control)
+        cost = self.calc_control_cost(control)
         assert cost.shape == (len(control),)
         return cost
 
@@ -168,10 +167,10 @@ class Task:
         assert control_horizons >= 0
 
         self._id = itertools.count()
-        self._N = N.sort()
-        self._L = L.sort()
-        self._E = E.sort()
-        self._T = T.sort()
+        self._N = N
+        self._L = L
+        self._E = E
+        self._T = T
         self._max_control_cost_per_dim = max_control_cost_per_dim
         self._system_cls = system_cls
         self._system_kwargs = system_kwargs or {}
@@ -194,18 +193,23 @@ class Task:
         fit_kwargs = fit_kwargs or {}
         act_kwargs = act_kwargs or {}
 
+        # TODO: try to condense
         def do_rep1():
             """
             Handles case when E is an array
             """
-            result = {k: [] for k in ["n", "latent_dim",
-                                      "embed_dim", "timesteps", "loss", "total_cost"]}
+            result = {k: [] for k in ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
             system = None
             for n, d, timesteps in itertools.product(self._N, zip(self._L, self._E), self._T):
                 latent_dim, embed_dim = d
                 if embed_dim < latent_dim:
                     return
-                system = self._set_system(latent_dim, embed_dim)
+                if system is None:
+                    system = self._system_cls(latent_dim, embed_dim, **self._system_kwargs)
+                if latent_dim != system.latent_dim:
+                    system.latent_dim = latent_dim
+                if embed_dim != system.embed_dim:
+                    system.embed_dim = embed_dim
                 self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
@@ -214,12 +218,16 @@ class Task:
             """
             Handles case when E is a None
             """
-            result = {k: [] for k in ["n", "latent_dim",
-                                      "embed_dim", "timesteps", "loss", "total_cost"]}
+            result = {k: [] for k in ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = latent_dim
-                system = self._set_system(latent_dim, embed_dim)
+                if system is None:
+                    system = self._system_cls(latent_dim, embed_dim, **self._system_kwargs)
+                if latent_dim != system.latent_dim:
+                    system.latent_dim = latent_dim
+                if embed_dim != system.embed_dim:
+                    system.embed_dim = embed_dim
                 self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
@@ -228,14 +236,18 @@ class Task:
             """
             Handles case when E is a constant
             """
-            result = {k: [] for k in ["n", "latent_dim",
-                                      "embed_dim", "timesteps", "loss", "total_cost"]}
+            result = {k: [] for k in ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = self._E
                 if embed_dim < latent_dim:
                     return
-                system = self._set_system(latent_dim, embed_dim)
+                if system is None:
+                    system = self._system_cls(latent_dim, embed_dim, **self._system_kwargs)
+                if latent_dim != system.latent_dim:
+                    system.latent_dim = latent_dim
+                if embed_dim != system.embed_dim:
+                    system.embed_dim = embed_dim
                 self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
@@ -249,46 +261,10 @@ class Task:
         else:
             raise TypeError("E must of type List[int], int, or None.")
 
-        data = Parallel(n_jobs=4, timeout=1e5)(delayed(do_rep)()
-                                               for _ in range(self._reps))
+        data = Parallel(n_jobs=4, timeout=1e6)(delayed(do_rep)() for _ in range(self._reps))
         data = pd.concat(data)
         data["id"] = id or next(self._id)
         return data
-
-    def _set_system(self, latent_dim, embed_dim):
-        if system is None:
-            system = self._system_cls(
-                latent_dim, embed_dim, **self._system_kwargs)
-        if latent_dim != system.latent_dim:
-            system.latent_dim = latent_dim
-        if embed_dim != system.embed_dim:
-            system.embed_dim = embed_dim
-        return system
-
-    def _gen_trainset(self, system, n: int, timesteps: int, noisy=False):
-        train_init_conds = system.make_init_conds(n)
-
-        return system.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
-
-    def _gen_testset(self, system, in_dist=True):
-        test_init_conds = system.make_init_conds(self._test_examples, in_dist)
-        return system.make_data(test_init_conds, timesteps=self._test_timesteps)
-
-    def _fit_model(self, system, model, x: np.ndarray, timesteps: int,  max_control_cost: int,  fit_kwargs: dict = None,
-                   act_kwargs: dict = None, noisy=False) -> int:
-        total_cost = 0
-        model.fit(x, **fit_kwargs)
-
-        for _ in range(self._control_horizons):
-            control = model.act(x, **act_kwargs)
-            cost = system.calc_control_cost(control)
-            total_cost += cost
-            assert np.all(cost <= max_control_cost), "Control cost exceeded!"
-            x = system.make_data(
-                init_conds=x[:, 0], control=control, timesteps=timesteps, noisy=noisy)
-            model.fit(x, **fit_kwargs)
-
-        return total_cost
 
     def _do_rep(self,
                 result: dict,
@@ -308,16 +284,26 @@ class Task:
         print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
 
         # Create model and data
-        model = model_cls(embed_dim, timesteps,
-                          max_control_cost, **model_kwargs)
+        model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
+        train_init_conds = system.make_init_conds_wrapper(n)
 
-        x = self._gen_trainset(system, n, timesteps, noisy)
-        total_cost = self._fit_model(system, model, x, timesteps,
-                                     max_control_cost, fit_kwargs, act_kwargs, noisy)
-        test = self._gen_testset(self, system, in_dist)
+        x = system.make_data_wrapper(train_init_conds, timesteps=timesteps, noisy=noisy)
+        total_cost = 0
+        model.fit(x, **fit_kwargs)
 
+        for _ in range(self._control_horizons):
+            control = model.act_wrapper(x, **act_kwargs)
+            cost = system.calc_control_cost_wrapper(control)
+            total_cost += cost
+            assert np.all(cost <= max_control_cost), "Control cost exceeded!"
+            x = system.make_data_wrapper(init_conds=x[:, 0], control=control, timesteps=timesteps, noisy=noisy)
+            model.fit(x, **fit_kwargs)
+
+        # create test data
+        test_init_conds = system.make_init_conds_wrapper(self._test_examples, in_dist)
+        test = system.make_data_wrapper(test_init_conds, timesteps=self._test_timesteps)
         pred = model.predict(test[:, 0], self._test_timesteps)
-        loss = system.calc_loss(pred, test)
+        loss = system.calc_loss_wrapper(pred, test)
         result['n'].append(n)
         result['latent_dim'].append(latent_dim)
         result['embed_dim'].append(embed_dim)

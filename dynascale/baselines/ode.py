@@ -15,7 +15,7 @@ class ODE(Model):
         self.mse_loss = nn.MSELoss()
         self.opt = torch.optim.Adam(self.model.parameters(), self.lr)
 
-    def _predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
+    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         pass
 
     def fit(self, x: np.ndarray, epochs=100, **kwargs):

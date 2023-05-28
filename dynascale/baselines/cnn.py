@@ -43,7 +43,7 @@ class CNN(Model):
             loss.backward()
             opt.step()
 
-    def _predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
+    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         state = torch.tensor(x0, dtype=torch.float32)
         pred = state.unsqueeze(1)
 

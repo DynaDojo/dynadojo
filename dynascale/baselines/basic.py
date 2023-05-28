@@ -25,7 +25,7 @@ class Basic(Model):
         tail = x[:, 1:, :]
         self.model.fit(head.astype(float), tail.astype(float), epochs=epochs, verbose=verbose)
 
-    def _predict(self, x0: np.ndarray, timesteps: int, *args, **kwargs) -> np.ndarray:
+    def predict(self, x0: np.ndarray, timesteps: int, *args, **kwargs) -> np.ndarray:
         preds = [x0[:, None, :]]
         for _ in tqdm(range(timesteps - 1), leave=False):
             preds.append(self.model.predict(preds[-1], verbose=0))

@@ -71,7 +71,7 @@ class LowestPossibleRadius(Model):
             self.radiiTables[newRadius] = self.generateRadiusTable(newRadius)
             self.currRadius = newRadius
 
-    def act(self, x, **kwargs):
+    def act_wrapper(self, x, **kwargs):
         control = []
         lastState = x[:, -1, :]
         control_mag = []  # constraint is for each sample
@@ -172,7 +172,7 @@ class LowestPossibleRadius(Model):
             evolved.append(sampleResult)
         return evolved
 
-    def _predict(self, x0, timesteps, **kwargs):
+    def predict(self, x0, timesteps, **kwargs):
         preds = [x0]
 
         for _ in range(timesteps-1):

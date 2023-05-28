@@ -26,13 +26,13 @@ class SNNChallenge(LDSSystem):
                                         N=embed_dim,
                                         max_error=1 / 2)  # hyperparam: max_error
 
-    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
-        return super()._make_init_conds(n, in_dist)
+    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+        return super().make_init_conds(n, in_dist)
 
-    def _make_data(self, init_conds: np.ndarray,
-                   control: np.ndarray,
-                   timesteps: int,
-                   noisy=False) -> np.ndarray:
+    def make_data(self, init_conds: np.ndarray,
+                  control: np.ndarray,
+                  timesteps: int,
+                  noisy=False) -> np.ndarray:
         time = np.linspace(0, 1, num=timesteps)  # hyperparam: [t0, tf]
 
         def get_trajectory(x0, u):

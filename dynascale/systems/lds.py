@@ -90,11 +90,11 @@ class LDSSystem(System):
         self.B = self._make_BC()
         self.C = self._make_BC()
 
-    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         init_cond_range = self._init_cond_in_dist_range if in_dist else self._init_cond_out_dist_range
         return RNG.uniform(*init_cond_range, (n, self.embed_dim))
 
-    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
         init_conds = init_conds @ np.linalg.pinv(self.C)
         time = np.linspace(0, 1, num=timesteps)
@@ -112,9 +112,9 @@ class LDSSystem(System):
         data = np.transpose(np.array(data), axes=(0, 2, 1)) @ self.C
         return data
 
-    def _calc_loss(self, x, y) -> float:
+    def calc_loss(self, x, y) -> float:
         error = x - y
-        return np.mean(error ** 2)
+        return np.mean(error ** 2) / self.embed_dim
 
-    def _calc_control_cost(self, control: np.ndarray) -> float:
+    def calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)
