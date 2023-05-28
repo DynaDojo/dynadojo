@@ -19,7 +19,7 @@ class TargetError(Task):
 
         if isinstance(E, list):
             assert (len(L) == len(E))
-            for l, idx in enumerate(L):
+            for idx, l in enumerate(L):
                 assert (E[idx] >= l)
         elif isinstance(E, int):
             assert (E >= np.max(L))
