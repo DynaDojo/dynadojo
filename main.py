@@ -5,17 +5,29 @@ from dynascale.tasks import FixedTrainSize
 import numpy as np
 import scipy as sp
 
+from dynascale.baselines.lr import LinearRegression
+from dynascale.baselines.simple import Simple
+from dynascale.systems.lds import LDSSystem
+from dynascale.tasks import FixedComplexity
+
 def main():
-    latent_dim = 3
-    embed_dim = 6
-    n = 3
-    timesteps = 50
-    challenge = SNNChallenge(latent_dim, embed_dim)
-    x0 = challenge.make_init_conds_wrapper(n)
-    y0 = challenge.make_init_conds_wrapper(30, in_dist=False)
-    x = challenge.make_data_wrapper(x0, timesteps=timesteps)
-    y = challenge.make_data_wrapper(y0, timesteps=timesteps)
-    plot([x, y], target_dim=3, labels=["in", "out"], max_lines=30)
+    l = 5
+    task = FixedComplexity(N=[10, 100, 200],
+                           l=l,
+                           e=l,
+                           t=50,
+                           max_control_cost_per_dim=0,
+                           control_horizons=0,
+                           test_examples=100,
+                           reps=10,
+                           test_timesteps=50,
+                           system_cls=LDSSystem
+                           )
+
+    lr_data = task.evaluate(model_cls=LinearRegression, id="LR")
+
+    task.plot(lr_data)
+
 
 
 if __name__ == '__main__':

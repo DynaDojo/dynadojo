@@ -5,18 +5,22 @@ import seaborn as sns
 
 """
 TODO:
-- add argument to control log scale
-- make labels latex
+- DONE  argument to control log scale
+- DONE latex
+- DONE add rep_id
+- DONE pi -- 
 """
+
+
 def _assign_labels(data, labels):
     assert len(data) == len(labels)
     for frameidx, frame in enumerate(data):
         data[frameidx] = frame.assign(id=labels[frameidx])
 
 
-def plot_metric(data, x_col, y_col, labels=None, hue="id", estimator=np.mean, errorbar="sd"):
-    if labels:
-        _assign_labels(data, labels)
+def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.mean, errorbar=("pi", 50)):
+    if idlabels:
+        _assign_labels(data, idlabels)
 
     sns.set_context("paper")
     sns.set_theme(style="ticks")
@@ -25,22 +29,32 @@ def plot_metric(data, x_col, y_col, labels=None, hue="id", estimator=np.mean, er
     if not isinstance(data, pd.DataFrame):
         data = pd.concat(data)
 
-    ax = sns.catplot(data=data, x=x_col, y=y_col, hue=hue, estimator=estimator, kind="point", errorbar=errorbar)
-    ax.set(xticks=range(len(data[x_col].unique())))
+   
+    ax = sns.catplot(data=data, x=xcol, y=ycol, hue=hue, estimator=estimator, kind="point", errorbar=errorbar)
+
+    ax.set(xticks=range(len(data[xcol].unique())))
+    if log:
+        ax.set(yscale="log")
+
+    if xlabel:
+       ax.set(xlabel=xlabel)
+    if ylabel:
+       ax.set(ylabel=ylabel)
 
     plt.show()
 
 
-def plot_target_error(data, x_col, y_col, labels=None, hue="id", estimator=np.mean, errorbar="sd", error_col="error",
-                      target_error=0.1):
-    if labels:
-        _assign_labels(data, labels)
+def plot_target_loss(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.mean, errorbar=("pi", 50), error_col="error",
+                     _target_loss=0.1):
+    if idlabels:
+        _assign_labels(data, idlabels)
 
     if not isinstance(data, pd.DataFrame):
         data = pd.concat(data)
 
-    grouped = data.groupby(["id", x_col, y_col])[error_col].mean().reset_index()
-    grouped = grouped[grouped[error_col] < target_error]
+    filtered = data[data[error_col] < _target_loss]
+    # for each rep in the x dim, get the lowest y that was successful
+    successes = filtered.loc[filtered.groupby(["id", "rep", xcol])[ycol].idxmin()].reset_index()
 
-    assert (len(grouped) > 0)
-    plot_metric(grouped, x_col, y_col, labels=None, hue=hue, estimator=estimator, errorbar=errorbar)
+    assert (len(successes) > 0)
+    plot_metric(successes, xcol, ycol, None, xlabel, ylabel, hue, log, estimator, errorbar)

@@ -4,12 +4,11 @@ import numpy as np
 
 import seaborn as sns
 import matplotlib.pyplot as plt
-from dynascale.utils.plotting import plot_target_loss
+from dynascale.utils.plotting import plot_target_loss, plot_metric
 
 from joblib import Parallel, delayed
 
-from abstractions import Task, System, Model
-
+from dynascale.abstractions import Task, System, Model
 
 class TargetError(Task):
     def __init__(self, L: list[int], t: int, max_control_cost_per_dim: int, control_horizons: int,
@@ -144,7 +143,7 @@ class TargetError(Task):
         def _do_rep(rep_id, latent_dim, embed_dim):
             result = {k: [] for k in ["rep", "n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
 
-            system = self._set_system(latent_dim, embed_dim)
+            system = self._set_system(system, latent_dim, embed_dim)
             max_control_cost = self._max_control_cost_per_dim * latent_dim
             model = model_cls(embed_dim, self._T, max_control_cost, **model_kwargs)
             test = self._gen_testset(system, in_dist)
@@ -192,20 +191,21 @@ class FixedComplexity(Task):
 
     @staticmethod
     def plot(data):
-        g = sns.lmplot(
-            data=data,
-            x="n", y="loss", hue="id",
-            height=5,
-            ci=50,
-            robust=True,
-            facet_kws=dict(sharey=False),
-            scatter=False,
-            fit_reg=True
-        )
-        g.set_axis_labels(x_var="$n$", y_var="Loss")
-        plt.yscale('log')
-        plt.xscale('log')
-        plt.show()
+        plot_metric(data, "n", "loss", xlabel=r'$n$')
+        # g = sns.lmplot(
+        #     data=data,
+        #     x="n", y="loss", hue="id",
+        #     height=5,
+        #     ci=50,
+        #     robust=True,
+        #     facet_kws=dict(sharey=False),
+        #     scatter=False,
+        #     fit_reg=True
+        # )
+        # g.set_axis_labels(x_var="$n$", y_var="Loss")
+        # plt.yscale('log')
+        # plt.xscale('log')
+        # plt.show()
 
 
 class FixedTrainSize(Task):
