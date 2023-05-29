@@ -169,10 +169,13 @@ class Task:
         assert control_horizons >= 0
 
         self._id = itertools.count()
-        self._N = N.sort()
-        self._L = L.sort()
-        self._E = E.sort()
-        self._T = T.sort()
+        self._N = np.sort(N)
+        self._L = np.sort(L)
+        if isinstance(E, list):
+            self._E = np.sort(E)
+        else:
+            self._E = E
+        self._T = np.sort(T)
         self._max_control_cost_per_dim = max_control_cost_per_dim
         self._system_cls = system_cls
         self._system_kwargs = system_kwargs or {}
@@ -206,7 +209,7 @@ class Task:
                 latent_dim, embed_dim = d
                 if embed_dim < latent_dim:
                     return
-                system = self._set_system(latent_dim, embed_dim)
+                system = self._set_system(system, latent_dim, embed_dim)
                 self._do_rep(rep_id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
@@ -220,7 +223,7 @@ class Task:
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = latent_dim
-                system = self._set_system(latent_dim, embed_dim)
+                system = self._set_system(system, latent_dim, embed_dim)
                 self._do_rep(rep_id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
@@ -236,7 +239,7 @@ class Task:
                 embed_dim = self._E
                 if embed_dim < latent_dim:
                     return
-                system = self._set_system(latent_dim, embed_dim)
+                system = self._set_system(system, latent_dim, embed_dim)
                 self._do_rep(rep_id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
@@ -256,7 +259,7 @@ class Task:
         data["id"] = id or next(self._id)
         return data
 
-    def _set_system(self, latent_dim, embed_dim):
+    def _set_system(self, system, latent_dim, embed_dim):
         if system is None:
             system = self._system_cls(
                 latent_dim, embed_dim, **self._system_kwargs)
@@ -326,7 +329,7 @@ class Task:
         total_cost = self._fit_model(system, model, x, timesteps,
                                      max_control_cost, fit_kwargs, act_kwargs, noisy)
 
-        test = self._gen_testset(self, system, in_dist)
+        test = self._gen_testset(system, in_dist)
 
         pred = model.predict(test[:, 0], self._test_timesteps)
         loss = system.calc_loss_wrapper(pred, test)
