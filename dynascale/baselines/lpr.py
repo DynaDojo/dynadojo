@@ -71,7 +71,7 @@ class LowestPossibleRadius(Model):
             self.radiiTables[newRadius] = self.generateRadiusTable(newRadius)
             self.currRadius = newRadius
 
-    def act_wrapper(self, x, **kwargs):
+    def act(self, x, **kwargs):
         control = []
         lastState = x[:, -1, :]
         control_mag = []  # constraint is for each sample

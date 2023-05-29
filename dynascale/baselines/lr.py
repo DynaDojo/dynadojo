@@ -37,7 +37,7 @@ class LinearRegression(Model):
 
         return self.U
 
-    def _predict(self, x0, timesteps, **kwargs):
+    def predict(self, x0, timesteps, **kwargs):
         preds = []
         traj = [x0.T]
         for _ in range(timesteps-1):
@@ -74,7 +74,7 @@ class ManualLinearRegression(Model):
             pinv = np.linalg.pinv(X)
             self.A_hat = Y@pinv
 
-    def _act(self, x, **kwargs):
+    def act(self, x, **kwargs):
         self.U = np.random.uniform(-1, 1,
                                    [len(x[0]), self.timesteps, self.embed_dim])
         self.U = np.array(self.U)
@@ -84,7 +84,7 @@ class ManualLinearRegression(Model):
 
         return self.U
 
-    def _predict(self, x0, timesteps, **kwargs):
+    def predict(self, x0, timesteps, **kwargs):
         preds = []
         traj = [x0.T]
         for _ in range(timesteps-1):
