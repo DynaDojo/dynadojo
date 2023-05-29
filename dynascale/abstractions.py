@@ -195,11 +195,11 @@ class Task:
         fit_kwargs = fit_kwargs or {}
         act_kwargs = act_kwargs or {}
 
-        def do_rep1():
+        def do_rep1(rep_id):
             """
             Handles case when E is an array
             """
-            result = {k: [] for k in ["n", "latent_dim",
+            result = {k: [] for k in ["rep", "n", "latent_dim",
                                       "embed_dim", "timesteps", "loss", "total_cost"]}
             system = None
             for n, d, timesteps in itertools.product(self._N, zip(self._L, self._E), self._T):
@@ -207,29 +207,29 @@ class Task:
                 if embed_dim < latent_dim:
                     return
                 system = self._set_system(latent_dim, embed_dim)
-                self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
+                self._do_rep(rep_id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
 
-        def do_rep2():
+        def do_rep2(rep_id):
             """
             Handles case when E is a None
             """
-            result = {k: [] for k in ["n", "latent_dim",
+            result = {k: [] for k in ["rep", "n", "latent_dim",
                                       "embed_dim", "timesteps", "loss", "total_cost"]}
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = latent_dim
                 system = self._set_system(latent_dim, embed_dim)
-                self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
+                self._do_rep(rep_id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
 
-        def do_rep3():
+        def do_rep3(rep_id):
             """
             Handles case when E is a constant
             """
-            result = {k: [] for k in ["n", "latent_dim",
+            result = {k: [] for k in ["rep", "n", "latent_dim",
                                       "embed_dim", "timesteps", "loss", "total_cost"]}
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
@@ -237,7 +237,7 @@ class Task:
                 if embed_dim < latent_dim:
                     return
                 system = self._set_system(latent_dim, embed_dim)
-                self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
+                self._do_rep(rep_id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
 
@@ -250,8 +250,8 @@ class Task:
         else:
             raise TypeError("E must of type List[int], int, or None.")
 
-        data = Parallel(n_jobs=4, timeout=1e6)(delayed(do_rep)()
-                                               for _ in range(self._reps))
+        data = Parallel(n_jobs=4, timeout=1e6)(delayed(do_rep)(rep_id)
+                                               for rep_id in range(self._reps))
         data = pd.concat(data)
         data["id"] = id or next(self._id)
         return data
@@ -292,6 +292,7 @@ class Task:
         return total_cost
 
     def _do_rep(self,
+                rep_id: int,
                 result: dict,
                 system: System,
                 n: int,
@@ -320,6 +321,7 @@ class Task:
 
         pred = model.predict(test[:, 0], self._test_timesteps)
         loss = system.calc_loss_wrapper(pred, test)
+        result['rep'].append(rep_id)
         result['n'].append(n)
         result['latent_dim'].append(latent_dim)
         result['embed_dim'].append(embed_dim)
