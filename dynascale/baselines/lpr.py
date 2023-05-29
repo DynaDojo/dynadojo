@@ -161,7 +161,7 @@ class LowestPossibleRadius(Model):
                     pos = (cellidx + pos_x) % self.ROW_LENGTH
                     neighborhood += str(sample[pos])
 
-                # if seen before
+                # if seen before, use knowledge
                 if (self.radiiTables[self.currRadius][neighborhood]) != None:
                     sampleResult.append(
                         self.radiiTables[self.currRadius][neighborhood])

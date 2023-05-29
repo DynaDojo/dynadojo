@@ -76,7 +76,7 @@ class ManualLinearRegression(Model):
 
     def act(self, x, **kwargs):
         self.U = np.random.uniform(-1, 1,
-                                   [len(x[0]), self.timesteps, self.embed_dim])
+                                   [len(x[0]), self._timesteps, self._embed_dim])
         self.U = np.array(self.U)
 
         self.U = (self.U / np.linalg.norm(self.U, axis=-1)
