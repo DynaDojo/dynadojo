@@ -53,7 +53,7 @@ class TargetError(Task):
         pred = model.predict(test[:, 0], self._test_timesteps)
         return system.calc_loss(pred, test), total_cost
 
-    def _gen_bounds(self, system, model, test, l, results, max_control_cost, noisy, fit_kwargs, act_kwargs):
+    def _gen_bounds(self, system, model, test, l, max_control_cost, noisy, fit_kwargs, act_kwargs):
 
         lower = 1
         upper = 1
@@ -141,10 +141,22 @@ class TargetError(Task):
 
         data = []
 
-        def _do_rep():
-            result = {k: [] for k in ["n", "latent_dim",
-                                      "embed_dim", "timesteps", "loss", "total_cost"]}
+        def _do_rep(rep_id, latent_dim, embed_dim):
+            result = {k: [] for k in ["rep", "n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
 
+            system = self._set_system(latent_dim, embed_dim)
+            max_control_cost = self._max_control_cost_per_dim * latent_dim
+            model = model_cls(embed_dim, self._T, max_control_cost, **model_kwargs)
+            test = self._gen_testset(system, in_dist)
+
+            lower, upper = self._gen_bounds(system, model, test, latent_dim, max_control_cost, noisy, fit_kwargs, act_kwargs)
+            lowest_needed, loss_achieved, total_cost = self._search(system, model, test, lower, upper, max_control_cost, noisy, fit_kwargs, act_kwargs)
+
+            self._append_result(result, rep_id, lowest_needed, latent_dim, embed_dim, self._T, loss_achieved, total_cost)
+
+            return pd.DataFrame(result)
+
+        for idx, latent_dim in enumerate(self._L):
             if not self._E:
                 embed_dim = latent_dim
             elif isinstance(self._E, int):
@@ -152,33 +164,8 @@ class TargetError(Task):
             else:
                 embed_dim = self._E[idx]
 
-            system = self._set_system(latent_dim, embed_dim)
-
-            max_control_cost = self._max_control_cost_per_dim * latent_dim
-
-            model = model_cls(embed_dim, self._T,
-                              max_control_cost, **model_kwargs)
-
-            test = self._gen_testset(system, in_dist)
-
-            lower, upper = self._gen_bounds(system, model, test, latent_dim, results,
-                                            max_control_cost, noisy, fit_kwargs, act_kwargs)
-
-            lowest_needed, loss_achieved, total_cost = self._search(
-                system, model, test, lower, upper, max_control_cost, noisy, fit_kwargs, act_kwargs)
-
-            result['n'].append(lowest_needed)
-            result['latent_dim'].append(latent_dim)
-            result['embed_dim'].append(embed_dim)
-            result['timesteps'].append(self._T)
-            result['loss'].append(loss_achieved)
-            result['total_cost'].append(total_cost)
-
-            return pd.DataFrame(result)
-
-        for idx, latent_dim in enumerate(self._L):
-            temp_df = Parallel(n_jobs=4, timeout=1e5)(delayed(_do_rep)()
-                                                      for _ in range(self._reps))
+            temp_df = Parallel(n_jobs=4, timeout=1e6)(delayed(_do_rep)(rep_id, latent_dim, embed_dim)
+                                                      for rep_id in range(self._reps))
 
             self.samples_needed[latent_dim] = np.median(temp_df.n)
 

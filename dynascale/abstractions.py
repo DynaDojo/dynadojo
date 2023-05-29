@@ -291,6 +291,15 @@ class Task:
 
         return total_cost
 
+    def _append_result(self, result, rep_id, n, latent_dim, embed_dim, timesteps, loss, total_cost):
+        result['rep'].append(rep_id)
+        result['n'].append(n)
+        result['latent_dim'].append(latent_dim)
+        result['embed_dim'].append(embed_dim)
+        result['timesteps'].append(timesteps)
+        result['loss'].append(loss)
+        result['total_cost'].append(total_cost)
+
     def _do_rep(self,
                 rep_id: int,
                 result: dict,
@@ -321,10 +330,6 @@ class Task:
 
         pred = model.predict(test[:, 0], self._test_timesteps)
         loss = system.calc_loss_wrapper(pred, test)
-        result['rep'].append(rep_id)
-        result['n'].append(n)
-        result['latent_dim'].append(latent_dim)
-        result['embed_dim'].append(embed_dim)
-        result['timesteps'].append(timesteps)
-        result['loss'].append(loss)
-        result['total_cost'].append(total_cost)
+
+        self._append_result(result, rep_id, n, latent_dim,
+                            embed_dim, timesteps, loss, total_cost)
