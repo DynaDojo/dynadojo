@@ -17,7 +17,8 @@ class Model(ABC):
         :param kwargs:
         """
         self._embed_dim = embed_dim
-        self._timesteps = timesteps  # NOTE: this is the timesteps of the training data; NOT the predicted trajectories
+        # NOTE: this is the timesteps of the training data; NOT the predicted trajectories
+        self._timesteps = timesteps
         self._max_control_cost = max_control_cost
 
     @abstractmethod
@@ -127,7 +128,8 @@ class System(ABC):
         if control is None:
             control = np.zeros((n, timesteps, self.embed_dim))
         assert control.shape == (n, timesteps, self.embed_dim)
-        data = self.make_data(init_conds=init_conds, control=control, timesteps=timesteps, noisy=noisy)
+        data = self.make_data(init_conds=init_conds,
+                              control=control, timesteps=timesteps, noisy=noisy)
         assert data.shape == (n, timesteps, self.embed_dim)
         return data
 
@@ -167,10 +169,10 @@ class Task:
         assert control_horizons >= 0
 
         self._id = itertools.count()
-        self._N = N
-        self._L = L
-        self._E = E
-        self._T = T
+        self._N = N.sort()
+        self._L = L.sort()
+        self._E = E.sort()
+        self._T = T.sort()
         self._max_control_cost_per_dim = max_control_cost_per_dim
         self._system_cls = system_cls
         self._system_kwargs = system_kwargs or {}
@@ -193,23 +195,18 @@ class Task:
         fit_kwargs = fit_kwargs or {}
         act_kwargs = act_kwargs or {}
 
-        # TODO: try to condense
         def do_rep1():
             """
             Handles case when E is an array
             """
-            result = {k: [] for k in ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
+            result = {k: [] for k in ["n", "latent_dim",
+                                      "embed_dim", "timesteps", "loss", "total_cost"]}
             system = None
             for n, d, timesteps in itertools.product(self._N, zip(self._L, self._E), self._T):
                 latent_dim, embed_dim = d
                 if embed_dim < latent_dim:
                     return
-                if system is None:
-                    system = self._system_cls(latent_dim, embed_dim, **self._system_kwargs)
-                if latent_dim != system.latent_dim:
-                    system.latent_dim = latent_dim
-                if embed_dim != system.embed_dim:
-                    system.embed_dim = embed_dim
+                system = self._set_system(latent_dim, embed_dim)
                 self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
@@ -218,16 +215,12 @@ class Task:
             """
             Handles case when E is a None
             """
-            result = {k: [] for k in ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
+            result = {k: [] for k in ["n", "latent_dim",
+                                      "embed_dim", "timesteps", "loss", "total_cost"]}
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = latent_dim
-                if system is None:
-                    system = self._system_cls(latent_dim, embed_dim, **self._system_kwargs)
-                if latent_dim != system.latent_dim:
-                    system.latent_dim = latent_dim
-                if embed_dim != system.embed_dim:
-                    system.embed_dim = embed_dim
+                system = self._set_system(latent_dim, embed_dim)
                 self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
@@ -236,18 +229,14 @@ class Task:
             """
             Handles case when E is a constant
             """
-            result = {k: [] for k in ["n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
+            result = {k: [] for k in ["n", "latent_dim",
+                                      "embed_dim", "timesteps", "loss", "total_cost"]}
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = self._E
                 if embed_dim < latent_dim:
                     return
-                if system is None:
-                    system = self._system_cls(latent_dim, embed_dim, **self._system_kwargs)
-                if latent_dim != system.latent_dim:
-                    system.latent_dim = latent_dim
-                if embed_dim != system.embed_dim:
-                    system.embed_dim = embed_dim
+                system = self._set_system(latent_dim, embed_dim)
                 self._do_rep(result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
@@ -261,10 +250,46 @@ class Task:
         else:
             raise TypeError("E must of type List[int], int, or None.")
 
-        data = Parallel(n_jobs=4, timeout=1e6)(delayed(do_rep)() for _ in range(self._reps))
+        data = Parallel(n_jobs=4, timeout=1e6)(delayed(do_rep)()
+                                               for _ in range(self._reps))
         data = pd.concat(data)
         data["id"] = id or next(self._id)
         return data
+
+    def _set_system(self, latent_dim, embed_dim):
+        if system is None:
+            system = self._system_cls(
+                latent_dim, embed_dim, **self._system_kwargs)
+        if latent_dim != system.latent_dim:
+            system.latent_dim = latent_dim
+        if embed_dim != system.embed_dim:
+            system.embed_dim = embed_dim
+        return system
+
+    def _gen_trainset(self, system, n: int, timesteps: int, noisy=False):
+        train_init_conds = system.make_init_conds_wrapper(n)
+        return system.make_data_wrapper(train_init_conds, timesteps=timesteps, noisy=noisy)
+
+    def _gen_testset(self, system, in_dist=True):
+        test_init_conds = system.make_init_conds_wrapper(
+            self._test_examples, in_dist)
+        return system.make_data_wrapper(test_init_conds, timesteps=self._test_timesteps)
+
+    def _fit_model(self, system, model, x: np.ndarray, timesteps: int,  max_control_cost: int,  fit_kwargs: dict = None,
+                   act_kwargs: dict = None, noisy=False) -> int:
+        total_cost = 0
+        model.fit(x, **fit_kwargs)
+
+        for _ in range(self._control_horizons):
+            control = model.act(x, **act_kwargs)
+            cost = system.calc_control_cost(control)
+            total_cost += cost
+            assert np.all(cost <= max_control_cost), "Control cost exceeded!"
+            x = system.make_data(
+                init_conds=x[:, 0], control=control, timesteps=timesteps, noisy=noisy)
+            model.fit(x, **fit_kwargs)
+
+        return total_cost
 
     def _do_rep(self,
                 result: dict,
@@ -284,24 +309,15 @@ class Task:
         print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
 
         # Create model and data
-        model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
-        train_init_conds = system.make_init_conds_wrapper(n)
+        model = model_cls(embed_dim, timesteps,
+                          max_control_cost, **model_kwargs)
 
-        x = system.make_data_wrapper(train_init_conds, timesteps=timesteps, noisy=noisy)
-        total_cost = 0
-        model.fit(x, **fit_kwargs)
+        x = self._gen_trainset(system, n, timesteps, noisy)
+        total_cost = self._fit_model(system, model, x, timesteps,
+                                     max_control_cost, fit_kwargs, act_kwargs, noisy)
 
-        for _ in range(self._control_horizons):
-            control = model.act_wrapper(x, **act_kwargs)
-            cost = system.calc_control_cost_wrapper(control)
-            total_cost += cost
-            assert np.all(cost <= max_control_cost), "Control cost exceeded!"
-            x = system.make_data_wrapper(init_conds=x[:, 0], control=control, timesteps=timesteps, noisy=noisy)
-            model.fit(x, **fit_kwargs)
+        test = self._gen_testset(self, system, in_dist)
 
-        # create test data
-        test_init_conds = system.make_init_conds_wrapper(self._test_examples, in_dist)
-        test = system.make_data_wrapper(test_init_conds, timesteps=self._test_timesteps)
         pred = model.predict(test[:, 0], self._test_timesteps)
         loss = system.calc_loss_wrapper(pred, test)
         result['n'].append(n)
