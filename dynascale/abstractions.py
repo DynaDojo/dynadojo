@@ -175,7 +175,10 @@ class Task:
             self._E = np.sort(E)
         else:
             self._E = E
-        self._T = np.sort(T)
+        if isinstance(T, list):
+            self._T = np.sort(T)
+        else:
+            self._T = T
         self._max_control_cost_per_dim = max_control_cost_per_dim
         self._system_cls = system_cls
         self._system_kwargs = system_kwargs or {}
@@ -274,8 +277,7 @@ class Task:
         return system.make_data_wrapper(train_init_conds, timesteps=timesteps, noisy=noisy)
 
     def _gen_testset(self, system, in_dist=True):
-        test_init_conds = system.make_init_conds_wrapper(
-            self._test_examples, in_dist)
+        test_init_conds = system.make_init_conds_wrapper(self._test_examples, in_dist)
         return system.make_data_wrapper(test_init_conds, timesteps=self._test_timesteps)
 
     def _fit_model(self, system, model, x: np.ndarray, timesteps: int,  max_control_cost: int,  fit_kwargs: dict = None,
@@ -331,7 +333,7 @@ class Task:
 
         test = self._gen_testset(system, in_dist)
 
-        pred = model.predict(test[:, 0], self._test_timesteps)
+        pred = model.predict_wrapper(test[:, 0], self._test_timesteps)
         loss = system.calc_loss_wrapper(pred, test)
 
         self._append_result(result, rep_id, n, latent_dim,
