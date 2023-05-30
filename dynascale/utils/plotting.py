@@ -44,17 +44,16 @@ def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="
     plt.show()
 
 
-def plot_target_loss(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.mean, errorbar=("pi", 50), error_col="error",
-                     _target_loss=0.1):
+def plot_target_loss(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.mean, errorbar=("pi", 50), error_col="loss", target_loss=0.1):
     if idlabels:
         _assign_labels(data, idlabels)
 
     if not isinstance(data, pd.DataFrame):
         data = pd.concat(data)
 
-    filtered = data[data[error_col] < _target_loss]
+    filtered = data[data[error_col] < target_loss]
     # for each rep in the x dim, get the lowest y that was successful
-    successes = filtered.loc[filtered.groupby(["id", "rep", xcol])[ycol].idxmin()].reset_index()
+    successes = filtered.loc[filtered.groupby(["id", "rep", xcol])[ycol].idxmin()].reset_index(drop=True)
 
     assert (len(successes) > 0)
     plot_metric(successes, xcol, ycol, None, xlabel, ylabel, hue, log, estimator, errorbar)
