@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from scipy.integrate import odeint
+from torchdiffeq import odeint
 
 from ..abstractions import Model
 
