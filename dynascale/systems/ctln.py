@@ -1,4 +1,6 @@
 from dynascale.abstractions import System
+import torch
+import torch.nn as nn
 from torchdiffeq import odeint
 import networkx as nx
 import numpy as np
