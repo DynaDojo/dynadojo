@@ -1,0 +1,5 @@
+,rep,n,latent_dim,embed_dim,timesteps,loss,total_cost,id
+0,0,1,1,64,5,0.9754375,0,LPR
+1,0,3,1,64,5,1.0,0,LPR
+2,0,2,1,64,5,1.0,0,LPR
+3,0,1,1,64,5,0.9754375,0,LPR

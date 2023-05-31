@@ -10,6 +10,7 @@ from dynascale.tasks import FixedComplexity
 
 def main():
     l = 30
+    noisy = True
     task = FixedComplexity(N=[1, 10, 100, 1000, 10000],
                            l=l,
                            e=l,
@@ -25,7 +26,7 @@ def main():
     file = f"../cache/lr_data_fc_{l}.csv"
     if os.path.exists(file):
         if input(f"'{file}' already exists. Do you want to overwrite it? [y]") == "y":
-            lr_data = task.evaluate(model_cls=MyLinearRegression, id="LR")
+            lr_data = task.evaluate(model_cls=MyLinearRegression, id="LR", noisy=noisy)
             lr_data.to_csv(file)
         else:
             lr_data = pd.read_csv(file)
@@ -37,7 +38,7 @@ def main():
     file = f"../cache/simple_data_{l}.csv"
     if os.path.exists(file):
         if input(f"'{file}' already exists. Do you want to overwrite it? [y]") == "y":
-            simple_data = task.evaluate(model_cls=Simple, model_kwargs={'epochs': 1000}, id="Simple")
+            simple_data = task.evaluate(model_cls=Simple, model_kwargs={'epochs': 1000}, id="Simple", noisy=noisy)
             simple_data.to_csv(file)
         else:
             simple_data = pd.read_csv(file)

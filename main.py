@@ -1,5 +1,5 @@
 from dynascale.utils.lds import plot
-from dynascale.systems.snn import SNNChallenge
+from dynascale.systems.snn import SNNSystem
 from dynascale.baselines.simple import Simple
 from dynascale.tasks import FixedTrainSize
 import numpy as np

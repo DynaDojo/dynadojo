@@ -11,9 +11,11 @@ from joblib import Parallel, delayed
 from dynascale.abstractions import Task, AbstractSystem, AbstractModel
 
 
-class TargetError(Task):
+class FixedError(Task):
     def __init__(self, L: list[int], t: int, max_control_cost_per_dim: int, control_horizons: int,
-                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, target_loss: float, max_samples=10000, E: int | list[int] = None):
+                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, target_loss: float,
+                 system_kwargs: dict = None,
+                 max_samples=1000, E: int | list[int] = None):
 
         if isinstance(E, list):
             assert (len(L) == len(E))
@@ -30,7 +32,7 @@ class TargetError(Task):
         self.result = None
         self.samples_needed = {}
 
-        super().__init__([1], L, E, t, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps)
+        super().__init__([1], L, E, t, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     def _evaluate_n(self, system, model, test, n, max_control_cost, noisy, fit_kwargs, act_kwargs):
         x = None

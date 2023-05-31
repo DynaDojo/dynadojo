@@ -1,10 +1,10 @@
 import numpy as np
-from ..abstractions import Model
+from ..abstractions import AbstractModel
 
 from sklearn.linear_model import LinearRegression as SKLinearRegression
 
 
-class LinearRegression(Model):
+class LinearRegression(AbstractModel):
     def __init__(self, embed_dim, timesteps, control_constraint):
         super().__init__(embed_dim, timesteps, control_constraint)
         self.A_hat = []
@@ -48,7 +48,7 @@ class LinearRegression(Model):
         return preds
 
 
-class ManualLinearRegression(Model):
+class ManualLinearRegression(AbstractModel):
     def __init__(self, embed_dim, timesteps, control_constraint):
         super().__init__(embed_dim, timesteps, control_constraint)
         self.A_hat = []

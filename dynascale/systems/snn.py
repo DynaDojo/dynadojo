@@ -9,7 +9,7 @@ from dynascale.systems.lds import LDSSystem
 RNG = np.random.default_rng()
 
 
-class SNNChallenge(LDSSystem):
+class SNNSystem(LDSSystem):
 
     def __init__(self, latent_dim, embed_dim,
                  init_cond_in_dist_range=(0, 1),
