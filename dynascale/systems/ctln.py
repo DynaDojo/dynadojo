@@ -25,7 +25,7 @@ class CTLNSystem(System):
         self._epsilon = random.uniform(0, self._delta/(self._delta+1))
         self._graph = self._make_graph(self._nodes, self._p)
         self._x0 = torch.tensor([random.uniform(0, 1) for _ in range(self._nodes)])
-        self._T = torch.tensor(random.uniform(0, 1))
+        self._T = torch.tensor([random.uniform(0, 1) for _ in range(self._nodes)])
         self._input = torch.tensor(random.uniform(0, 1))
         self._state = (self._x0, self._T, self._graph, self._input)
         
