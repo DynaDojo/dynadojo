@@ -10,7 +10,7 @@ from dynascale.tasks import FixedError
 
 
 def main():
-    target_loss = 0.5
+    target_loss = 0.75
     mutation_p = 0
     task = FixedError(
         target_loss=target_loss,

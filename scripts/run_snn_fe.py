@@ -11,6 +11,7 @@ from dynascale.tasks import FixedError
 
 def main():
     target_loss = 0.5
+    noisy = True
     task = FixedError(
         target_loss=target_loss,
         L=[10, 100, 1000, 10000],
@@ -24,10 +25,10 @@ def main():
         system_cls=SNNSystem,
     )
 
-    file = f"../cache/SNN/lr_data_fe_{target_loss}.csv"
+    file = f"../cache/SNN/lr_data_fe_{target_loss}_{noisy}.csv"
     if os.path.exists(file):
         if input(f"'{file}' already exists. Do you want to overwrite it? [y]") == "y":
-            lr_data = task.evaluate(model_cls=ManualLinearRegression, id="LR")
+            lr_data = task.evaluate(model_cls=ManualLinearRegression, id="LR", noisy=noisy)
             lr_data.to_csv(file)
         else:
             lr_data = pd.read_csv(file)
@@ -38,10 +39,10 @@ def main():
 
     task.plot(lr_data)
 
-    file = f"../cache/CA/cnn_data_fe_{target_loss}.csv"
+    file = f"../cache/SNN/simple_data_fe_{target_loss}_{noisy}.csv"
     if os.path.exists(file):
         if input(f"'{file}' already exists. Do you want to overwrite it? [y]") == "y":
-            simple_data = task.evaluate(model_cls=Simple, model_kwargs={'epochs': 300}, id="Simple")
+            simple_data = task.evaluate(model_cls=Simple, model_kwargs={'epochs': 300}, id="Simple", noisy=noisy)
             simple_data.to_csv(file)
         else:
             simple_data = pd.read_csv(file)

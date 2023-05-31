@@ -19,7 +19,7 @@ def main():
         T=[5],
         max_control_cost_per_dim=0,
         control_horizons=0,
-        test_examples=10,
+        test_examples=100,
         reps=50,
         test_timesteps=5,
         system_cls=CASystem,
