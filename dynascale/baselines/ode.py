@@ -3,10 +3,10 @@ import torch
 import torch.nn as nn
 from scipy.integrate import odeint
 
-from ..abstractions import Model
+from ..abstractions import AbstractModel
 
 
-class ODE(Model):
+class ODE(AbstractModel):
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, lr=3e-2, **kwargs):
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
 

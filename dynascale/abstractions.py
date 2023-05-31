@@ -6,7 +6,7 @@ import pandas as pd
 from joblib import Parallel, delayed
 
 
-class Model(ABC):
+class AbstractModel(ABC):
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
         """
         Base class for all models. Your models should subclass this class.
@@ -83,7 +83,7 @@ class Model(ABC):
         return pred
 
 
-class System(ABC):
+class AbstractSystem(ABC):
     def __init__(self, latent_dim, embed_dim):
         """
         Base class for all systems. Your systems should subclass this class.
@@ -160,7 +160,7 @@ class Task:
                  T: list[int],
                  max_control_cost_per_dim: int,
                  control_horizons: int,
-                 system_cls: type[System],
+                 system_cls: type[AbstractSystem],
                  reps: int,
                  test_examples: int,
                  test_timesteps: int,
@@ -188,7 +188,7 @@ class Task:
         self._test_timesteps = test_timesteps
 
     def evaluate(self,
-                 model_cls: type[Model],
+                 model_cls: type[AbstractModel],
                  model_kwargs: dict = None,
                  fit_kwargs: dict = None,
                  act_kwargs: dict = None,
@@ -308,12 +308,12 @@ class Task:
     def _do_rep(self,
                 rep_id: int,
                 result: dict,
-                system: System,
+                system: AbstractSystem,
                 n: int,
                 latent_dim: int,
                 embed_dim: int,
                 timesteps: int,
-                model_cls: type[Model],
+                model_cls: type[AbstractModel],
                 model_kwargs: dict = None,
                 fit_kwargs: dict = None,
                 act_kwargs: dict = None,

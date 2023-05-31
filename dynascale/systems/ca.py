@@ -4,12 +4,12 @@ import numpy as np
 from joblib import Parallel, delayed
 from tqdm.auto import tqdm
 
-from dynascale.abstractions import System
+from dynascale.abstractions import AbstractSystem
 
 RNG = np.random.default_rng()
 
 
-class CASystem(System):
+class CASystem(AbstractSystem):
     def __init__(self, latent_dim, embed_dim, in_dist_p=0.25, out_dist_p=0.75, mutation_p=0.01):
         super().__init__(latent_dim, embed_dim)
         lambda_val = RNG.uniform()
@@ -20,7 +20,7 @@ class CASystem(System):
         self._out_dist_p = out_dist_p
         self._mutation_p = mutation_p
 
-    @System.latent_dim.setter
+    @AbstractSystem.latent_dim.setter
     def latent_dim(self, value):
         self._latent_dim = value
         lambda_val = RNG.uniform()

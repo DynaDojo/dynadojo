@@ -1,9 +1,9 @@
 import numpy as np
 
-from ..abstractions import Model
+from ..abstractions import AbstractModel
 
 
-class LowestPossibleRadius(Model):
+class LowestPossibleRadius(AbstractModel):
     def __init__(self, embed_dim, timesteps, max_control_cost):
         super().__init__(embed_dim, timesteps, max_control_cost)
         self.currRadius = 1

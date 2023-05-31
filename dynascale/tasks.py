@@ -8,11 +8,12 @@ from dynascale.utils.plotting import plot_target_loss, plot_metric
 
 from joblib import Parallel, delayed
 
-from dynascale.abstractions import Task, System, Model
+from dynascale.abstractions import Task, AbstractSystem, AbstractModel
+
 
 class TargetError(Task):
     def __init__(self, L: list[int], t: int, max_control_cost_per_dim: int, control_horizons: int,
-                 system_cls: type[System], reps: int, test_examples: int, test_timesteps: int, target_loss: float, max_samples=10000, E: int | list[int] = None):
+                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, target_loss: float, max_samples=10000, E: int | list[int] = None):
 
         if isinstance(E, list):
             assert (len(L) == len(E))
@@ -143,7 +144,7 @@ class TargetError(Task):
                
 
     def evaluate(self,
-                 model_cls: type[Model],
+                 model_cls: type[AbstractModel],
                  model_kwargs: dict = None,
                  fit_kwargs: dict = None,
                  act_kwargs: dict = None,
@@ -207,7 +208,7 @@ class TargetError(Task):
 
 class FixedComplexity(Task):
     def __init__(self, N: list[int], l: int, e: int, t: int, max_control_cost_per_dim: int, control_horizons: int,
-                 system_cls: type[System], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
+                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
         L = [l]
         E = e
         T = [t]
@@ -235,7 +236,7 @@ class FixedComplexity(Task):
 
 class FixedTrainSize(Task):
     def __init__(self, n: int, L: list[int], E: list[int] | int | None, T: list[int], max_control_cost_per_dim: int, control_horizons: int,
-                 system_cls: type[System], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
+                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
         N = [n]
         super().__init__(N, L, E, T, max_control_cost_per_dim, control_horizons,
                          system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)

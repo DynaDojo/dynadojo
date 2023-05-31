@@ -3,12 +3,12 @@ import scipy as sp
 from scipy.integrate import solve_ivp
 from scipy.stats import ortho_group
 
-from dynascale.abstractions import System
+from dynascale.abstractions import AbstractSystem
 
 RNG = np.random.default_rng()
 
 
-class LDSSystem(System):
+class LDSSystem(AbstractSystem):
     def __init__(self, latent_dim, embed_dim,
                  # negative eigenvalues produce stable linear system (https://en.wikipedia.org/wiki/Stability_theory)
                  A_eigval_range=(-5, 0),
@@ -77,13 +77,13 @@ class LDSSystem(System):
     def _make_BC(self):
         return self._singular_values_to_matrix(self.latent_dim, self.embed_dim, self._BC_sv_range)
 
-    @System.embed_dim.setter
+    @AbstractSystem.embed_dim.setter
     def embed_dim(self, value):
         self._embed_dim = value
         self.B = self._make_BC()
         self.C = self._make_BC()
 
-    @System.latent_dim.setter
+    @AbstractSystem.latent_dim.setter
     def latent_dim(self, value):
         self._latent_dim = value
         self.A = self._make_A()
@@ -117,4 +117,4 @@ class LDSSystem(System):
         return np.mean(error ** 2) / self.embed_dim
 
     def calc_control_cost(self, control: np.ndarray) -> float:
-        return np.linalg.norm(control, axis=(1, 2), ord=2)
+        return np.linalg.norm(control, axis=(1, 2), ord=2) / self.embed_dim  # TODO: ask Max

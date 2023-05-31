@@ -2,10 +2,10 @@ import numpy as np
 import tensorflow as tf
 from tqdm.auto import tqdm
 
-from ..abstractions import Model
+from ..abstractions import AbstractModel
 
 
-class Basic(Model):
+class Basic(AbstractModel):
 
     def __init__(self, embed_dim, timesteps, max_control_cost, **kwargs):
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
