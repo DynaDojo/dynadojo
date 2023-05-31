@@ -1,5 +1,7 @@
 from dynascale.abstractions import System
+from torchdiffeq import odeint
 import networkx as nx
+import numpy as np
 import random
 
 RNG = np.random.default_rng()
