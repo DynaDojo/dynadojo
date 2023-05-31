@@ -56,7 +56,7 @@ class CTLNSystem(System):
 
         sol = odeint(dynamics, self._state, time, method='rk4')
         data.append(sol[0])
-        return sol[0].detach().numpy()
+        return sol[0].unsqueeze(0).detach().numpy()
 
     def calc_loss(self, x, y) -> float:
         error = x - y
