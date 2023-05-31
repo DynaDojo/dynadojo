@@ -1,3 +1,9 @@
+import torch
+import torch.nn as nn
+from torchdiffeq import odeint
+
+from ..abstractions import Model
+
 class AugODE(Model):
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, lr=3e-2, aug_dim = 2, **kwargs):
         super().__init__()
@@ -10,9 +16,9 @@ class AugODE(Model):
         self.opt = torch.optim.Adam(self.model.parameters(), self.lr)
 
     def forward(self, t, state):
-        zeros = torch.zeros(self.aug_dim)
-        #aug_state = torch.cat((state, zeros))
-        aug_state = torch.nn.functional.pad(input=state, pad=(0, self.aug_dim), mode='constant', value=0)
+        #zeros = torch.zeros(self.aug_dim)
+        #aug_state = torch.cat((state, zeros)) #naive way does not generalize
+        aug_state = torch.nn.functional.pad(input=state, pad=(0, self.aug_dim), mode='constant', value=0) #is this correct and does it generalize to different data shapes?
         
         dx = self.model(aug_state)
         return dx
@@ -33,7 +39,7 @@ class AugODE(Model):
             loss.backward()
             self.opt.step()
 
-    def predict(self, x0):
+    def predict(self, x0, timesteps):
         x0 = torch.tensor(x0, dtype=torch.float32)
-        t = torch.linspace(0.0, self.timesteps, self.timesteps)
-        return odeint(self, x0, t)
+        t = torch.linspace(0.0, timesteps, timesteps)
+        return odeint(self, x0, t).detach().numpy()
