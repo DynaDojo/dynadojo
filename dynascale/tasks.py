@@ -104,7 +104,7 @@ class FixedError(Task):
                     break
                 else:
                     sys.exit(
-                        f'At {self.max_samples} samples, error is {max_samples_error}, which is larger than the target fixed error')
+                        f'Fixed error not achieved: At {self.max_samples} max samples, error is still {max_samples_error}')
 
             else:
                 upper_error = self._evaluate_n(
@@ -245,17 +245,18 @@ class FixedTrainSize(Task):
 
     @staticmethod
     def plot(data: pd.DataFrame):
-        g = sns.lmplot(
-            data=data,
-            x="latent_dim", y="loss", hue="id",
-            height=5,
-            ci=50,
-            robust=True,
-            facet_kws=dict(sharey=False),
-            scatter=False,
-            fit_reg=True
-        )
-        g.set_axis_labels(x_var="Latent Dimension", y_var="Loss")
-        plt.yscale('log')
-        plt.xscale('log')
-        plt.show()
+        plot_metric(data, "latent_dim", "loss", xlabel=r'$L$', log=False)
+        # g = sns.lmplot(
+        #     data=data,
+        #     x="latent_dim", y="loss", hue="id",
+        #     height=5,
+        #     ci=50,
+        #     robust=True,
+        #     facet_kws=dict(sharey=False),
+        #     scatter=False,
+        #     fit_reg=True
+        # )
+        # g.set_axis_labels(x_var="Latent Dimension", y_var="Loss")
+        # plt.yscale('log')
+        # plt.xscale('log')
+        # plt.show()
