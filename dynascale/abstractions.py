@@ -213,7 +213,7 @@ class Task:
                 if embed_dim < latent_dim:
                     return
                 system = self._set_system(system, latent_dim, embed_dim)
-                self._do_rep(rep_id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
+                self._do_rep(rep_id, id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
 
@@ -227,7 +227,7 @@ class Task:
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = latent_dim
                 system = self._set_system(system, latent_dim, embed_dim)
-                self._do_rep(rep_id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
+                self._do_rep(rep_id, id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
 
@@ -243,7 +243,7 @@ class Task:
                 if embed_dim < latent_dim:
                     return
                 system = self._set_system(system, latent_dim, embed_dim)
-                self._do_rep(rep_id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
+                self._do_rep(rep_id, id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
                              act_kwargs, in_dist, noisy)
             return pd.DataFrame(result)
 
@@ -287,11 +287,11 @@ class Task:
 
         for _ in range(self._control_horizons):
             control = model.act(x, **act_kwargs)
-            cost = system.calc_control_cost(control)
+            cost = system.calc_control_cost_wrapper(control)
             total_cost += cost
             assert np.all(cost <= max_control_cost), "Control cost exceeded!"
-            x = system.make_data(
-                init_conds=x[:, 0], control=control, timesteps=timesteps, noisy=noisy)
+            x = system.make_data_wrapper(
+                init_conds=x[:, -1], control=control, timesteps=timesteps, noisy=noisy)
             model.fit(x, **fit_kwargs)
 
         return total_cost
@@ -307,6 +307,7 @@ class Task:
 
     def _do_rep(self,
                 rep_id: int,
+                id: str | int,
                 result: dict,
                 system: AbstractSystem,
                 n: int,
@@ -321,7 +322,7 @@ class Task:
                 noisy=False,
                 ):
         max_control_cost = self._max_control_cost_per_dim * latent_dim
-        print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}")
+        print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}, {rep_id=}, {id=}")
 
         # Create model and data
         model = model_cls(embed_dim, timesteps,
