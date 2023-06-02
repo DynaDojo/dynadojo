@@ -18,7 +18,7 @@ def _assign_labels(data, labels):
         data[frameidx] = frame.assign(id=labels[frameidx])
 
 
-def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.mean, errorbar=("pi", 50)):
+def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.median, errorbar=("pi", 50)):
     if idlabels:
         _assign_labels(data, idlabels)
 
@@ -44,7 +44,7 @@ def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="
     plt.show()
 
 
-def plot_target_loss(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.mean, errorbar=("pi", 50), error_col="loss", target_loss=0.1):
+def plot_target_loss(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.median, errorbar=("pi", 50), error_col="loss", target_loss=0.1):
     if idlabels:
         _assign_labels(data, idlabels)
 
