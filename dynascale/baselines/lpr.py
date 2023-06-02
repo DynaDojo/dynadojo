@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 from ..abstractions import AbstractModel
 
@@ -42,8 +43,7 @@ class LowestPossibleRadius(AbstractModel):
 
                     # to the left
                     for neg_x in range(radius, 0, -1):
-                        neighborhood += str(sample[stepidx - 1]
-                                            [cellidx - neg_x])
+                        neighborhood += str(sample[stepidx - 1][cellidx - neg_x])
 
                     # directly above
                     neighborhood += str(sample[stepidx - 1][cellidx])
@@ -56,6 +56,7 @@ class LowestPossibleRadius(AbstractModel):
                     if (self.radiiTables[radius][neighborhood]) == None:
                         self.radiiTables[radius][neighborhood] = cell
                     else:
+                        
                         if self.radiiTables[radius][neighborhood] != cell:
                             return False
         return True
@@ -74,72 +75,62 @@ class LowestPossibleRadius(AbstractModel):
     def act(self, x, **kwargs):
         control = []
         lastState = x[:, -1, :]
-        control_mag = []  # constraint is for each sample
+        control_mag = {}  # constraint is for each sample
 
         # find a smart control for 1st next state of traj
         for sampleidx, sample in enumerate(lastState):
             tempControl = []
-            for _ in range(self._embed_dim / ((self.currRadius*2) + 1)):
+            for _ in range(math.floor(self._embed_dim / ((self.currRadius*2) + 1))):
                 cellidx = self.currRadius
                 neighborhood = ""
 
                 # left of cell
                 for neg_x in range(self.currRadius, 0, -1):
-                    neighborhood += str(sample[0][cellidx - neg_x])
+                    neighborhood += str(sample[cellidx - neg_x])
 
                 # the cell
-                neighborhood += str(sample[0][cellidx])
+                neighborhood += str(sample[cellidx])
 
                 # right of cell
                 for pos_x in range(1, self.currRadius+1):
                     pos = (cellidx + pos_x) % self.ROW_LENGTH
-                    neighborhood += str(sample[0][pos])
+                    neighborhood += str(sample[pos])
 
                 # if key is seen, replace with unseen
                 if (self.radiiTables[self.currRadius][neighborhood]) != None:
                     unseenKeys = [
                         key for key, value in self.radiiTables[self.currRadius].items() if value is None]
-                    desiredKey = np.random.choice(unseenKeys)
+                    if unseenKeys:
+                        desiredKey = np.random.choice(unseenKeys)
 
-                    for idx, element in enumerate(neighborhood):
-                        if control_mag[sampleidx] > self._max_control_cost:
-                            tempControl.append(0)
-                        else:
-                            if element == desiredKey[idx]:
+                        for idx, element in enumerate(neighborhood):
+                            if sampleidx not in control_mag:
+                                control_mag[sampleidx] = 0
+                            if control_mag[sampleidx] > self._max_control_cost:
                                 tempControl.append(0)
-                            elif element > desiredKey[idx]:
-                                tempControl.append(-1)
-                                control_mag[sampleidx] += 1
-                            elif element < desiredKey[idx]:
-                                tempControl.append(1)
-                                control_mag[sampleidx] += 1
+                            else:
+                                if element == desiredKey[idx]:
+                                    tempControl.append(0)
+                                elif element > desiredKey[idx]:
+                                    tempControl.append(-1)
+                                    control_mag[sampleidx] += 1
+                                elif element < desiredKey[idx]:
+                                    tempControl.append(1)
+                                    control_mag[sampleidx] += 1
                 cellidx += (self.currRadius*2)+1
 
+            # finish the row of control if not done
             while (len(tempControl) < self._embed_dim):
                 tempControl.append(0)
 
-            control.append(tempControl)
+            control.append([tempControl])
 
-        # for all other states of traj, choose random control
-        for sampleidx in range(len(x[0])):
-            for timestep in range(1, self._timesteps):
-                # alternate with no control to see effect of even-numbered controls
-                if timestep % 2 == 1:
-                    control.append(np.zeros(self._embed_dim))
-
-                else:
-                    tempControl = []
-                    for _ in range(self._embed_dim):
-                        if control_mag[sampleidx] > self._max_control_cost:
-                            tempControl += 0
-                        else:
-                            element = np.random.choice([-1, 0, 1])
-                            tempControl.append(element)
-                            if element:
-                                control_mag[sampleidx] += 1
-                    control.append(tempControl)
-
-        return control
+        # for all other states of traj, choose no control
+        for sampleidx in range(len(x)):
+            for _ in range(1, self._timesteps):
+                control[sampleidx].append(np.zeros(self._embed_dim))
+                
+        return np.array(control)
 
     def _evolve(self, x):
         evolved = []
