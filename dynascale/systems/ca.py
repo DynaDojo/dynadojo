@@ -1,4 +1,5 @@
 
+import math
 import cellpylib as cpl
 import numpy as np
 from joblib import Parallel, delayed
@@ -10,7 +11,7 @@ RNG = np.random.default_rng()
 
 
 class CASystem(AbstractSystem):
-    def __init__(self, latent_dim, embed_dim, in_dist_p=0.25, out_dist_p=0.75, mutation_p=0.01):
+    def __init__(self, latent_dim, embed_dim, in_dist_p=0.25, out_dist_p=0.75, mutation_p=0.00):
         super().__init__(latent_dim, embed_dim)
         lambda_val = RNG.uniform()
         self.rule_table, _, _ = cpl.random_rule_table(lambda_val=lambda_val, k=2, r=self.latent_dim,
