@@ -1,4 +1,4 @@
-import sys
+import warnings
 import pandas as pd
 import numpy as np
 
@@ -15,7 +15,7 @@ class FixedError(Task):
     def __init__(self, L: list[int], t: int, max_control_cost_per_dim: int, control_horizons: int,
                  system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, target_loss: float,
                  system_kwargs: dict = None,
-                 max_samples=1000, E: int | list[int] = None):
+                 max_samples=10000, E: int | list[int] = None):
 
         if isinstance(E, list):
             assert (len(L) == len(E))
@@ -24,6 +24,7 @@ class FixedError(Task):
         elif isinstance(E, int):
             assert (E >= np.max(L))
 
+        # the dimensions have to be sorted, we need a guarantee that they are sorted
         self._target_loss = target_loss
         self.max_samples = max_samples
 
@@ -103,8 +104,8 @@ class FixedError(Task):
                 if max_samples_error < self._target_loss:
                     break
                 else:
-                    sys.exit(
-                        f'Fixed error not achieved: At {self.max_samples} max samples, error is still {max_samples_error}')
+                    warnings.warn(f'Rep #{self.rep_id} for l={system.latent_dim} and e={system.embed_dim} failed: Fixed error not achieved within max samples. At {self.max_samples} samples, error is still {max_samples_error}, which is above {self._target_loss}')
+                    return (lower, None) 
 
             else:
                 upper_error = self._evaluate_n(
@@ -166,6 +167,7 @@ class FixedError(Task):
             self.rep_id = rep_id
 
             self.result = {k: [] for k in ["rep", "n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
+            print(f"{latent_dim=}, {embed_dim=}, timesteps={self._T}, {rep_id=}, {id=}")
 
             system = None
             system = self._set_system(system, latent_dim, embed_dim)
@@ -174,7 +176,8 @@ class FixedError(Task):
             test = self._gen_testset(system, in_dist)
 
             lower, upper = self._gen_bounds(system, model, test, latent_dim, max_control_cost, noisy, fit_kwargs, act_kwargs)
-            self._search(system, model, test, lower, upper, max_control_cost, noisy, fit_kwargs, act_kwargs)
+            if upper is not None:
+                self._search(system, model, test, lower, upper, max_control_cost, noisy, fit_kwargs, act_kwargs)
 
             return pd.DataFrame(self.result)
 
