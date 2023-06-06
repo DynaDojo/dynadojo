@@ -206,7 +206,7 @@ class Task:
             Handles case when E is an array
             """
             result = {k: [] for k in ["rep", "n", "latent_dim",
-                                      "embed_dim", "timesteps", "loss", "total_cost"]}
+                                      "embed_dim", "timesteps", "control_horizons", "loss", "total_cost"]}
             system = None
             for n, d, timesteps in itertools.product(self._N, zip(self._L, self._E), self._T):
                 latent_dim, embed_dim = d
@@ -222,7 +222,7 @@ class Task:
             Handles case when E is a None
             """
             result = {k: [] for k in ["rep", "n", "latent_dim",
-                                      "embed_dim", "timesteps", "loss", "total_cost"]}
+                                      "embed_dim", "timesteps", "control_horizons", "loss", "total_cost"]}
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = latent_dim
@@ -236,7 +236,7 @@ class Task:
             Handles case when E is a constant
             """
             result = {k: [] for k in ["rep", "n", "latent_dim",
-                                      "embed_dim", "timesteps", "loss", "total_cost"]}
+                                      "embed_dim", "timesteps", "control_horizons", "loss", "total_cost"]}
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = self._E
@@ -302,6 +302,7 @@ class Task:
         result['latent_dim'].append(latent_dim)
         result['embed_dim'].append(embed_dim)
         result['timesteps'].append(timesteps)
+        result['control_horizons'].append(self._control_horizons)
         result['loss'].append(loss)
         result['total_cost'].append(total_cost)
 
@@ -322,7 +323,7 @@ class Task:
                 noisy=False,
                 ):
         max_control_cost = self._max_control_cost_per_dim * latent_dim
-        print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}, {rep_id=}, {id=}")
+        print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}, control_horizons={self._control_horizons}, { rep_id=}, {id=}")
 
         # Create model and data
         model = model_cls(embed_dim, timesteps,
@@ -337,5 +338,4 @@ class Task:
         pred = model.predict_wrapper(test[:, 0], self._test_timesteps)
         loss = system.calc_loss_wrapper(pred, test)
 
-        self._append_result(result, rep_id, n, latent_dim,
-                            embed_dim, timesteps, loss, total_cost)
+        self._append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, loss, total_cost)
