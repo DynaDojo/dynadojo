@@ -9,8 +9,7 @@ class LowestPossibleRadius(AbstractModel):
         super().__init__(embed_dim, timesteps, max_control_cost)
         self.currRadius = 1
         self.radiiTables = {}
-        self.radiiTables[self.currRadius] = self.generateRadiusTable(
-            self.currRadius)
+        self.radiiTables[self.currRadius] = self.generateRadiusTable(self.currRadius)
         self.ROW_LENGTH = embed_dim
         self._max_control_cost = max_control_cost
 
@@ -25,12 +24,7 @@ class LowestPossibleRadius(AbstractModel):
 
     def generateRadiusTable(self, radius):
         allCombos = self.generateCombos((radius*2)+1)
-        tableDict = {}
-
-        for combo in allCombos:
-            tableDict[combo] = None
-
-        return tableDict
+        return dict.fromkeys(allCombos)
 
     def isValidRadius(self, radius, samples) -> bool:
         for sample in samples:
@@ -56,17 +50,11 @@ class LowestPossibleRadius(AbstractModel):
                     if (self.radiiTables[radius][neighborhood]) == None:
                         self.radiiTables[radius][neighborhood] = cell
                     else:
-                        
                         if self.radiiTables[radius][neighborhood] != cell:
                             return False
         return True
 
-    def fit(self, samples, silent=False):
-        self.currRadius = 1
-        self.radiiTables = {}
-        self.radiiTables[self.currRadius] = self.generateRadiusTable(
-            self.currRadius)
-
+    def fit(self, samples):
         while (not self.isValidRadius(self.currRadius, samples)):
             newRadius = self.currRadius+1
             self.radiiTables[newRadius] = self.generateRadiusTable(newRadius)
@@ -106,7 +94,7 @@ class LowestPossibleRadius(AbstractModel):
                         for idx, element in enumerate(neighborhood):
                             if sampleidx not in control_mag:
                                 control_mag[sampleidx] = 0
-                            if control_mag[sampleidx] > self._max_control_cost:
+                            if control_mag[sampleidx] >= self._max_control_cost:
                                 tempControl.append(0)
                             else:
                                 if element == desiredKey[idx]:
@@ -129,7 +117,7 @@ class LowestPossibleRadius(AbstractModel):
         for sampleidx in range(len(x)):
             for _ in range(1, self._timesteps):
                 control[sampleidx].append(np.zeros(self._embed_dim))
-                
+
         return np.array(control)
 
     def _evolve(self, x):
