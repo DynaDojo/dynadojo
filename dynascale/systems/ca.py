@@ -38,6 +38,7 @@ class CASystem(AbstractSystem):
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
 
+       # print(f'self.rule_table: {self.rule_table}')
         def get_trajectory(x0, u):
             cellular_automata = np.clip([x0 + u[0]], 0, 1).astype(np.int32)
             for t in range(1, timesteps):
@@ -57,7 +58,7 @@ class CASystem(AbstractSystem):
 
     def calc_loss(self, x, y):
         # averaged across all samples and all predicted timesteps
-        return (np.count_nonzero(x == y) / self.embed_dim) / len(y) / len(y[1])
+        return 1 - (np.count_nonzero(x == y) / self.embed_dim) / len(y) / len(y[1])
 
     def calc_control_cost(self, control: np.ndarray) -> float:
         return np.sum(control, axis=(1, 2))
