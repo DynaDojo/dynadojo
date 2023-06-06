@@ -35,8 +35,14 @@ class FixedError(Task):
 
         super().__init__([1], L, E, t, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
-    def _evaluate_n(self, system, model, test, n, max_control_cost, noisy, fit_kwargs, act_kwargs):
+    def _evaluate_n(self, system, model_cls, test, n, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs):
         x = None
+
+        df = pd.DataFrame(self.result)
+        df = df.loc[(df['rep'] == self.rep_id) & (df['n'] == n) & df['latent_dim'] == system.latent_dim]
+        if len(df) == 1:
+            return df['loss'][0]
+
         if self.X is None:
             self.X = self._gen_trainset(system, n, self._T, noisy)
             x = self.X
@@ -51,6 +57,7 @@ class FixedError(Task):
                 self.X = np.concatenate((self.X, to_add), axis=0)
                 x = self.X
 
+        model = model_cls(system.embed_dim, self._T, max_control_cost, **model_kwargs)
         total_cost = self._fit_model(system, model, x, self._T,
                                      max_control_cost, fit_kwargs, act_kwargs, noisy)
 
@@ -63,8 +70,7 @@ class FixedError(Task):
 
         return loss
 
-    def _gen_bounds(self, system, model, test, l, max_control_cost, noisy, fit_kwargs, act_kwargs):
-
+    def _gen_bounds(self, system, model_cls, test, l, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs):
         lower = 1
         upper = 3
         predicted = 2
@@ -75,8 +81,8 @@ class FixedError(Task):
 
             # adaptively predict based on median of samples needed in lower dims
             if len(self.samples_needed.keys()) > 1:
-                p = np.polyfit(list(self.samples_needed.keys()), list(self.samples_needed.values()),
-                               deg=len(list(self.samples_needed.keys())) - 1)
+                # p = np.polyfit(list(self.samples_needed.keys()), list(self.samples_needed.values()), deg=len(list(self.samples_needed.keys())) - 1)
+                p = self.samples_needed[prev_largest_dim] * 2
                 predict_func = np.poly1d(p)
                 predicted = int(round(predict_func(l)))
 
@@ -89,18 +95,18 @@ class FixedError(Task):
             upper = (2 * predicted) - lower
 
         # if lower meets target loss, decrease to be lower
-        lower_error = self._evaluate_n(system, model, test, lower, max_control_cost, noisy, fit_kwargs, act_kwargs)
+        lower_error = self._evaluate_n(system, model_cls, test, lower, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
         while lower_error < self._target_loss:
             if lower == 1:
                 break
             lower = lower // 2
-            lower_error = self._evaluate_n(system, model, test, lower, max_control_cost, noisy, fit_kwargs, act_kwargs)
+            lower_error = self._evaluate_n(system, model_cls, test, lower, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
 
         # increase upper until it satisfies target loss or exceeds max_samples
         while upper <= self.max_samples:
             if upper == self.max_samples:
                 max_samples_error = self._evaluate_n(
-                    system, model, test, self.max_samples, max_control_cost, noisy, fit_kwargs, act_kwargs)
+                    system, model_cls, test, self.max_samples, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
                 if max_samples_error < self._target_loss:
                     break
                 else:
@@ -109,7 +115,7 @@ class FixedError(Task):
 
             else:
                 upper_error = self._evaluate_n(
-                    system, model, test, upper, max_control_cost, noisy, fit_kwargs, act_kwargs)
+                    system, model_cls, test, upper, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
                 
                 if upper_error < self._target_loss:
                     break
@@ -124,14 +130,14 @@ class FixedError(Task):
 
         return (lower, upper)
 
-    def _search(self, system, model, test, lower, upper, max_control_cost, noisy, fit_kwargs, act_kwargs):
+    def _search(self, system, model_cls, test, lower, upper, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs):
         lowest_needed = None
        
         while (lower != upper):
             mid = int((lower + upper) / 2)
 
             mid_error = self._evaluate_n(
-                system, model, test, mid, max_control_cost, noisy, fit_kwargs, act_kwargs)
+                system, model_cls, test, mid, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
 
 
             if mid_error > self._target_loss:
@@ -166,19 +172,20 @@ class FixedError(Task):
 
             self.rep_id = rep_id
 
-            self.result = {k: [] for k in ["rep", "n", "latent_dim", "embed_dim", "timesteps", "loss", "total_cost"]}
-            print(f"{latent_dim=}, {embed_dim=}, timesteps={self._T}, {rep_id=}, {id=}")
+            self.result = {k: [] for k in ["rep", "n", "latent_dim", "embed_dim", "timesteps", "control_horizons", "loss", "total_cost"]}
+            print(f"{latent_dim=}, {embed_dim=}, timesteps={self._T}, control_horizons={self._control_horizons}, {rep_id=}, {id=}")
 
             system = None
             system = self._set_system(system, latent_dim, embed_dim)
             max_control_cost = self._max_control_cost_per_dim * latent_dim
-            model = model_cls(embed_dim, self._T, max_control_cost, **model_kwargs)
+            
             test = self._gen_testset(system, in_dist)
 
-            lower, upper = self._gen_bounds(system, model, test, latent_dim, max_control_cost, noisy, fit_kwargs, act_kwargs)
+            lower, upper = self._gen_bounds(system, model_cls, test, latent_dim, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
             if upper is not None:
-                self._search(system, model, test, lower, upper, max_control_cost, noisy, fit_kwargs, act_kwargs)
+                self._search(system, model_cls, test, lower, upper, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
 
+            self.X = None 
             return pd.DataFrame(self.result)
 
         for idx, latent_dim in enumerate(self._L):
@@ -190,12 +197,7 @@ class FixedError(Task):
             else:
                 embed_dim = self._E[idx]
 
-          
-
-            temp_df = Parallel(n_jobs=1)(delayed(_do_rep)(rep_id, latent_dim, embed_dim)
-                                                      for rep_id in range(self._reps))
-
-  
+            temp_df = Parallel(n_jobs=1)(delayed(_do_rep)(rep_id, latent_dim, embed_dim) for rep_id in range(self._reps))
             temp_df = pd.concat(temp_df, ignore_index=True)
 
             self.samples_needed[latent_dim] = int(round(np.median(temp_df["n"])))
@@ -204,6 +206,10 @@ class FixedError(Task):
 
         data = pd.concat(data,  ignore_index=True)
         data["id"] = id or next(self._id)
+
+        self.samples_needed = None
+        self.X = None
+        self.result = None
 
         return data
 
