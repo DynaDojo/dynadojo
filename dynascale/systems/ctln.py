@@ -54,7 +54,6 @@ class CTLNSystem(AbstractSystem):
         data.append(sol[0])
         # result = sol[0].unsqueeze(0).detach().numpy()
         result = np.transpose(sol[0].detach().numpy(), axes=(1, 0, 2))
-        print(result.shape)
         return result
 
     def calc_loss(self, x, y) -> float:
