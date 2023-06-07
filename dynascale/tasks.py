@@ -41,7 +41,7 @@ class FixedError(Task):
         df = pd.DataFrame(self.result)
         df = df.loc[(df['rep'] == self.rep_id) & (df['n'] == n) & df['latent_dim'] == system.latent_dim]
         if len(df) == 1:
-            return df['loss'][0]
+            return df.iloc[0]['loss']
 
         if self.X is None:
             self.X = self._gen_trainset(system, n, self._T, noisy)
@@ -96,7 +96,7 @@ class FixedError(Task):
 
         # if lower meets target loss, decrease to be lower
         lower_error = self._evaluate_n(system, model_cls, test, lower, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
-        while lower_error < self._target_loss:
+        while lower_error <= self._target_loss:
             if lower == 1:
                 break
             lower = lower // 2
@@ -107,7 +107,7 @@ class FixedError(Task):
             if upper == self.max_samples:
                 max_samples_error = self._evaluate_n(
                     system, model_cls, test, self.max_samples, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
-                if max_samples_error < self._target_loss:
+                if max_samples_error <= self._target_loss:
                     break
                 else:
                     warnings.warn(f'Rep #{self.rep_id} for l={system.latent_dim} and e={system.embed_dim} failed: Fixed error not achieved within max samples. At {self.max_samples} samples, error is still {max_samples_error}, which is above {self._target_loss}')
@@ -117,7 +117,7 @@ class FixedError(Task):
                 upper_error = self._evaluate_n(
                     system, model_cls, test, upper, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
                 
-                if upper_error < self._target_loss:
+                if upper_error <= self._target_loss:
                     break
                 else:
                     if upper == lower:
@@ -203,13 +203,13 @@ class FixedError(Task):
             self.samples_needed[latent_dim] = int(round(np.median(temp_df["n"])))
 
             data.append(temp_df)
-
-        data = pd.concat(data,  ignore_index=True)
-        data["id"] = id or next(self._id)
-
+       
         self.samples_needed = None
         self.X = None
         self.result = None
+
+        data = pd.concat(data,  ignore_index=True)
+        data["id"] = id or next(self._id)
 
         return data
 
