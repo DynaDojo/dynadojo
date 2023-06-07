@@ -169,16 +169,10 @@ class Task:
         assert control_horizons >= 0
 
         self._id = itertools.count()
-        self._N = np.sort(N)
-        self._L = np.sort(L)
-        if isinstance(E, list):
-            self._E = np.sort(E)
-        else:
-            self._E = E
-        if isinstance(T, list):
-            self._T = np.sort(T)
-        else:
-            self._T = T
+        self._N = N
+        self._L = L
+        self._E = E
+        self._T = T
         self._max_control_cost_per_dim = max_control_cost_per_dim
         self._system_cls = system_cls
         self._system_kwargs = system_kwargs or {}

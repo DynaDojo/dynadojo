@@ -1,4 +1,4 @@
-from dynascale.abstractions import System
+from abstractions import AbstractSystem
 import torch
 import torch.nn as nn
 from torchdiffeq import odeint
@@ -9,26 +9,24 @@ import random
 RNG = np.random.default_rng()
 
 
-class CTLNSystem(System):
-    def __init__(self, latent_dim, embed_dim):
+class CTLNSystem(AbstractSystem):
+    def __init__(self, latent_dim, embed_dim, p):
         super().__init__(latent_dim, embed_dim)
         self._latent_dim = latent_dim
         self._embed_dim = embed_dim
         self.relu = nn.ReLU()
-
-
-    def make_init_conds(self, p):
-        self._nodes = self._latent_dim #latent dim and nodes the same?
         self._p = p
+        self._nodes = latent_dim
 
+    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         self._delta = random.uniform(0, 1) #what should the upper bound on the randomly generated constants be?
         self._epsilon = random.uniform(0, self._delta/(self._delta+1))
-        self._graph = self._make_graph(self._nodes, self._p)
-        self._x0 = torch.tensor([random.uniform(0, 1) for _ in range(self._nodes)])
-        self._T = torch.tensor([random.uniform(0, 1) for _ in range(self._nodes)])
-        self._input = torch.tensor(random.uniform(0, 1))
-        self._state = (self._x0, self._T, self._graph, self._input)
-        
+        graph = self._make_graph(self._nodes, self._p)
+        x0 = torch.Tensor(RNG.uniform(0, 1, size=(n, self.embed_dim)))
+        time = torch.tensor([random.uniform(0, 1) for _ in range(self._nodes)])
+        b = torch.Tensor(RNG.uniform(0, 1, size=(self.embed_dim, n)))
+        self._state = (x0, time, graph, b)
+        return x0
 
     def _make_graph(self, nodes, p):
         g = nx.erdos_renyi_graph(nodes, p)
@@ -45,18 +43,19 @@ class CTLNSystem(System):
 
         def dynamics(t, state):
             x, T, W, b = state
-            y = torch.matmul(W, x) + b
-
-            dx = (-x + self.relu(y))/T
+            y = W @ x.T + b
+            dx = (-x.T + self.relu(y)) / T[:, None]
             dT = torch.zeros_like(T)
             dW = torch.zeros_like(W)
             db = torch.zeros_like(b)
-
             return (dx, dT, dW, db)
 
         sol = odeint(dynamics, self._state, time, method='rk4')
         data.append(sol[0])
-        return sol[0].unsqueeze(0).detach().numpy()
+        # result = sol[0].unsqueeze(0).detach().numpy()
+        result = np.transpose(sol[0].detach().numpy(), axes=(1, 0, 2))
+        print(result.shape)
+        return result
 
     def calc_loss(self, x, y) -> float:
         error = x - y

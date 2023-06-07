@@ -2,6 +2,7 @@ import numpy as np
 import scipy as sp
 from scipy.integrate import solve_ivp
 from scipy.stats import ortho_group
+from sklearn.metrics import mean_squared_error
 
 from dynascale.abstractions import AbstractSystem
 
@@ -113,6 +114,7 @@ class LDSSystem(AbstractSystem):
         return data
 
     def calc_loss(self, x, y) -> float:
+        # TODO: add more details
         error = x - y
         return np.mean(error ** 2) / self.embed_dim
 
