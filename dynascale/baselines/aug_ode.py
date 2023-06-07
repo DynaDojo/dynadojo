@@ -3,9 +3,9 @@ import torch
 import torch.nn as nn
 from torchdiffeq import odeint
 
-from ..abstractions import Model
+from ..abstractions import AbstractModel
 
-class AugODE(Model):
+class AugODE(AbstractModel):
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, lr=3e-2, aug_dim = 2, **kwargs):
         super().__init__()
 
