@@ -1,4 +1,4 @@
-from abstractions import AbstractSystem
+from dynascale.abstractions import AbstractSystem
 import torch
 import torch.nn as nn
 from torchdiffeq import odeint

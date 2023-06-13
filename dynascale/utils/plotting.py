@@ -51,7 +51,7 @@ def plot_target_loss(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, 
     if not isinstance(data, pd.DataFrame):
         data = pd.concat(data)
 
-    filtered = data[data[error_col] < target_loss]
+    filtered = data[data[error_col] <= target_loss]
     # for each rep in the x dim, get the lowest y that was successful
     successes = filtered.loc[filtered.groupby(["id", "rep", xcol])[ycol].idxmin()].reset_index(drop=True)
 
