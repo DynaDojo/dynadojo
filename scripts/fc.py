@@ -9,7 +9,7 @@ from dynascale.tasks import FixedComplexity, FixedError, FixedTrainSize
 
 def main():
     add_more = True
-    l = 50
+    l = 10
     task = FixedComplexity(N=[10, 50, 100, 400, 600, 1000],
                            l=l,
                            e=l,

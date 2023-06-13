@@ -7,32 +7,31 @@ from dynascale.tasks import FixedComplexity, FixedError, FixedTrainSize
 
 
 def main():
-    l = 500
-    add_more = True
-    task = FixedComplexity(N=[1000 ],
+    l = 5
+    add_more = False
+    overwrite = False
+    task = FixedComplexity(N=[200],
                            l=l,
-                           e=l,
+                           e=None,
                            t=50,
                            max_control_cost_per_dim=0,
                            control_horizons=0,
                            test_examples=100,
-                           reps=10,
+                           reps=100,
                            test_timesteps=50,
                            system_cls=CTLNSystem,
                            system_kwargs={"p": 0.5}
                            )
 
-    # for in_dist in [True, False]:
-    in_dist = True
-    file = f"../cache/TLN/fc_{l=}_{in_dist=}.csv"
-    if os.path.exists(file):
+    file = f"../cache/TLN/fc_{l=}.csv"
+    if os.path.exists(file) and not overwrite:
         data = pd.read_csv(file)
         if add_more:
-            new_data = task.evaluate(model_cls=LinearRegression, id=f"LR ({l}, {in_dist})", noisy=True, in_dist=in_dist)
+            new_data = task.evaluate(model_cls=LinearRegression, id=f"LR (TLN)", noisy=False, in_dist=True)
             data = pd.concat((data, new_data))
             data.to_csv(file)
     else:
-        data = task.evaluate(model_cls=LinearRegression, id=f"LR ({l}, {in_dist})", noisy=True, in_dist=in_dist)
+        data = task.evaluate(model_cls=LinearRegression, id=f"LR (TLN)", noisy=False, in_dist=True)
         data.to_csv(file)
     task.plot(data)
 
