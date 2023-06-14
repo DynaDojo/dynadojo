@@ -38,7 +38,7 @@ class CNN(AbstractModel):
 
                 next_state = self.lin(self.c1(state_t))  # doesnt even call forward
 
-                loss += lossMSE((next_state[:, 0,:] * state[:, t, :]), state[:, t+1, :].unsqueeze(1)) #loss_BCEL(next_state, state[:, t + 1, :].unsqueeze(1))
+                loss += lossMSE((next_state * (state[:, t, :].unsqueeze(1))), state[:, t+1, :].unsqueeze(1)) #loss_BCEL(next_state, state[:, t + 1, :].unsqueeze(1))
 
             # print(loss.item())
             loss.backward()
