@@ -6,7 +6,7 @@ from ..abstractions import AbstractModel
 
 
 class CNN(AbstractModel):
-    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, lr=6e-2, k=5, **kwargs):
+    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, lr=6e-2, k=3, **kwargs):
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
 
         self.lr = lr
