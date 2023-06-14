@@ -25,6 +25,7 @@ class CNN(AbstractModel):
 
         opt = torch.optim.Adam(self.c1.parameters(), self.lr)
         loss_BCEL = nn.BCELoss()
+        lossMSE = nn.MSELoss()
 
         for i in range(epochs):
             opt.zero_grad()
@@ -37,7 +38,7 @@ class CNN(AbstractModel):
 
                 next_state = self.lin(self.c1(state_t))  # doesnt even call forward
 
-                loss += loss_BCEL(next_state, state[:, t + 1, :].unsqueeze(1))
+                loss += lossMSE((next_state[:, 0,:] * state[:, t, :]), state[:, t+1, :].unsqueeze(1)) #loss_BCEL(next_state, state[:, t + 1, :].unsqueeze(1))
 
             # print(loss.item())
             loss.backward()
