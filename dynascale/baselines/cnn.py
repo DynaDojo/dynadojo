@@ -14,7 +14,9 @@ class CNN(AbstractModel):
         self.c1 = nn.Sequential(
             nn.Conv1d(1, 32, self.k, padding='same'),
             nn.MaxPool1d(self.k),
-            nn.Conv1d(32, 1, self.k, padding='same')
+            nn.BatchNorm1d(32),
+            nn.Conv1d(32, 1, self.k, padding='same'),
+            nn.BatchNorm1d(1)
         )
         n_channels = self.c1(torch.empty(1, 1, self._embed_dim)).size(-1)
         self.lin = nn.Sequential(nn.Linear(n_channels, embed_dim), nn.Sigmoid())
