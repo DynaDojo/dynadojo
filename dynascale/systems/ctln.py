@@ -56,7 +56,7 @@ class CTLNSystem(AbstractSystem):
         result = np.transpose(sol[0].detach().numpy(), axes=(1, 0, 2))
         return result
 
-    def calc_loss(self, x, y) -> float:
+    def calc_error(self, x, y) -> float:
         error = x - y
         return np.mean(error ** 2) / self.embed_dim
 

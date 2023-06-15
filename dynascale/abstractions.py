@@ -134,12 +134,12 @@ class AbstractSystem(ABC):
         return data
 
     @abstractmethod
-    def calc_loss(self, x, y) -> float:
+    def calc_error(self, x, y) -> float:
         raise NotImplementedError
 
-    def calc_loss_wrapper(self, x, y) -> float:
+    def calc_error_wrapper(self, x, y) -> float:
         assert x.shape == y.shape
-        return self.calc_loss(x, y)
+        return self.calc_error(x, y)
 
     @abstractmethod
     def calc_control_cost(self, control: np.ndarray) -> np.ndarray:
@@ -330,6 +330,6 @@ class Task:
         test = self._gen_testset(system, in_dist)
 
         pred = model.predict_wrapper(test[:, 0], self._test_timesteps)
-        loss = system.calc_loss_wrapper(pred, test)
+        loss = system.calc_error_wrapper(pred, test)
 
         self._append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, loss, total_cost)

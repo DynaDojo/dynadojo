@@ -64,7 +64,7 @@ class FixedError(Task):
 
         pred = model.predict_wrapper(test[:, 0], self._test_timesteps)
 
-        loss = system.calc_loss_wrapper(pred, test)
+        loss = system.calc_error_wrapper(pred, test)
 
         self._append_result(self.result, self.rep_id, n, system.latent_dim, system.embed_dim, self._T, loss, total_cost)
 

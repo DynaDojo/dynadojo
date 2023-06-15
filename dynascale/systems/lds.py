@@ -113,7 +113,7 @@ class LDSSystem(AbstractSystem):
         data = np.transpose(np.array(data), axes=(0, 2, 1)) @ self.C
         return data
 
-    def calc_loss(self, x, y) -> float:
+    def calc_error(self, x, y) -> float:
         # TODO: add more details
         error = x - y
         return np.mean(error ** 2) / self.embed_dim

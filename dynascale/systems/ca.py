@@ -56,7 +56,7 @@ class CASystem(AbstractSystem):
         data = np.array(data)
         return data
 
-    def calc_loss(self, x, y):
+    def calc_error(self, x, y):
         # averaged across all samples and all predicted timesteps
         return 1 - (np.count_nonzero(x == y) / self.embed_dim) / len(y) / len(y[1])
 
