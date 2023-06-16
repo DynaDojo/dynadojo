@@ -3,7 +3,7 @@
 
 ## Example
 
-```
+```python
 import dynadojo as dd
 import numpy as np
 
