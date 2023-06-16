@@ -22,33 +22,34 @@ class AbstractModel(ABC):
         self._max_control_cost = max_control_cost
 
     @abstractmethod
-    def fit(self, x: np.ndarray, **kwargs):
+    def fit(self, x: np.ndarray, **kwargs) -> None:
         """
         Trains the model. Your models must implement this method.
 
-        :param x: (n, timesteps, embed_dim) a tensor of trajectories
+        :param x: (n, timesteps, embed_dim) trajectories tensor
         :param kwargs:
-        :return:
+        :return: None
         """
         raise NotImplementedError
 
     def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
         """
-        Driver for act(). Your models should overload this method if they use non-trivial control.
+        Determines the control for each action horizon. Your models should override this method if they use
+        non-trivial control.
 
-        :param x: (n, timesteps, embed_dim) a tensor of trajectories
+        :param x: (n, timesteps, embed_dim) trajectories tensor
         :param kwargs:
-        :return: (n, timesteps, embed_dim) a tensor of controls
+        :return: (n, timesteps, embed_dim) controls tensor
         """
         return np.zeros_like(x)
 
     def act_wrapper(self, x: np.ndarray, **kwargs) -> np.ndarray:
         """
-        Wrapper for _act(). Determines the control for each action horizon. Your model should NOT overload this.
+        Wrapper for act() called in evaluate(). Verifies control tensor is the right shape. You should NOT override this.
 
-        :param x: (n, timesteps, embed_dim) a tensor of trajectories
+        :param x: (n, timesteps, embed_dim) trajectories tensor
         :param kwargs:
-        :return: (n, timesteps, embed_dim) a tensor of controls
+        :return: (n, timesteps, embed_dim) controls tensor
         """
         control = self.act(x, **kwargs)
         assert control.shape == x.shape
@@ -57,25 +58,32 @@ class AbstractModel(ABC):
     @abstractmethod
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         """
-        Driver for predict(). Your models must implement this method.
+        Predict how initial conditions matrix evolves over a given number of timesteps. Your models must implement this method.
 
-        The timesteps argument can differ from the ._timesteps attribute. Allows models to predict trajectories
-        with more/less timesteps than their training data.
+        NOTE: The timesteps argument can differ from the ._timesteps attribute. This allows model to train on data
+        that is shorter/longer than trajectories in the test set.
 
-        :param x0: (n, embed_dim) a matrix of initial conditions
+        NOTE: The first coordinate of each trajectory should match the initial condition.
+
+        :param x0: (n, embed_dim) initial conditions matrix
         :param timesteps: timesteps per predicted trajectory
         :param kwargs:
-        :return:
+        :return: (n, timesteps, embed_dim) trajectories tensor
         """
         raise NotImplementedError
 
     def predict_wrapper(self, x0: np.ndarray, timesteps, **kwargs) -> np.ndarray:
         """
+        Wrapper for predict() called in evaluate(). Verifies predicted trajectories tensor has the right shape.
+        You should NOT override this.
 
-        :param x0: (n, embed_dim) a matrix of initial conditions
+        NOTE: Does not enforce that the first coordinate of each trajectory is the same as the initial condition. This
+        allows DynaDojo to handle models that completely mispredict trajectory evolution.
+
+        :param x0: (n, embed_dim) initial conditions matrix
         :param timesteps: timesteps per predicted trajectory
         :param kwargs:
-        :return:
+        :return: (n, timesteps, embed_dim) trajectories tensor
         """
         pred = self.predict(x0, timesteps, **kwargs)
         n = x0.shape[0]
@@ -87,6 +95,10 @@ class AbstractSystem(ABC):
     def __init__(self, latent_dim, embed_dim):
         """
         Base class for all systems. Your systems should subclass this class.
+
+        NOTE: The reason we use properties and setter methods for ._latent_dim and ._embed_dim is to allow
+        systems to maintain information through parameter shifts. See LDSSystem in './systems/lds.py' for a principled 
+        usage example of the setter methods.
         """
         self._latent_dim = latent_dim
         self._embed_dim = embed_dim
@@ -109,19 +121,57 @@ class AbstractSystem(ABC):
 
     @abstractmethod
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+        """
+        Abstract method to generate initial conditions. Your system should override this method.
+
+        NOTE: Systems developers determine what counts as in vs out-of-distribution. DynaDojo doesn't provide
+        any verification that this distinction makes sense or even exists.
+
+        :param n: number of initial conditions
+        :param in_dist: Boolean. If True, generate in-distribution initial conditions. Defaults to True. If False,
+        generate out-of-distribution initial conditions.
+        :return: (n, embed_dim) initial conditions matrix
+        """
         raise NotImplementedError
 
     def make_init_conds_wrapper(self, n: int, in_dist=True):
+        """
+        Wrapper for make_init_conds() called in evaluate(). Verifies initial condition matrix is the right shape. 
+        You should NOT override this.
+
+        :param n: number of initial conditions
+        :param in_dist: Boolean. If True, generate in-distribution initial conditions. Defaults to True. If False,
+        generate out-of-distribution initial conditions.
+        :return: (n, embed_dim) initial conditions matrix
+        """
         init_conds = self.make_init_conds(n, in_dist)
         assert init_conds.shape == (n, self.embed_dim)
         return init_conds
 
     @abstractmethod
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+        """
+        Abstract method that makes trajectories from initial conditions. Your system must override this method.
+        
+        :param init_conds: (n, embed_dim) initial conditions matrix
+        :param control: (n, timesteps, embed_dim) controls tensor
+        :param timesteps: timesteps per training trajectory (per action horizon)
+        :param noisy: Boolean. If True, add noise to trajectories. Defaults to False. If False, no noise is added.
+        :return: (n, timesteps, embed_dim) trajectories tensor
+        """
         raise NotImplementedError
 
     def make_data_wrapper(self, init_conds: np.ndarray, control: np.ndarray = None, timesteps: int = 1,
                           noisy=False) -> np.ndarray:
+        """
+        TODO:
+
+        :param init_conds:
+        :param control:
+        :param timesteps:
+        :param noisy:
+        :return:
+        """
         assert timesteps > 0
         assert init_conds.ndim == 2 and init_conds.shape[1] == self.embed_dim
         n = init_conds.shape[0]
@@ -135,17 +185,43 @@ class AbstractSystem(ABC):
 
     @abstractmethod
     def calc_error(self, x, y) -> float:
+        """
+        TODO:
+
+        :param x:
+        :param y:
+        :return:
+        """
         raise NotImplementedError
 
     def calc_error_wrapper(self, x, y) -> float:
+        """
+        TODO:
+
+        :param x:
+        :param y:
+        :return:
+        """
         assert x.shape == y.shape
         return self.calc_error(x, y)
 
     @abstractmethod
     def calc_control_cost(self, control: np.ndarray) -> np.ndarray:
+        """
+        TODO:
+
+        :param control:
+        :return:
+        """
         raise NotImplementedError
 
     def calc_control_cost_wrapper(self, control: np.ndarray) -> np.ndarray:
+        """
+        TODO:
+
+        :param control:
+        :return:
+        """
         assert control.shape[2] == self.embed_dim and control.ndim == 3
         cost = self.calc_control_cost(control)
         assert cost.shape == (len(control),)
@@ -166,6 +242,21 @@ class Task:
                  test_timesteps: int,
                  system_kwargs: dict = None,
                  ):
+        """
+        TODO:
+
+        :param N:
+        :param L:
+        :param E:
+        :param T:
+        :param max_control_cost_per_dim:
+        :param control_horizons:
+        :param system_cls:
+        :param reps:
+        :param test_examples:
+        :param test_timesteps:
+        :param system_kwargs:
+        """
         assert control_horizons >= 0
 
         self._id = itertools.count()
@@ -190,6 +281,18 @@ class Task:
                  noisy=False,
                  id=None,
                  ):
+        """
+        TODO:
+
+        :param model_cls:
+        :param model_kwargs:
+        :param fit_kwargs:
+        :param act_kwargs:
+        :param in_dist:
+        :param noisy:
+        :param id:
+        :return:
+        """
 
         model_kwargs = model_kwargs or {}
         fit_kwargs = fit_kwargs or {}
@@ -280,7 +383,7 @@ class Task:
         model.fit(x, **fit_kwargs)
 
         for _ in range(self._control_horizons):
-            control = model.act(x, **act_kwargs)
+            control = model.act_wrapper(x, **act_kwargs)
             cost = system.calc_control_cost_wrapper(control)
             total_cost += cost
             assert np.all(cost <= max_control_cost), "Control cost exceeded!"
@@ -320,16 +423,10 @@ class Task:
         print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}, control_horizons={self._control_horizons}, { rep_id=}, {id=}")
 
         # Create model and data
-        model = model_cls(embed_dim, timesteps,
-                          max_control_cost, **model_kwargs)
-
+        model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
         x = self._gen_trainset(system, n, timesteps, noisy)
-        total_cost = self._fit_model(system, model, x, timesteps,
-                                     max_control_cost, fit_kwargs, act_kwargs, noisy)
-
+        total_cost = self._fit_model(system, model, x, timesteps, max_control_cost, fit_kwargs, act_kwargs, noisy)
         test = self._gen_testset(system, in_dist)
-
         pred = model.predict_wrapper(test[:, 0], self._test_timesteps)
         loss = system.calc_error_wrapper(pred, test)
-
         self._append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, loss, total_cost)

@@ -4,7 +4,7 @@ from scipy.integrate import solve_ivp
 from scipy.stats import ortho_group
 from sklearn.metrics import mean_squared_error
 
-from dynascale.abstractions import AbstractSystem
+from dynadojo.abstractions import AbstractSystem
 
 RNG = np.random.default_rng()
 

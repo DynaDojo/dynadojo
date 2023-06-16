@@ -4,11 +4,11 @@ import numpy as np
 
 import seaborn as sns
 import matplotlib.pyplot as plt
-from dynascale.utils.plotting import plot_target_loss, plot_metric
+from dynadojo.utils.plotting import plot_target_loss, plot_metric
 
 from joblib import Parallel, delayed
 
-from dynascale.abstractions import Task, AbstractSystem, AbstractModel
+from dynadojo.abstractions import Task, AbstractSystem, AbstractModel
 
 
 class FixedError(Task):
@@ -229,21 +229,6 @@ class FixedComplexity(Task):
     @staticmethod
     def plot(data):
         plot_metric(data, "n", "loss", xlabel=r'$n$')
-        # g = sns.lmplot(
-        #     data=data,
-        #     x="n", y="loss", hue="id",
-        #     height=5,
-        #     ci=50,
-        #     robust=True,
-        #     facet_kws=dict(sharey=False),
-        #     scatter=False,
-        #     fit_reg=True
-        # )
-        # g.set_axis_labels(x_var="$n$", y_var="Loss")
-        # plt.yscale('log')
-        # plt.xscale('log')
-        # plt.show()
-
 
 class FixedTrainSize(Task):
     def __init__(self, n: int, L: list[int], E: list[int] | int | None, T: list[int], max_control_cost_per_dim: int, control_horizons: int,
@@ -255,17 +240,3 @@ class FixedTrainSize(Task):
     @staticmethod
     def plot(data: pd.DataFrame):
         plot_metric(data, "latent_dim", "loss", xlabel=r'$L$', log=False)
-        # g = sns.lmplot(
-        #     data=data,
-        #     x="latent_dim", y="loss", hue="id",
-        #     height=5,
-        #     ci=50,
-        #     robust=True,
-        #     facet_kws=dict(sharey=False),
-        #     scatter=False,
-        #     fit_reg=True
-        # )
-        # g.set_axis_labels(x_var="Latent Dimension", y_var="Loss")
-        # plt.yscale('log')
-        # plt.xscale('log')
-        # plt.show()
