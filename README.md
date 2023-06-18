@@ -25,7 +25,9 @@ dd.utils.lds.plot([x, y], target_dim=min(latent_dim, 3), labels=["in", "out"], m
 
 In the image below, observe how the in distribution trajectories (blue) have a different evolution than the out-of-distribution trajectories (orange). A robust model should be able to predict the orange trajectories even if it's only trained on the blue ones.
 
-<img align="center" src="graphics/lds_example1.png">
+<p align="center">
+<img src="graphics/lds_example1.png">
+</p>
 
 Next, let's create our nonlinear model using DynaDojo's baseline `DNN` class.
 
@@ -49,7 +51,9 @@ y_err=346.67112531011145
 
 As we can see, the model performs pretty badly. With 10 epochs of training, it struggles to predict both the in and out-of-distribution trajectories!
 
-<img align="center" src="graphics/lds_example2.png">
+<p align="center">
+<img src="graphics/lds_example2.png">
+</p>
 
 Next, let's try `DNN` with a linear activation.
 
@@ -72,6 +76,8 @@ y_err=243.8198349312669
 
 As we can see, the linear model does much better! This is because linear models learn linear dynamics faster.
 
-<img align="center" src="graphics/lds_example3.png">
+<p align="center">
+<img src="graphics/lds_example3.png">
+</p>
 
 Using DynaDojo's `Challenge` class, we can quickly see how this comparison scales. 
