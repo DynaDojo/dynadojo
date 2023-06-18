@@ -88,3 +88,7 @@ As we can see, the linear model does much better! This is because linear models 
 ## Citing
 
 ## License
+
+This software is made available under the terms of the MIT license. See LICENSE for details.
+
+The external dependencies used by this software are available under a variety of different licenses. Review these external licenses before using the software.
