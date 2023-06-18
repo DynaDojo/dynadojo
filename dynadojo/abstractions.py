@@ -97,7 +97,7 @@ class AbstractSystem(ABC):
         Base class for all systems. Your systems should subclass this class.
 
         NOTE: The reason we use properties and setter methods for ._latent_dim and ._embed_dim is to allow
-        systems to maintain information through parameter shifts. See LDSSystem in './systems/lds.py' for a principled 
+        systems to maintain information through parameter shifts. See LDSSystem in './systems/lds.py' for a principled
         usage example of the setter methods.
         """
         self._latent_dim = latent_dim
@@ -136,7 +136,7 @@ class AbstractSystem(ABC):
 
     def make_init_conds_wrapper(self, n: int, in_dist=True):
         """
-        Wrapper for make_init_conds() called in evaluate(). Verifies initial condition matrix is the right shape. 
+        Wrapper for make_init_conds() called in evaluate(). Verifies initial condition matrix is the right shape.
         You should NOT override this.
 
         :param n: number of initial conditions
@@ -152,7 +152,7 @@ class AbstractSystem(ABC):
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         """
         Abstract method that makes trajectories from initial conditions. Your system must override this method.
-        
+
         :param init_conds: (n, embed_dim) initial conditions matrix
         :param control: (n, timesteps, embed_dim) controls tensor
         :param timesteps: timesteps per training trajectory (per action horizon)
@@ -164,13 +164,13 @@ class AbstractSystem(ABC):
     def make_data_wrapper(self, init_conds: np.ndarray, control: np.ndarray = None, timesteps: int = 1,
                           noisy=False) -> np.ndarray:
         """
-        TODO:
+        Wraps make_data(). Checks that trajectories tensor has the proper shape. You should NOT override this.
 
-        :param init_conds:
-        :param control:
-        :param timesteps:
-        :param noisy:
-        :return:
+        :param init_conds: (n, embed_dim) initial conditions matrix
+        :param control: (n, timesteps, embed_dim) controls tensor
+        :param timesteps: timesteps per training trajectory (per action horizon)
+        :param noisy: Boolean. If True, add noise to trajectories. Defaults to False. If False, no noise is added.
+        :return: (n, timesteps, embed_dim) trajectories tensor
         """
         assert timesteps > 0
         assert init_conds.ndim == 2 and init_conds.shape[1] == self.embed_dim
@@ -186,21 +186,22 @@ class AbstractSystem(ABC):
     @abstractmethod
     def calc_error(self, x, y) -> float:
         """
-        TODO:
+        Calculates the error between two tensors of trajectories. Your systems must implement this.
 
-        :param x:
-        :param y:
-        :return:
+        :param x: (n, timesteps, embed_dim) trajectories tensor
+        :param y: (n, timesteps, embed_dim) trajectories tensor
+        :return: Float. The error between x and y.
         """
         raise NotImplementedError
 
     def calc_error_wrapper(self, x, y) -> float:
         """
-        TODO:
+        Wraps calc_error. Checks that calc_error is called with properly-shaped x and y.
+        Your systems should NOT override this.
 
-        :param x:
-        :param y:
-        :return:
+        :param x: (n, timesteps, embed_dim) trajectories tensor
+        :param y: (n, timesteps, embed_dim) trajectories tensor
+        :return: Float. The error between x and y.
         """
         assert x.shape == y.shape
         return self.calc_error(x, y)
@@ -208,19 +209,20 @@ class AbstractSystem(ABC):
     @abstractmethod
     def calc_control_cost(self, control: np.ndarray) -> np.ndarray:
         """
-        TODO:
+        Calculate the control cost for each control TRAJECTORY (i.e., calculates the costs for every
+        control matrix, not for the whole tensor). Your systems must implement this.
 
-        :param control:
-        :return:
+        :param control: (n, timesteps, embed_dim) controls tensor
+        :return: (n,) control costs vector
         """
         raise NotImplementedError
 
     def calc_control_cost_wrapper(self, control: np.ndarray) -> np.ndarray:
         """
-        TODO:
+        Wraps calc_control_cost(). Your systems should NOT override this.
 
-        :param control:
-        :return:
+        :param control: (n, timesteps, embed_dim) controls tensor
+        :return: (n,) control costs vector
         """
         assert control.shape[2] == self.embed_dim and control.ndim == 3
         cost = self.calc_control_cost(control)
@@ -243,18 +245,20 @@ class Task:
                  system_kwargs: dict = None,
                  ):
         """
-        TODO:
 
-        :param N:
-        :param L:
-        :param E:
-        :param T:
-        :param max_control_cost_per_dim:
-        :param control_horizons:
-        :param system_cls:
-        :param reps:
-        :param test_examples:
-        :param test_timesteps:
+
+        :param N: train sizes
+        :param L: latent dimensions
+        :param E: embedded dimensions. Optional. If list, then evaluate iterates across embedded dimensions.
+        If int, then evaluate uses a fixed embedded dimension. If None, then evaluate sets the embedded dimension
+        equal to the latent dimension.
+        :param T: timesteps
+        :param max_control_cost_per_dim: max control cost per control trajectory
+        :param control_horizons: number of times to generate training data with control
+        :param system_cls: class constructor (NOT instance) for a concrete system
+        :param reps: number of times to repeat each experiment
+        :param test_examples: test size
+        :param test_timesteps: test timesteps
         :param system_kwargs:
         """
         assert control_horizons >= 0
@@ -280,18 +284,19 @@ class Task:
                  in_dist=True,
                  noisy=False,
                  id=None,
-                 ):
+                 ) -> pd.DataFrame:
         """
-        TODO:
+        Evaluates a model class (NOT an instance) on a dynamical system over a set of experimental parameters.
 
-        :param model_cls:
+        :param model_cls: model class to be evaluated
         :param model_kwargs:
         :param fit_kwargs:
         :param act_kwargs:
-        :param in_dist:
-        :param noisy:
-        :param id:
-        :return:
+        :param in_dist: Boolean. If True, generate in-distribution initial conditions for the test set. Defaults to True.
+        If False, generate out-of-distribution initial conditions for the test set.
+        :param noisy: Boolean. If True, add noise to train set. Defaults to False. If False, no noise is added.
+        :param id: model ID associated with evaluation results in returned DataFrame
+        :return: a pandas DataFrame with experimental results
         """
 
         model_kwargs = model_kwargs or {}

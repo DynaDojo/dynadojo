@@ -79,5 +79,3 @@ As we can see, the linear model does much better! This is because linear models 
 <p align="center">
 <img src="graphics/lds_example3.png">
 </p>
-
-Using DynaDojo's `Challenge` class, we can quickly see how this comparison scales. 
