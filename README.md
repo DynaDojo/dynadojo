@@ -1,5 +1,10 @@
 # DynaDojo
 
+
+## Contents
+
+## Installation
+
 ## Examples
 ### Example 1: Comparing DNN activations on LDSs
 
@@ -79,3 +84,7 @@ As we can see, the linear model does much better! This is because linear models 
 <p align="center">
 <img src="graphics/lds_example3.png">
 </p>
+
+## Citing
+
+## License
