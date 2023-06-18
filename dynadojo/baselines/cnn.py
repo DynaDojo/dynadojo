@@ -38,7 +38,7 @@ class CNN(AbstractModel):
                 state_t = state[:, t, :]
                 state_t = torch.reshape(state_t, (batch_size, self._embed_dim)).unsqueeze(1)
 
-                next_state = self.lin(self.c1(state_t))  # doesnt even call forward
+                next_state = self.lin(self.c1(state_t))  # doesn't even call forward
 
                 loss += lossMSE((next_state * (state[:, t, :].unsqueeze(1))), state[:, t+1, :].unsqueeze(1)) #loss_BCEL(next_state, state[:, t + 1, :].unsqueeze(1))
 

@@ -3,15 +3,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-"""
-TODO:
-- DONE  argument to control log scale
-- DONE latex
-- DONE add rep_id
-- DONE pi -- 
-"""
-
-
 def _assign_labels(data, labels):
     assert len(data) == len(labels)
     for frameidx, frame in enumerate(data):
