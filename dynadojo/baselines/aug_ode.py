@@ -7,12 +7,11 @@ from ..abstractions import AbstractModel
 
 class AugODE(AbstractModel):
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, lr=3e-2, aug_dim = 2, **kwargs):
-        super().__init__()
+        super().__init__(embed_dim, timesteps, max_control_cost)
 
         self.model = nn.Sequential(nn.Linear(embed_dim + aug_dim, 32), nn.Softplus(), nn.Linear(32, embed_dim))
         self.lr = lr
         self.aug_dim = aug_dim
-        self.timesteps = timesteps
         self.mse_loss = nn.MSELoss()
         self.opt = torch.optim.Adam(self.model.parameters(), self.lr)
 
@@ -27,11 +26,11 @@ class AugODE(AbstractModel):
     def fit(self, x: np.ndarray, epochs=100, **kwargs):
         x = torch.tensor(x, dtype=torch.float32)
         state = x[:, 0, :]
-        step = end = epochs/self.timesteps
+        step = end = epochs/self._timesteps
         
         for _ in range(epochs):
             if _ % step == 0:
-                t = torch.linspace(0.0, end, self.timesteps)
+                t = torch.linspace(0.0, end, self._timesteps)
                 end += step
             self.opt.zero_grad()
             pred = odeint(self.forward, state, t, method='midpoint')
