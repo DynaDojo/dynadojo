@@ -2,9 +2,8 @@ import numpy as np
 import scipy as sp
 from scipy.integrate import solve_ivp
 from scipy.stats import ortho_group
-from sklearn.metrics import mean_squared_error
 
-from dynadojo.abstractions import AbstractSystem
+from ..abstractions import AbstractSystem
 
 RNG = np.random.default_rng()
 

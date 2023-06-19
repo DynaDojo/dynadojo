@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: dynadojo
+Version: 0.1.5
+Summary: An extensible platform for benchmarking sample efficiency in dynamical system identification
+Home-page: https://github.com/FlyingWorkshop/DynaDojo
+Author: Logan Mondal Bhamidipaty
+Author-email: loganmb@stanford.edu
+License: MIT
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3.10
+Requires-Python: >=3.10
+License-File: LICENSE

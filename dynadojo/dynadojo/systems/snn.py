@@ -4,7 +4,7 @@ from scipy.integrate import solve_ivp
 from scipy.interpolate import interp1d
 from scipy.optimize import minimize, NonlinearConstraint
 
-from dynadojo.systems.lds import LDSSystem
+from .lds import LDSSystem
 
 RNG = np.random.default_rng()
 

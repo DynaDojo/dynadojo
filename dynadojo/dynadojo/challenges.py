@@ -2,13 +2,11 @@ import warnings
 import pandas as pd
 import numpy as np
 
-import seaborn as sns
-import matplotlib.pyplot as plt
-from dynadojo.utils.plotting import plot_target_loss, plot_metric
+from .utils.plotting import plot_target_loss, plot_metric
 
 from joblib import Parallel, delayed
 
-from dynadojo.abstractions import Task, AbstractSystem, AbstractModel
+from .abstractions import Task, AbstractSystem, AbstractModel
 
 
 class FixedError(Task):

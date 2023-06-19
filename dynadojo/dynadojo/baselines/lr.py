@@ -5,8 +5,8 @@ from sklearn.linear_model import LinearRegression as SKLinearRegression
 
 
 class LinearRegression(AbstractModel):
-    def __init__(self, embed_dim, timesteps, control_constraint):
-        super().__init__(embed_dim, timesteps, control_constraint)
+    def __init__(self, embed_dim, timesteps, max_control_cost):
+        super().__init__(embed_dim, timesteps, max_control_cost)
         self.A_hat = []
         self.U = None
         self.model = None

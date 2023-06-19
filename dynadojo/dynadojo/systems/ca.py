@@ -1,11 +1,9 @@
 
-import math
 import cellpylib as cpl
 import numpy as np
 from joblib import Parallel, delayed
-from tqdm.auto import tqdm
 
-from dynadojo.abstractions import AbstractSystem
+from ..abstractions import AbstractSystem
 
 RNG = np.random.default_rng()
 

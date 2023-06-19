@@ -1,4 +1,4 @@
-from dynadojo.abstractions import AbstractSystem
+from ..abstractions import AbstractSystem
 import torch
 import torch.nn as nn
 from torchdiffeq import odeint
