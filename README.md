@@ -1,9 +1,14 @@
 # DynaDojo
 
-
-## Contents
-
 ## Installation
+
+You can install DynaDojo with `pip`. Please note that you will have to install some dependencies yourself before installing DynaDojo.
+
+```python
+pip install dynadojo==0.1.0
+```
+
+
 
 ## Examples
 ### Example 1: Comparing DNN activations on LDSs
@@ -14,7 +19,7 @@ To start, let's create some LDS data using one of DynaDojo's off-the-shelf `LDSS
 
 ```python
 
-from dynadojo import dynadojo as dd
+import dynadojo as dd
 import numpy as np
 
 latent_dim = 5
@@ -26,7 +31,7 @@ x0 = system.make_init_conds(n)
 y0 = system.make_init_conds(30, in_dist=False)
 x = system.make_data(x0, control=np.zeros((n, timesteps, embed_dim)), timesteps=timesteps)
 y = system.make_data(y0, control=np.zeros((n, timesteps, embed_dim)), timesteps=timesteps)
-dynadojo_123.dynadojo.utils.lds.plot([x, y], target_dim=min(latent_dim, 3), labels=["in", "out"], max_lines=15)
+dd.utils.lds.plot([x, y], target_dim=min(latent_dim, 3), labels=["in", "out"], max_lines=15)
 ```
 
 In the image below, observe how the in distribution trajectories (blue) have a different evolution than the out-of-distribution trajectories (orange). A robust model should be able to predict the orange trajectories even if it's only trained on the blue ones.
