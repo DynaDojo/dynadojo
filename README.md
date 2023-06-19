@@ -1,4 +1,7 @@
 # DynaDojo
+DynaDojo is a playground for testing models in dynamical system idenficiation. 
+
+By iteratively adjusting the number of sample and testing performance generalizes, the platform lets you evaluate your model on a growing number of dynamical systems.
 
 ## Installation
 
