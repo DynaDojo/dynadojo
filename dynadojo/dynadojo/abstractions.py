@@ -230,7 +230,7 @@ class AbstractSystem(ABC):
         return cost
 
 
-class Task:
+class Challenge:
     def __init__(self,
                  N: list[int],
                  L: list[int],

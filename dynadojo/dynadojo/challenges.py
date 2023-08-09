@@ -6,10 +6,10 @@ from .utils.plotting import plot_target_loss, plot_metric
 
 from joblib import Parallel, delayed
 
-from .abstractions import Task, AbstractSystem, AbstractModel
+from .abstractions import Challenge, AbstractSystem, AbstractModel
 
 
-class FixedError(Task):
+class FixedError(Challenge):
     def __init__(self, L: list[int], t: int, max_control_cost_per_dim: int, control_horizons: int,
                  system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, target_loss: float,
                  system_kwargs: dict = None,
@@ -215,7 +215,7 @@ class FixedError(Task):
         plot_target_loss(data, "latent_dim", "n", target_loss=self._target_loss, ylabel=r'$n$')
 
 
-class FixedComplexity(Task):
+class FixedComplexity(Challenge):
     def __init__(self, N: list[int], l: int, e: int, t: int, max_control_cost_per_dim: int, control_horizons: int,
                  system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
         L = [l]
@@ -228,7 +228,7 @@ class FixedComplexity(Task):
     def plot(data):
         plot_metric(data, "n", "loss", xlabel=r'$n$')
 
-class FixedTrainSize(Task):
+class FixedTrainSize(Challenge):
     def __init__(self, n: int, L: list[int], E: list[int] | int | None, T: list[int], max_control_cost_per_dim: int, control_horizons: int,
                  system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
         N = [n]
