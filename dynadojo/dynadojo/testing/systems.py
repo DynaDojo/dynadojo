@@ -13,16 +13,21 @@ def get_test_system(module):
             return obj
     print(f"Couldn't find valid System to test in {module}")
 
+
 def test_fixed_complexity(N: list[int], l: int, e: int, t: int, max_control_cost_per_dim: int, control_horizons: int,
-                          system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
+                          system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int,
+                          system_kwargs: dict = None):
     print("Testing FixedComplexity")
-    challenge = FixedComplexity(N=N, l=l, e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim, control_horizons=control_horizons, system_cls=system_cls, reps=reps, test_examples=test_examples, test_timesteps=test_timesteps, system_kwargs=system_kwargs)
+    challenge = FixedComplexity(N=N, l=l, e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
+                                control_horizons=control_horizons, system_cls=system_cls, reps=reps,
+                                test_examples=test_examples, test_timesteps=test_timesteps, system_kwargs=system_kwargs)
     for in_dist, noisy in ([True, True], [True, False], [False, True], [False, False]):
         print(f"\tTesting {in_dist=} {noisy=}")
         challenge.evaluate(LinearRegression, in_dist=in_dist, noisy=noisy)
 
+
 def test_system(system_module: str,
-                n=2, l=2, e=2, t=2, max_control_cost_per_dim=0, control_horizons=0, test_examples=2, test_timesteps=10,
+                n=2, l=2, e=3, t=2, max_control_cost_per_dim=0, control_horizons=0, test_examples=2, test_timesteps=10,
                 system_kwargs: dict = None):
     system_cls = get_test_system(system_module)
     reps = 1
@@ -31,5 +36,3 @@ def test_system(system_module: str,
     test_fixed_complexity(N=[n], l=l, e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
                           control_horizons=control_horizons, test_examples=test_examples,
                           reps=reps, test_timesteps=test_timesteps, system_kwargs=system_kwargs, system_cls=system_cls)
-
-

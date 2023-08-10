@@ -1,121 +1,63 @@
 import numpy as np
 import scipy as sp
-from scipy.integrate import solve_ivp
-from scipy.stats import ortho_group
 
-from ..abstractions import AbstractSystem
-
-RNG = np.random.default_rng()
+from .utils import SimpleSystem
 
 
-class LDSSystem(AbstractSystem):
-    def __init__(self, latent_dim, embed_dim,
-                 # negative eigenvalues produce stable linear system (https://en.wikipedia.org/wiki/Stability_theory)
+class LDSSystem(SimpleSystem):
+    def __init__(self,
+                 latent_dim,
+                 embed_dim,
                  A_eigval_range=(-5, 0),
                  A_eigvec_range=(-1, 1),
-                 BC_sv_range=(-1, 1),
-                 init_cond_in_dist_range=(0, 10),
-                 init_cond_out_dist_range=(-10, 0),
-                 scale=0.01
-                 ):
-        super().__init__(latent_dim, embed_dim)
+                 embedder_sv_range=(0.1, 1),
+                 controller_sv_range=(0.1, 1),
+                 in_dist_range=(0, 10),
+                 out_dist_range=(-10, 0),
+                 noise_scale=0.01,
+                 seed=None):
+
+        super().__init__(latent_dim, embed_dim, embedder_sv_range, controller_sv_range, in_dist_range, out_dist_range,
+                         noise_scale, seed)
+
         self._A_eigval_range = A_eigval_range
         self._A_eigvec_range = A_eigvec_range
-        self._BC_sv_range = BC_sv_range
-        self._init_cond_in_dist_range = init_cond_in_dist_range
-        self._init_cond_out_dist_range = init_cond_out_dist_range
-        self._scale = scale
-
         self.A = self._make_A()
-        self.B = self._make_BC()
-        self.C = self._make_BC()
 
-    @staticmethod
-    def _eigenvalues_to_matrix(dim, eig_range, eigvec_range):
+    def _eigenvalues_to_matrix(self, dim, eig_range, eigvec_range):
         # use eigendecomposition to produce a real-valued matrix with target eigenvalues
-        if RNG.uniform() <= 0:  # TODO: change
+        if self._rng.uniform() <= 0:
             # 50% chance to have all real eigenvalues
-            eigenvalues = RNG.uniform(*eig_range, size=dim)
-            Q = RNG.uniform(*eigvec_range, size=(dim, dim))
+            eigenvalues = self._rng.uniform(*eig_range, size=dim)
+            Q = self._rng.uniform(*eigvec_range, size=(dim, dim))
             Q = sp.linalg.orth(Q)  # orthogonal matrices preserve operator norms
         else:
             # 50% chance to have some complex eigenvalues
-            num_complex = RNG.integers(0, dim, endpoint=True)
+            num_complex = self._rng.integers(0, dim, endpoint=True)
             if num_complex % 2 == 1:
                 num_complex -= 1
             num_real = dim - num_complex
 
-            real_eigenvalues = RNG.uniform(*eig_range, size=num_real)
-            real_eigenvectors = RNG.uniform(*eigvec_range, size=(dim, num_real))
+            real_eigenvalues = self._rng.uniform(*eig_range, size=num_real)
+            real_eigenvectors = self._rng.uniform(*eigvec_range, size=(dim, num_real))
 
             # complex eigenvectors and eigenvalues must have conjugate pairs in the diagonalization for A to be real
-            complex_eigenvalues = RNG.uniform(*eig_range, size=num_complex // 2) + 1j * RNG.uniform(*eig_range, size=num_complex // 2)
-            complex_eigenvectors = RNG.uniform(*eigvec_range, size=(dim, num_complex // 2)) + 1j * RNG.uniform(*eigvec_range, size=(dim, num_complex // 2))
+            complex_eigenvalues = self._rng.uniform(*eig_range, size=num_complex // 2) + 1j * self._rng.uniform(*eig_range, size=num_complex // 2)
+            complex_eigenvectors = self._rng.uniform(*eigvec_range, size=(dim, num_complex // 2)) + 1j * self._rng.uniform(*eigvec_range, size=(dim, num_complex // 2))
 
             eigenvalues = np.concatenate((real_eigenvalues, complex_eigenvalues, complex_eigenvalues.conjugate()))
             Q = np.hstack((real_eigenvectors, complex_eigenvectors, complex_eigenvectors.conjugate()))
 
             # shuffle columns
-            pi = RNG.permutation(dim)
+            pi = self._rng.permutation(dim)
             Q = Q[pi]
             eigenvalues = eigenvalues[pi]
 
         M = Q @ np.diag(eigenvalues) @ np.linalg.inv(Q)
         return M.real
 
-    @staticmethod
-    def _singular_values_to_matrix(m, n, sv_range):
-        U = ortho_group.rvs(m)
-        sigma = np.eye(m, n) * RNG.uniform(*sv_range, size=n)
-        V = ortho_group.rvs(n)
-        M = U @ sigma @ V
-        return M
-
     def _make_A(self):
         return self._eigenvalues_to_matrix(self.latent_dim, self._A_eigval_range, self._A_eigvec_range)
 
-    def _make_BC(self):
-        return self._singular_values_to_matrix(self.latent_dim, self.embed_dim, self._BC_sv_range)
-
-    @AbstractSystem.embed_dim.setter
-    def embed_dim(self, value):
-        self._embed_dim = value
-        self.B = self._make_BC()
-        self.C = self._make_BC()
-
-    @AbstractSystem.latent_dim.setter
-    def latent_dim(self, value):
-        self._latent_dim = value
-        self.A = self._make_A()
-        self.B = self._make_BC()
-        self.C = self._make_BC()
-
-    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
-        init_cond_range = self._init_cond_in_dist_range if in_dist else self._init_cond_out_dist_range
-        return RNG.uniform(*init_cond_range, (n, self.embed_dim))
-
-    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
-        data = []
-        init_conds = init_conds @ np.linalg.pinv(self.C)
-        time = np.linspace(0, 1, num=timesteps)
-
-        def dynamics(t, x, u):
-            i = np.argmin(np.abs(t - time))
-            if noisy:
-                return self.A @ x + self.B @ u[i] + RNG.normal(scale=self._scale, size=(self.latent_dim))
-            else:
-                return self.A @ x + self.B @ u[i]
-
-        for x0, u in zip(init_conds, control):
-            sol = solve_ivp(dynamics, t_span=[0, 1], y0=x0, t_eval=time, dense_output=True, args=(u,))
-            data.append(sol.y)
-        data = np.transpose(np.array(data), axes=(0, 2, 1)) @ self.C
-        return data
-
-    def calc_error(self, x, y) -> float:
-        # TODO: add more details
-        error = x - y
-        return np.mean(error ** 2) / self.embed_dim
-
-    def calc_control_cost(self, control: np.ndarray) -> float:
-        return np.linalg.norm(control, axis=(1, 2), ord=2) / self.embed_dim  # TODO: ask Max
+    def calc_dynamics(self, t, x):
+        return self.A @ x
