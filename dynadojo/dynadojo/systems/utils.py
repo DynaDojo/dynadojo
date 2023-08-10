@@ -13,15 +13,17 @@ class SimpleSystem(AbstractSystem):
                  in_dist_range=(0, 10),
                  out_dist_range=(-10, 0),
                  noise_scale=0.01,
-                 seed=None,
+                 t_range=(0, 1),
                  ):
         super().__init__(latent_dim, embed_dim)
+
+        self._t_range = t_range
 
         self._in_dist_range = in_dist_range
         self._out_dist_range = out_dist_range
 
         self._noise_scale = noise_scale
-        self._rng = np.random.default_rng(seed)
+        self._rng = np.random.default_rng()
 
         self._embedder_sv_range = embedder_sv_range
         self._controller_sv_range = controller_sv_range
@@ -38,8 +40,8 @@ class SimpleSystem(AbstractSystem):
         return self._controller
 
     def _update_embedder_and_controller(self):
-        self._embedder = sv_to_matrix(self.latent_dim, self.embed_dim, self._rng, self._embedder_sv_range)
-        self._controller = sv_to_matrix(self.latent_dim, self.embed_dim, self._rng, self._controller_sv_range)
+        self._embedder = self._sv_to_matrix(self.latent_dim, self.embed_dim, self._embedder_sv_range)
+        self._controller = self._sv_to_matrix(self.latent_dim, self.embed_dim, self._controller_sv_range)
 
     @AbstractSystem.embed_dim.setter
     def embed_dim(self, value):
@@ -71,7 +73,7 @@ class SimpleSystem(AbstractSystem):
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
         init_conds = init_conds @ np.linalg.pinv(self.embedder)
-        time = np.linspace(0, 1, num=timesteps)
+        time = np.linspace(self._t_range[0], self._t_range[1], num=timesteps)
 
         def dynamics(t, x, u):
             i = np.argmin(np.abs(t - time))
@@ -81,17 +83,16 @@ class SimpleSystem(AbstractSystem):
             return dx
 
         for x0, u in zip(init_conds, control):
-            sol = solve_ivp(dynamics, t_span=[0, 1], y0=x0, t_eval=time, dense_output=True, args=(u,))
+            sol = solve_ivp(dynamics, t_span=[self._t_range[0], self._t_range[1]], y0=x0, t_eval=time, dense_output=True, args=(u,))
             data.append(sol.y)
 
         data = np.transpose(np.array(data), axes=(0, 2, 1)) @ self.embedder
         return data
 
-
-def sv_to_matrix(m, n, rng, sv_range):
-    U = ortho_group.rvs(m)
-    sigma = np.eye(m, n) * rng.uniform(*sv_range, size=n)
-    V = ortho_group.rvs(n)
-    M = U @ sigma @ V
-    return M
+    def _sv_to_matrix(self, m, n, sv_range):
+        U = ortho_group.rvs(m)
+        sigma = np.eye(m, n) * self._rng.uniform(*sv_range, size=n)
+        V = ortho_group.rvs(n)
+        M = U @ sigma @ V
+        return M
 
