@@ -5,20 +5,9 @@ from .utils import SimpleSystem
 
 
 class LDSSystem(SimpleSystem):
-    def __init__(self,
-                 latent_dim,
-                 embed_dim,
-                 A_eigval_range=(-5, 0),
-                 A_eigvec_range=(-1, 1),
-                 embedder_sv_range=(0.1, 1),
-                 controller_sv_range=(0.1, 1),
-                 in_dist_range=(0, 10),
-                 out_dist_range=(-10, 0),
-                 noise_scale=0.01,
-                 seed=None):
+    def __init__(self, latent_dim, embed_dim, A_eigval_range=(-5, 0), A_eigvec_range=(-1, 1), **kwargs):
 
-        super().__init__(latent_dim, embed_dim, embedder_sv_range, controller_sv_range, in_dist_range, out_dist_range,
-                         noise_scale, seed)
+        super().__init__(latent_dim, embed_dim, **kwargs)
 
         self._A_eigval_range = A_eigval_range
         self._A_eigvec_range = A_eigvec_range
