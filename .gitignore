@@ -1,5 +1,8 @@
+*.pyc
 playground.ipynb
 venv
 .ipynb_checkpoints
+grave
 todo.txt
+cache
 .idea
