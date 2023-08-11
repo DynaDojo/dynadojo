@@ -103,9 +103,9 @@ class CLVSystem(AbstractSystem):
 
             if noisy:
                 noise = np.random.normal(0,0.01,(self.embed_dim))
-                dX = (X * self.R * ((1 - (self.A @ X))+noise)) 
+                dX = (X * self.R * ((1 - (self.A @ X))+noise)) + u[i]
             else:
-                dX = (X * self.R * ((1 - (self.A @ X)))) 
+                dX = (X * self.R * ((1 - (self.A @ X)))) + u[i]
             return dX
 
 
