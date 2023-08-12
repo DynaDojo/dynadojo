@@ -1,6 +1,6 @@
 from dynascale.abstractions import AbstractSystem
 
-from scipy.integrate import odeint, solve_ivp
+from scipy.integrate import odeint
 import scipy as scipy
 import numpy as np
 
@@ -68,7 +68,7 @@ class CLVSystem(AbstractSystem):
             for j in range(self._embed_dim):
                 if i == j:
                     A[i][j] = 1 #intra-species is all 1 in competitive
-
+    
         return A / self.K
 
     @AbstractSystem.embed_dim.setter
@@ -90,38 +90,39 @@ class CLVSystem(AbstractSystem):
                     number = int(np.random.uniform(self.OOD_range[0] * self.K[s], self.OOD_range[1] * self.K[s]))
                 temp.append(number)
             x0.append(temp)
-
         return x0
 
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
-        data = []
-        time = np.linspace(0, 100, timesteps)
 
-        def dynamics(t, X, u):
+        time = np.linspace(0, timesteps, timesteps)
+
+        def dynamics(X, t, u):
             i = np.argmin(np.abs(t - time))
 
             if noisy:
-                noise = np.random.normal(0,0.01,(self.embed_dim))
-                dX = (X * self.R * ((1 - (self.A @ X))+noise)) + u[i]
+                noise = np.random.normal(0,0.01,(self.embed_dim))/self.K
+                print(noise)
+                dX = (X * self.R *((1 - (self.A @ X))))
+                print(dX)
+                dX += noise
+                #print(dX)
+                print('-'*10)
             else:
-                dX = (X * self.R * ((1 - (self.A @ X)))) + u[i]
+                dX = (X * (self.R - (self.A @ X))) + u[i]
             return dX
-
-
+        
         sol = []
         if control:
             for x0, u in zip(init_conds, control):
-                sol = solve_ivp(dynamics, t_span=[0, 1], y0=x0, t_eval=time, dense_output=True, args=(u,))
+                sol.append(odeint(dynamics, x0, time, args=(u,)))
 
         else:
             for x0 in init_conds:
                 u = np.zeros((timesteps, self.embed_dim))
-                sol = solve_ivp(dynamics, t_span=[0, 100], y0=x0, t_eval=time, dense_output=True, args=(u,))
-                data.append(sol.y)
+                sol.append(odeint(dynamics, x0, time, args=(u,)))
 
-        data = np.transpose(np.array(data), axes=(0, 2, 1)) 
-        return data
+        return sol
 
     def calc_error(self, x, y) -> float:
         error = x - y
