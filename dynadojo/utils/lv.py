@@ -6,6 +6,7 @@ from sklearn.decomposition import PCA
 
 MAX_LINES = 30
 
+
 def _plot2d(trajs_grid, gridlabels: list = None):
     fig = plt.figure()
     ax = fig.add_subplot()
@@ -13,7 +14,8 @@ def _plot2d(trajs_grid, gridlabels: list = None):
         if gridlabels is None:
             line_collection = LineCollection(trajs, color=f"C{i}")
         else:
-            line_collection = LineCollection(trajs, color=f"C{i}", label=gridlabels[i])
+            line_collection = LineCollection(
+                trajs, color=f"C{i}", label=gridlabels[i])
         ax.add_collection(line_collection)
         ax.scatter(trajs[:, 0, 0], trajs[:, 0, 1], color=f"C{i}", marker="o")
     minima = trajs_grid.min(axis=(0, 1, 2))
@@ -26,14 +28,16 @@ def _plot2d(trajs_grid, gridlabels: list = None):
 
 
 def _plot3d(grid, fig, gridlabels: list = None):
-    ax = fig.add_subplot( projection='3d')
+    ax = fig.add_subplot(projection='3d')
     for i, trajs in enumerate(grid):
         if gridlabels is None:
             line_collection = Line3DCollection(trajs, color=f"C{i}")
         else:
-            line_collection = Line3DCollection(trajs, color=f"C{i}", label=gridlabels[i])
+            line_collection = Line3DCollection(
+                trajs, color=f"C{i}", label=gridlabels[i])
         ax.add_collection(line_collection)
-        ax.scatter(trajs[:, 0, 0], trajs[:, 0, 1], trajs[:, 0, 2], color=f"C{i}", marker="o")
+        ax.scatter(trajs[:, 0, 0], trajs[:, 0, 1],
+                   trajs[:, 0, 2], color=f"C{i}", marker="o")
     minima = grid.min(axis=(0, 1, 2))
     maxima = grid.max(axis=(0, 1, 2))
     ax.set_xlim(minima[0], maxima[0])
@@ -42,7 +46,7 @@ def _plot3d(grid, fig, gridlabels: list = None):
     if gridlabels is not None:
         ax.legend()
     plt.show()
-    
+
     return fig, ax
 
 
@@ -76,12 +80,12 @@ def _apply_pca_to_grid(trajs_grid, pca) -> np.ndarray:
 def plot(grid: list[np.ndarray], target_dim: int = 3, max_lines=MAX_LINES, specieslabels: list[str] = None, gridlabels: list[str] = None):
     grid = np.array([x[:max_lines] for x in grid])
     dim = grid.shape[-1]
-    fig = plt.figure(figsize=(16,4))
+    fig = plt.figure(figsize=(16, 4))
     posidx = 1
     for dataset in grid:
         pos = 100 + len(grid) * 10 + posidx
         ax = fig.add_subplot(1, len(grid), posidx)
-        
+
         for i in range(len(dataset[0][0])):
             ydata = dataset[0][:, i]
             if specieslabels:
@@ -90,7 +94,7 @@ def plot(grid: list[np.ndarray], target_dim: int = 3, max_lines=MAX_LINES, speci
             else:
                 ax.plot(ydata)
         posidx += 1
-                
+
     assert target_dim <= dim
     assert target_dim <= 3
     if dim == 2:
