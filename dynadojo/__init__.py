@@ -8,3 +8,4 @@ from . import utils
 from . import baselines
 from . import abstractions
 from . import challenges
+from . import testing

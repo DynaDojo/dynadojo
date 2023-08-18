@@ -11,6 +11,40 @@ You can install DynaDojo with `pip`. Please note that you will have to install s
 pip install dynadojo==0.1.0
 ```
 
+## Pre-Built Challenges
+
+`DynaDojo` comes with three off-the-shelf challenges: `FixedError`, `FixedComplexity`, and `FixedTrainSize`. More information about each can be found in the paper.
+
+## Adding Systems
+
+To add new systems to `DynaDojo`, you must subclass from `AbstractSystem`. Some skeleton code is provided below.
+
+```python
+import numpy as np
+
+from dynadojo.abstractions import AbstractSystem
+
+
+class MySystem(AbstractSystem):
+    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+        pass
+
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+        pass
+
+    def calc_error(self, x, y) -> float:
+        pass
+
+    def calc_control_cost(self, control: np.ndarray) -> np.ndarray:
+        pass
+
+    def __init__(self, latent_dim, embed_dim):
+        super().__init__(latent_dim, embed_dim)
+```
+
+Documentation for each of the abstract methods can be found in [dynadojo/abstractions](https://github.com/FlyingWorkshop/DynaScale/blob/c62e1abb0275a8c72931bc10177a8ba9a44424f3/dynadojo/dynadojo/abstractions.py). For controlled systems, developers must also implement the `act` method.
+
+To verify that your system works, try using the `tester.py` module.
 
 
 ## Examples

@@ -6,6 +6,7 @@ from sklearn.decomposition import PCA
 
 MAX_LINES = 30
 
+
 def _plot2d(trajs_grid, labels: list = None):
     fig = plt.figure()
     ax = fig.add_subplot()

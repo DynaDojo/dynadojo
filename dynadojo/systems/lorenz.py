@@ -1,85 +1,44 @@
-
-
-#  system = deeptime.data.lorenz_system()
-#  x0 = np.array([[8, 7, 15]])
-#  traj = system.trajectory(x0, 3500)
-
-#  ax = plt.figure().add_subplot(projection='3d')
-#  ax.scatter(*x0.T, color='blue', label=r"$t_\mathrm{start}$")
-#  ax.scatter(*traj[-1].T, color='red', label=r"$t_\mathrm{final}$")
-
-#  points = traj.reshape((-1, 1, 3))
-#  segments = np.concatenate([points[:-1], points[1:]], axis=1)
-#  coll = Line3DCollection(segments, cmap='coolwarm')
-#  coll.set_array(np.linspace(0, 1, num=len(points), endpoint=True))
-#  coll.set_linewidth(2)
-#  ax.add_collection(coll)
-#  ax.set_xlim3d((-19, 19))
-#  ax.set_ylim3d((-26, 26))
-#  ax.set_zlim3d((0, 45))
-#  ax.set_box_aspect(np.ptp(traj, axis=0))
-#  ax.legend()
-
-import deeptime
+"""
+Generalized Lorenz system formulation based on
+paper from Shen: https://www.worldscientific.com/doi/epdf/10.1142/S0218127419500378
+"""
 import numpy as np
-import math
-from joblib import Parallel, delayed
-from tqdm.auto import tqdm
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d.art3d import Line3DCollection
+
+from .utils import SimpleSystem
 
 
-from dynascale.abstractions import AbstractSystem
+class LorenzSystem(SimpleSystem):
+    def __init__(self, latent_dim, embed_dim, sigma=10, r=28, a_squared=1/2, b=8/3, **kwargs):
+        assert latent_dim % 2 == 1 and latent_dim >= 3, "Latent dimension must be odd number at least 3."
+        self._sigma = sigma
+        self._r = r
+        self._a_squared = a_squared
+        self._b = b
+        super().__init__(latent_dim, embed_dim, **kwargs)
 
-RNG = np.random.default_rng()
+    def calc_dynamics(self, t, x):
+        X, Y, Z = x[:3]
+        dX = -self._sigma * X + self._sigma * Y
+        dY = -X * Z + self._r * X - Y
+        M = self.latent_dim
+        N = int((M - 3) / 2)
+        pad = -1
+
+        Yj = np.concatenate(([pad], x[3:3 + N], [0]))  # Y_{N+1} = 0
+        Zj = np.concatenate(([Z], x[3 + N:]))  # Z_0 = Z
+
+        j = np.arange(1, N + 1)
+        beta = np.concatenate(([pad], (j + 1) ** 2 * self._b))
+        d = ((2 * j + 1) ** 2 + self._a_squared) / (1 + self._a_squared)
+
+        dZ = X * Y - X * Yj[1] - self._b * Z
+
+        dYj = np.zeros(N + 1)
+        dZj = np.zeros(N + 2)
+        dYj[j] = j * X * Zj[j - 1] - (j + 1) * X * Zj[j] - d[j - 1] * Yj[j]
+        dZj[j] = (j + 1) * X * Yj[j] - (j + 1) * X * Yj[j + 1] - beta[j] * Zj[j]
+
+        dx = np.concatenate(([dX, dY, dZ], dYj[1:], dZj[1:-1]))
+        return dx
 
 
-class LorenzSystem(AbstractSystem):
-    def __init__(self, latent_dim, embed_dim, in_dist_p=0.25, out_dist_p=0.75, mutation_p=0.00):
-        super().__init__(latent_dim, embed_dim)
-        lambda_val = RNG.uniform()
-       
-
-    @AbstractSystem.latent_dim.setter
-    def latent_dim(self, value):
-        self._latent_dim = value
-        lambda_val = RNG.uniform()
-        self.rule_table, _, _ = cpl.random_rule_table(lambda_val=lambda_val, k=2, r=self.latent_dim,
-                                                      strong_quiescence=True,
-                                                      isotropic=True)
-
-    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
-        if in_dist:
-            
-            return RNG.random(1, self._in_dist_p, size=(n, self.embed_dim))
-        else:
-            return RNG.random(1, self._out_dist_p, size=(n, self.embed_dim))
-
-    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
-        data = []
-
-       # print(f'self.rule_table: {self.rule_table}')
-        def get_trajectory(x0, u):
-            lorenz = deeptime.data.lorenz_system()
-            #cellular_automata = np.clip([x0 + u[0]], 0, 1).astype(np.int32)
-            for t in range(1, timesteps):
-                cellular_automata = cpl.evolve(cellular_automata,
-                                               timesteps=2,
-                                               apply_rule=lambda n, c, t: cpl.table_rule(n, self.rule_table),
-                                               r=self.latent_dim)
-                cellular_automata[-1] = np.clip(cellular_automata[-1] + u[t], 0, 1).astype(np.int32)
-                if noisy:
-                    mask = RNG.binomial(1, self._mutation_p, size=(self.embed_dim,)).astype(bool)
-                    cellular_automata[-1][mask] = (~cellular_automata[-1][mask].astype(bool)).astype(np.int32)
-            return lorenz
-
-        data = Parallel(n_jobs=4)(delayed(get_trajectory)(x0, u) for x0, u in zip(init_conds, control))
-        data = np.array(data)
-        return data
-
-    def calc_loss(self, x, y):
-        # averaged across all samples and all predicted timesteps
-        return 1 - (np.count_nonzero(x == y) / self.embed_dim) / len(y) / len(y[1])
-
-    def calc_control_cost(self, control: np.ndarray) -> float:
-        return np.sum(control, axis=(1, 2))
