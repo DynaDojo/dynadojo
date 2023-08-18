@@ -2,5 +2,8 @@ from .lds import LDSSystem
 from .ctln import CTLNSystem
 from .ca import CASystem
 from .snn import SNNSystem
-from .lv import PreyPredatorSystem, CompetitiveLVSystem
-from .opinion import BiasSystem, HKOpinionSystem
+from .lv import *
+from .opinion.algorithmic_bias import BiasSystem
+from .opinion.algorithmic_bias_media import BiasMediaSystem
+from .opinion.arwhk import ARWHKSystem
+from .opinion.risk_trust import RiskTrustSystem
