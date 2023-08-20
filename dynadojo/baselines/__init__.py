@@ -4,3 +4,4 @@ from .dnn import DNN
 from .lr import LinearRegression
 from .ode import ODE
 from .sindy import SINDy
+from .dmd import DMD
