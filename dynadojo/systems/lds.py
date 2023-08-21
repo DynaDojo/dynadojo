@@ -11,7 +11,7 @@ class LDSSystem(SimpleSystem):
 
         self._A_eigval_range = A_eigval_range
         self._A_eigvec_range = A_eigvec_range
-        self.A = self._make_A()
+        self.A = self._make_A(latent_dim)
 
     def _eigenvalues_to_matrix(self, dim, eig_range, eigvec_range):
         # use eigendecomposition to produce a real-valued matrix with target eigenvalues
@@ -45,8 +45,14 @@ class LDSSystem(SimpleSystem):
         M = Q @ np.diag(eigenvalues) @ np.linalg.inv(Q)
         return M.real
 
-    def _make_A(self):
-        return self._eigenvalues_to_matrix(self.latent_dim, self._A_eigval_range, self._A_eigvec_range)
+    def _make_A(self, dim):
+        return self._eigenvalues_to_matrix(dim, self._A_eigval_range, self._A_eigvec_range)
 
     def calc_dynamics(self, t, x):
         return self.A @ x
+
+    @SimpleSystem.latent_dim.setter
+    def latent_dim(self, value):
+        self._latent_dim = value
+        self._update_embedder_and_controller()
+        self.A = self._make_A(value)

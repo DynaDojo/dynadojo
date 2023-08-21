@@ -245,8 +245,6 @@ class Challenge:
                  system_kwargs: dict = None,
                  ):
         """
-
-
         :param N: train sizes
         :param L: latent dimensions
         :param E: embedded dimensions. Optional. If list, then evaluate iterates across embedded dimensions.

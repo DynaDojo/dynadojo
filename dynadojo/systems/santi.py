@@ -32,10 +32,10 @@ class NBodySystem(SimpleSystem):
                 sim.integrate(t)
                 positions = []
                 for particle in sim.particles:
-                    positions += [particle.x, particle.y, particle.z]
+                    positions += [particle.x, particle.y, particle.z, particle.vy]
                 example.append(positions)
             data.append(example)
-        data = np.array(data)[:, :, 3:]
+        data = np.array(data)[:, :, 4:]
 
         if noisy:
             data += self._rng.normal(scale=self._noise_scale, size=data.shape)

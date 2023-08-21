@@ -3,14 +3,25 @@ DynaDojo is a playground for testing models in dynamical system idenficiation.
 
 By iteratively adjusting the number of sample and testing performance generalizes, the platform lets you evaluate your model on a growing number of dynamical systems.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Challenges](#challenges)
+- [Systems](#systems)
+- [Baselines](#baselines)
+- [Citing](#citing)
+- [License](#license)
+
+
 ## Installation
 
 You can install DynaDojo with `pip`.
 
-```python
+```shell
 pip install dynadojo
 ```
 
+# Challenges
 ## Pre-Built Challenges
 
 `DynaDojo` comes with three off-the-shelf challenges: `FixedError`, `FixedComplexity`, and `FixedTrainSize`. More information about each can be found in the paper.
@@ -18,8 +29,9 @@ pip install dynadojo
 For demonstrations, please see:
 * [Fixed Error]()
 * [Fixed Complexity]()
+* [Fixed Train Size]()
 
-
+# Systems
 
 ## Adding Systems
 
@@ -135,6 +147,8 @@ As we can see, the linear model does much better! This is because linear models 
 </p>
 
 ## Citing
+
+Pending
 
 ## License
 
