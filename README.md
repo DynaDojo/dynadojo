@@ -103,9 +103,9 @@ class MySystem(AbstractSystem):
         super().__init__(latent_dim, embed_dim)
 ```
 
-Documentation for each of the abstract methods can be found in [dynadojo/abstractions](dynadojo/abstractions.py). For controlled systems, developers must also implement the `act` method.
+Documentation for each of the abstract methods can be found in [dynadojo/abstractions](dynadojo/abstractions.py). 
 
-To verify that your system works, try using the `tester.py` module.
+Use `tester.py` to verify that your new system accurately integrates with DynaDojo.
 
 
 ## Examples
