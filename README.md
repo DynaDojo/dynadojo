@@ -12,7 +12,6 @@ By iteratively adjusting the number of sample and testing performance generalize
 - [Citing](#citing)
 - [License](#license)
 
-
 ## Installation
 
 You can install DynaDojo with `pip`.
@@ -26,10 +25,42 @@ pip install dynadojo
 
 `DynaDojo` comes with three off-the-shelf challenges: `FixedError`, `FixedComplexity`, and `FixedTrainSize`. More information about each can be found in the paper.
 
+### Examples
 For demonstrations, please see:
-* [Fixed Error]()
-* [Fixed Complexity]()
-* [Fixed Train Size]()
+* [Fixed Error](demos/fixed_error_demo.ipynb)
+* [Fixed Complexity](demos/fixed_complexity_demo.ipynb)
+* [Fixed Train Size](demos/fixed_train_size_demo.ipynb)
+
+```python
+from dynadojo.systems import LDSSystem
+from dynadojo.baselines import LinearRegression, DNN
+from dynadojo.challenges import FixedComplexity
+import pandas as pd
+
+
+challenge = FixedComplexity(
+    N=[10, 100, 1000],  # number of training examples
+    l=3,  # latent dimension
+    e=3,  # embed dimension
+    t=50,  # timesteps
+    control_horizons=0,
+    max_control_cost_per_dim=0,
+    system_cls=LDSSystem,
+    reps=10,
+    test_examples=50,
+    test_timesteps=50,
+)
+data1 = challenge.evaluate(LinearRegression, id="linear regression")
+data2 = challenge.evaluate(DNN, model_kwargs={"activation": "relu"}, fit_kwargs={"epochs": 20}, id="nonlinear network")
+data3 = challenge.evaluate(DNN, fit_kwargs={"epochs": 20}, id="linear network")
+data = pd.concat((data1, data2, data3))
+challenge.plot(data)
+```
+<b>Out:</b>
+<p align="center">
+<img src="graphics/fixed_comp.png">
+</p>
+
 
 # Systems
 
@@ -60,7 +91,7 @@ class MySystem(AbstractSystem):
         super().__init__(latent_dim, embed_dim)
 ```
 
-Documentation for each of the abstract methods can be found in [dynadojo/abstractions](https://github.com/FlyingWorkshop/DynaScale/blob/c62e1abb0275a8c72931bc10177a8ba9a44424f3/dynadojo/dynadojo/abstractions.py). For controlled systems, developers must also implement the `act` method.
+Documentation for each of the abstract methods can be found in [dynadojo/abstractions](dynadojo/abstractions.py). For controlled systems, developers must also implement the `act` method.
 
 To verify that your system works, try using the `tester.py` module.
 
@@ -148,7 +179,9 @@ As we can see, the linear model does much better! This is because linear models 
 
 ## Citing
 
-Pending
+```angular2html
+
+```
 
 ## License
 
