@@ -1,4 +1,5 @@
 *.pyc
+ndlib_main
 playground.ipynb
 venv
 .ipynb_checkpoints
