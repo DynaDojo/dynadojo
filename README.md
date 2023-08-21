@@ -66,7 +66,7 @@ challenge.plot(data)
 
 ## Pre-Build Systems
 
-DynaDojo comes with [TODO] pre-built systems:
+DynaDojo comes with 18 pre-built systems:
 1. [Cellular Automata](dynadojo/systems/ca.py)
 2. [Threshold Linear Networks](dynadojo/systems/ctln.py)
 3. [N-Body Systems](dynadojo/systems/santi.py)
