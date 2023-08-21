@@ -52,14 +52,14 @@ class CompetitiveLVSystem(AbstractSystem):
 
     def _make_R(self):
         # r[i] must be positive
-        return np.abs(np.random.normal(0, 0.5, (self._latent_dim)))
+        return np.abs(self._rng.normal(0, 0.5, (self._latent_dim)))
 
     def _make_K(self, minK, maxK):
-        return np.random.uniform(minK, maxK, (self._latent_dim))
+        return self._rng.uniform(minK, maxK, (self._latent_dim))
 
     def _make_A(self):
         # inter-species is all positive in competitive
-        A = np.abs(np.random.normal(
+        A = np.abs(self._rng.normal(
             0, 1.0, (self._latent_dim, self._latent_dim)))
         for i in range(self._latent_dim):
             for j in range(self._latent_dim):
@@ -69,21 +69,21 @@ class CompetitiveLVSystem(AbstractSystem):
         return A / self.K
 
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
-        x0 = []
+        all = []
         for _ in range(n):
-            temp = []
+            x0 = []
             for s in range(self._latent_dim):
                 if in_dist:
-                    number = int(np.random.uniform(
+                    number = int(self._rng.uniform(
                         self.IND_range[0] * self.K[s], self.IND_range[1] * self.K[s]))
                 else:
-                    number = int(np.random.uniform(
+                    number = int(self._rng.uniform(
                         self.OOD_range[0] * self.K[s], self.OOD_range[1] * self.K[s]))
                 number = np.max([1, number])
-                temp.append(number)
-            x0.append(temp)
+                x0.append(number)
+            all.append(x0)
 
-        return x0
+        return all
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
@@ -93,7 +93,7 @@ class CompetitiveLVSystem(AbstractSystem):
             i = np.argmin(np.abs(t - time))
 
             if noisy:
-                noise = np.random.normal(
+                noise = self._rng.normal(
                     0, self.noise_scale, (self.latent_dim))
                 dX = (X * self.R * ((1 - (self.A @ X))+noise)) + u[i]
             else:

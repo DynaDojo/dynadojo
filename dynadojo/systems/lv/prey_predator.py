@@ -28,9 +28,6 @@ Predator:
 
 """
 
-# TODO seed, comment description, cleanup init conds
-
-
 class PreyPredatorSystem(AbstractSystem):
     def __init__(self, latent_dim, embed_dim,
                  minK=1,
@@ -38,6 +35,10 @@ class PreyPredatorSystem(AbstractSystem):
                  noise_scale=0.05,
                  IND_range=(0.1, 0.5),  # prevent spawning extinct species
                  OOD_range=(0.5, 0.9),
+                 R_range=(0.0, 0.5),
+                 prey_intra_range=(0.0,0.1),
+                 predator_intra_range=(0.0,0.1),
+                 pZeroInteraction=0.1,
                  nPrey=None,
                  seed=None):
         super().__init__(latent_dim, embed_dim)
@@ -50,12 +51,19 @@ class PreyPredatorSystem(AbstractSystem):
         self.minK = minK
         self.maxK = maxK
 
+        self.R_range = R_range
+        self.pZeroInteraction = pZeroInteraction
+        self.prey_intra_range = prey_intra_range
+        self.predator_intra_range = predator_intra_range
+
+        self._rng = np.random.default_rng(seed)
+
         self.nPrey = nPrey
         if (not self.nPrey):
             if latent_dim == 1:
-                self.nPrey = np.random.randint(0, 1)
+                self.nPrey = self._rng.randint(0, 1)
             else:
-                self.nPrey = np.random.randint(1, self.latent_dim)
+                self.nPrey = self._rng.randint(1, self.latent_dim)
 
         self.K = self._make_K(self.minK, self.maxK)  # Carrying capacity
         self.R = self._make_R()  # Growth Rate
@@ -67,7 +75,7 @@ class PreyPredatorSystem(AbstractSystem):
     def _make_R(self):
         R = []
         for i in range(self._latent_dim):
-            r = np.random.normal(0.0, 0.5)
+            r = self._rng.normal(self.R_range)
             if i < self.nPrey:
                 # R[i] must be positive for prey
                 r = np.abs(r)
@@ -81,22 +89,22 @@ class PreyPredatorSystem(AbstractSystem):
         K = []
         for i in range(self._latent_dim):
             if i < self.nPrey:
-                k = np.random.uniform(minK, maxK*2)
+                k = self._rng.uniform(minK, maxK*2)
             else:
-                k = np.random.uniform(minK, maxK)
+                k = self._rng.uniform(minK, maxK)
             K.append(k)
         return K
 
     def _make_A(self):
-        A = np.random.normal(0, 1, (self._latent_dim, self._latent_dim))
+        A = self._rng.normal(0, 1, (self._latent_dim, self._latent_dim))
         for i in range(self._latent_dim):
             for j in range(self._latent_dim):
                 if i == j:
                     if i < self.nPrey:
                         # intraspecies prey is not harsh, but needed negative to prevent infinite growth
-                        A[i][j] = -1 * np.abs(np.random.normal(0, 0.01))
+                        A[i][j] = -1 * np.abs(self._rng.normal(self.prey_intra_range))
                     else:
-                        A[i][j] = -1 * np.abs(np.random.normal(0, 0.1))
+                        A[i][j] = -1 * np.abs(self._rng.normal(self.predator_intra_range))
                 elif i < self.nPrey:
                     # two preys do not interact
                     if j < self.nPrey:
@@ -105,7 +113,7 @@ class PreyPredatorSystem(AbstractSystem):
                     # prey is negative interaction of predator
                     else:
                         # no interaction probability
-                        if (np.random.random() < 0.1):
+                        if (self._rng.random() < self.pZeroInteraction):
                             A[i][j] = 0
                             A[j][i] = 0
                         else:
@@ -115,7 +123,7 @@ class PreyPredatorSystem(AbstractSystem):
                 elif i >= self.nPrey:
                     if j >= self.nPrey:
                         # no interaction probability
-                        if (np.random.random() < 0.1):
+                        if (self._rng.random() < self.pZeroInteraction):
                             A[i][j] = 0
                             A[j][i] = 0
                         # two predators CAN interact
@@ -126,21 +134,21 @@ class PreyPredatorSystem(AbstractSystem):
         return A / self.K
 
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
-        x0 = []
+        all = []
         for _ in range(n):
-            temp = []
+            x0 = []
             for s in range(self._latent_dim):
                 if in_dist:
-                    number = int(np.random.uniform(
+                    number = int(self._rng.uniform(
                         self.IND_range[0] * self.maxK, self.IND_range[1] * self.maxK))
                 else:
-                    number = int(np.random.uniform(
+                    number = int(self._rng.uniform(
                         self.OOD_range[0] * self.maxK, self.OOD_range[1] * self.maxK))
                 number = np.max([1, number])
-                temp.append(number)
-            x0.append(temp)
+                x0.append(number)
+            all.append(x0)
 
-        return x0
+        return all
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
@@ -150,7 +158,7 @@ class PreyPredatorSystem(AbstractSystem):
             i = np.argmin(np.abs(t - time))
             dX = []
             if noisy:
-                noise = np.random.normal(
+                noise = self._rng.normal(
                     0, self.noise_scale, (self.latent_dim))
             else:
                 noise = np.zeros((self.latent_dim))
