@@ -73,8 +73,24 @@ DynaDojo comes with [TODO] pre-built systems:
 4. [Linear Dynamical Systems](dynadojo/systems/lds.py)
 5. [Generalized Lorenz](dynadojo/systems/lorenz.py)
 6. [Spiking Neural Network](dynadojo/systems/snn.py)
-7. [Lotka-Volterra Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
-8. [Lotka-Volterra Competitive](dynadojo/systems/lv/competitive.py)
+7. [Kuramoto N-Oscillators](dynadojo/systems/kuramoto.py)
+
+Lotka-Volterra
+8. [Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
+9. [Competitive LV](dynadojo/systems/lv/competitive.py)
+
+Opinion
+10. Daussian
+11. [Algorithmic Bias](dynadojo/systems/opinion/algorithmic_bias.py)
+12. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/algorithmic_bias_media.py)
+13. HK
+14. [WHK](dynadojo/systems/opinion/whk.py)
+15. [ARWHK](dynadojo/systems/opinion/arwhk.py)
+
+Epidemic
+16. [SIR](dynadojo/systems/epidemic/sir.py)
+17. [SIS](dynadojo/systems/epidemic/sis.py)
+18. [SEIS](dynadojo/systems/epidemic/seis.py)
 
 ## Adding Systems
 
