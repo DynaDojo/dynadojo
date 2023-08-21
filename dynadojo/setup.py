@@ -3,9 +3,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="dynadojo",
-    version="0.2.0",
+    version="0.2.4",
     description="An extensible platform for benchmarking sample efficiency in dynamical system identification",
-    url="https://github.com/FlyingWorkshop/DynaDojo",
+    url="https://github.com/FlyingWorkshop/dynadojo",
     author="Logan Mondal Bhamidipaty",
     author_email="loganmb@stanford.edu",
     license="MIT",
@@ -15,7 +15,6 @@ setup(
         "Programming Language :: Python :: 3.10"
     ],
     install_requires=[
-        "tqdm>=4.65.0",
         "numpy>=1.23.5",
         "torch>=2.0.1",
         "torchdiffeq>=0.2.3",
@@ -29,6 +28,11 @@ setup(
         "matplotlib",
         "pandas",
         "networkx",
+        "rebound",
+        "ndlib",
+        "pydmd",
+        "pysindy",
+        "tqdm",
     ],
     packages=find_packages(),
 )
