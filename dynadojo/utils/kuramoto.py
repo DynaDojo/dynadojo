@@ -1,0 +1,25 @@
+import pylab as plt
+import numpy as np
+from matplotlib.collections import LineCollection
+from mpl_toolkits.mplot3d.art3d import Line3DCollection
+from sklearn.decomposition import PCA
+
+MAX_LINES = 30
+
+
+def plot(grid: list[np.ndarray], timesteps, target_dim: int = 3, max_lines=MAX_LINES, gridlabels: list[str] = None):
+    grid = np.array([x[:max_lines] for x in grid])
+
+    
+    for idx, dataset in enumerate(grid):
+        plt.figure(figsize=(16, 8))
+
+        time = np.linspace(0, timesteps, len(dataset[0])-1)
+
+        for comp in range(len(dataset[0][0])):
+            plt.subplot(len(dataset[0][0]),1,comp+1)
+            plt.plot(time, np.diff(dataset[0][:,comp])/0.05,'r')
+            plt.ylabel(comp+1)
+
+        plt.suptitle(gridlabels[idx])
+    plt.show()
