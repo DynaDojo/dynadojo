@@ -27,7 +27,7 @@ def test_fixed_complexity(N: list[int], l: int, e: int, t: int, max_control_cost
 
 
 def test_system(system_module: str,
-                n=3, l=3, e=3, t=2, max_control_cost_per_dim=0, control_horizons=0, test_examples=2, test_timesteps=10,
+                n=1, l=4, e=4, t=2, max_control_cost_per_dim=0, control_horizons=0, test_examples=2, test_timesteps=10,
                 system_kwargs: dict = None):
     system_cls = get_test_system(system_module)
     reps = 1
