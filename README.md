@@ -5,15 +5,21 @@ By iteratively adjusting the number of sample and testing performance generalize
 
 ## Installation
 
-You can install DynaDojo with `pip`. Please note that you will have to install some dependencies yourself before installing DynaDojo.
+You can install DynaDojo with `pip`.
 
 ```python
-pip install dynadojo==0.1.0
+pip install dynadojo
 ```
 
 ## Pre-Built Challenges
 
 `DynaDojo` comes with three off-the-shelf challenges: `FixedError`, `FixedComplexity`, and `FixedTrainSize`. More information about each can be found in the paper.
+
+For demonstrations, please see:
+* [Fixed Error]()
+* [Fixed Complexity]()
+
+
 
 ## Adding Systems
 
