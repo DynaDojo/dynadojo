@@ -3,7 +3,7 @@ DynaDojo is a playground for testing models in dynamical system idenficiation.
 
 By iteratively adjusting the number of sample and testing performance generalizes, the platform lets you evaluate your model on a growing number of dynamical systems.
 
-## Table of Contents
+# Table of Contents
 
 - [Installation](#installation)
 - [Challenges](#challenges)
@@ -12,7 +12,7 @@ By iteratively adjusting the number of sample and testing performance generalize
 - [Citing](#citing)
 - [License](#license)
 
-## Installation
+# Installation
 
 You can install DynaDojo with `pip`.
 
@@ -77,7 +77,7 @@ DynaDojo comes with [TODO] pre-built systems:
 8. [Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
 9. [Competitive LV](dynadojo/systems/lv/competitive.py)
 
-Opinion  
+Opinion
 10. Daussian  
 11. [Algorithmic Bias](dynadojo/systems/opinion/algorithmic_bias.py)  
 12. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/algorithmic_bias_media.py)  
