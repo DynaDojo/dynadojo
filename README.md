@@ -8,7 +8,7 @@ By iteratively adjusting the number of sample and testing performance generalize
 - [Installation](#installation)
 - [Challenges](#challenges)
 - [Systems](#systems)
-- [Baselines](#baselines)
+- [Models](#models)
 - [Citing](#citing)
 - [License](#license)
 
@@ -104,7 +104,6 @@ Nonlinearity is a hallmark of modern deep learning; however, there are some exce
 To start, let's create some LDS data using one of DynaDojo's off-the-shelf `LDSSystem`.
 
 ```python
-
 import dynadojo as dd
 import numpy as np
 
@@ -176,6 +175,41 @@ As we can see, the linear model does much better! This is because linear models 
 <p align="center">
 <img src="graphics/lds_example3.png">
 </p>
+
+# Models
+
+## Baselines
+
+DynaDojo comes with six baseline models:
+1. [CNN](dynadojo/baselines/cnn.py)
+2. [DMD](dynadojo/baselines/dmd.py) from the paper "Dynamic mode decomposition of numerical and experimental data"
+3. [DNN](dynadojo/baselines/dnn.py)
+4. [LPR](dynadojo/baselines/lpr.py)
+5. [LR](dynadojo/baselines/lr.py)
+6. [SINDy](dynadojo/baselines/sindy.py) from the paper "Discovering governing equations from data by sparse identification of nonlinear dynamical systems"
+
+## Adding Models
+Adding new models is simple with DynaDojo. The developer simply needs to implement two abstract methods `fit` and `predict`. If the model uses control, then the developer should also implement `act`. Skeleton code is provided below.
+
+```python
+import numpy as np
+
+from dynadojo.abstractions import AbstractModel
+
+
+class MyModel(AbstractModel):
+    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
+        super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
+        
+    def fit(self, x: np.ndarray, **kwargs) -> None:
+        pass
+
+    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
+        pass
+    
+    def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
+        pass
+```
 
 ## Citing
 
