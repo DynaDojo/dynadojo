@@ -64,6 +64,18 @@ challenge.plot(data)
 
 # Systems
 
+## Pre-Build Systems
+
+DynaDojo comes with [TODO] pre-built systems:
+1. [Cellular Automata](dynadojo/systems/ca.py)
+2. [Threshold Linear Networks](dynadojo/systems/ctln.py)
+3. [N-Body Systems](dynadojo/systems/santi.py)
+4. [Linear Dynamical Systems](dynadojo/systems/lds.py)
+5. [Generalized Lorenz](dynadojo/systems/lorenz.py)
+6. [Spiking Neural Network](dynadojo/systems/snn.py)
+7. [Lotka-Volterra Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
+8. [Lotka-Volterra Competitive](dynadojo/systems/lv/competitive.py)
+
 ## Adding Systems
 
 To add new systems to `DynaDojo`, you must subclass from `AbstractSystem`. Some skeleton code is provided below.
