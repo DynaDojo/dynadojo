@@ -74,8 +74,6 @@ DynaDojo comes with [TODO] pre-built systems:
 5. [Generalized Lorenz](dynadojo/systems/lorenz.py)
 6. [Spiking Neural Network](dynadojo/systems/snn.py)
 7. [Kuramoto N-Oscillators](dynadojo/systems/kuramoto.py)
-
-Lotka-Volterra
 8. [Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
 9. [Competitive LV](dynadojo/systems/lv/competitive.py)
 
