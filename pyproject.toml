@@ -30,4 +30,4 @@ classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
 
 [project.urls]
-Home = "https://github.com/FlyingWorkshop/dynadojo/tree/main"
+Home = "https://github.com/FlyingWorkshop/dynadojo/"
