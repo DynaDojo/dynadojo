@@ -77,18 +77,18 @@ DynaDojo comes with [TODO] pre-built systems:
 8. [Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
 9. [Competitive LV](dynadojo/systems/lv/competitive.py)
 
-Opinion
-10. Daussian
-11. [Algorithmic Bias](dynadojo/systems/opinion/algorithmic_bias.py)
-12. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/algorithmic_bias_media.py)
-13. HK
-14. [WHK](dynadojo/systems/opinion/whk.py)
-15. [ARWHK](dynadojo/systems/opinion/arwhk.py)
+Opinion  
+10. Daussian  
+11. [Algorithmic Bias](dynadojo/systems/opinion/algorithmic_bias.py)  
+12. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/algorithmic_bias_media.py)  
+13. HK  
+14. [WHK](dynadojo/systems/opinion/whk.py)  
+15. [ARWHK](dynadojo/systems/opinion/arwhk.py)  
 
-Epidemic
-16. [SIR](dynadojo/systems/epidemic/sir.py)
-17. [SIS](dynadojo/systems/epidemic/sis.py)
-18. [SEIS](dynadojo/systems/epidemic/seis.py)
+Epidemic  
+16. [SIR](dynadojo/systems/epidemic/sir.py)  
+17. [SIS](dynadojo/systems/epidemic/sis.py)  
+18. [SEIS](dynadojo/systems/epidemic/seis.py)  
 
 ## Adding Systems
 
