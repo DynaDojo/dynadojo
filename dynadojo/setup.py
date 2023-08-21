@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="dynadojo",
-    version="0.1.0",
+    version="0.2.0",
     description="An extensible platform for benchmarking sample efficiency in dynamical system identification",
     url="https://github.com/FlyingWorkshop/DynaDojo",
     author="Logan Mondal Bhamidipaty",
