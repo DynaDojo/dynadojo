@@ -14,6 +14,7 @@ class SimpleSystem(AbstractSystem):
                  out_dist_range=(-10, 0),
                  noise_scale=0.01,
                  t_range=(0, 1),
+                 seed=None
                  ):
         super().__init__(latent_dim, embed_dim)
 
@@ -23,7 +24,7 @@ class SimpleSystem(AbstractSystem):
         self._out_dist_range = out_dist_range
 
         self._noise_scale = noise_scale
-        self._rng = np.random.default_rng()
+        self._rng = np.random.default_rng(seed)
 
         self._embedder_sv_range = embedder_sv_range
         self._controller_sv_range = controller_sv_range
