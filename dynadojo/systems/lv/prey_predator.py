@@ -1,4 +1,4 @@
-from dynadojo.abstractions import AbstractSystem
+from ...abstractions import AbstractSystem
 
 from scipy.integrate import solve_ivp
 import scipy as scipy

@@ -1,3 +1,7 @@
+"""An extensible platform for benchmarking sample efficiency in dynamical system identification"""
+
+__version__ = "0.3.0"
+
 __author__ = "Logan Mondal Bhamidipaty, Tommy Anthony Bruzzese, Max Kanwal, Rami Ratl Mrad"
 __copyright__ = "Copyright 2023"
 __credits__ = ["Logan Mondal Bhamidipaty", "Tommy Anthony Bruzzese", "Max Kanwal", "Rami Ratl Mrad"]

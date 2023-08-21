@@ -2,7 +2,7 @@ import networkx as nx
 import ndlib.models.ModelConfig as mc
 import ndlib.models.epidemics as ep
 
-from dynadojo.abstractions import AbstractSystem
+from ...abstractions import AbstractSystem
 
 import numpy as np
 

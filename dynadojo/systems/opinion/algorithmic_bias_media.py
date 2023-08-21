@@ -1,8 +1,8 @@
 import networkx as nx
 import ndlib.models.ModelConfig as mc
-import ndlib_main.ndlib.models.opinions as op
+import ndlib.models.opinions as op
 
-from dynadojo.abstractions import AbstractSystem
+from ...abstractions import AbstractSystem
 
 import numpy as np
 
