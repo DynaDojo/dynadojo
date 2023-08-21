@@ -82,14 +82,14 @@ def plot(grid: list[np.ndarray], target_dim: int = 3, max_lines=MAX_LINES, speci
     dim = grid.shape[-1]
     fig = plt.figure(figsize=(16, 4))
     posidx = 1
-    for dataset in grid:
-        pos = 100 + len(grid) * 10 + posidx
+    for idx, dataset in enumerate(grid):
         ax = fig.add_subplot(1, len(grid), posidx)
 
         for i in range(len(dataset[0][0])):
             ydata = dataset[0][:, i]
             if specieslabels:
                 ax.plot(ydata, label=specieslabels[i])
+                ax.set_title(gridlabels[idx])
                 ax.legend()
             else:
                 ax.plot(ydata)

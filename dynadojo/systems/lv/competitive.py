@@ -1,6 +1,6 @@
 from dynadojo.abstractions import AbstractSystem
 
-from scipy.integrate import odeint, solve_ivp
+from scipy.integrate import solve_ivp
 import scipy as scipy
 import numpy as np
 
