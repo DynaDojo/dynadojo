@@ -1,4 +1,4 @@
-![Group 70 (1)](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/6f7d727f-00a9-4706-93b4-022f418f5f10)
+![Logo](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/297b41d5-d967-4b63-8b46-6fa54aca8703)
 
 
 **DynaDojo** is a gym environment for testing how models generalize and efficently use samples in dynamical system idenficiation. Our platform lets you understand how a model performs as various parameters are adjusted, including increasing the dataset size, changing the number of timesteps per trajectory, active learning (control), adding noise, adjusting the distribution of initial conditions, and more.
@@ -10,7 +10,7 @@ pip install dynadojo
 ```
 
 ## Introduction
-![Roles-Graphic (2)](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/157f97a3-ea73-43a0-bf7a-2697eddbfcc1)
+![Roles Graphic - no code](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/157f97a3-ea73-43a0-bf7a-2697eddbfcc1)
 
 There are three ways to interact with DynaDojo and users can take on multiple "hats" at a time. You can add new dynamical [Systems](#systems) to the platform, create set environments for adjusting parameters in a [Challenge](#challenges), or implement your [Model](#models) with our API to understand how it performs.
 
