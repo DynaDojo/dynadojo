@@ -64,7 +64,7 @@ challenge.plot(data)
 
 # Systems
 
-## Pre-Build Systems
+## Pre-Built Systems
 
 DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to opinion dynamics, ecology, and epidemology:
 1. [Cellular Automata](dynadojo/systems/ca.py)
@@ -78,12 +78,12 @@ DynaDojo comes with 17 pre-built systems that range from mature mathematic simul
 9. [Competitive LV](dynadojo/systems/lv/competitive.py)
 10. [Deffuant](dynadojo/systems/opinion/deffuant.py)     
 11. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/algorithmic_bias_media.py)  
-12. [HK](dynadojo/systems/opinion/hk.py)  
-13. [WHK](dynadojo/systems/opinion/whk.py)  
-14. [ARWHK](dynadojo/systems/opinion/arwhk.py)
-15. [SIR](dynadojo/systems/epidemic/sir.py)  
-16. [SIS](dynadojo/systems/epidemic/sis.py)  
-17. [SEIS](dynadojo/systems/epidemic/seis.py)  
+12. [Hegselmann-Krause (HK)](dynadojo/systems/opinion/hk.py)  
+13. [Weighted Hegselmann-Krause (WHK)](dynadojo/systems/opinion/whk.py)  
+14. [Attraction-Repulsion Weighted Hegselmann-Krause (ARWHK)](dynadojo/systems/opinion/arwhk.py)
+15. [SIR: Susceptible/Infected/Removed](dynadojo/systems/epidemic/sir.py)  
+16. [SIS: Susceptible/Infected/Susceptible](dynadojo/systems/epidemic/sis.py)  
+17. [SEIS: Susceptible/Exposed/Infected/Susceptible](dynadojo/systems/epidemic/seis.py)  
 
 ## Adding Systems
 
