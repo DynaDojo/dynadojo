@@ -48,9 +48,9 @@ challenge.plot(data)
 ```
 <b>Out (Fixed Complexity):</b>
 Note how for this LDSSystem, a linear network learns more from each added sample (larger decreases in error) than a nonlinear network, and how linear regression immediately saturates at very low error. These dynamics help contextualize model performance and comparision.
-<p align="center">
-    ![Group 71 (2)](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/dba4dc1a-f7fb-4af9-9324-2d4617c8ba7d)
-</p>
+
+![Fixed Complexity](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/f1ad9c50-eb6f-44be-8925-337aeaf35a3a)
+
 
 
 ## Systems
@@ -140,9 +140,9 @@ class MyModel(AbstractModel):
 
 
 ## Examples
-### Example 1: Comparing DNN activations on LDSs
+### Example 1: Comparing DNN activations on LDS
 
-Nonlinearity is a hallmark of modern deep learning; however, there are some exceptional tasks where linear models actually outperform nonlinear neural networks. In this example, we explore this phenomena through linear dynamical systems (LDSs) and deep neural networks (DNNs).
+Nonlinearity is a hallmark of modern deep learning; however, there are some exceptional tasks where linear models actually outperform nonlinear neural networks. In this example, we explore this phenomena through linear dynamical systems (LDS) and deep neural networks (DNNs).
 
 To start, let's create some LDS data using one of DynaDojo's off-the-shelf `LDSSystem`.
 
