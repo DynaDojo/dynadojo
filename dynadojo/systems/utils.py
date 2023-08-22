@@ -1,6 +1,9 @@
 import numpy as np
 from scipy.stats import ortho_group
 from scipy.integrate import solve_ivp
+import networkx as nx
+import ndlib.models.ModelConfig as mc
+import ndlib.models.epidemics as ep
 
 from ..abstractions import AbstractSystem
 
@@ -10,21 +13,20 @@ class SimpleSystem(AbstractSystem):
                  # singular values are non-neg by convention; >0 since we don't want a nontrivial null space
                  embedder_sv_range=(0.1, 1),
                  controller_sv_range=(0.1, 1),
-                 in_dist_range=(0, 10),
-                 out_dist_range=(-10, 0),
+                 IND_range=(0, 10),
+                 OOD_range=(-10, 0),
                  noise_scale=0.01,
                  t_range=(0, 1),
-                 seed=None
                  ):
         super().__init__(latent_dim, embed_dim)
 
         self._t_range = t_range
 
-        self._in_dist_range = in_dist_range
-        self._out_dist_range = out_dist_range
+        self.IND_range = IND_range
+        self.OOD_range = OOD_range
 
         self._noise_scale = noise_scale
-        self._rng = np.random.default_rng(seed)
+        self._rng = np.random.default_rng()
 
         self._embedder_sv_range = embedder_sv_range
         self._controller_sv_range = controller_sv_range
@@ -56,7 +58,7 @@ class SimpleSystem(AbstractSystem):
 
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         """Uniformly samples embedded-dimensional points from an inside or outside distribution"""
-        init_cond_range = self._in_dist_range if in_dist else self._out_dist_range
+        init_cond_range = self.IND_range if in_dist else self.OOD_range
         return self._rng.uniform(*init_cond_range, (n, self.embed_dim))
 
     def calc_error(self, x, y) -> float:
@@ -97,3 +99,79 @@ class SimpleSystem(AbstractSystem):
         M = U @ sigma @ V
         return M
 
+class NetworkSystem(AbstractSystem):
+    def __init__(self, latent_dim, embed_dim,
+                 noise_scale,
+                 IND_range, 
+                 OOD_range,
+                 seed=None):
+
+        super().__init__(latent_dim, embed_dim)
+
+        assert embed_dim == latent_dim
+        self._rng = np.random.default_rng(seed)
+
+        self.noise_scale = noise_scale
+        self.IND_range = IND_range
+        self.OOD_range = OOD_range
+
+    def create_model(self, x0):
+        return
+
+    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+        x0 = []
+        for _ in range(n):
+            if in_dist:
+                x0.append({node: np.random.uniform(
+                    self.IND_range[0], self.IND_range[1]) for node in range(self.latent_dim)})
+            else:
+                x0.append({node: np.random.uniform(
+                    self.OOD_range[0], self.OOD_range[1]) for node in range(self.latent_dim)})
+
+        return x0
+
+        
+
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+        data = []
+
+        if noisy:
+            noise = np.random.normal(
+                0, self.noise_scale, (self.latent_dim))
+        else:
+            noise = np.zeros((self.latent_dim))
+
+        def dynamics(x0):
+            self.create_model(x0)
+
+            iterations = self.model.iteration_bunch(timesteps)
+            dX = []
+            for iteration in iterations:
+                step = []
+                for idx in range(self.latent_dim):
+                    if (idx in iteration["status"]):
+                        step.append(iteration["status"][idx])
+                    else:
+                        step.append(dX[-1][idx])
+                dX.append(step + noise)
+            return dX
+
+        if control:
+            for x0, u in zip(init_conds, control):
+                sol = dynamics(x0)
+                data.append(sol)
+
+        else:
+            for x0 in init_conds:
+                sol = dynamics(x0)
+                data.append(sol)
+
+        data = np.transpose(data, axes=(0, 2, 1))
+        return data
+
+    def calc_error(self, x, y) -> float:
+        error = x - y
+        return np.mean(error ** 2) / self.latent_dim
+
+    def calc_control_cost(self, control: np.ndarray) -> float:
+        return np.linalg.norm(control, axis=(1, 2), ord=2)
