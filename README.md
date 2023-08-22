@@ -9,12 +9,12 @@ You can install DynaDojo with `pip`:
 pip install dynadojo
 ```
 
-# Introduction
+## Introduction
 ![Roles-Graphic (2)](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/157f97a3-ea73-43a0-bf7a-2697eddbfcc1)
 
 There are three ways to interact with DynaDojo and users can take on multiple "hats" at a time. You can add new dynamical [Systems](#systems) to the platform, create set environments for adjusting parameters in a [Challenge](#challenges), or implement your [Model](#models) with our API to understand how it performs.
 
-# Challenges
+## Challenges
 
 ![toychallenges-chips](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/dcae54df-ef98-48d4-ad2e-e37c4054e67b)
 
@@ -52,9 +52,7 @@ challenge.plot(data)
 </p>
 
 
-# Systems
-
-## Pre-Built Systems
+## Systems
 
 DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to bounded confidence opinion dynamics, ecology, and epidemology:
 1. [Cellular Automata](dynadojo/systems/ca.py)
@@ -75,9 +73,9 @@ DynaDojo comes with 17 pre-built systems that range from mature mathematic simul
 16. [SIS: Susceptible/Infected/Susceptible](dynadojo/systems/epidemic/sis.py)  
 17. [SEIS: Susceptible/Exposed/Infected/Susceptible](dynadojo/systems/epidemic/seis.py)  
 
-## Adding Systems
+### Adding Systems
 
-To add new systems to `DynaDojo`, you must subclass from `AbstractSystem`. Some skeleton code is provided below.
+To add new systems to `DynaDojo`, you subclass from `AbstractSystem` and implement the required functions listed below. It is easy to build a System from scratch, or to use existing packages like `scipy` and `NDLIB` and wrap them for our API.
 
 ```python
 import numpy as np
@@ -102,9 +100,45 @@ class MySystem(AbstractSystem):
         super().__init__(latent_dim, embed_dim)
 ```
 
-Documentation for each of the abstract methods can be found in [dynadojo/abstractions](dynadojo/abstractions.py). 
+Documentation for each of the abstract methods can be found in [dynadojo/abstractions](dynadojo/abstractions.py). Use `tester.py` to verify that your new system accurately integrates with DynaDojo.
 
-Use `tester.py` to verify that your new system accurately integrates with DynaDojo.
+
+# Models
+
+## Baselines
+
+DynaDojo comes with six baseline models:
+1. [CNN](dynadojo/baselines/cnn.py)
+2. [DMD](dynadojo/baselines/dmd.py) (Schmid, Peter J., "Dynamic mode decomposition of numerical and experimental data")
+3. [DNN](dynadojo/baselines/dnn.py)
+4. [LPR](dynadojo/baselines/lpr.py)
+5. [LR](dynadojo/baselines/lr.py)
+6. [SINDy](dynadojo/baselines/sindy.py) (Brunton, Steven L., Joshua L. Proctor, and J. Nathan Kutz., "Discovering governing equations from data by sparse identification of nonlinear dynamical systems")
+
+## Adding Models
+Adding new models is simple with DynaDojo. The developer simply needs to implement two abstract methods `fit` and `predict`. A model can also optionally use control with the `act` method.
+
+```python
+import numpy as np
+
+from dynadojo.abstractions import AbstractModel
+
+
+class MyModel(AbstractModel):
+    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
+        super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
+        
+    def fit(self, x: np.ndarray, **kwargs) -> None:
+        pass
+
+    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
+        pass
+
+    #optional, used when control desired
+    def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
+        pass
+```
+
 
 
 ## Examples
@@ -186,41 +220,6 @@ As we can see, the linear model does much better! This is because linear models 
 <p align="center">
 <img src="graphics/lds_example3.png">
 </p>
-
-# Models
-
-## Baselines
-
-DynaDojo comes with six baseline models:
-1. [CNN](dynadojo/baselines/cnn.py)
-2. [DMD](dynadojo/baselines/dmd.py) from the paper "Dynamic mode decomposition of numerical and experimental data"
-3. [DNN](dynadojo/baselines/dnn.py)
-4. [LPR](dynadojo/baselines/lpr.py)
-5. [LR](dynadojo/baselines/lr.py)
-6. [SINDy](dynadojo/baselines/sindy.py) from the paper "Discovering governing equations from data by sparse identification of nonlinear dynamical systems"
-
-## Adding Models
-Adding new models is simple with DynaDojo. The developer simply needs to implement two abstract methods `fit` and `predict`. If the model uses control, then the developer should also implement `act`. Skeleton code is provided below.
-
-```python
-import numpy as np
-
-from dynadojo.abstractions import AbstractModel
-
-
-class MyModel(AbstractModel):
-    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
-        super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
-        
-    def fit(self, x: np.ndarray, **kwargs) -> None:
-        pass
-
-    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
-        pass
-    
-    def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
-        pass
-```
 
 ## Citing
 
