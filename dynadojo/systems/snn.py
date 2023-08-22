@@ -12,16 +12,16 @@ RNG = np.random.default_rng()
 class SNNSystem(LDSSystem):
 
     def __init__(self, latent_dim, embed_dim,
-                 init_cond_in_dist_range=(0, 1),
-                 init_cond_out_dist_range=(-1, 0)
+                 in_dist_range=(0, 1),
+                 out_dist_range=(-1, 0)
                  ):
         assert embed_dim >= 2 * latent_dim, "REQUIRED: embed_dim ≥ 2 * latent_dim"
         super().__init__(latent_dim, embed_dim,
-                         init_cond_in_dist_range=init_cond_in_dist_range,
-                         init_cond_out_dist_range=init_cond_out_dist_range,
+                         in_dist_range=in_dist_range,
+                         out_dist_range=out_dist_range,
                          )
         c = lambda t: np.zeros(latent_dim)
-        self.LDS = LinearDynamicalSystem(self.A, self.B, c)
+        self.LDS = LinearDynamicalSystem(self.A, self._controller, c)
         self.SNN = SpikingNeuralNetwork(self.LDS,
                                         N=embed_dim,
                                         max_error=1 / 2)  # hyperparam: max_error
@@ -85,7 +85,7 @@ class LinearDynamicalSystem:
                             vectorized=False
                             )
         return results
-
+#
 
 class SpikingNeuralNetwork:
 
