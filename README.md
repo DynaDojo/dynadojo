@@ -66,7 +66,7 @@ challenge.plot(data)
 
 ## Pre-Built Systems
 
-DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to opinion dynamics, ecology, and epidemology:
+DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to bounded confidence opinion dynamics, ecology, and epidemology:
 1. [Cellular Automata](dynadojo/systems/ca.py)
 2. [Threshold Linear Networks](dynadojo/systems/ctln.py)
 3. [N-Body Systems](dynadojo/systems/santi.py)
