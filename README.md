@@ -1,11 +1,10 @@
-# DynaDojo
-DynaDojo is a playground for testing models in dynamical system idenficiation. 
+![Group 70 (1)](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/6f7d727f-00a9-4706-93b4-022f418f5f10)
 
-By iteratively adjusting the number of sample and testing performance generalizes, the platform lets you evaluate your model on a growing number of dynamical systems.
 
-# Table of Contents
+**DynaDojo** is a gym environment for testing how models generalize and efficently use samples in dynamical system idenficiation. Our platform lets you understand how a model performs as various parameters are adjusted, including increasing the dataset size, changing the number of timesteps per trajectory, active learning (control), adding noise, adjusting the distribution of initial conditions, and more.
 
 - [Installation](#installation)
+- [Introduction](#introduction)
 - [Challenges](#challenges)
 - [Systems](#systems)
 - [Models](#models)
@@ -19,17 +18,16 @@ You can install DynaDojo with `pip`.
 ```shell
 pip install dynadojo
 ```
+# Introduction
+
+There are three ways to interact with DynaDojo and users can take on multiple "hats" at a time.
 
 # Challenges
-## Pre-Built Challenges
 
-`DynaDojo` comes with three off-the-shelf challenges: `FixedError`, `FixedComplexity`, and `FixedTrainSize`. More information about each can be found in the paper.
+![toychallenges-chips](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/dcae54df-ef98-48d4-ad2e-e37c4054e67b)
 
-### Examples
-For demonstrations, please see:
-* [Fixed Error](demos/fixed_error_demo.ipynb)
-* [Fixed Complexity](demos/fixed_complexity_demo.ipynb)
-* [Fixed Train Size](demos/fixed_train_size_demo.ipynb)
+`DynaDojo` comes with three off-the-shelf challenges: [Fixed Error](demos/fixed_error_demo.ipynb), [Fixed Complexity](demos/fixed_complexity_demo.ipynb), and [Fixed Train Size](demos/fixed_train_size_demo.ipynb).
+
 
 ```python
 from dynadojo.systems import LDSSystem
