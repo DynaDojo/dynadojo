@@ -1,2 +1,5 @@
-from .algorithmic_bias_media import BiasMediaSystem
-from .algorithmic_bias import BiasSystem
+from .media_bias import MediaBiasSystem
+from .deffuant import DeffuantSystem
+from .whk import WHKSystem
+from .arwhk import ARWHKSystem
+from .hk import HKSystem
