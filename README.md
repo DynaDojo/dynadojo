@@ -64,9 +64,9 @@ challenge.plot(data)
 
 # Systems
 
-## Pre-Build Systems
+## Pre-Built Systems
 
-DynaDojo comes with [TODO] pre-built systems:
+DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to opinion dynamics, ecology, and epidemology:
 1. [Cellular Automata](dynadojo/systems/ca.py)
 2. [Threshold Linear Networks](dynadojo/systems/ctln.py)
 3. [N-Body Systems](dynadojo/systems/santi.py)
@@ -74,17 +74,16 @@ DynaDojo comes with [TODO] pre-built systems:
 5. [Generalized Lorenz](dynadojo/systems/lorenz.py)
 6. [Spiking Neural Network](dynadojo/systems/snn.py)
 7. [Kuramoto N-Oscillators](dynadojo/systems/kuramoto.py)
-8. [Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
-9. [Competitive LV](dynadojo/systems/lv/competitive.py)
-10. Daussian  
-11. [Algorithmic Bias](dynadojo/systems/opinion/algorithmic_bias.py)  
-12. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/algorithmic_bias_media.py)  
-13. HK  
-14. [WHK](dynadojo/systems/opinion/whk.py)  
-15. [ARWHK](dynadojo/systems/opinion/arwhk.py)
-16. [SIR](dynadojo/systems/epidemic/sir.py)  
-17. [SIS](dynadojo/systems/epidemic/sis.py)  
-18. [SEIS](dynadojo/systems/epidemic/seis.py)  
+8. [Generalized Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
+9. [Competitive Lotka Volterra](dynadojo/systems/lv/competitive.py)
+10. [Deffuant](dynadojo/systems/opinion/deffuant.py)     
+11. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/algorithmic_bias_media.py)  
+12. [Hegselmann-Krause (HK)](dynadojo/systems/opinion/hk.py)  
+13. [Weighted Hegselmann-Krause (WHK)](dynadojo/systems/opinion/whk.py)  
+14. [Attraction-Repulsion Weighted Hegselmann-Krause (ARWHK)](dynadojo/systems/opinion/arwhk.py)
+15. [SIR: Susceptible/Infected/Removed](dynadojo/systems/epidemic/sir.py)  
+16. [SIS: Susceptible/Infected/Susceptible](dynadojo/systems/epidemic/sis.py)  
+17. [SEIS: Susceptible/Exposed/Infected/Susceptible](dynadojo/systems/epidemic/seis.py)  
 
 ## Adding Systems
 

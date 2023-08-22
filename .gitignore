@@ -7,3 +7,7 @@ grave
 todo.txt
 cache
 .idea
+*.gz
+*.whl
+*.gz
+*.gz

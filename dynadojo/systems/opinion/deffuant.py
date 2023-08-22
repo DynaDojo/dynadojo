@@ -1,31 +1,36 @@
 import networkx as nx
 import ndlib.models.ModelConfig as mc
-import ndlib.models.epidemics as ep
+import ndlib.models.opinions as op
 
-from ..utils import EpidemicSystem
+from ..utils import OpinionSystem
 
-class SIRSystem(EpidemicSystem):
+import numpy as np
+
+class DeffuantSystem(OpinionSystem):
     def __init__(self, latent_dim, embed_dim,
                  noise_scale=0.01,
-                 IND_range=(0, 3),
-                 OOD_range=(0, 3),
-                 p_infection=0.1,
-                 p_removal=0.5,
-                 p_edge=0.1,
+                 IND_range=(0, 0.5),
+                 OOD_range=(0.5, 1),
+                 epsilon=0.32,
+                 bias=0,
+                 p_edge=1,
                  seed=None):
 
         super().__init__(latent_dim, embed_dim, noise_scale, IND_range, OOD_range, seed)
 
         assert embed_dim == latent_dim
+        assert latent_dim > 30
 
+        # Network topology
         self.g = nx.erdos_renyi_graph(self.latent_dim, p_edge)
-        
+
+        # Model configuration
         self.config = mc.Configuration()
-        self.config.add_model_parameter('beta', p_infection)
-        self.config.add_model_parameter('gamma', p_removal)
+        self.config.add_model_parameter("epsilon", epsilon)
+        self.config.add_model_parameter("gamma", bias)
 
     def create_model(self, x0):
-        self.model = ep.SIRModel(self.g)
+        self.model = op.AlgorithmicBiasModel(self.g)
         self.model.set_initial_status(self.config)
         self.model.status = x0
         self.model.initial_status = x0

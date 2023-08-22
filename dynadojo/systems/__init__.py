@@ -6,4 +6,5 @@ from .ctln import CTLNSystem
 from .ca import CASystem
 from .snn import SNNSystem
 from .lorenz import LorenzSystem
+from .kuramoto import KuramotoSystem
 # from .santi import NBodySystem
