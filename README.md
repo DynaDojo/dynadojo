@@ -14,7 +14,8 @@ There are three ways to interact with DynaDojo and users can take on multiple "h
 
 ![Roles-Graphic-GitHub](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/6dc9cdd6-b169-4a48-881f-218994a067f6)
 
-![Extensible-params-GitHub](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/7f7d5e25-9ff6-4fb5-9fa6-32d46385c33d)
+![Extensible-params-GitHub](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/bbdef9f9-f2b6-4801-a3ca-3c8e9c1a19ad)
+
 
 
 
