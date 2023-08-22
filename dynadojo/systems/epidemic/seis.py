@@ -14,11 +14,10 @@ class SEISSystem(EpidemicSystem):
                  p_edge=0.1,
                  latency=0.05,
                  fraction_infected=0.1, #initial infections
+                 group_status=False,
                  seed=None):
 
-        super().__init__(latent_dim, embed_dim, noise_scale, IND_range, OOD_range, seed)
-
-        assert embed_dim == latent_dim
+        super().__init__(latent_dim, embed_dim, noise_scale, IND_range, OOD_range, group_status, seed)
 
         self.g = nx.erdos_renyi_graph(self.latent_dim, p_edge)
         

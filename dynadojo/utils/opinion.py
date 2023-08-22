@@ -4,7 +4,7 @@ import numpy as np
 MAX_LINES = 30
 
 
-def plot(grid: list[np.ndarray], target_dim: int = 3, max_lines=MAX_LINES, gridlabels: list[str] = None):
+def plot(grid: list[np.ndarray], target_dim: int = 3, max_lines=MAX_LINES, datalabels: list[str] = None, gridlabels: list[str] = None):
     grid = np.array([x[:max_lines] for x in grid])
     fig = plt.figure(figsize=(16, 4))
 
@@ -14,8 +14,11 @@ def plot(grid: list[np.ndarray], target_dim: int = 3, max_lines=MAX_LINES, gridl
 
         for i in range(len(dataset[0])):
             ydata = dataset[0][i]
-
-            ax.plot(ydata)
+            if(datalabels):
+                ax.plot(ydata, label=datalabels[i])
+                ax.legend()
+            else:
+                ax.plot(ydata)
             ax.set_title(gridlabels[idx])
         posidx += 1
 
