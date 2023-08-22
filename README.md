@@ -76,15 +76,14 @@ DynaDojo comes with 18 pre-built systems:
 7. [Kuramoto N-Oscillators](dynadojo/systems/kuramoto.py)
 8. [Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
 9. [Competitive LV](dynadojo/systems/lv/competitive.py)
-10. Daussian  
-11. [Algorithmic Bias](dynadojo/systems/opinion/algorithmic_bias.py)  
-12. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/algorithmic_bias_media.py)  
-13. HK  
-14. [WHK](dynadojo/systems/opinion/whk.py)  
-15. [ARWHK](dynadojo/systems/opinion/arwhk.py)
-16. [SIR](dynadojo/systems/epidemic/sir.py)  
-17. [SIS](dynadojo/systems/epidemic/sis.py)  
-18. [SEIS](dynadojo/systems/epidemic/seis.py)  
+10. [Deffuant](dynadojo/systems/opinion/deffuant.py)     
+11. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/algorithmic_bias_media.py)  
+12. [HK](dynadojo/systems/opinion/hk.py)  
+13. [WHK](dynadojo/systems/opinion/whk.py)  
+14. [ARWHK](dynadojo/systems/opinion/arwhk.py)
+15. [SIR](dynadojo/systems/epidemic/sir.py)  
+16. [SIS](dynadojo/systems/epidemic/sis.py)  
+17. [SEIS](dynadojo/systems/epidemic/seis.py)  
 
 ## Adding Systems
 
