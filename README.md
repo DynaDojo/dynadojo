@@ -46,21 +46,22 @@ data3 = challenge.evaluate(DNN, fit_kwargs={"epochs": 20}, id="linear network")
 data = pd.concat((data1, data2, data3))
 challenge.plot(data)
 ```
-<b>Out:</b>
+<b>Out (Fixed Complexity):</b>
+Note how for this LDSSystem, a linear network learns more from each added sample (larger decreases in error) than a nonlinear network, and how linear regression immediately saturates at very low error. These dynamics help contextualize model performance and comparision.
 <p align="center">
-<img src="graphics/fixed_comp.png">
+    ![Group 71 (2)](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/dba4dc1a-f7fb-4af9-9324-2d4617c8ba7d)
 </p>
 
 
 ## Systems
 
-DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to bounded confidence opinion dynamics, ecology, and epidemology:
+DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to bounded confidence opinion dynamics, biology, ecology, and epidemology:
 1. [Cellular Automata](dynadojo/systems/ca.py)
 2. [Threshold Linear Networks](dynadojo/systems/ctln.py)
 3. [N-Body Systems](dynadojo/systems/santi.py)
-4. [Linear Dynamical Systems](dynadojo/systems/lds.py)
+4. [Linear Dynamical Systems (LDS)](dynadojo/systems/lds.py)
 5. [Generalized Lorenz](dynadojo/systems/lorenz.py)
-6. [Spiking Neural Network](dynadojo/systems/snn.py)
+6. [Spiking Neural Network (SNN)](dynadojo/systems/snn.py)
 7. [Kuramoto N-Oscillators](dynadojo/systems/kuramoto.py)
 8. [Generalized Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
 9. [Competitive Lotka Volterra](dynadojo/systems/lv/competitive.py)
@@ -104,15 +105,12 @@ Documentation for each of the abstract methods can be found in [dynadojo/abstrac
 
 
 # Models
-
-## Baselines
-
-DynaDojo comes with six baseline models:
+DynaDojo comes with six **baseline** models:
 1. [CNN](dynadojo/baselines/cnn.py)
 2. [DMD](dynadojo/baselines/dmd.py) (Schmid, Peter J., "Dynamic mode decomposition of numerical and experimental data")
 3. [DNN](dynadojo/baselines/dnn.py)
-4. [LPR](dynadojo/baselines/lpr.py)
-5. [LR](dynadojo/baselines/lr.py)
+4. [Lowest Possible Radius (LPR)](dynadojo/baselines/lpr.py)
+5. [Linear Regression (LR)](dynadojo/baselines/lr.py)
 6. [SINDy](dynadojo/baselines/sindy.py) (Brunton, Steven L., Joshua L. Proctor, and J. Nathan Kutz., "Discovering governing equations from data by sparse identification of nonlinear dynamical systems")
 
 ## Adding Models
