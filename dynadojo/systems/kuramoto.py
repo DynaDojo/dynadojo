@@ -83,14 +83,13 @@ class KuramotoSystem(AbstractSystem):
         T = np.arange(t0, t1, dt)
 
         def kuramoto_ODE(t, y, arg):
-            w, k, noisy, u = arg
+            w, k, noisy = arg
             yt = y[:, None]
             dy = y-yt
             phase = w.astype(self.dtype)
             if noisy:
                 phase += self._rng.normal(
                     0, self.noise_scale, (self.latent_dim))
-            phase += u
             for m, _k in enumerate(k):
                 phase += np.sum(_k*np.sin((m+1)*dy), axis=1)
 
@@ -104,21 +103,20 @@ class KuramotoSystem(AbstractSystem):
             kODE = ode(kuramoto_ODE)
             kODE.set_integrator("dopri5")
 
-            for i in range(len(t[1:])):
-                u = U[i]
-
             # Set parameters into model
             kODE.set_initial_value(x0, t[0])
-            kODE.set_f_params((self.W, self.K, noisy, u))
+            kODE.set_f_params((self.W, self.K, noisy))
 
             phase = np.empty((self.latent_dim, len(t)))
 
             # Run ODE integrator
             for idx, _t in enumerate(t[1:]):
-                phase[:, idx] = kODE.y
+                print(U[idx])
+                phase[:, idx] = kODE.y + U[idx]
                 kODE.integrate(_t)
+                print(kODE.t)
 
-            phase[:, -1] = kODE.y
+            phase[:, -1] = kODE.y 
 
             return phase
 
@@ -130,7 +128,7 @@ class KuramotoSystem(AbstractSystem):
 
         else:
             for x0 in init_conds:
-                U = np.zeros((int(timesteps/self.dt)))
+                U = np.zeros((int(timesteps/self.dt), self.latent_dim))
                 sol = solve(T, x0, U)
                 data.append(sol)
 
