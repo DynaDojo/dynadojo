@@ -10,3 +10,4 @@ cache
 *.gz
 *.whl
 *.gz
+*.gz

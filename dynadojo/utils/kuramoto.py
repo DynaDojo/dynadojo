@@ -1,15 +1,11 @@
 import pylab as plt
 import numpy as np
-from matplotlib.collections import LineCollection
-from mpl_toolkits.mplot3d.art3d import Line3DCollection
-from sklearn.decomposition import PCA
 
 MAX_LINES = 30
 
 
-def plot(grid: list[np.ndarray], timesteps, target_dim: int = 3, max_lines=MAX_LINES, gridlabels: list[str] = None):
+def plot(grid: list[np.ndarray], timesteps, max_lines=MAX_LINES, gridlabels: list[str] = None):
     grid = np.array([x[:max_lines] for x in grid])
-
     
     for idx, dataset in enumerate(grid):
         plt.figure(figsize=(16, 8))
