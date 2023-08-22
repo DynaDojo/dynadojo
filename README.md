@@ -1,35 +1,30 @@
-# DynaDojo
-DynaDojo is a playground for testing models in dynamical system idenficiation. 
+![Logo](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/297b41d5-d967-4b63-8b46-6fa54aca8703)
 
-By iteratively adjusting the number of sample and testing performance generalizes, the platform lets you evaluate your model on a growing number of dynamical systems.
 
-# Table of Contents
+**DynaDojo** is a Python gym environment for testing how models generalize and efficently use samples in dynamical system idenficiation. Our platform lets you understand how a model performs as various parameters are adjusted, including increasing the dataset size, changing the number of timesteps per trajectory, active learning (control), adding noise, adjusting the distribution of initial conditions, and more.
 
-- [Installation](#installation)
-- [Challenges](#challenges)
-- [Systems](#systems)
-- [Models](#models)
-- [Citing](#citing)
-- [License](#license)
-
-# Installation
-
-You can install DynaDojo with `pip`.
+You can install DynaDojo with `pip`:
 
 ```shell
 pip install dynadojo
 ```
 
-# Challenges
-## Pre-Built Challenges
+## Introduction
+There are three ways to interact with DynaDojo and users can take on multiple "hats" at a time. You can add new dynamical [Systems](#systems) to the platform, create set environments for adjusting parameters in a [Challenge](#challenges), or implement your [Model](#models) with our API to understand how it performs. Most of the platform is adjustable through various parameters in these clases.
 
-`DynaDojo` comes with three off-the-shelf challenges: `FixedError`, `FixedComplexity`, and `FixedTrainSize`. More information about each can be found in the paper.
+![Roles-Graphic-GitHub](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/6dc9cdd6-b169-4a48-881f-218994a067f6)
 
-### Examples
-For demonstrations, please see:
-* [Fixed Error](demos/fixed_error_demo.ipynb)
-* [Fixed Complexity](demos/fixed_complexity_demo.ipynb)
-* [Fixed Train Size](demos/fixed_train_size_demo.ipynb)
+![Extensible-params-GitHub](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/bbdef9f9-f2b6-4801-a3ca-3c8e9c1a19ad)
+
+
+
+
+## Challenges
+
+![toychallenges-chips](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/dcae54df-ef98-48d4-ad2e-e37c4054e67b)
+
+`DynaDojo` comes with three off-the-shelf challenges: [Fixed Error](demos/fixed_error_demo.ipynb), [Fixed Complexity](demos/fixed_complexity_demo.ipynb), and [Fixed Train Size](demos/fixed_train_size_demo.ipynb).
+
 
 ```python
 from dynadojo.systems import LDSSystem
@@ -56,28 +51,27 @@ data3 = challenge.evaluate(DNN, fit_kwargs={"epochs": 20}, id="linear network")
 data = pd.concat((data1, data2, data3))
 challenge.plot(data)
 ```
-<b>Out:</b>
-<p align="center">
-<img src="graphics/fixed_comp.png">
-</p>
+<b>Out (Fixed Complexity):</b>
+Note how for this LDSSystem, a linear network learns more from each added sample (larger decreases in error) than a nonlinear network, and how linear regression immediately saturates at very low error. These dynamics help contextualize model performance and comparision.
+
+![Fixed Complexity](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/f1ad9c50-eb6f-44be-8925-337aeaf35a3a)
 
 
-# Systems
 
-## Pre-Built Systems
+## Systems
 
-DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to opinion dynamics, ecology, and epidemology:
+DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to bounded confidence opinion dynamics, biology, ecology, and epidemology:
 1. [Cellular Automata](dynadojo/systems/ca.py)
 2. [Threshold Linear Networks](dynadojo/systems/ctln.py)
 3. [N-Body Systems](dynadojo/systems/santi.py)
-4. [Linear Dynamical Systems](dynadojo/systems/lds.py)
+4. [Linear Dynamical Systems (LDS)](dynadojo/systems/lds.py)
 5. [Generalized Lorenz](dynadojo/systems/lorenz.py)
-6. [Spiking Neural Network](dynadojo/systems/snn.py)
+6. [Spiking Neural Network (SNN)](dynadojo/systems/snn.py)
 7. [Kuramoto N-Oscillators](dynadojo/systems/kuramoto.py)
-8. [Generalized Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
+8. [Generalized Predator-Prey](dynadojo/systems/lv/prey_predator.py)
 9. [Competitive Lotka Volterra](dynadojo/systems/lv/competitive.py)
 10. [Deffuant](dynadojo/systems/opinion/deffuant.py)     
-11. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/algorithmic_bias_media.py)  
+11. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/media_bias.py)  
 12. [Hegselmann-Krause (HK)](dynadojo/systems/opinion/hk.py)  
 13. [Weighted Hegselmann-Krause (WHK)](dynadojo/systems/opinion/whk.py)  
 14. [Attraction-Repulsion Weighted Hegselmann-Krause (ARWHK)](dynadojo/systems/opinion/arwhk.py)
@@ -85,9 +79,9 @@ DynaDojo comes with 17 pre-built systems that range from mature mathematic simul
 16. [SIS: Susceptible/Infected/Susceptible](dynadojo/systems/epidemic/sis.py)  
 17. [SEIS: Susceptible/Exposed/Infected/Susceptible](dynadojo/systems/epidemic/seis.py)  
 
-## Adding Systems
+### Adding Systems
 
-To add new systems to `DynaDojo`, you must subclass from `AbstractSystem`. Some skeleton code is provided below.
+To add new systems to `DynaDojo`, you subclass from `AbstractSystem` and implement the required functions listed below. It is easy to build a System from scratch, or to use existing packages like `scipy` and `NDLIB` and wrap them for our API.
 
 ```python
 import numpy as np
@@ -112,15 +106,48 @@ class MySystem(AbstractSystem):
         super().__init__(latent_dim, embed_dim)
 ```
 
-Documentation for each of the abstract methods can be found in [dynadojo/abstractions](dynadojo/abstractions.py). 
+Documentation for each of the abstract methods can be found in [dynadojo/abstractions](dynadojo/abstractions.py). Use `tester.py` to verify that your new system accurately integrates with DynaDojo.
 
-Use `tester.py` to verify that your new system accurately integrates with DynaDojo.
+
+# Models
+DynaDojo comes with six **baseline** models:
+1. [CNN](dynadojo/baselines/cnn.py)
+2. [DMD](dynadojo/baselines/dmd.py) (Schmid, Peter J., "Dynamic mode decomposition of numerical and experimental data")
+3. [DNN](dynadojo/baselines/dnn.py)
+4. [Lowest Possible Radius (LPR)](dynadojo/baselines/lpr.py)
+5. [Linear Regression (LR)](dynadojo/baselines/lr.py)
+6. [SINDy](dynadojo/baselines/sindy.py) (Brunton, Steven L., Joshua L. Proctor, and J. Nathan Kutz., "Discovering governing equations from data by sparse identification of nonlinear dynamical systems")
+
+## Adding Models
+Adding new models is simple with DynaDojo. The developer simply needs to implement two abstract methods `fit` and `predict`. A model can also optionally use control with the `act` method.
+
+```python
+import numpy as np
+
+from dynadojo.abstractions import AbstractModel
+
+
+class MyModel(AbstractModel):
+    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
+        super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
+        
+    def fit(self, x: np.ndarray, **kwargs) -> None:
+        pass
+
+    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
+        pass
+
+    #optional, used when control desired
+    def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
+        pass
+```
+
 
 
 ## Examples
-### Example 1: Comparing DNN activations on LDSs
+### Example 1: Comparing DNN activations on LDS
 
-Nonlinearity is a hallmark of modern deep learning; however, there are some exceptional tasks where linear models actually outperform nonlinear neural networks. In this example, we explore this phenomena through linear dynamical systems (LDSs) and deep neural networks (DNNs).
+Nonlinearity is a hallmark of modern deep learning; however, there are some exceptional tasks where linear models actually outperform nonlinear neural networks. In this example, we explore this phenomena through linear dynamical systems (LDS) and deep neural networks (DNNs).
 
 To start, let's create some LDS data using one of DynaDojo's off-the-shelf `LDSSystem`.
 
@@ -196,41 +223,6 @@ As we can see, the linear model does much better! This is because linear models 
 <p align="center">
 <img src="graphics/lds_example3.png">
 </p>
-
-# Models
-
-## Baselines
-
-DynaDojo comes with six baseline models:
-1. [CNN](dynadojo/baselines/cnn.py)
-2. [DMD](dynadojo/baselines/dmd.py) from the paper "Dynamic mode decomposition of numerical and experimental data"
-3. [DNN](dynadojo/baselines/dnn.py)
-4. [LPR](dynadojo/baselines/lpr.py)
-5. [LR](dynadojo/baselines/lr.py)
-6. [SINDy](dynadojo/baselines/sindy.py) from the paper "Discovering governing equations from data by sparse identification of nonlinear dynamical systems"
-
-## Adding Models
-Adding new models is simple with DynaDojo. The developer simply needs to implement two abstract methods `fit` and `predict`. If the model uses control, then the developer should also implement `act`. Skeleton code is provided below.
-
-```python
-import numpy as np
-
-from dynadojo.abstractions import AbstractModel
-
-
-class MyModel(AbstractModel):
-    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
-        super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
-        
-    def fit(self, x: np.ndarray, **kwargs) -> None:
-        pass
-
-    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
-        pass
-    
-    def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
-        pass
-```
 
 ## Citing
 
