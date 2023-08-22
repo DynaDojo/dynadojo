@@ -1,7 +1,7 @@
 ![Logo](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/297b41d5-d967-4b63-8b46-6fa54aca8703)
 
 
-**DynaDojo** is a gym environment for testing how models generalize and efficently use samples in dynamical system idenficiation. Our platform lets you understand how a model performs as various parameters are adjusted, including increasing the dataset size, changing the number of timesteps per trajectory, active learning (control), adding noise, adjusting the distribution of initial conditions, and more.
+**DynaDojo** is a Python gym environment for testing how models generalize and efficently use samples in dynamical system idenficiation. Our platform lets you understand how a model performs as various parameters are adjusted, including increasing the dataset size, changing the number of timesteps per trajectory, active learning (control), adding noise, adjusting the distribution of initial conditions, and more.
 
 You can install DynaDojo with `pip`:
 
