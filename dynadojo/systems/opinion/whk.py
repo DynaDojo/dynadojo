@@ -2,11 +2,11 @@ import networkx as nx
 import ndlib.models.ModelConfig as mc
 import ndlib.models.opinions as op
 
-from ..utils import NetworkSystem
+from ..utils import OpinionSystem
 
 import numpy as np
 
-class WHKSystem(NetworkSystem):
+class WHKSystem(OpinionSystem):
     def __init__(self, latent_dim, embed_dim,
                  noise_scale=0.01,
                  IND_range=(-0.5, 0.5),

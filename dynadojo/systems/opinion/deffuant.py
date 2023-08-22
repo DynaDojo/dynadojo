@@ -2,17 +2,17 @@ import networkx as nx
 import ndlib.models.ModelConfig as mc
 import ndlib.models.opinions as op
 
-from ..utils import NetworkSystem
+from ..utils import OpinionSystem
 
 import numpy as np
 
-class DeffuantSystem(NetworkSystem):
+class DeffuantSystem(OpinionSystem):
     def __init__(self, latent_dim, embed_dim,
                  noise_scale=0.01,
                  IND_range=(0, 0.5),
                  OOD_range=(0.5, 1),
                  epsilon=0.32,
-                 gamma=0,
+                 bias=0,
                  p_edge=1,
                  seed=None):
 
@@ -27,7 +27,7 @@ class DeffuantSystem(NetworkSystem):
         # Model configuration
         self.config = mc.Configuration()
         self.config.add_model_parameter("epsilon", epsilon)
-        self.config.add_model_parameter("gamma", gamma)
+        self.config.add_model_parameter("gamma", bias)
 
     def create_model(self, x0):
         self.model = op.AlgorithmicBiasModel(self.g)
