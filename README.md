@@ -71,7 +71,7 @@ DynaDojo comes with 17 pre-built systems that range from mature mathematic simul
 8. [Generalized Predator-Prey](dynadojo/systems/lv/prey_predator.py)
 9. [Competitive Lotka Volterra](dynadojo/systems/lv/competitive.py)
 10. [Deffuant](dynadojo/systems/opinion/deffuant.py)     
-11. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/media_bias.py)  
+11. [Algorithmic Bias with Media Influence](dynadojo/systems/opinion/media_bias.py)  
 12. [Hegselmann-Krause (HK)](dynadojo/systems/opinion/hk.py)  
 13. [Weighted Hegselmann-Krause (WHK)](dynadojo/systems/opinion/whk.py)  
 14. [Attraction-Repulsion Weighted Hegselmann-Krause (ARWHK)](dynadojo/systems/opinion/arwhk.py)
