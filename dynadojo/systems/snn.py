@@ -12,13 +12,13 @@ RNG = np.random.default_rng()
 class SNNSystem(LDSSystem):
 
     def __init__(self, latent_dim, embed_dim,
-                 init_cond_in_dist_range=(0, 1),
-                 init_cond_out_dist_range=(-1, 0)
+                 IND_range=(0, 1),
+                 OOD_range=(-1, 0)
                  ):
         assert embed_dim >= 2 * latent_dim, "REQUIRED: embed_dim ≥ 2 * latent_dim"
         super().__init__(latent_dim, embed_dim,
-                         init_cond_in_dist_range=init_cond_in_dist_range,
-                         init_cond_out_dist_range=init_cond_out_dist_range,
+                         IND_range=IND_range,
+                         OOD_range=OOD_range,
                          )
         c = lambda t: np.zeros(latent_dim)
         self.LDS = LinearDynamicalSystem(self.A, self.B, c)

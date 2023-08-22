@@ -6,15 +6,14 @@ from .utils import SimpleSystem
 
 class NBodySystem(SimpleSystem):
     def __init__(self, latent_dim, embed_dim, mass=10e-3, plot_data=False,
-                 in_dist_range=(-1, 1), out_dist_range=(-1, 1),
+                 IND_range=(-1, 1), OOD_range=(-1, 1),
                  **kwargs):
         assert latent_dim >= 4 and latent_dim % 4 == 0
         assert latent_dim == embed_dim
         self._n_bodies = latent_dim // 4
         self._mass = mass
         self._plot_data = plot_data
-        super().__init__(latent_dim, embed_dim, in_dist_range=in_dist_range, out_dist_range=out_dist_range,
-                         **kwargs)
+        super().__init__(latent_dim, embed_dim, IND_range=IND_range, OOD_range=OOD_range, **kwargs)
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         assert not np.any(control), "Control must be zero."
