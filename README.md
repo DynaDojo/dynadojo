@@ -68,7 +68,7 @@ DynaDojo comes with 17 pre-built systems that range from mature mathematic simul
 5. [Generalized Lorenz](dynadojo/systems/lorenz.py)
 6. [Spiking Neural Network (SNN)](dynadojo/systems/snn.py)
 7. [Kuramoto N-Oscillators](dynadojo/systems/kuramoto.py)
-8. [Generalized Predictor-Prey](dynadojo/systems/lv/prey_predator.py)
+8. [Generalized Predator-Prey](dynadojo/systems/lv/prey_predator.py)
 9. [Competitive Lotka Volterra](dynadojo/systems/lv/competitive.py)
 10. [Deffuant](dynadojo/systems/opinion/deffuant.py)     
 11. [Algorithmic Bias w/ Media Influence](dynadojo/systems/opinion/algorithmic_bias_media.py)  
