@@ -12,9 +12,10 @@ pip install dynadojo
 ## Introduction
 There are three ways to interact with DynaDojo and users can take on multiple "hats" at a time. You can add new dynamical [Systems](#systems) to the platform, create set environments for adjusting parameters in a [Challenge](#challenges), or implement your [Model](#models) with our API to understand how it performs. Most of the platform is adjustable through various parameters in these clases.
 
-![Roles-Graphic-GitHub](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/43d55f30-096c-426e-a6fc-480660eff60b)
+![Roles-Graphic-GitHub](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/6dc9cdd6-b169-4a48-881f-218994a067f6)
 
-![Extensible-params-GitHub](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/f8ecf4d9-36ef-4391-a531-ed9cdc6375fd)
+![Extensible-params-GitHub](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/7f7d5e25-9ff6-4fb5-9fa6-32d46385c33d)
+
 
 
 ## Challenges
