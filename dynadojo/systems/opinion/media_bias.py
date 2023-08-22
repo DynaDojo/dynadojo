@@ -6,6 +6,11 @@ from ..utils import OpinionSystem
 
 import numpy as np
 
+''' 
+Note: in the current release of ndlib, AlgorithmicBiasMediaModel is not implemented.
+For now, using this system requires local cloning of ndlib
+For more see: https://github.com/GiulioRossetti/ndlib/issues/251
+'''
 class MediaBiasSystem(OpinionSystem):
     def __init__(self, latent_dim, embed_dim,
                  noise_scale=0.01,
