@@ -51,10 +51,10 @@ data3 = challenge.evaluate(DNN, fit_kwargs={"epochs": 20}, id="linear network")
 data = pd.concat((data1, data2, data3))
 challenge.plot(data)
 ```
-<b>Out (Fixed Complexity):</b>
+<b>Out (Fixed Complexity, C = latent_dim = 5):</b>
 Note how for this LDSSystem, a linear network learns more from each added sample (larger decreases in error) than a nonlinear network, and how linear regression immediately saturates at very low error. These dynamics help contextualize model performance and comparision.
 
-![Fixed Complexity](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/f1ad9c50-eb6f-44be-8925-337aeaf35a3a)
+![Fixed Complexity](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/db71a5f8-24f8-4594-b008-f46c1c5b110f)
 
 
 
