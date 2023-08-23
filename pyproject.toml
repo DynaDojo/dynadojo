@@ -1,5 +1,20 @@
 [build-system]
-requires = ["flit_core >=3.2,<4",
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "dynadojo"
+
+authors = [{name = "Logan Mondal Bhamidipaty", email = "loganmb@stanford.edu"},
+    {name = "Tommy Anthony Bruzzese", email = "tbru@stanford.edu"},
+    {name = "Max Kanwal", email = "kanwal@stanford.edu"},
+    {name = "Rami Ratl Mrad", email = "ramiratlmrad@berkeley.ed"},
+    ]
+readme = "README.md"
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+dependencies = ["networkx",
     "tqdm>=4.65.0",
     "numpy>=1.23.5",
     "torch>=2.0.1",
@@ -13,21 +28,15 @@ requires = ["flit_core >=3.2,<4",
     "cellpylib",
     "matplotlib",
     "pandas",
-    "networkx",
-    "rebound",
     "ndlib",
     "pydmd",
-    "pysindy"]
-build-backend = "flit_core.buildapi"
+    "pysindy",
+    "setuptools"]
 
-[project]
-name = "dynadojo"
-authors = [{name = "LB", email = "loganmb@stanford.edu"},
-    {name = "TB", email = "tbru@stanford.edu"},]
-readme = "README.md"
-license = {file = "LICENSE"}
-classifiers = ["License :: OSI Approved :: MIT License"]
-dynamic = ["version", "description"]
+[project.optional-dependencies]
+nbody = [
+    "rebound"
+]
 
 [project.urls]
-Home = "https://github.com/FlyingWorkshop/dynadojo/"
+Home = "https://github.com/FlyingWorkshop/dynadojo/tree/main"
