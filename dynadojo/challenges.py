@@ -226,7 +226,7 @@ class FixedComplexity(Challenge):
 
     @staticmethod
     def plot(data):
-        plot_metric(data, "n", "loss", xlabel=r'$n$')
+        plot_metric(data, "n", "error", xlabel=r'$n$')
 
 class FixedTrainSize(Challenge):
     def __init__(self, n: int, L: list[int], E: list[int] | int | None, T: list[int], max_control_cost_per_dim: int, control_horizons: int,
@@ -237,4 +237,4 @@ class FixedTrainSize(Challenge):
 
     @staticmethod
     def plot(data: pd.DataFrame):
-        plot_metric(data, "latent_dim", "loss", xlabel=r'$L$', log=False)
+        plot_metric(data, "latent_dim", "error", xlabel=r'$L$', log=False)

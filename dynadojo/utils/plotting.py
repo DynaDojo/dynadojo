@@ -35,7 +35,7 @@ def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="
     plt.show()
 
 
-def plot_target_loss(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.median, errorbar=("pi", 50), error_col="loss", target_loss=0.1):
+def plot_target_loss(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.median, errorbar=("pi", 50), error_col="error", target_loss=0.1):
     if idlabels:
         _assign_labels(data, idlabels)
 
