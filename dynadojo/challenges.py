@@ -2,7 +2,7 @@ import warnings
 import pandas as pd
 import numpy as np
 
-from .utils.plotting import plot_target_loss, plot_metric
+from .utils.plotting import plot_target_error, plot_metric
 
 from joblib import Parallel, delayed
 
@@ -11,7 +11,7 @@ from .abstractions import Challenge, AbstractSystem, AbstractModel
 
 class FixedError(Challenge):
     def __init__(self, L: list[int], t: int, max_control_cost_per_dim: int, control_horizons: int,
-                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, target_loss: float,
+                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, target_error: float,
                  system_kwargs: dict = None,
                  max_samples=10000, E: int | list[int] = None):
 
@@ -23,7 +23,7 @@ class FixedError(Challenge):
             assert (E >= np.max(L))
 
         # the dimensions have to be sorted, we need a guarantee that they are sorted
-        self._target_loss = target_loss
+        self._target_error = target_error
         self.max_samples = max_samples
 
         self.X = None
@@ -39,7 +39,7 @@ class FixedError(Challenge):
         df = pd.DataFrame(self.result)
         df = df.loc[(df['rep'] == self.rep_id) & (df['n'] == n) & df['latent_dim'] == system.latent_dim]
         if len(df) == 1:
-            return df.iloc[0]['loss']
+            return df.iloc[0]['error']
 
         if self.X is None:
             self.X = self._gen_trainset(system, n, self._T, noisy)
@@ -62,11 +62,11 @@ class FixedError(Challenge):
 
         pred = model.predict_wrapper(test[:, 0], self._test_timesteps)
 
-        loss = system.calc_error_wrapper(pred, test)
+        error = system.calc_error_wrapper(pred, test)
 
-        self._append_result(self.result, self.rep_id, n, system.latent_dim, system.embed_dim, self._T, loss, total_cost)
+        self._append_result(self.result, self.rep_id, n, system.latent_dim, system.embed_dim, self._T, error, total_cost)
 
-        return loss
+        return error
 
     def _gen_bounds(self, system, model_cls, test, l, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs):
         lower = 1
@@ -92,30 +92,30 @@ class FixedError(Challenge):
                 predicted = lower+1
             upper = (2 * predicted) - lower
 
-        # if lower meets target loss, decrease to be lower
+        # if lower meets target error, decrease to be lower
         lower_error = self._evaluate_n(system, model_cls, test, lower, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
-        while lower_error <= self._target_loss:
+        while lower_error <= self._target_error:
             if lower == 1:
                 break
             lower = lower // 2
             lower_error = self._evaluate_n(system, model_cls, test, lower, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
 
-        # increase upper until it satisfies target loss or exceeds max_samples
+        # increase upper until it satisfies target error or exceeds max_samples
         while upper <= self.max_samples:
             if upper == self.max_samples:
                 max_samples_error = self._evaluate_n(
                     system, model_cls, test, self.max_samples, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
-                if max_samples_error <= self._target_loss:
+                if max_samples_error <= self._target_error:
                     break
                 else:
-                    warnings.warn(f'Rep #{self.rep_id} for l={system.latent_dim} and e={system.embed_dim} failed: Fixed error not achieved within max samples. At {self.max_samples} samples, error is still {max_samples_error}, which is above {self._target_loss}')
+                    warnings.warn(f'Rep #{self.rep_id} for l={system.latent_dim} and e={system.embed_dim} failed: Fixed error not achieved within max samples. At {self.max_samples} samples, error is still {max_samples_error}, which is above {self._target_error}')
                     return (lower, None) 
 
             else:
                 upper_error = self._evaluate_n(
                     system, model_cls, test, upper, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
                 
-                if upper_error <= self._target_loss:
+                if upper_error <= self._target_error:
                     break
                 else:
                     if upper == lower:
@@ -138,7 +138,7 @@ class FixedError(Challenge):
                 system, model_cls, test, mid, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
 
 
-            if mid_error > self._target_loss:
+            if mid_error > self._target_error:
                 if lower == mid:
                     lower = mid + 1
                 else:
@@ -170,7 +170,7 @@ class FixedError(Challenge):
 
             self.rep_id = rep_id
 
-            self.result = {k: [] for k in ["rep", "n", "latent_dim", "embed_dim", "timesteps", "control_horizons", "loss", "total_cost"]}
+            self.result = {k: [] for k in ["rep", "n", "latent_dim", "embed_dim", "timesteps", "control_horizons", "error", "total_cost"]}
             print(f"{latent_dim=}, {embed_dim=}, timesteps={self._T}, control_horizons={self._control_horizons}, {rep_id=}, {id=}")
 
             system = None
@@ -212,7 +212,7 @@ class FixedError(Challenge):
         return data
 
     def plot(self, data):
-        plot_target_loss(data, "latent_dim", "n", target_loss=self._target_loss, ylabel=r'$n$')
+        plot_target_error(data, "latent_dim", "n", target_error=self._target_error, ylabel=r'$n$')
 
 
 class FixedComplexity(Challenge):

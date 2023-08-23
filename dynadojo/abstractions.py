@@ -306,7 +306,7 @@ class Challenge:
             Handles case when E is an array
             """
             result = {k: [] for k in ["rep", "n", "latent_dim",
-                                      "embed_dim", "timesteps", "control_horizons", "loss", "total_cost"]}
+                                      "embed_dim", "timesteps", "control_horizons", "error", "total_cost"]}
             system = None
             for n, d, timesteps in itertools.product(self._N, zip(self._L, self._E), self._T):
                 latent_dim, embed_dim = d
@@ -322,7 +322,7 @@ class Challenge:
             Handles case when E is a None
             """
             result = {k: [] for k in ["rep", "n", "latent_dim",
-                                      "embed_dim", "timesteps", "control_horizons", "loss", "total_cost"]}
+                                      "embed_dim", "timesteps", "control_horizons", "error", "total_cost"]}
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = latent_dim
@@ -336,7 +336,7 @@ class Challenge:
             Handles case when E is a constant
             """
             result = {k: [] for k in ["rep", "n", "latent_dim",
-                                      "embed_dim", "timesteps", "control_horizons", "loss", "total_cost"]}
+                                      "embed_dim", "timesteps", "control_horizons", "error", "total_cost"]}
             system = None
             for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
                 embed_dim = self._E
@@ -396,14 +396,14 @@ class Challenge:
 
         return total_cost
 
-    def _append_result(self, result, rep_id, n, latent_dim, embed_dim, timesteps, loss, total_cost):
+    def _append_result(self, result, rep_id, n, latent_dim, embed_dim, timesteps, error, total_cost):
         result['rep'].append(rep_id)
         result['n'].append(n)
         result['latent_dim'].append(latent_dim)
         result['embed_dim'].append(embed_dim)
         result['timesteps'].append(timesteps)
         result['control_horizons'].append(self._control_horizons)
-        result['loss'].append(loss)
+        result['error'].append(error)
         result['total_cost'].append(total_cost)
 
     def _do_rep(self,
@@ -431,5 +431,5 @@ class Challenge:
         total_cost = self._fit_model(system, model, x, timesteps, max_control_cost, fit_kwargs, act_kwargs, noisy)
         test = self._gen_testset(system, in_dist)
         pred = model.predict_wrapper(test[:, 0], self._test_timesteps)
-        loss = system.calc_error_wrapper(pred, test)
-        self._append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, loss, total_cost)
+        error = system.calc_error_wrapper(pred, test)
+        self._append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, error, total_cost)
