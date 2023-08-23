@@ -111,10 +111,8 @@ class KuramotoSystem(AbstractSystem):
 
             # Run ODE integrator
             for idx, _t in enumerate(t[1:]):
-                print(U[idx])
                 phase[:, idx] = kODE.y + U[idx]
                 kODE.integrate(_t)
-                print(kODE.t)
 
             phase[:, -1] = kODE.y 
 
