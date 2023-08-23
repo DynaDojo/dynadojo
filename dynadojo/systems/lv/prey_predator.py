@@ -61,9 +61,9 @@ class PreyPredatorSystem(AbstractSystem):
         self.nPrey = nPrey
         if (not self.nPrey):
             if latent_dim == 1:
-                self.nPrey = self._rng.randint(0, 1)
+                self.nPrey = self._rng.uniform(0, 1)
             else:
-                self.nPrey = self._rng.randint(1, self.latent_dim)
+                self.nPrey = self._rng.uniform(1, self.latent_dim)
 
         self.K = self._make_K(self.minK, self.maxK)  # Carrying capacity
         self.R = self._make_R()  # Growth Rate
@@ -75,7 +75,7 @@ class PreyPredatorSystem(AbstractSystem):
     def _make_R(self):
         R = []
         for i in range(self._latent_dim):
-            r = self._rng.normal(self.R_range)
+            r = self._rng.normal(self.R_range[0], self.R_range[1])
             if i < self.nPrey:
                 # R[i] must be positive for prey
                 r = np.abs(r)
@@ -102,9 +102,9 @@ class PreyPredatorSystem(AbstractSystem):
                 if i == j:
                     if i < self.nPrey:
                         # intraspecies prey is not harsh, but needed negative to prevent infinite growth
-                        A[i][j] = -1 * np.abs(self._rng.normal(self.prey_intra_range))
+                        A[i][j] = -1 * np.abs(self._rng.normal(self.prey_intra_range[0], self.prey_intra_range[1]))
                     else:
-                        A[i][j] = -1 * np.abs(self._rng.normal(self.predator_intra_range))
+                        A[i][j] = -1 * np.abs(self._rng.normal(self.predator_intra_range[0], self.predator_intra_range[1]))
                 elif i < self.nPrey:
                     # two preys do not interact
                     if j < self.nPrey:

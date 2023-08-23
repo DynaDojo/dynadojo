@@ -32,6 +32,8 @@ class CompetitiveLVSystem(AbstractSystem):
                  noise_scale=0.01,
                  IND_range=(0.1, 0.5),  # prevent spawning extinct species
                  OOD_range=(0.5, 0.9),
+                 R_range=(0.0, 0.5),
+                 interspecies_range=(0, 1),
                  seed=None):
         super().__init__(latent_dim, embed_dim)
 
@@ -41,6 +43,9 @@ class CompetitiveLVSystem(AbstractSystem):
         self.minK = minK,
         self.maxK = maxK,
         self._rng = np.random.default_rng(seed)
+
+        self.R_range = R_range
+        self.interspecies_range = interspecies_range
 
         self.R = self._make_R()  # Growth Rate
         self.K = self._make_K(self.minK, self.maxK)  # Carrying capacity
@@ -52,7 +57,7 @@ class CompetitiveLVSystem(AbstractSystem):
 
     def _make_R(self):
         # r[i] must be positive
-        return np.abs(self._rng.normal(0, 0.5, (self._latent_dim)))
+        return np.abs(self._rng.normal(self.R_range[0], self.R_range[1], (self._latent_dim)))
 
     def _make_K(self, minK, maxK):
         return self._rng.uniform(minK, maxK, (self._latent_dim))
@@ -60,7 +65,7 @@ class CompetitiveLVSystem(AbstractSystem):
     def _make_A(self):
         # inter-species is all positive in competitive
         A = np.abs(self._rng.normal(
-            0, 1.0, (self._latent_dim, self._latent_dim)))
+            self.interspecies_range[0], self.interspecies_range[1], (self._latent_dim, self._latent_dim)))
         for i in range(self._latent_dim):
             for j in range(self._latent_dim):
                 if i == j:
