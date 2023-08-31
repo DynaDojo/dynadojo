@@ -63,7 +63,7 @@ Note how for this LDSSystem, a linear network learns more from each added sample
 ## Systems
 
 <p align="center">
-<img src="https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/hot_dino.gif" alt="DynaDojo 2D Heat Equation" width="400"/>
+<img src="https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/hot_dino.gif" alt="DynaDojo 2D Heat Equation" width="300"/>
 </p>
 
 DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to bounded confidence opinion dynamics, biology, ecology, and epidemology:
@@ -85,6 +85,8 @@ DynaDojo comes with 17 pre-built systems that range from mature mathematic simul
 16. [SIS: Susceptible/Infected/Susceptible](dynadojo/systems/epidemic/sis.py)  
 17. [SEIS: Susceptible/Exposed/Infected/Susceptible](dynadojo/systems/epidemic/seis.py)  
 18. [2D Heat Equation](dynadojo/systems/heat.py)
+19. [Black-Scholes-Barenblatt (BSB)](dynadojo/systems/fbsnn_pde/bsb.py)
+20. [Hamilton-Jacobi-Bellman (HJB)](dynadojo/systems/heat.py)
 
 ### Adding Systems
 
