@@ -137,7 +137,7 @@ class PreyPredatorSystem(AbstractSystem):
         all = []
         for _ in range(n):
             x0 = []
-            for s in range(self._latent_dim):
+            for _ in range(self._latent_dim):
                 if in_dist:
                     number = int(self._rng.uniform(
                         self.IND_range[0] * self.maxK, self.IND_range[1] * self.maxK))
