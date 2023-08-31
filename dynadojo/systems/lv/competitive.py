@@ -106,7 +106,7 @@ class CompetitiveLVSystem(AbstractSystem):
             return dX
 
         sol = []
-        if control:
+        if control is not None:
             for x0, u in zip(init_conds, control):
                 sol = solve_ivp(dynamics, t_span=[
                                 0, timesteps], y0=x0, t_eval=time, dense_output=True, args=(u,))

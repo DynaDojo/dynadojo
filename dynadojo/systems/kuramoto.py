@@ -119,7 +119,7 @@ class KuramotoSystem(AbstractSystem):
             return phase
 
         sol = []
-        if control:
+        if control is not None:
             for x0, U in zip(init_conds, control):
                 sol = solve(T, x0, U)
                 data.append(sol)

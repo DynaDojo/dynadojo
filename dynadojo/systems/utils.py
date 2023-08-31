@@ -153,7 +153,7 @@ class OpinionSystem(AbstractSystem):
                 dX.append(step + noise)
             return dX
 
-        if control:
+        if control is not None:
             for x0, u in zip(init_conds, control):
                 sol = dynamics(x0)
                 data.append(sol)
@@ -236,7 +236,7 @@ class EpidemicSystem(AbstractSystem):
                     dX.append([int(x) for x in (step + noise)])
             return dX
 
-        if control:
+        if control is not None:
             for x0, u in zip(init_conds, control):
                 sol = dynamics(x0)
                 data.append(sol)
