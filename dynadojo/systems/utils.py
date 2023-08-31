@@ -256,7 +256,7 @@ class EpidemicSystem(AbstractSystem):
         return np.linalg.norm(control, axis=(1, 2), ord=2)
 
 '''
-Forward-Backward Neural Network Systems, adapted from Naziar Raissi https://github.com/maziarraissi/FBSNNs
+Forward-Backward Neural Network Systems, adapted from Maziar Raissi https://github.com/maziarraissi/FBSNNs
 '''
 class FBSNNSystem(AbstractSystem):
     def __init__(self, latent_dim, embed_dim,
@@ -429,7 +429,7 @@ class FBSNNSystem(AbstractSystem):
     
         X_pred, _ = self._predict(init_conds, t_test, W_test)
 
-        sol = np.reshape(self._u_exact(np.reshape(t_test[0:self.N,:,:],[-1,1]), np.reshape(X_pred[0:self.N,:,:],[-1,self.latent_dim]), self.T), [self.N,-1,1])
+        sol = np.reshape(self._u_exact(np.reshape(t_test[0:self.N,:,:],[-1,1]), np.reshape(X_pred[0:self.N,:,:],[-1,self.latent_dim]), self.T, noisy), [self.N,-1,1])
         
         return sol
 
@@ -441,7 +441,7 @@ class FBSNNSystem(AbstractSystem):
         return np.linalg.norm(control, axis=(1, 2), ord=2)
 
     @abstractmethod
-    def _u_exact(t, X, T): # (N+1) x 1, (N+1) x latent_dim
+    def _u_exact(t, X, T, noisy): # (N+1) x 1, (N+1) x latent_dim
         pass
 
     @abstractmethod
@@ -450,7 +450,6 @@ class FBSNNSystem(AbstractSystem):
     
     @abstractmethod
     def _g_tf(self, X): # N x latent_dim
-        print("the super parent version")
         pass # N x 1
     
     @abstractmethod
