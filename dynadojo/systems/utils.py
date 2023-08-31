@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 from scipy.stats import ortho_group
 from scipy.integrate import solve_ivp
@@ -277,14 +278,14 @@ class FBSNNSystem(AbstractSystem):
         self.T = T # terminal time
         self.latent_dim = latent_dim # number of dimensions
         
+        
         # layers
         if layers:
             self.layers = layers
         else:
             self.layers = [self.latent_dim+1] + 4*[256] + [1] # (latent_dim+1) --> 1
         
-        # initialize NN
-        self.weights, self.biases = self._initialize_NN(self.layers)
+       
         
         self.IND_range = IND_range
         self.OOD_range = OOD_range
@@ -331,7 +332,7 @@ class FBSNNSystem(AbstractSystem):
     def _Dg_tf(self, X): # N x latent_dim
         return tf.gradients(self._g_tf(X), X)[0] # N x latent_dim
         
-    def _loss_function(self, t, W, X0): # N x (timesteps) x 1, N x (timesteps) x latent_dim, 1 x latent_dim
+    def _loss_function(self, t, W, X0, noisy): # N x (timesteps) x 1, N x (timesteps) x latent_dim, 1 x latent_dim
         loss = 0
         X_list = []
         Y_list = []
@@ -342,6 +343,12 @@ class FBSNNSystem(AbstractSystem):
         
         X_list.append(X0)
         Y_list.append(Y0)
+
+        if noisy:
+            noise = self._rng.normal(
+                    0, self.noise_scale, (X0.shape[0], X0.shape[1]))
+        else:
+            noise = 0
         
         for n in range(0,self.timesteps):
             t1 = t[:,n+1,:]
@@ -354,7 +361,7 @@ class FBSNNSystem(AbstractSystem):
             
             t0 = t1
             W0 = W1
-            X0 = X1
+            X0 = X1 + noise
             Y0 = Y1
             Z0 = Z1
             
@@ -378,6 +385,7 @@ class FBSNNSystem(AbstractSystem):
         dt = T/self.timesteps
         
         Dt[:,1:,:] = dt
+        np.random.seed(self.DW_seed)
         DW[:,1:,:] = np.sqrt(dt)*np.random.normal(size=(self.N,self.timesteps,self.latent_dim))
         
         t = np.cumsum(Dt,axis=1) # N x timesteps x 1
@@ -397,6 +405,10 @@ class FBSNNSystem(AbstractSystem):
         
 
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+        # initialize NN
+        self.weights, self.biases = self._initialize_NN(self.layers)
+        self.DW_seed = np.random.randint(0,100)
+
         X0 = []
         if in_dist:
             X0 = self._rng.uniform(self.IND_range[0], self.IND_range[1], (n, self.latent_dim))
@@ -419,7 +431,7 @@ class FBSNNSystem(AbstractSystem):
         self.W_tf = tf.compat.v1.placeholder(tf.float32, shape=[self.N, self.timesteps+1, self.latent_dim]) # N x (timesteps) x latent_dim
         self.Xi_tf = tf.compat.v1.placeholder(tf.float32, shape=[self.N, self.latent_dim]) # 1 x latent_dim
 
-        self.loss, self.X_pred, self.Y_pred, self.Y0_pred = self._loss_function(self.t_tf, self.W_tf, self.Xi_tf)
+        self.loss, self.X_pred, self.Y_pred, self.Y0_pred = self._loss_function(self.t_tf, self.W_tf, self.Xi_tf, noisy)
     
         # initialize session and variables
         init = tf.compat.v1.global_variables_initializer()
@@ -429,7 +441,12 @@ class FBSNNSystem(AbstractSystem):
     
         X_pred, _ = self._predict(init_conds, t_test, W_test)
 
-        sol = np.reshape(self._u_exact(np.reshape(t_test[0:self.N,:,:],[-1,1]), np.reshape(X_pred[0:self.N,:,:],[-1,self.latent_dim]), self.T, noisy), [self.N,-1,1])
+        if control is not None:
+            control = control.reshape(-1,control.shape[2])
+            sol = np.reshape(self._solve(np.reshape(t_test[0:self.N,:,:],[-1,1]), np.reshape(X_pred[0:self.N,:,:],[-1,self.latent_dim]), self.T, control), [self.N,-1,1])
+        else:
+            U = np.zeros([self.N*(self.timesteps+1), 1])
+            sol = np.reshape(self._solve(np.reshape(t_test[0:self.N,:,:],[-1,1]), np.reshape(X_pred[0:self.N,:,:],[-1,self.latent_dim]), self.T, U), [self.N,-1,1])
         
         return sol
 
@@ -441,7 +458,7 @@ class FBSNNSystem(AbstractSystem):
         return np.linalg.norm(control, axis=(1, 2), ord=2)
 
     @abstractmethod
-    def _u_exact(t, X, T, noisy): # (N+1) x 1, (N+1) x latent_dim
+    def _solve(t, X, T, U): # (N+1) x 1, (N+1) x latent_dim
         pass
 
     @abstractmethod

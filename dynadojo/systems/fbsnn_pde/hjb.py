@@ -34,7 +34,7 @@ class HJBSystem(FBSNNSystem):
         return tf.sqrt(2.0)*super()._sigma_tf(t, X, Y) # N x latent_dim x latent_dim
     
 
-    def _u_exact(self, t, X, T, noisy): # (N+1) x 1, (N+1) x latent_dim, T
+    def _solve(self, t, X, T, U): # (N+1) x 1, (N+1) x latent_dim, T
 
         def g(X): # MC x NC x D
             return np.log(0.5 + 0.5*np.sum(X**2, axis=2, keepdims=True)) # MC x N x 1
@@ -42,14 +42,8 @@ class HJBSystem(FBSNNSystem):
         MC = 10**5
         NC = t.shape[0]
         W = np.random.normal(size=(MC,NC,self.latent_dim)) # MC x NC x D
-
-        if noisy:
-                noise = self._rng.normal(
-                    0, self.noise_scale)
-        else:
-            noise = 0
         
-        return -np.log(np.mean(np.exp(-g(X + np.sqrt(2.0*np.abs(T-t))*W)),axis=0))+noise
+        return -np.log(np.mean(np.exp(-g(X + np.sqrt(2.0*np.abs(T-t))*W+U)),axis=0))
 
       
 

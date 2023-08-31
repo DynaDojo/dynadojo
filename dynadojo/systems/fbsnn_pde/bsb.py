@@ -12,7 +12,7 @@ self.latent_dim, controls dimension of the systems
 '''
 class BSBSystem(FBSNNSystem):
     def __init__(self, latent_dim, embed_dim,
-                 noise_scale=0.05,
+                 noise_scale=0.001,
                  IND_range=(0, 0.8),
                  OOD_range=(0.8, 1),
                  layers=None,
@@ -33,16 +33,10 @@ class BSBSystem(FBSNNSystem):
     def _sigma_tf(self, t, X, Y): # N x 1, N x latent_dim, N x 1
         return 0.4*tf.linalg.diag(X) # N x latent_dim x latent_dim
     
-    def _u_exact(self, t, X, T, noisy): # (N+1) x 1, (N+1) x latent_dim, T
+    def _solve(self, t, X, T, U): # (N+1) x 1, (N+1) x latent_dim, T
         r = 0.05
         sigma_max = 0.4
-
-        if noisy:
-                noise = self._rng.normal(
-                    0, self.noise_scale)
-        else:
-            noise = 0
-
-        return np.exp((r + sigma_max**2)*(T - t))*np.sum(X**2, 1, keepdims = True)+noise  # (N+1) x 1
+        
+        return (np.exp((r + sigma_max**2)*(T - t)))*np.sum(X**2+U, 1, keepdims = True) # (N+1) x 1
             
 
