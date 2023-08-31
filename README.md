@@ -86,7 +86,7 @@ DynaDojo comes with 20 pre-built systems (including ODEs and PDEs) that range fr
 17. [SEIS: Susceptible/Exposed/Infected/Susceptible](dynadojo/systems/epidemic/seis.py)  
 18. [2D Heat Equation](dynadojo/systems/heat.py)
 19. [Black-Scholes-Barenblatt (BSB)](dynadojo/systems/fbsnn_pde/bsb.py)
-20. [Hamilton-Jacobi-Bellman (HJB)](dynadojo/systems/heat.py)
+20. [Hamilton-Jacobi-Bellman (HJB)](dynadojo/systems/fbsnn_pde/hjb.py)
 
 ### Adding Systems
 
