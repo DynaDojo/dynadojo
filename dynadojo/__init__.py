@@ -1,10 +1,8 @@
 """An extensible platform for benchmarking sample efficiency in dynamical system identification"""
 
-__version__ = "0.2.0"
+__version__ = "0.2.5"
 
-__author__ = "Logan Mondal Bhamidipaty, Tommy Anthony Bruzzese, Max Kanwal, Rami Ratl Mrad"
 __copyright__ = "Copyright 2023"
-__credits__ = ["Logan Mondal Bhamidipaty", "Tommy Anthony Bruzzese", "Max Kanwal", "Rami Ratl Mrad"]
 __license__ = "MIT"
 
 from . import systems

@@ -5,11 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "dynadojo"
 
-authors = [{name = "Logan Mondal Bhamidipaty", email = "loganmb@stanford.edu"},
-    {name = "Tommy Anthony Bruzzese", email = "tbru@stanford.edu"},
-    {name = "Max Kanwal", email = "kanwal@stanford.edu"},
-    {name = "Rami Ratl Mrad", email = "ramiratlmrad@berkeley.ed"},
-    ]
+authors = [{name = "Logan Mondal Bhamidipaty <loganmb@stanford.edu>, Tommy Anthony Bruzzese <tbru@stanford.edu>, Max Kanwal <kanwal@stanford.edu>, Rami Ratl Mrad <ramiratlmrad@berkeley.edu>"}]
 readme = "README.md"
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
@@ -39,4 +35,4 @@ nbody = [
 ]
 
 [project.urls]
-Home = "https://github.com/FlyingWorkshop/dynadojo/tree/main"
+Home = "https://github.com/FlyingWorkshop/dynadojo/"
