@@ -56,7 +56,7 @@ Note how for this LDSSystem, a linear network learns more from each added sample
 
 <p align="center">
 <img src="https://github.com/FlyingWorkshop/dynadojo/assets/56043296/db71a5f8-24f8-4594-b008-f46c1c5b110f"/>
-</p> -->
+</p>
 
 
 
@@ -64,7 +64,7 @@ Note how for this LDSSystem, a linear network learns more from each added sample
 
 <p align="center">
 <img src="https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/hot_dino.gif" alt="DynaDojo 2D Heat Equation" width="200"/>
-</p> -->
+</p>
 
 DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to bounded confidence opinion dynamics, biology, ecology, and epidemology:
 1. [Cellular Automata](dynadojo/systems/ca.py)
