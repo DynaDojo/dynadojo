@@ -66,7 +66,7 @@ Note how for this LDSSystem, a linear network learns more from each added sample
 <img src="https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/hot_dino.gif" alt="DynaDojo 2D Heat Equation" width="300"/>
 </p>
 
-DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to bounded confidence opinion dynamics, biology, ecology, and epidemology:
+DynaDojo comes with 20 pre-built systems (including ODEs and PDEs) that range from mature mathematic simulations, to bounded confidence opinion dynamics, biology, ecology, and epidemology:
 1. [Cellular Automata](dynadojo/systems/ca.py)
 2. [Threshold Linear Networks](dynadojo/systems/ctln.py)
 3. [N-Body Systems](dynadojo/systems/santi.py)
