@@ -63,7 +63,7 @@ Note how for this LDSSystem, a linear network learns more from each added sample
 ## Systems
 
 <p align="center">
-<img src="https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/hot_dino.gif" alt="DynaDojo 2D Heat Equation" width="200"/>
+<img src="https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/hot_dino.gif" alt="DynaDojo 2D Heat Equation" width="400"/>
 </p>
 
 DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to bounded confidence opinion dynamics, biology, ecology, and epidemology:
