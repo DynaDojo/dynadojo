@@ -54,14 +54,16 @@ challenge.plot(data)
 <b>Out (Fixed Complexity, C = latent_dim = 5):</b>
 Note how for this LDSSystem, a linear network learns more from each added sample (larger decreases in error) than a nonlinear network, and how linear regression immediately saturates at very low error. These dynamics help contextualize model performance and comparision.
 
-![Fixed Complexity](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/db71a5f8-24f8-4594-b008-f46c1c5b110f)
+<p align="center">
+<img src="https://github.com/FlyingWorkshop/dynadojo/assets/56043296/db71a5f8-24f8-4594-b008-f46c1c5b110f"/>
+</p> -->
 
 
 
 ## Systems
 
 <p align="center">
-<img src="https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/hot_dino.gif" alt="DynaDojo 2D Heat Equation"/>
+<img src="https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/hot_dino.gif" alt="DynaDojo 2D Heat Equation" width="200"/>
 </p> -->
 
 DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to bounded confidence opinion dynamics, biology, ecology, and epidemology:
