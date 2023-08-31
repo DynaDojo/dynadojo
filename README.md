@@ -60,6 +60,8 @@ Note how for this LDSSystem, a linear network learns more from each added sample
 
 ## Systems
 
+![Alt Text](graphics/hot_dino.gif)
+
 DynaDojo comes with 17 pre-built systems that range from mature mathematic simulations, to bounded confidence opinion dynamics, biology, ecology, and epidemology:
 1. [Cellular Automata](dynadojo/systems/ca.py)
 2. [Threshold Linear Networks](dynadojo/systems/ctln.py)
@@ -78,6 +80,7 @@ DynaDojo comes with 17 pre-built systems that range from mature mathematic simul
 15. [SIR: Susceptible/Infected/Removed](dynadojo/systems/epidemic/sir.py)  
 16. [SIS: Susceptible/Infected/Susceptible](dynadojo/systems/epidemic/sis.py)  
 17. [SEIS: Susceptible/Exposed/Infected/Susceptible](dynadojo/systems/epidemic/seis.py)  
+18. [2D Heat Equation](dynadojo/systems/heat.py)
 
 ### Adding Systems
 
