@@ -16,7 +16,7 @@ class BSBSystem(FBSNNSystem):
                  IND_range=(0, 0.8),
                  OOD_range=(0.8, 1),
                  layers=None,
-                 T=5.0,
+                 T=1.0,
                  seed=None):
 
         super().__init__(latent_dim, embed_dim, noise_scale, IND_range, OOD_range, layers, T, seed)

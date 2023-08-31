@@ -13,8 +13,8 @@ self.latent_dim, controls dimension of the systems
 class HJBSystem(FBSNNSystem):
     def __init__(self, latent_dim, embed_dim,
                  noise_scale=0.05,
-                 IND_range=(0, 1),
-                 OOD_range=(1, 2),
+                 IND_range=(0, 1.5),
+                 OOD_range=(1.5, 3),
                  layers=None,
                  T=1.0,
                  seed=None):
