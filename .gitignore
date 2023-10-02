@@ -2,6 +2,7 @@
 ndlib_main
 playground.ipynb
 venv
+.venv
 .ipynb_checkpoints
 grave
 todo.txt
@@ -11,3 +12,5 @@ cache
 *.whl
 *.gz
 *.gz
+.python-version
+.vscode
