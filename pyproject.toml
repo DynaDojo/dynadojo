@@ -7,20 +7,20 @@ authors = [
     {name = "Rami Ratl Mrad", email = "ramiratlmrad@berkeley.edu"}
 ]
 dependencies = [
-    "jupyter",
     "numpy",
     "networkx",
     "ndlib",
-    "scikit-learn",
-    "tensorflow",
-    "torch",
+    "scikit-learn>=1.3.1",
+    "tensorflow>=2.14.0",
+    "torch>=2.0.0,!=2.0.1",
     "torchdiffeq",
     "cellpylib",
     "pysindy",
     "pydmd",
     "seaborn",
+    "tensorflow-io-gcs-filesystem>=0.34.0",
 ]
-requires-python = ">=3.10,<3.11"
+requires-python = ">=3.10,<=3.11"
 readme = "README.md"
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
@@ -39,6 +39,7 @@ name = "pypi"
 [tool.pdm.dev-dependencies]
 dev = [
     "pylint",
+    "jupyter>=1.0.0",
 ]
 
 [project.urls]
