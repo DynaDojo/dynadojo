@@ -1,5 +1,5 @@
-# FROM python:3.10-slim-buster as builder
-FROM tensorflow/tensorflow:2.14.0 as builder
+FROM python:3.10-slim-buster as builder
+# FROM tensorflow/tensorflow:2.14.0 as builder # DOES NOT WORK
 ARG TARGETPLATFORM
 RUN apt update -y \
     && apt-get install -y python3-dev build-essential \
