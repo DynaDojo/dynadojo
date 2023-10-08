@@ -2,10 +2,16 @@ This repo is set up to work on Stanford Sherlock clusters using Singularity.
 
 # Run Interactively on Sherlock
 
-## 1. To build docker image (using BuildKit), from the project root, where the `Dockerfile` is.
+## 1. Locally build docker image (using BuildKit), from the project root, where the `Dockerfile` is.
 ```
 DOCKER_BUILDKIT=1 docker build --target=runtime -t <username>/dynadojo .
 ```
+
+Test it locally.
+```
+docker run -it <username>/dynadojo bash
+```
+
 To push the image onto docker hub:
 ```
 docker push <username>/dynadojo:latest
@@ -31,7 +37,7 @@ Pull the image.
 ```
 mkdir -p $GROUP_HOME/$USER/simg
 cd $GROUP_HOME/$USER/simg
-singularity pull docker://carynbear/dynadojo:amd
+singularity pull docker://<username>/dynadojo
 ```
 Run from entrypoint.
 ```
@@ -46,11 +52,10 @@ singularity shell --pwd /tmp/dynadojo dynadojo.simg
 ## 4. OR Build and run a writable singularity container to test [help](https://wiki.ncsa.illinois.edu/display/ISL20/Containers)
 ```
 cd $GROUP_HOME/$USER/simg
-singularity build --sandbox -F dynadojo docker://carynbear/dynadojo:amd
-singularity run --pwd /dynadojo dynadojo
+singularity build --sandbox -F dynadojo docker://carynbear/dynadojo:buildx
+singularity shell --writable dynadojo
 
-
-singularity shell --pwd /dynadojo --writable dynadojo
+singularity run dynadojo
 ```
 # Resources
 

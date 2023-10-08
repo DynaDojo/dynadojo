@@ -1,7 +1,7 @@
 import numpy as np
 import rebound
 
-from .utils import SimpleSystem
+from .utils.simple import SimpleSystem
 
 
 class NBodySystem(SimpleSystem):

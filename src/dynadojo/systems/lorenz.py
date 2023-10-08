@@ -4,7 +4,7 @@ paper from Shen: https://www.worldscientific.com/doi/epdf/10.1142/S0218127419500
 """
 import numpy as np
 
-from .utils import SimpleSystem
+from .utils.simple import SimpleSystem
 
 
 class LorenzSystem(SimpleSystem):

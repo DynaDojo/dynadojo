@@ -18,5 +18,7 @@ pyenv local 3.10 #set the current directory default version
 pdm install 
 ```
 
+Make sure to reload terminal to activate venv.
+
 Todo:
 Build/publish

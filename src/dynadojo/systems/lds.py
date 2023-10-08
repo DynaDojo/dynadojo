@@ -1,7 +1,7 @@
 import numpy as np
 import scipy as sp
 
-from .utils import SimpleSystem
+from .utils.simple import SimpleSystem
 
 
 class LDSSystem(SimpleSystem):

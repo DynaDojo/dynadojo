@@ -3,7 +3,7 @@ Adapted from: https://levelup.gitconnected.com/solving-2d-heat-equation-numerica
 """
 import numpy as np
 
-from .utils import SimpleSystem
+from .utils.simple import SimpleSystem
 
 
 class HeatEquation(SimpleSystem):

@@ -6,8 +6,15 @@ from ..abstractions import AbstractSystem
 from ..challenges import FixedError, FixedComplexity, FixedTrainSize
 from ..baselines import LinearRegression
 
+import importlib
+
 
 def get_test_system(module):
+    try:
+        importlib.import_module(module)
+    except Exception as e:
+        ImportError(f"Could not import {module}")
+
     for name, obj in inspect.getmembers(sys.modules[module]):
         if inspect.isclass(obj) and issubclass(obj, AbstractSystem) and obj is not AbstractSystem:
             return obj
