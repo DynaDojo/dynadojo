@@ -31,7 +31,7 @@ Pull the image.
 ```
 mkdir -p $GROUP_HOME/$USER/simg
 cd $GROUP_HOME/$USER/simg
-singularity pull docker://<username>/dynadojo
+singularity pull docker://carynbear/dynadojo:amd
 ```
 Run from entrypoint.
 ```
@@ -46,10 +46,11 @@ singularity shell --pwd /tmp/dynadojo dynadojo.simg
 ## 4. OR Build and run a writable singularity container to test [help](https://wiki.ncsa.illinois.edu/display/ISL20/Containers)
 ```
 cd $GROUP_HOME/$USER/simg
-singularity build --sandbox -F dynadojo docker://carynbear/dynadojo:buildx
-singularity shell --writable dynadojo
+singularity build --sandbox -F dynadojo docker://carynbear/dynadojo:amd
+singularity run --pwd /dynadojo dynadojo
 
-singularity run dynadojo
+
+singularity shell --pwd /dynadojo --writable dynadojo
 ```
 # Resources
 
