@@ -2,7 +2,7 @@ import networkx as nx
 import ndlib.models.ModelConfig as mc
 import ndlib.models.opinions as op
 
-from ..utils import OpinionSystem
+from ..utils.utils import OpinionSystem
 
 import numpy as np
 

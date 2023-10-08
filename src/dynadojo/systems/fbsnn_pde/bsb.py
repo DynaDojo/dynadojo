@@ -1,6 +1,6 @@
 import numpy as np
-import tensorflow as tf
-from ..utils import FBSNNSystem
+# import tensorflow as tf
+from ..utils.utils import FBSNNSystem
 
 '''
 Black-Scholes-Barenblatt PDE adapted from Maziar Raissi, https://github.com/maziarraissi/FBSNNs
@@ -25,13 +25,13 @@ class BSBSystem(FBSNNSystem):
         return 0.05*(Y - tf.reduce_sum(X*Z, 1, keepdims = True)) # N x 1
     
     def _g_tf(self, X): # N x latent_dim
-        return tf.reduce_sum(X**2, 1, keepdims = True) # N x 1
+        return self.tf.reduce_sum(X**2, 1, keepdims = True) # N x 1
 
     def _mu_tf(self, t, X, Y, Z): # N x 1, N x latent_dim, N x 1, N x latent_dim
         return super()._mu_tf(t, X, Y, Z) # N x latent_dim
         
     def _sigma_tf(self, t, X, Y): # N x 1, N x latent_dim, N x 1
-        return 0.4*tf.linalg.diag(X) # N x latent_dim x latent_dim
+        return 0.4*self.tf.linalg.diag(X) # N x latent_dim x latent_dim
     
     def _solve(self, t, X, T, U): # (N+1) x 1, (N+1) x latent_dim, T
         r = 0.05
