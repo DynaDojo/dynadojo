@@ -1,5 +1,5 @@
 import numpy as np
-# import tensorflow as tf
+import tensorflow as tf
 
 from ..abstractions import AbstractModel
 
@@ -8,7 +8,6 @@ class DNN(AbstractModel):
 
     def __init__(self, embed_dim, timesteps, max_control_cost, activation=None, **kwargs):
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
-        import tensorflow as tf
         self.model = tf.keras.Sequential([
             tf.keras.Input(shape=(None, embed_dim)),
             tf.keras.layers.Dense(30, activation=activation, kernel_regularizer="l2"),

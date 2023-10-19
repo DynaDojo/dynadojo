@@ -1,6 +1,6 @@
 import numpy as np
-# import tensorflow as tf
-from ..utils.utils import FBSNNSystem
+import tensorflow as tf
+from ..utils.fbsnn import FBSNNSystem
 
 '''
 Hamilton-Jacobi-Bellman PDE adapted from Maziar Raissi, https://github.com/maziarraissi/FBSNNs
@@ -22,16 +22,16 @@ class HJBSystem(FBSNNSystem):
         super().__init__(latent_dim, embed_dim, noise_scale, IND_range, OOD_range, layers, T, seed)
 
     def _phi_tf(self, t, X, Y, Z): # N x 1, N x latent_dim, N x 1, N x latent_dim
-        return self.tf.reduce_sum(Z**2, 1, keepdims = True) # N x 1
+        return tf.reduce_sum(Z**2, 1, keepdims = True) # N x 1
     
     def _g_tf(self, X): # N x latent_dim
-        return self.tf.math.log(0.5 + 0.5*self.tf.reduce_sum(X**2, 1, keepdims = True)) # N x 1
+        return tf.math.log(0.5 + 0.5*tf.reduce_sum(X**2, 1, keepdims = True)) # N x 1
 
     def _mu_tf(self, t, X, Y, Z): # N x 1, N x latent_dim, N x 1, N x latent_dim
         return super()._mu_tf(t, X, Y, Z) # N x latent_dim
         
     def _sigma_tf(self, t, X, Y): # N x 1, N x latent_dim, N x 1
-        return self.tf.sqrt(2.0)*super()._sigma_tf(t, X, Y) # N x latent_dim x latent_dim
+        return tf.sqrt(2.0)*super()._sigma_tf(t, X, Y) # N x latent_dim x latent_dim
     
 
     def _solve(self, t, X, T, U): # (N+1) x 1, (N+1) x latent_dim, T
