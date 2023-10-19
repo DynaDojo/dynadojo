@@ -2,10 +2,9 @@
 import numpy as np
 from scipy.stats import ortho_group
 from scipy.integrate import solve_ivp
-# import tensorflow as tf
+
 
 from ...abstractions import AbstractSystem
-from abc import abstractmethod
 
 
 class SimpleSystem(AbstractSystem):

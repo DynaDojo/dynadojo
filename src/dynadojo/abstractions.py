@@ -242,7 +242,7 @@ class Challenge:
                  reps: int,
                  test_examples: int,
                  test_timesteps: int,
-                 system_kwargs: dict = None,
+                 system_kwargs: dict | None = None,
                  ):
         """
         :param N: train sizes
@@ -276,9 +276,9 @@ class Challenge:
 
     def evaluate(self,
                  model_cls: type[AbstractModel],
-                 model_kwargs: dict = None,
-                 fit_kwargs: dict = None,
-                 act_kwargs: dict = None,
+                 model_kwargs: dict | None = None,
+                 fit_kwargs: dict | None = None,
+                 act_kwargs: dict | None = None,
                  in_dist=True,
                  noisy=False,
                  id=None,
