@@ -5,11 +5,14 @@ from sklearn.linear_model import LinearRegression as SKLinearRegression
 
 
 class LinearRegression(AbstractModel):
-    def __init__(self, embed_dim, timesteps, max_control_cost):
+    def __init__(self, embed_dim, timesteps, max_control_cost,
+                seed=None
+                ):
         super().__init__(embed_dim, timesteps, max_control_cost)
         self.A_hat = []
         self.U = None
         self.model = None
+        self._rng = np.random.default_rng(seed=seed)
 
     def fit(self, x: np.ndarray, **kwargs):
 
@@ -28,7 +31,7 @@ class LinearRegression(AbstractModel):
         self.A_hat = self.model.coef_
 
     def act(self, x, **kwargs):
-        self.U = np.random.uniform(-1, 1,
+        self.U = self._rng.uniform(-1, 1,
                                    [len(x[0]), self._timesteps, self._embed_dim])
         self.U = np.array(self.U)
 
@@ -49,11 +52,14 @@ class LinearRegression(AbstractModel):
 
 
 class ManualLinearRegression(AbstractModel):
-    def __init__(self, embed_dim, timesteps, control_constraint):
+    def __init__(self, embed_dim, timesteps, control_constraint,
+                seed=None
+                ):
         super().__init__(embed_dim, timesteps, control_constraint)
         self.A_hat = []
         self.U = None
         self.model = None
+        self._rng = np.random.default_rng(seed=seed)
 
     def fit(self, x: np.ndarray, **kwargs):
         X = x[:, :-1, :]
@@ -75,7 +81,7 @@ class ManualLinearRegression(AbstractModel):
             self.A_hat = Y@pinv
 
     def act(self, x, **kwargs):
-        self.U = np.random.uniform(-1, 1,
+        self.U = self._rng.uniform(-1, 1,
                                    [len(x[0]), self._timesteps, self._embed_dim])
         self.U = np.array(self.U)
 

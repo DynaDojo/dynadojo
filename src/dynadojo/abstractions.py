@@ -243,14 +243,16 @@ class Challenge:
                  test_examples: int,
                  test_timesteps: int,
                  system_kwargs: dict | None = None,
+                 save_class: bool = False,
                  ):
         """
-        :param N: train sizes
+        :param N: train sizes, (# of trajectories)
         :param L: latent dimensions
-        :param E: embedded dimensions. Optional. If list, then evaluate iterates across embedded dimensions.
-        If int, then evaluate uses a fixed embedded dimension. If None, then evaluate sets the embedded dimension
-        equal to the latent dimension.
-        :param T: timesteps
+        :param E: embedded dimensions. Optional. 
+            If list, then evaluate iterates across embedded dimensions. (e >= l)
+            If int, then evaluate uses a fixed embedded dimension. (E >= max(L))
+            If None, then evaluate sets the embedded dimension equal to the latent dimension. (e = l)
+        :param T: timesteps (length of a trajectory)
         :param max_control_cost_per_dim: max control cost per control trajectory
         :param control_horizons: number of times to generate training data with control
         :param system_cls: class constructor (NOT instance) for a concrete system
@@ -273,6 +275,7 @@ class Challenge:
         self._reps = reps
         self._test_examples = test_examples
         self._test_timesteps = test_timesteps
+        self._save_class = save_class
 
     def evaluate(self,
                  model_cls: type[AbstractModel],
@@ -363,13 +366,16 @@ class Challenge:
         return data
 
     def _set_system(self, system, latent_dim, embed_dim):
-        if system is None:
+        # ToDo: Provide documentation for overriding latent_dim and embed_dim setters (see systems/utils/simple.py)
+        # This functionality is provided to allow for scaling embedded dim on a fixed system instance
+        if system is None or not self._save_class:
+            # Default behavior: create a new system instance for each rep
             system = self._system_cls(
                 latent_dim, embed_dim, **self._system_kwargs)
         if latent_dim != system.latent_dim:
-            system.latent_dim = latent_dim
+            system.latent_dim = latent_dim #must override property setter to update embedder and controller
         if embed_dim != system.embed_dim:
-            system.embed_dim = embed_dim
+            system.embed_dim = embed_dim #must override property setter to update embedder and controller
         return system
 
     def _gen_trainset(self, system, n: int, timesteps: int, noisy=False):
@@ -423,7 +429,7 @@ class Challenge:
                 noisy=False,
                 ):
         max_control_cost = self._max_control_cost_per_dim * latent_dim
-        print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}, control_horizons={self._control_horizons}, { rep_id=}, {id=}")
+        
 
         # Create model and data
         model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
@@ -432,4 +438,5 @@ class Challenge:
         test = self._gen_testset(system, in_dist)
         pred = model.predict_wrapper(test[:, 0], self._test_timesteps)
         error = system.calc_error_wrapper(pred, test)
+        print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}, control_horizons={self._control_horizons}, { rep_id=}, {id=}, {error=}, {total_cost=}")
         self._append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, error, total_cost)
