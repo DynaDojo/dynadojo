@@ -16,6 +16,7 @@ class SimpleSystem(AbstractSystem):
                  OOD_range=(-10, 0),
                  noise_scale=0.01,
                  t_range=(0, 1),
+                 seed=None,
                  ):
         super().__init__(latent_dim, embed_dim)
 
@@ -25,7 +26,7 @@ class SimpleSystem(AbstractSystem):
         self.OOD_range = OOD_range
 
         self._noise_scale = noise_scale
-        self._rng = np.random.default_rng()
+        self._rng = np.random.default_rng(seed=seed)
 
         self._embedder_sv_range = embedder_sv_range
         self._controller_sv_range = controller_sv_range
@@ -92,8 +93,8 @@ class SimpleSystem(AbstractSystem):
         return data
 
     def _sv_to_matrix(self, m, n, sv_range):
-        U = ortho_group.rvs(m)
+        U = ortho_group.rvs(m, random_state=self._rng)
         sigma = np.eye(m, n) * self._rng.uniform(*sv_range, size=n)
-        V = ortho_group.rvs(n)
+        V = ortho_group.rvs(n, random_state=self._rng)
         N = U @ sigma @ V
         return N

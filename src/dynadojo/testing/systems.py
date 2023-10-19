@@ -23,14 +23,14 @@ def get_test_system(module):
 
 def test_fixed_complexity(N: list[int], l: int, e: int, t: int, max_control_cost_per_dim: int, control_horizons: int,
                           system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int,
-                          system_kwargs: dict = None):
+                          system_kwargs: dict = None, model_kwargs: dict = None):
     print("Testing FixedComplexity")
     challenge = FixedComplexity(N=N, l=l, e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
                                 control_horizons=control_horizons, system_cls=system_cls, reps=reps,
                                 test_examples=test_examples, test_timesteps=test_timesteps, system_kwargs=system_kwargs)
     for in_dist, noisy in ([True, True], [True, False], [False, True], [False, False]):
         print(f"\tTesting {in_dist=} {noisy=}")
-        challenge.evaluate(LinearRegression, in_dist=in_dist, noisy=noisy)
+        challenge.evaluate(LinearRegression, model_kwargs={"seed":10}, in_dist=in_dist, noisy=noisy)
 
 
 def test_system(system_module: str,
