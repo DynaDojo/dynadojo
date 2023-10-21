@@ -390,19 +390,6 @@ class Challenge:
             data["id"] = id or next(self._id)
         return data
         
-
-    # def _set_system(self, system, latent_dim, embed_dim):
-    #     # ToDo: Provide documentation for overriding latent_dim and embed_dim setters (see systems/utils/simple.py)
-    #     # This functionality is provided to allow for scaling embedded dim on a fixed system instance
-    #     if system is None:
-    #         system = self._system_cls(
-    #             latent_dim, embed_dim, **self._system_kwargs)
-    #     if latent_dim != system.latent_dim:
-    #         system.latent_dim = latent_dim #must override property setter to update embedder and controller
-    #     if embed_dim != system.embed_dim:
-    #         system.embed_dim = embed_dim #must override property setter to update embedder and controller
-    #     return system
-
     def _gen_trainset(self, system, n: int, timesteps: int, noisy=False):
         train_init_conds = system.make_init_conds_wrapper(n)
         return system.make_data_wrapper(train_init_conds, timesteps=timesteps, noisy=noisy)
