@@ -12,6 +12,7 @@ class LDSSystem(SimpleSystem):
         self._A_eigval_range = A_eigval_range
         self._A_eigvec_range = A_eigvec_range
         self.A = self._make_A(latent_dim)
+        
 
     def _eigenvalues_to_matrix(self, dim, eig_range, eigvec_range):
         # use eigendecomposition to produce a real-valued matrix with target eigenvalues
