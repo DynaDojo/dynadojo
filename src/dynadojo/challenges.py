@@ -220,8 +220,7 @@ class FixedComplexity(Challenge):
                  system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
         L = [l]
         E = e
-        T = [t]
-        super().__init__(N, L, E, T, max_control_cost_per_dim, control_horizons,
+        super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
                          system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     @staticmethod
@@ -229,10 +228,11 @@ class FixedComplexity(Challenge):
         plot_metric(data, "n", "error", xlabel=r'$n$')
 
 class FixedTrainSize(Challenge):
-    def __init__(self, n: int, L: list[int], E: list[int] | int | None, T: list[int], max_control_cost_per_dim: int, control_horizons: int,
-                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
+    def __init__(self, n: int, L: list[int], E: list[int] | int | None, t: int, 
+                max_control_cost_per_dim: int, control_horizons: int,
+                system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
         N = [n]
-        super().__init__(N, L, E, T, max_control_cost_per_dim, control_horizons,
+        super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
                          system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     @staticmethod

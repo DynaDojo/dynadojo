@@ -5,14 +5,12 @@ from sklearn.linear_model import LinearRegression as SKLinearRegression
 
 
 class LinearRegression(AbstractModel):
-    def __init__(self, embed_dim, timesteps, max_control_cost,
-                seed=None
-                ):
-        super().__init__(embed_dim, timesteps, max_control_cost)
+    def __init__(self, embed_dim, timesteps, max_control_cost, seed=None):
+        super().__init__(embed_dim, timesteps, max_control_cost, seed)
         self.A_hat = []
         self.U = None
         self.model = None
-        self._rng = np.random.default_rng(seed=seed)
+        self._rng = np.random.default_rng(seed=self._seed)
 
     def fit(self, x: np.ndarray, **kwargs):
 

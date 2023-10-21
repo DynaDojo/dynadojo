@@ -7,7 +7,7 @@ from joblib import Parallel, delayed
 
 
 class AbstractModel(ABC):
-    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
+    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, seed: int | None, **kwargs):
         """
         Base class for all models. Your models should subclass this class.
 
@@ -20,6 +20,7 @@ class AbstractModel(ABC):
         # NOTE: this is the timesteps of the training data; NOT the predicted trajectories
         self._timesteps = timesteps
         self._max_control_cost = max_control_cost
+        self._seed = seed
 
     @abstractmethod
     def fit(self, x: np.ndarray, **kwargs) -> None:
@@ -92,7 +93,7 @@ class AbstractModel(ABC):
 
 
 class AbstractSystem(ABC):
-    def __init__(self, latent_dim, embed_dim):
+    def __init__(self, latent_dim, embed_dim, seed: int | None, **kwargs):
         """
         Base class for all systems. Your systems should subclass this class.
 
@@ -102,6 +103,7 @@ class AbstractSystem(ABC):
         """
         self._latent_dim = latent_dim
         self._embed_dim = embed_dim
+        self._seed = seed
 
     @property
     def latent_dim(self):
@@ -235,7 +237,7 @@ class Challenge:
                  N: list[int],
                  L: list[int],
                  E: list[int] | int | None,
-                 T: list[int],
+                 t: int,
                  max_control_cost_per_dim: int,
                  control_horizons: int,
                  system_cls: type[AbstractSystem],
@@ -243,7 +245,7 @@ class Challenge:
                  test_examples: int,
                  test_timesteps: int,
                  system_kwargs: dict | None = None,
-                 save_class: bool = False,
+                #  save_class: bool = False,
                  ):
         """
         :param N: train sizes, (# of trajectories)
@@ -252,7 +254,7 @@ class Challenge:
             If list, then evaluate iterates across embedded dimensions. (e >= l)
             If int, then evaluate uses a fixed embedded dimension. (E >= max(L))
             If None, then evaluate sets the embedded dimension equal to the latent dimension. (e = l)
-        :param T: timesteps (length of a trajectory)
+        :param t: timesteps (length of a trajectory)
         :param max_control_cost_per_dim: max control cost per control trajectory
         :param control_horizons: number of times to generate training data with control
         :param system_cls: class constructor (NOT instance) for a concrete system
@@ -267,7 +269,7 @@ class Challenge:
         self._N = N
         self._L = L
         self._E = E
-        self._T = T
+        self._t = t
         self._max_control_cost_per_dim = max_control_cost_per_dim
         self._system_cls = system_cls
         self._system_kwargs = system_kwargs or {}
@@ -275,7 +277,6 @@ class Challenge:
         self._reps = reps
         self._test_examples = test_examples
         self._test_timesteps = test_timesteps
-        self._save_class = save_class
 
     def evaluate(self,
                  model_cls: type[AbstractModel],
@@ -285,6 +286,11 @@ class Challenge:
                  in_dist=True,
                  noisy=False,
                  id=None,
+                 num_parallel_cpu=-1,
+                 seed=None,
+                 # Which reps and L to evaluate. If None, evaluate all reps on all L.
+                 eval_reps: list[int] = None,
+                 eval_L: list[int] | None = None
                  ) -> pd.DataFrame:
         """
         Evaluates a model class (NOT an instance) on a dynamical system over a set of experimental parameters.
@@ -297,86 +303,105 @@ class Challenge:
         If False, generate out-of-distribution initial conditions for the test set.
         :param noisy: Boolean. If True, add noise to train set. Defaults to False. If False, no noise is added.
         :param id: model ID associated with evaluation results in returned DataFrame
-        :return: a pandas DataFrame with experimental results
+        :param num_parallel_cpu: number of cpus to use in parallel. Defaults to -1, which uses all available cpu.
+        :param seed: to seed random number generator for seeding systems and models. Defaults to None. Is overriden by seeds in system_kwargs or model_kwargs.
+        :param eval_reps: if provided, will only evaluate the given rep_ids. Defaults to None, which evaluates all repetitions.
+        :param eval_L: if provided, will only evaluate the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
+        return: a pandas DataFrame with experimental results
         """
 
         model_kwargs = model_kwargs or {}
         fit_kwargs = fit_kwargs or {}
         act_kwargs = act_kwargs or {}
 
-        def do_rep1(rep_id):
+        def system_run(rep_id, latent_dim, embed_dim, system_seed=None, model_seed=None):
             """
-            Handles case when E is an array
+            For a given system latent dimension and embedding dimension, instantiates system and evaluates reps of
+            iterating over the number of trajectories N and lengths of trajectory timesteps T. 
+
+            Note that model seed in model_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
             """
             result = {k: [] for k in ["rep", "n", "latent_dim",
                                       "embed_dim", "timesteps", "control_horizons", "error", "total_cost"]}
-            system = None
-            for n, d, timesteps in itertools.product(self._N, zip(self._L, self._E), self._T):
-                latent_dim, embed_dim = d
-                if embed_dim < latent_dim:
-                    return
-                system = self._set_system(system, latent_dim, embed_dim)
-                self._do_rep(rep_id, id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
-                             act_kwargs, in_dist, noisy)
+            
+            if embed_dim < latent_dim:
+                return
+
+            # Seed in system_kwargs takes precedence over the seed passed to this function.
+            system = self._system_cls(latent_dim, embed_dim, **{"seed":system_seed, **self._system_kwargs})
+            
+            # Create data
+            largest_N = max(self._N)
+            training_set = self._gen_trainset(system, largest_N, self._t, noisy)
+            test_set = self._gen_testset(system, in_dist)
+            
+            max_control_cost = self._max_control_cost_per_dim * latent_dim
+
+            # On each subset of the training set, we retrain the model from scratch (initialized with the same random seed). If you don't, then # of training epochs will scale with N. This would confound the effect of training set size with training time.
+            for n in self._N:
+                # Create Model. Seed in model_kwargs takes precedence over the seed passed to this function.
+                model = model_cls(embed_dim, self._t, max_control_cost, **{"seed": model_seed, **model_kwargs})
+                training_set_n = training_set[:n] #train on subset of training set
+                total_cost = self._fit_model(system, model, training_set_n, self._t, max_control_cost, fit_kwargs, act_kwargs, noisy)
+                pred = model.predict_wrapper(test_set[:, 0], self._test_timesteps)
+                error = system.calc_error_wrapper(pred, test_set)
+                print(f"{n=}, {latent_dim=}, {embed_dim=}, timesteps={self._t}, control_horizons={self._control_horizons}, { rep_id=}, {id=}, {error=}, {total_cost=}, model_seed={model._seed}, system_seed={system._seed}")
+                self._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, error, total_cost)
+
             return pd.DataFrame(result)
 
-        def do_rep2(rep_id):
-            """
-            Handles case when E is a None
-            """
-            result = {k: [] for k in ["rep", "n", "latent_dim",
-                                      "embed_dim", "timesteps", "control_horizons", "error", "total_cost"]}
-            system = None
-            for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
-                embed_dim = latent_dim
-                system = self._set_system(system, latent_dim, embed_dim)
-                self._do_rep(rep_id, id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
-                             act_kwargs, in_dist, noisy)
-            return pd.DataFrame(result)
-
-        def do_rep3(rep_id):
-            """
-            Handles case when E is a constant
-            """
-            result = {k: [] for k in ["rep", "n", "latent_dim",
-                                      "embed_dim", "timesteps", "control_horizons", "error", "total_cost"]}
-            system = None
-            for n, latent_dim, timesteps in itertools.product(self._N, self._L, self._T):
-                embed_dim = self._E
-                if embed_dim < latent_dim:
-                    return
-                system = self._set_system(system, latent_dim, embed_dim)
-                self._do_rep(rep_id, id, result, system, n, latent_dim, embed_dim, timesteps, model_cls, model_kwargs, fit_kwargs,
-                             act_kwargs, in_dist, noisy)
-            return pd.DataFrame(result)
-
-        if isinstance(self._E, list):
-            do_rep = do_rep1
-        elif self._E is None:
-            do_rep = do_rep2
+        # Sets embedded dim array when self._E is None, constant, or an array    
+        if self._E is None: 
+            E = self._L
         elif isinstance(self._E, int):
-            do_rep = do_rep3
+            E = [self._E] * len(self._L)
         else:
-            raise TypeError("E must of type List[int], int, or None.")
+            assert isinstance(self._E, list), "E must of type List[int], int, or None."
+            assert len(self._E) != len(self._L), "E (type List[int]) and L must be of the same length."
+            E = self._E
 
-        data = Parallel(n_jobs=4, timeout=1e6)(delayed(do_rep)(rep_id)
-                                               for rep_id in range(self._reps))
-        data = pd.concat(data)
-        data["id"] = id or next(self._id)
+        # Handling which reps to evaluate. 
+        ## First, making seeds for all reps
+        if seed:
+            rng = np.random.default_rng(seed)
+            system_seeds = rng.integers(0, 2**32, size=self._reps*len(self._L))
+            model_seeds = rng.integers(0, 2**32, size=self._reps*len(self._L))
+        else:
+            system_seeds = [None]*self._reps*len(self._L)
+            model_seeds = [None]*self._reps*len(self._L)
+        ## Second creating all system_run arguments (rep_id, latent_dim, embed_dim, system_seed, model_seed)
+        system_run_args = zip(itertools.product(range(self._reps), zip(self._L, E)), system_seeds, model_seeds)
+        ## flatten system_args to a list of tuples
+        system_run_args = [(r, l, e, system_seed, model_seed) for (r, (l, e)), system_seed, model_seed in system_run_args]
+        ## Third, figuring out which reps to run based on specified subset of reps
+        if eval_reps:
+            system_run_args = [args for args in system_run_args if args[0] in eval_reps]
+        ## Fourth, figuring out which systems to run based on specified subset of L
+        if eval_L:
+            system_run_args = [args for args in system_run_args if args[2] in eval_L]
+        
+        # Run systems in parallel
+        data = Parallel(n_jobs=num_parallel_cpu, timeout=1e6)(
+            delayed(system_run)(rep_id, l, e, system_seed=system_seed, model_seed=model_seed) 
+            for rep_id, l, e, system_seed, model_seed in system_run_args)
+
+        if data:
+            data = pd.concat(data)
+            data["id"] = id or next(self._id)
         return data
+        
 
-    def _set_system(self, system, latent_dim, embed_dim):
-        # ToDo: Provide documentation for overriding latent_dim and embed_dim setters (see systems/utils/simple.py)
-        # This functionality is provided to allow for scaling embedded dim on a fixed system instance
-        if system is None or not self._save_class:
-            # Default behavior: create a new system instance for each rep
-            system = self._system_cls(
-                latent_dim, embed_dim, **self._system_kwargs)
-        if latent_dim != system.latent_dim:
-            system.latent_dim = latent_dim #must override property setter to update embedder and controller
-        if embed_dim != system.embed_dim:
-            system.embed_dim = embed_dim #must override property setter to update embedder and controller
-        return system
+    # def _set_system(self, system, latent_dim, embed_dim):
+    #     # ToDo: Provide documentation for overriding latent_dim and embed_dim setters (see systems/utils/simple.py)
+    #     # This functionality is provided to allow for scaling embedded dim on a fixed system instance
+    #     if system is None:
+    #         system = self._system_cls(
+    #             latent_dim, embed_dim, **self._system_kwargs)
+    #     if latent_dim != system.latent_dim:
+    #         system.latent_dim = latent_dim #must override property setter to update embedder and controller
+    #     if embed_dim != system.embed_dim:
+    #         system.embed_dim = embed_dim #must override property setter to update embedder and controller
+    #     return system
 
     def _gen_trainset(self, system, n: int, timesteps: int, noisy=False):
         train_init_conds = system.make_init_conds_wrapper(n)
@@ -411,32 +436,3 @@ class Challenge:
         result['control_horizons'].append(self._control_horizons)
         result['error'].append(error)
         result['total_cost'].append(total_cost)
-
-    def _do_rep(self,
-                rep_id: int,
-                id: str | int,
-                result: dict,
-                system: AbstractSystem,
-                n: int,
-                latent_dim: int,
-                embed_dim: int,
-                timesteps: int,
-                model_cls: type[AbstractModel],
-                model_kwargs: dict = None,
-                fit_kwargs: dict = None,
-                act_kwargs: dict = None,
-                in_dist=True,
-                noisy=False,
-                ):
-        max_control_cost = self._max_control_cost_per_dim * latent_dim
-        
-
-        # Create model and data
-        model = model_cls(embed_dim, timesteps, max_control_cost, **model_kwargs)
-        x = self._gen_trainset(system, n, timesteps, noisy)
-        total_cost = self._fit_model(system, model, x, timesteps, max_control_cost, fit_kwargs, act_kwargs, noisy)
-        test = self._gen_testset(system, in_dist)
-        pred = model.predict_wrapper(test[:, 0], self._test_timesteps)
-        error = system.calc_error_wrapper(pred, test)
-        print(f"{n=}, {latent_dim=}, {embed_dim=}, {timesteps=}, control_horizons={self._control_horizons}, { rep_id=}, {id=}, {error=}, {total_cost=}")
-        self._append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, error, total_cost)

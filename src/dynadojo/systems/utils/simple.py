@@ -8,7 +8,7 @@ from ...abstractions import AbstractSystem
 
 
 class SimpleSystem(AbstractSystem):
-    def __init__(self, latent_dim, embed_dim,
+    def __init__(self, latent_dim, embed_dim, seed=None,
                  # singular values are non-neg by convention; >0 since we don't want a nontrivial null space
                  embedder_sv_range=(0.1, 1),
                  controller_sv_range=(0.1, 1),
@@ -16,9 +16,8 @@ class SimpleSystem(AbstractSystem):
                  OOD_range=(-10, 0),
                  noise_scale=0.01,
                  t_range=(0, 1),
-                 seed=None,
                  ):
-        super().__init__(latent_dim, embed_dim)
+        super().__init__(latent_dim, embed_dim, seed)
 
         self._t_range = t_range
 
@@ -26,7 +25,7 @@ class SimpleSystem(AbstractSystem):
         self.OOD_range = OOD_range
 
         self._noise_scale = noise_scale
-        self._rng = np.random.default_rng(seed=seed)
+        self._rng = np.random.default_rng(seed=self._seed)
 
         self._embedder_sv_range = embedder_sv_range
         self._controller_sv_range = controller_sv_range
