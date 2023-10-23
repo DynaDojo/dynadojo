@@ -1,3 +1,4 @@
+import math
 import warnings
 import pandas as pd
 import numpy as np
@@ -10,214 +11,314 @@ from .abstractions import Challenge, AbstractSystem, AbstractModel
 
 
 class FixedError(Challenge):
-    def __init__(self, L: list[int], t: int, max_control_cost_per_dim: int, control_horizons: int,
-                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, target_error: float,
-                 system_kwargs: dict = None,
-                 max_samples=10000, E: int | list[int] = None):
+    def __init__(self,
+                L: list[int], 
+                t: int, 
+                max_control_cost_per_dim: int, 
+                control_horizons: int,
+                system_cls: type[AbstractSystem], 
+                reps: int, 
+                test_examples: int, 
+                test_timesteps: int, 
+                target_error: float,
+                E: int | list[int] = None,
+                system_kwargs: dict = None,
+                n_precision: int = 5,
+                n_starts: list[int] = None,
+                n_window: int = 0,
+                n_max=10000
+            ):
+        """
+        Challenge where the error is fixed and the latent dimensionality is varied. Performs a binary search over the number of training samples to find the minimum number of samples needed to achieve the target error rate.
 
-        if isinstance(E, list):
-            assert (len(L) == len(E))
-            for idx, l in enumerate(L):
-                assert (E[idx] >= l)
-        elif isinstance(E, int):
-            assert (E >= np.max(L))
+        :param L: List of latent dimensions to test
+        :param t: Number of timesteps of each training trajectory
+        :param max_control_cost_per_dim: Maximum control cost per dimension
+        :param control_horizons: Number of control horizons to test
+        :param system_cls: System class to use
+        :param reps: Number of repetitions to run for each latent dimension
+        :param test_examples: Number of test examples to use
+        :param test_timesteps: Number of timesteps of each test trajectory
+        :param target_error: Target error to test
+        :param E: List of embedding dimensions to test. If None, defaults to L.
+        :param system_kwargs: Keyword arguments to pass to the system class
+        :param n_precision: Uncertainty interval around number of training samples to achieve target error. (i.e. the true number of samples needed for the target error rate will be in [samples_needed - sample_precision, samples_needed + sample_precision]). If 0, we find the exact minimum number of samples needed to achieve the target error rate.
+        :param n_window: Number of n to smooth over on left and right when calculating the error rate during search. If 0, no averaging is done.
+        :param n_starts: List of starting points for the binary search over the number of training samples for each latent dim in L. len must equal len(L). If None, defaults to 1.
+        :param n_max: Maximum number of training samples to use
+        """
+        assert (n_precision >= 0), "Precision must be non-negative"
+        assert (L == sorted(L)), "Latent dimensions have to be sorted" #ToDo: is this necessary?
+        #ToDo: sort L and E if not sorted instead of throwing error.
 
-        # the dimensions have to be sorted, we need a guarantee that they are sorted
+        self.n_starts = {l: 1 for l in L}
+        if n_starts:
+            assert (len(L) == len(n_starts)), "if supplied, must provide a starting point for each latent dimension"
+            self.n_starts = {l: n for l, n in zip(L, n_starts)}
+
+        self.n_precision = n_precision
+        self.n_window = n_window
+        self.n_max = n_max
         self._target_error = target_error
-        self.max_samples = max_samples
+        
 
-        self.X = None
         self.rep_id = None
         self.result = None
-        self.samples_needed = {}
-
+        self.n_needed = {}
+        
         super().__init__([1], L, E, t, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
-    def _evaluate_n(self, system, model_cls, test, n, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs):
-        x = None
-
-        df = pd.DataFrame(self.result)
-        df = df.loc[(df['rep'] == self.rep_id) & (df['n'] == n) & df['latent_dim'] == system.latent_dim]
-        if len(df) == 1:
-            return df.iloc[0]['error']
-
-        if self.X is None:
-            self.X = self._gen_trainset(system, n, self._T, noisy)
-            x = self.X
-
-        # if already generated n samples, pull from existing training set; else add more samples
-        else:
-            if (len(self.X) >= n):
-                x = self.X[:int(n), : , :]
-            else:
-                to_add = self._gen_trainset(
-                    system, n - len(self.X), self._T, noisy)
-                self.X = np.concatenate((self.X, to_add), axis=0)
-                x = self.X
-
-        model = model_cls(system.embed_dim, self._T, max_control_cost, **model_kwargs)
-        total_cost = self._fit_model(system, model, x, self._T,
-                                     max_control_cost, fit_kwargs, act_kwargs, noisy)
-
-
-        pred = model.predict_wrapper(test[:, 0], self._test_timesteps)
-
-        error = system.calc_error_wrapper(pred, test)
-
-        self._append_result(self.result, self.rep_id, n, system.latent_dim, system.embed_dim, self._T, error, total_cost)
-
-        return error
-
-    def _gen_bounds(self, system, model_cls, test, l, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs):
-        lower = 1
-        upper = 3
-        predicted = 2
-
-        if self.samples_needed:
-            prev_largest_dim = np.max(list(self.samples_needed.keys()))
-            lower = self.samples_needed[prev_largest_dim]
-
-            # adaptively predict based on median of samples needed in lower dims
-            if len(self.samples_needed.keys()) > 1:
-                # p = np.polyfit(list(self.samples_needed.keys()), list(self.samples_needed.values()), deg=len(list(self.samples_needed.keys())) - 1)
-                p = self.samples_needed[prev_largest_dim] * 2
-                predict_func = np.poly1d(p)
-                predicted = int(round(predict_func(l)))
-
-            # with only one data dim seens, assume a very small slope
-            else:
-                predicted = self.samples_needed[prev_largest_dim] + 1
-
-            if predicted < lower:
-                predicted = lower+1
-            upper = (2 * predicted) - lower
-
-        # if lower meets target error, decrease to be lower
-        lower_error = self._evaluate_n(system, model_cls, test, lower, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
-        while lower_error <= self._target_error:
-            if lower == 1:
-                break
-            lower = lower // 2
-            lower_error = self._evaluate_n(system, model_cls, test, lower, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
-
-        # increase upper until it satisfies target error or exceeds max_samples
-        while upper <= self.max_samples:
-            if upper == self.max_samples:
-                max_samples_error = self._evaluate_n(
-                    system, model_cls, test, self.max_samples, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
-                if max_samples_error <= self._target_error:
-                    break
-                else:
-                    warnings.warn(f'Rep #{self.rep_id} for l={system.latent_dim} and e={system.embed_dim} failed: Fixed error not achieved within max samples. At {self.max_samples} samples, error is still {max_samples_error}, which is above {self._target_error}')
-                    return (lower, None) 
-
-            else:
-                upper_error = self._evaluate_n(
-                    system, model_cls, test, upper, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
-                
-                if upper_error <= self._target_error:
-                    break
-                else:
-                    if upper == lower:
-                        temp_upper = lower+1
-                    else:
-                        temp_upper = round((2 * (upper - lower)) + upper)
-                    lower = upper
-                    upper = min(self.max_samples, temp_upper)
+    def evaluate(self, 
+        model_cls: type[AbstractModel], 
+        model_kwargs: dict | None = None, 
+        fit_kwargs: dict | None = None, 
+        act_kwargs: dict | None = None, 
+        ood=False, noisy=False, id=None, 
+        num_parallel_cpu=-1, 
+        seed=None, 
+        eval_reps: list[int] = None, eval_L: list[int] | None = None, 
+        **kwargs) -> pd.DataFrame:
         
+        results = super().evaluate(model_cls, model_kwargs, fit_kwargs, act_kwargs, ood, noisy, id, num_parallel_cpu, seed, eval_reps, eval_L, **kwargs)
+        targets = results[['latent_dim', 'embed_dim', 'rep',  'n_target', 'model_seed', 'system_seed']].drop_duplicates()
 
-        return (lower, upper)
-
-    def _search(self, system, model_cls, test, lower, upper, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs):
-        lowest_needed = None
-       
-        while (lower != upper):
-            mid = int((lower + upper) / 2)
-
-            mid_error = self._evaluate_n(
-                system, model_cls, test, mid, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
-
-
-            if mid_error > self._target_error:
-                if lower == mid:
-                    lower = mid + 1
-                else:
-                    lower = mid
-            else:
-                upper = mid
-                lowest_needed = mid
-        
-        return lowest_needed
-               
-
-    def evaluate(self,
-                 model_cls: type[AbstractModel],
-                 model_kwargs: dict = None,
-                 fit_kwargs: dict = None,
-                 act_kwargs: dict = None,
-                 in_dist=True,
-                 noisy=False,
-                 id=None,
-                 ):
-
-        model_kwargs = model_kwargs or {}
-        fit_kwargs = fit_kwargs or {}
-        act_kwargs = act_kwargs or {}
-
-        data = []
-
-        def _do_rep(rep_id, latent_dim, embed_dim):
-
-            self.rep_id = rep_id
-
-            self.result = {k: [] for k in ["rep", "n", "latent_dim", "embed_dim", "timesteps", "control_horizons", "error", "total_cost"]}
-            print(f"{latent_dim=}, {embed_dim=}, timesteps={self._T}, control_horizons={self._control_horizons}, {rep_id=}, {id=}")
-
-            system = None
-            system = self._set_system(system, latent_dim, embed_dim)
-            max_control_cost = self._max_control_cost_per_dim * latent_dim
+        #TODO: use logger instead of print
+        for _, row in targets.iterrows():
+            print(f"!!! rep_id={row['rep']}, latent_dim={row['latent_dim']}, n_target={row['n_target']}, embed_dim={row['embed_dim']}, seed={row['system_seed']},{row['model_seed']} ")
             
-            test = self._gen_testset(system, in_dist)
+        return results
 
-            lower, upper = self._gen_bounds(system, model_cls, test, latent_dim, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
-            if upper is not None:
-                self._search(system, model_cls, test, lower, upper, max_control_cost, noisy, fit_kwargs, act_kwargs, model_kwargs)
+    def system_run(self, 
+                    rep_id, 
+                    latent_dim, 
+                    embed_dim, 
+                    model_cls : type[AbstractModel],
+                    model_kwargs : dict = None,
+                    fit_kwargs : dict = None,
+                    act_kwargs : dict = None,
+                    noisy : bool = False,
+                    test_ood : bool = False,
+                    system_seed=None, 
+                    model_seed=None
+                    ):
+        """
+        For a given system latent dimension and embedding dimension, instantiates system and evaluates reps of
+        iterating over the number of trajectories N.
 
-            self.X = None 
-            return pd.DataFrame(self.result)
+        Note that model seed in model_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
+        """
+        result = Challenge._init_result_dict()
 
-        for idx, latent_dim in enumerate(self._L):
-            self.X = None
-            if not self._E:
-                embed_dim = latent_dim
-            elif isinstance(self._E, int):
-                embed_dim = self._E
+        if embed_dim < latent_dim:
+            return
+
+        # Seed in system_kwargs takes precedence over the seed passed to this function.
+        system = self._system_cls(latent_dim, embed_dim, **{"seed":system_seed, **self._system_kwargs})
+        
+        # generate test set and max control cost
+        test_set = self._gen_testset(system, in_dist=True)
+        ood_test_set = self._gen_testset(system, in_dist=False)
+        max_control_cost = self._max_control_cost_per_dim * latent_dim
+        
+        # generating master training set which is used to generate training sets of different sizes
+        master_training_set = self._gen_trainset(system, 10, self._t, noisy)
+        def get_training_set(n):
+            """ 
+            Helper function to get training set of size n. If we have already generated enough trajectories, simply return a subset of the training set. If not, generate more trajectories and add to training set.
+            """
+            nonlocal master_training_set
+            if n <= len(master_training_set): # if we have already generated enough trajectories
+                return master_training_set[:int(n), : , :] #train on subset of training set
+            else: #add more trajectories to training set 
+                to_add = self._gen_trainset(system, n - len(master_training_set), self._t, noisy)
+                master_training_set = np.concatenate((master_training_set, to_add), axis=0)
+                return master_training_set
+
+        # memoized run function which stores results in result dictionary and memoizes whether or not we have already run the model for a given n 
+        memo = {}
+        
+        def run(n, window=0): 
+            """
+            Helper function to instantiate and run a model once for a given n. If window > 0, then we take the moving average of the error over the last window runs. Results are stored in result dictionary and memoized.
+
+            param n: number of trajectories to train on
+            param window: number of runs to the left of and right of the current run to take the moving average over; ToDo: make this the absolute window size...lazy
+            """
+            def run_helper(n):  #for a given n, fit model and return error
+                #check memo
+                nonlocal memo
+                if n in memo:
+                    return memo[n]
+                model = model_cls(embed_dim, self._t, max_control_cost, **{"seed": model_seed, **model_kwargs})
+                training_set = get_training_set(n)
+                total_cost = self._fit_model(system, model, training_set, self._t, max_control_cost, fit_kwargs, act_kwargs, noisy)
+                pred = model.predict_wrapper(test_set[:, 0], self._test_timesteps)
+                error = system.calc_error_wrapper(pred, test_set)
+                ood_error = None
+                if test_ood:
+                    ood_pred = model.predict_wrapper(ood_test_set[:, 0], self._test_timesteps)
+                    ood_error = system.calc_error_wrapper(ood_pred, ood_test_set)
+                #append/memoize result
+                Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error=ood_error)
+                if test_ood:
+                    memo[n] = (ood_error, total_cost)
+                    return ood_error, total_cost
+                else:
+                    memo[n] = (error, total_cost)
+                    return error, total_cost
+            if window > 0: #moving average/median 
+                results_window = [run_helper(nn) for nn in range(max(1,n - window), min(n+window+1, self.n_max))]
+                error = np.median([r[0] for r in results_window]) #ToDo: make this a mean or median?
+                total_cost = np.median([r[1] for r in results_window]) #ToDo: make this a mean or median?
             else:
-                embed_dim = self._E[idx]
+                error, total_cost = run_helper(n)
+            #TODO: fix logging? Should we use a logger?
+            print(f"{n=}, {window=}, {latent_dim=}, {embed_dim=}, t={self._t}, control_h={self._control_horizons}, {rep_id=}, {total_cost=}, {error=:0.3}, {test_ood=}, model_seed={model_seed}, sys_seed={system._seed}")
+            return error, total_cost
+            
+        # run model for different values of the number of trajectories n, searching for n needed to achieve the target error            
+        def search():
+            """
+            Helper function to search for the number of trajectories N needed to achieve the target error.
+            
+            Returns -1 if target error is never reached within n_max trajectories, np.inf if target error is stuck in a local minimum, and the number of trajectories N needed to achieve the target error otherwise.
+            
+            Assumption that the test error is a convex function of N. Does an exponential search to narrow down the range of N to search over, then does a binary search to find the number of trajectories N needed to achieve the target error.
 
-            temp_df = Parallel(n_jobs=1)(delayed(_do_rep)(rep_id, latent_dim, embed_dim) for rep_id in range(self._reps))
-            temp_df = pd.concat(temp_df, ignore_index=True)
+            In the exponential search, we start with n_curr = 1 or n_starts[latent_dim] if it exists. We then double n_curr until we have found a range of n where the target error is achieved. We handle the case where we have overshot the N needed to achieve the target error by backing up (either by two steps or by halving n_curr) and restarting the exponential search with a smaller increment. We do this until we have found a range of n where the target error is achieved.
+            """
+            # Doing an exponential search.
+            # Narrow down the range of N to search over, giving a left and right bound where the target error is achieved. 
+            # If we have overshot the N needed to achieve the target error, back up and restart the exponential search with a smaller increment.
+            # If we exceed the maximum number of trajectories, return -1. If we converge to a local minimum, return np.inf.
+            # Assumption: the test error is a convex function of N.
+            n_curr = self.n_starts.get(latent_dim, 1) # start with n_curr = 1 or n_starts[latent_dim] if it exists
+            n_prevs = []
+            error_prev = None
+            increment = 1
+            increment_max = self.n_max//10 #TODO: what is a good value for this?
+            multiplicative_factor = 2
+            history = set() #keep track of (n_curr, increment) pairs we have already tried to avoid infinite loops
+            best_answer = np.inf
+            while True:
+                if n_curr > self.n_max:
+                    return -1 # target error is never reached within n_max trajectories
+                
+                if (n_curr, increment) in history: #cycle detected, return best answer
+                    print(f"CYCLEEEEEEE {n_curr=}, {increment=}, {error_curr=}, {error_prev=}, {n_prevs=}")
+                    return best_answer
 
-            self.samples_needed[latent_dim] = int(round(np.median(temp_df["n"])))
+                history.add((n_curr, increment))
 
-            data.append(temp_df)
-       
-        self.samples_needed = None
-        self.X = None
-        self.result = None
+                # run model on n_curr, update our best answer if we have found a new best answer
+                error_curr, total_cost = run(n_curr, window=self.n_window)
+                if error_curr <= self._target_error and n_curr < best_answer:
+                    best_answer = n_curr
 
-        data = pd.concat(data,  ignore_index=True)
-        data["id"] = id or next(self._id)
+                if len(n_prevs) > 0:
+                    if error_curr > error_prev: # error is increasing
+                        # Move backwards
+                        if len(n_prevs) > 1: # Back twice
+                            n_prevs.pop()
+                            n_prev_prev = n_prevs.pop()
+                            if n_curr - n_prev_prev <= max(self.n_precision, 1):
+                                # target error is never reached, minimum error is above threshold under parabolic assumption
+                                # This ignores the possibility that the target error is reached within the precision (only possible if high curvature)
+                                return np.inf 
+                            n_curr = n_prev_prev
+                        else: # or halve n_prev
+                            n_curr =  n_prevs.pop()
+                            if n_curr < self.n_precision:
+                                return n_curr #no more backing up can be done
+                            n_curr = max(1, n_curr//multiplicative_factor)
+                        n_prevs = []
+                        increment = 1
+                        error_prev = None # reset error_prev
+                    else: # error is decreasing
+                        if error_curr < self._target_error: # found n_curr below target
+                            break # do binary search if n_curr is below target
+                        else:
+                            n_prevs.append(n_curr)
+                            error_prev = error_curr
+                            n_curr = n_curr + increment 
+                            # scale increment, but not below 1 nor above increment_max
+                            increment = min(max(1, math.ceil(increment * multiplicative_factor)), increment_max)
+                else: #no n_prevs
+                    if error_curr > self._target_error:
+                        #move forward
+                        n_prevs.append(n_curr)
+                        error_prev = error_curr
+                        n_curr = n_curr + increment
+                        increment = min(max(1, math.ceil(increment * multiplicative_factor)), increment_max)
+                    else: # error_curr < target
+                        if n_curr < self.n_precision + 1:
+                            return n_curr #no more backing up can be done
+                        #move backward
+                        n_curr = max(1, n_curr//multiplicative_factor)
 
+
+            # do binary search, assuming error is convex and that error(n_lower) > target and error(n_upper) < target. So we can always check the left side of the interval if target is between error_lower and error_curr, and the right side otherwise.
+            # n_prevs[-1] is the last n_curr that is above target
+            # n_curr is the first n_curr that is below target
+            # binary search between n_prevs[-1] and n_curr
+            n_lower = n_prevs[-1] 
+            error_lower, _ = run(n_lower, window=self.n_window)
+            n_upper = n_curr
+            error_upper, _ = run(n_upper, window=self.n_window)
+            while True:
+                n_curr = (n_lower + n_upper)//2
+                # stop if n_upper and n_lower are within precision
+                if n_upper - n_lower <= max(self.n_precision, 1):
+                    return math.ceil((n_lower + n_upper)/2)
+
+                error_curr, _ = run(n_curr, window=self.n_window)
+                # find which side of the interval to keep
+                # if target is between error_lower and error_curr, keep left side
+                # if target is between error_curr and error_upper, keep right side
+                if error_lower > self._target_error > error_curr:
+                    n_upper = n_curr
+                    error_upper = error_curr    
+                else:
+                    n_lower = n_curr
+                    error_lower = error_curr
+
+        # Run search    
+        n_target = search()
+        # issue with joblib.Parallellization:
+        # self.n_needed[latent_dim] = self.n_needed.get(latent_dim, []).append(n_target_error)
+        # print(f"!!! {rep_id=}, {latent_dim=}, {n_target=}")
+        
+        data = pd.DataFrame(result)
+        data['n_target'] = n_target
+        data['target_error'] = self._target_error
+        data['n_start'] = self.n_starts.get(latent_dim, 1)
+        data['n_window'] = self.n_window
+        data['n_precision'] = self.n_precision
+        data['n_max'] = self.n_max
+        data['system_seed'] = system_seed
+        data['model_seed'] = model_seed
+
+        # note: result is appended to as a side effect of calling run() inside of search(); 
+        # TODO: refactor to avoid side effects, make pure functions. 
         return data
-
+    
     def plot(self, data):
         plot_target_error(data, "latent_dim", "n", target_error=self._target_error, ylabel=r'$n$')
 
 
 class FixedComplexity(Challenge):
-    def __init__(self, N: list[int], l: int, e: int, t: int, max_control_cost_per_dim: int, control_horizons: int,
-                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
+    def __init__(self, 
+                l: int,
+                t: int,  
+                N: list[int], 
+                system_cls: type[AbstractSystem], 
+                reps: int, 
+                test_examples: int, 
+                test_timesteps: int, 
+                e: int = None, 
+                max_control_cost_per_dim: int = 1, 
+                control_horizons: int = 0,
+                system_kwargs: dict = None):
         L = [l]
         E = e
         super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
