@@ -87,7 +87,7 @@ class SimpleSystem(AbstractSystem):
         for x0, u in zip(init_conds, control):
             sol = solve_ivp(dynamics, t_span=[self._t_range[0], self._t_range[1]], y0=x0, t_eval=time, dense_output=True, args=(u,))
             data.append(sol.y)
-
+            
         data = np.transpose(np.array(data), axes=(0, 2, 1)) @ self.embedder
         return data
 
