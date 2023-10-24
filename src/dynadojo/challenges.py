@@ -140,10 +140,10 @@ class FixedError(Challenge):
         ood=False, noisy=False, id=None, 
         num_parallel_cpu=-1, 
         seed=None, 
-        eval_reps: list[int] = None, eval_L: list[int] | None = None, 
-        **kwargs) -> pd.DataFrame:
+        reps_filter: list[int] = None, L_filter: list[int] | None = None
+        ) -> pd.DataFrame:
         
-        results = super().evaluate(model_cls, model_kwargs, fit_kwargs, act_kwargs, ood, noisy, id, num_parallel_cpu, seed, eval_reps, eval_L, **kwargs)
+        results = super().evaluate(model_cls, model_kwargs, fit_kwargs, act_kwargs, ood, noisy, id, num_parallel_cpu, seed, reps_filter, L_filter)
         targets = results[['latent_dim', 'embed_dim', 'rep',  'n_target', 'model_seed', 'system_seed']].drop_duplicates()
 
         #TODO: use logger instead of print

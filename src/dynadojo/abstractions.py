@@ -287,10 +287,12 @@ class Challenge:
                  id=None,
                  num_parallel_cpu=-1,
                  seed=None,
-                 # Which reps and L to evaluate. If None, evaluate all reps on all L.
-                 eval_reps: list[int] = None,
-                 eval_L: list[int] | None = None,
-                 **kwargs
+                 # Filters which reps and L to evaluate. If None, no filtering is performed. 
+                 # We recommend using these filters to parallelize evaluation across multiple machines, while retaining reproducibility.
+                 reps_filter: list[int] = None,
+                 L_filter: list[int] | None = None,
+                 rep_l_filter: list[tuple[int, int]] | None = None,
+                 #  **kwargs
                  ) -> pd.DataFrame:
         """
         Evaluates a model class (NOT an instance) on a dynamical system over a set of experimental parameters.
@@ -307,6 +309,8 @@ class Challenge:
         :param seed: to seed random number generator for seeding systems and models. Defaults to None. Is overriden by seeds in system_kwargs or model_kwargs.
         :param eval_reps: if provided, will only evaluate the given rep_ids. Defaults to None, which evaluates all repetitions.
         :param eval_L: if provided, will only evaluate the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
+        :param eval_rep_l: if provided, will only evaluate the given (rep_id, latent_dim) pairs. Defaults to None, which evaluates all (rep_id, latent_dim) pairs.
+        :
         return: a pandas DataFrame with experimental results
         """
 
@@ -341,14 +345,17 @@ class Challenge:
         ## flatten system_args to a list of tuples
         system_run_args = [(r, l, e, system_seed, model_seed) for (r, (l, e)), system_seed, model_seed in system_run_args]
         ## Third, figuring out which reps to run based on specified subset of reps
-        if eval_reps:
-            system_run_args = [args for args in system_run_args if args[0] in eval_reps]
+        if reps_filter is not None and len(reps_filter)> 0:
+            system_run_args = [args for args in system_run_args if args[0] in reps_filter]
         ## Fourth, figuring out which systems to run based on specified subset of L
-        if eval_L:
-            system_run_args = [args for args in system_run_args if args[2] in eval_L]
-        
+        if L_filter is not None and len(L_filter)> 0:
+            system_run_args = [args for args in system_run_args if args[1] in L_filter]
+        ## Fifth, figuring out which systems to run based on specified subset of (rep_id, L)
+        if rep_l_filter is not None and len(rep_l_filter)> 0:
+            system_run_args = [args for args in system_run_args if (args[0], args[1]) in rep_l_filter]
+
         fixed_run_args = { 
-            **kwargs,
+            # **kwargs, #ToDo: consider adding extra kwargs to pass to system_run
             "model_cls" : model_cls, 
             "model_kwargs" : model_kwargs, 
             "fit_kwargs": fit_kwargs, 
