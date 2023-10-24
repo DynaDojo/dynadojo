@@ -1,14 +1,78 @@
 import math
-import warnings
 import pandas as pd
 import numpy as np
 
 from .utils.plotting import plot_target_error, plot_metric
-
-from joblib import Parallel, delayed
-
 from .abstractions import Challenge, AbstractSystem, AbstractModel
 
+class FixedComplexity(Challenge):
+    def __init__(self, 
+                l: int,
+                t: int,  
+                N: list[int], 
+                system_cls: type[AbstractSystem], 
+                reps: int, 
+                test_examples: int, 
+                test_timesteps: int, 
+                e: int = None, 
+                max_control_cost_per_dim: int = 1, 
+                control_horizons: int = 0,
+                system_kwargs: dict = None):
+        L = [l]
+        E = e
+        super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
+                         system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
+
+    @staticmethod
+    def plot(data, latent_dim:int=None, embedding_dim:int=None, show: bool=True):
+        """
+        Returns: matplotlib.axes.Axes object
+        """
+        if not data['ood_error'].isnull().any():
+            ax = plot_metric(data, "n", ["error", "ood_error"], xlabel=r'$n$', ylabel=r'$\mathcal{E}$')
+            ax.legend(title='Distribution')
+        else:
+            ax = plot_metric(data, "n", "error", xlabel=r'$n$', ylabel=r'$\mathcal{E}$')
+            ax.get_legend().remove()
+        title = "Fixed Complexity"
+        if latent_dim:
+            title += f", latent={latent_dim}"
+        if embedding_dim:
+            title += f", embedding={embedding_dim}"
+        ax.set_title(title)
+        ax.set_xlabel(r'$n$')
+        if show:
+            import matplotlib.pyplot as plt
+            plt.show()
+        return ax
+
+class FixedTrainSize(Challenge):
+    def __init__(self, n: int, L: list[int], E: list[int] | int | None, t: int, 
+                max_control_cost_per_dim: int, control_horizons: int,
+                system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
+        N = [n]
+        super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
+                         system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
+
+    @staticmethod
+    def plot(data: pd.DataFrame, n: int = None, show : bool =True):
+        """
+        Returns: matplotlib.axes.Axes object
+        """
+        if not data['ood_error'].isnull().any():
+            ax = plot_metric(data, "latent_dim", ["error", "ood_error"], xlabel=r'$L$', log=False, ylabel=r'$\mathcal{E}$')
+            ax.legend(title='Distribution')
+        else:
+            ax = plot_metric(data, "latent_dim", "error", xlabel=r'$L$', log=False, ylabel=r'$\mathcal{E}$')
+            ax.get_legend().remove()
+        title = "Fixed Train Size"
+        if n:
+            title += f", n={n}"
+        ax.set_title(title)
+        if show:
+            import matplotlib.pyplot as plt
+            plt.show()
+        return ax
 
 class FixedError(Challenge):
     def __init__(self,
@@ -302,40 +366,21 @@ class FixedError(Challenge):
         # TODO: refactor to avoid side effects, make pure functions. 
         return data
     
-    def plot(self, data):
-        plot_target_error(data, "latent_dim", "n", target_error=self._target_error, ylabel=r'$n$')
-
-
-class FixedComplexity(Challenge):
-    def __init__(self, 
-                l: int,
-                t: int,  
-                N: list[int], 
-                system_cls: type[AbstractSystem], 
-                reps: int, 
-                test_examples: int, 
-                test_timesteps: int, 
-                e: int = None, 
-                max_control_cost_per_dim: int = 1, 
-                control_horizons: int = 0,
-                system_kwargs: dict = None):
-        L = [l]
-        E = e
-        super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
-                         system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
-
     @staticmethod
-    def plot(data):
-        plot_metric(data, "n", "error", xlabel=r'$n$')
+    def plot(data, target_error:float=None, show:bool=True):
+        
+        ax = plot_target_error(data, "latent_dim", "n", ylabel=r'$n$', xlabel=r'$L$')
+        title = "Fixed Error"
+        if not data['ood_error'].isnull().any(): 
+            title += ", OOD"
+        if target_error:
+            title += f", target error={target_error}"
+        ax.set_title(title)
+        ax.get_legend().remove()
 
-class FixedTrainSize(Challenge):
-    def __init__(self, n: int, L: list[int], E: list[int] | int | None, t: int, 
-                max_control_cost_per_dim: int, control_horizons: int,
-                system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
-        N = [n]
-        super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
-                         system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
+        if show:
+            import matplotlib.pyplot as plt
+            plt.show()
+        return ax
 
-    @staticmethod
-    def plot(data: pd.DataFrame):
-        plot_metric(data, "latent_dim", "error", xlabel=r'$L$', log=False)
+

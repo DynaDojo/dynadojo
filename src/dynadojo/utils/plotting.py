@@ -9,7 +9,7 @@ def _assign_labels(data, labels):
         data[frameidx] = frame.assign(id=labels[frameidx])
 
 
-def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.median, errorbar=("pi", 50)):
+def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.median, errorbar=("pi", 50), **kwargs):
     if idlabels:
         _assign_labels(data, idlabels)
 
@@ -19,11 +19,17 @@ def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="
 
     if not isinstance(data, pd.DataFrame):
         data = pd.concat(data)
-
    
-    ax = sns.catplot(data=data, x=xcol, y=ycol, hue=hue, estimator=estimator, kind="point", errorbar=errorbar)
+    # ax = sns.catplot(data=data, x=xcol, y=ycol, hue=hue, estimator=estimator, kind="point", errorbar=errorbar)
+    if type(ycol) == list: 
+        #if multiple ycols, melt them and plot as separate lines
+        data = data[[xcol] + ycol]
+        data = pd.melt(data, [xcol])
+        ax = sns.lineplot(data=data, x=xcol, y='value', hue="variable", estimator=estimator, errorbar=errorbar, **kwargs)
+    else:
+        ax = sns.lineplot(data=data, x=xcol, y=ycol, hue=hue, estimator=estimator, errorbar=errorbar, **kwargs)
 
-    ax.set(xticks=range(len(data[xcol].unique())))
+    ax.set(xticks=data[xcol].unique())
     if log:
         ax.set(yscale="log")
 
@@ -32,10 +38,17 @@ def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="
     if ylabel:
        ax.set(ylabel=ylabel)
 
-    plt.show()
+    return ax
 
 
-def plot_target_error(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.median, errorbar=("pi", 50), error_col="error", target_error=0.1):
+def plot_target_error(data, xcol, ycol, 
+            idlabels=None, xlabel=None, ylabel=None, 
+            hue="id", log=True, estimator=np.median, 
+            errorbar=("pi", 50), error_col="error", 
+            target_error=0.1, **kwargs
+            ):
+
+    target_error = data['target_error'].unique()[0] #first unique target error
     if idlabels:
         _assign_labels(data, idlabels)
 
@@ -47,4 +60,4 @@ def plot_target_error(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None,
     successes = filtered.loc[filtered.groupby(["id", "rep", xcol])[ycol].idxmin()].reset_index(drop=True)
 
     assert (len(successes) > 0)
-    plot_metric(successes, xcol, ycol, None, xlabel, ylabel, hue, log, estimator, errorbar)
+    return plot_metric(successes, xcol, ycol, None, xlabel, ylabel, hue, log, estimator, errorbar, **kwargs)

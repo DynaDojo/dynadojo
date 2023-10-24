@@ -33,12 +33,14 @@ def test_fixed_complexity(N: list[int], l: int, e: int, t: int, max_control_cost
                                 test_examples=test_examples, test_timesteps=test_timesteps, 
                                 system_kwargs=system_kwargs)
     ood = True
-    for  noisy in [True, False]:
-        print(f"\nTesting {ood=} {noisy=}")
-        challenge.evaluate(LinearRegression, seed=seed, ood=ood, noisy=noisy, 
-                            eval_reps=eval_reps, 
-                            eval_L = eval_L,
-                            model_kwargs=model_kwargs)
+    noisy = True
+    # for  noisy in [True, False]:
+    print(f"\nTesting {ood=} {noisy=}")
+    df = challenge.evaluate(LinearRegression, seed=seed, ood=ood, noisy=noisy, 
+                        eval_reps=eval_reps, 
+                        eval_L = eval_L,
+                        model_kwargs=model_kwargs)
+    return df
 
 def test_fixed_training(n: int, L: list[int], t: int, max_control_cost_per_dim: int, control_horizons: int,
                           system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int,
@@ -55,11 +57,12 @@ def test_fixed_training(n: int, L: list[int], t: int, max_control_cost_per_dim: 
     ood = True
     noisy = True
     print(f"\nTesting {ood=} {noisy=}")
-    challenge.evaluate(LinearRegression, seed=seed,
+    df = challenge.evaluate(LinearRegression, seed=seed,
                         ood=ood, noisy=noisy, 
                         eval_reps=eval_reps, 
                         eval_L = eval_L,
                         model_kwargs=model_kwargs)
+    return df
 
 def test_fixed_error(   target_error: float, L: list[int], t: int, max_control_cost_per_dim: int, control_horizons: int,
                           system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int,
@@ -81,20 +84,20 @@ def test_fixed_error(   target_error: float, L: list[int], t: int, max_control_c
     ood = True
     noisy = True
     print(f"\nTesting {ood=} {noisy=}")
-    challenge.evaluate(LinearRegression, seed=seed,
+    df = challenge.evaluate(LinearRegression, seed=seed,
                         ood=ood, noisy=noisy, 
                             eval_reps=eval_reps, 
                             eval_L = eval_L,
                             model_kwargs=model_kwargs)
-    
+    return df
 
 
 def test_system(system_module: str,
-                n=[1, 10], 
-                L=[4, 10],
-                n_starts=[10,10],
+                n=[1, 10, 20], 
+                L=[5, 10, 20],
+                n_starts=[10, 10, 10],
                 e=None, 
-                t=2, 
+                t=10, 
                 max_control_cost_per_dim=0, 
                 control_horizons=0, 
                 test_examples=2, 
@@ -106,23 +109,28 @@ def test_system(system_module: str,
                 system_kwargs: dict = None,
                 model_kwargs: dict = None,
                 test_ids : list[int] = [0, 1, 2],
-                ):
+                plot: bool = False):
     system_cls = get_test_system(system_module)
     print(f"System: {system_cls}")
     print(f"Model: {LinearRegression}")
     if 0 in test_ids:
-        test_fixed_complexity(N=n, l=L[0], e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
+        data = test_fixed_complexity(N=n, l=L[0], e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
                             control_horizons=control_horizons, test_examples=test_examples, model_kwargs=model_kwargs,
                             reps=reps, test_timesteps=test_timesteps, system_kwargs=system_kwargs, system_cls=system_cls, 
                             seed=seed, eval_reps=eval_reps, eval_L=eval_L)
+        if plot:
+            FixedComplexity.plot(data, latent_dim=L[0])
     if 1 in test_ids:
-        test_fixed_training(n=n[0], L=L, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
+        data = test_fixed_training(n=n[0], L=L, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
                           control_horizons=control_horizons, test_examples=test_examples, model_kwargs=model_kwargs,
                           reps=reps, test_timesteps=test_timesteps, system_kwargs=system_kwargs, system_cls=system_cls, 
                           seed=seed, eval_reps=eval_reps, eval_L=eval_L)
+        if plot:
+            FixedTrainSize.plot(data, n=n[0])   
 
     if 2 in test_ids:
-        test_fixed_error(target_error=5, L=L, t=t,
+        target_error = 5
+        data = test_fixed_error(target_error=target_error, L=L, t=t,
                     n_starts = n_starts,
                     n_window = 2,
                     n_precision = 0,
@@ -131,3 +139,5 @@ def test_system(system_module: str,
                     reps=reps, test_timesteps=test_timesteps, system_kwargs=system_kwargs, system_cls=system_cls, 
                     model_kwargs=model_kwargs,
                     seed=seed, eval_reps=eval_reps, eval_L=eval_L)
+        if plot:
+            FixedError.plot(data, target_error=target_error)
