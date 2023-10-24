@@ -25,8 +25,8 @@ def test_fixed_complexity(N: list[int], l: int, e: int, t: int, max_control_cost
                           system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int,
                           system_kwargs: dict = None, model_kwargs: dict = None, 
                           seed:int|None =None,  
-                          eval_reps: list[int] | None = None,
-                          eval_L: list[int] | None = None):
+                          reps_filter: list[int] | None = None,
+                          L_filter: list[int] | None = None):
     print(f"\n----Testing FixedComplexity----")
     challenge = FixedComplexity(N=N, l=l, e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
                                 control_horizons=control_horizons, system_cls=system_cls, reps=reps,
@@ -37,8 +37,8 @@ def test_fixed_complexity(N: list[int], l: int, e: int, t: int, max_control_cost
     # for  noisy in [True, False]:
     print(f"\nTesting {ood=} {noisy=}")
     df = challenge.evaluate(LinearRegression, seed=seed, ood=ood, noisy=noisy, 
-                        eval_reps=eval_reps, 
-                        eval_L = eval_L,
+                        reps_filter=reps_filter, 
+                        L_filter = L_filter,
                         model_kwargs=model_kwargs)
     return df
 
@@ -46,8 +46,8 @@ def test_fixed_training(n: int, L: list[int], t: int, max_control_cost_per_dim: 
                           system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int,
                           system_kwargs: dict = None, model_kwargs: dict = None, 
                           seed:int|None =None, 
-                          eval_reps: list[int] | None = None,
-                          eval_L: list[int] | None = None):
+                          reps_filter: list[int] | None = None,
+                          L_filter: list[int] | None = None):
     print("\n----Testing FixedTrainSize----")
     challenge = FixedTrainSize(n=2, L=L, E=None, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
                                 control_horizons=control_horizons, system_cls=system_cls, reps=reps,
@@ -59,8 +59,8 @@ def test_fixed_training(n: int, L: list[int], t: int, max_control_cost_per_dim: 
     print(f"\nTesting {ood=} {noisy=}")
     df = challenge.evaluate(LinearRegression, seed=seed,
                         ood=ood, noisy=noisy, 
-                        eval_reps=eval_reps, 
-                        eval_L = eval_L,
+                        reps_filter=reps_filter, 
+                        L_filter = L_filter,
                         model_kwargs=model_kwargs)
     return df
 
@@ -71,8 +71,8 @@ def test_fixed_error(   target_error: float, L: list[int], t: int, max_control_c
                           n_window: int = 1,
                           n_precision: int = 5,
                           seed:int|None =None, 
-                          eval_reps: list[int] | None = None,
-                          eval_L: list[int] | None = None):
+                          reps_filter: list[int] | None = None,
+                          L_filter: list[int] | None = None):
     print(f"\n----Testing FixedError---- {target_error=}")
     challenge = FixedError( L=L, t=t, target_error=target_error, 
                                 n_window=n_window, n_starts=n_starts, n_precision=n_precision,
@@ -86,8 +86,8 @@ def test_fixed_error(   target_error: float, L: list[int], t: int, max_control_c
     print(f"\nTesting {ood=} {noisy=}")
     df = challenge.evaluate(LinearRegression, seed=seed,
                         ood=ood, noisy=noisy, 
-                            eval_reps=eval_reps, 
-                            eval_L = eval_L,
+                            reps_filter=reps_filter, 
+                            L_filter = L_filter,
                             model_kwargs=model_kwargs)
     return df
 
@@ -104,8 +104,8 @@ def test_system(system_module: str,
                 test_timesteps=10,
                 seed = None,
                 reps = 1,
-                eval_reps = None,
-                eval_L = None,
+                reps_filter = None,
+                L_filter = None,
                 system_kwargs: dict = None,
                 model_kwargs: dict = None,
                 test_ids : list[int] = [0, 1, 2],
@@ -117,14 +117,14 @@ def test_system(system_module: str,
         data = test_fixed_complexity(N=n, l=L[0], e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
                             control_horizons=control_horizons, test_examples=test_examples, model_kwargs=model_kwargs,
                             reps=reps, test_timesteps=test_timesteps, system_kwargs=system_kwargs, system_cls=system_cls, 
-                            seed=seed, eval_reps=eval_reps, eval_L=eval_L)
+                            seed=seed, reps_filter=reps_filter, L_filter=L_filter)
         if plot:
             FixedComplexity.plot(data, latent_dim=L[0])
     if 1 in test_ids:
         data = test_fixed_training(n=n[0], L=L, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
                           control_horizons=control_horizons, test_examples=test_examples, model_kwargs=model_kwargs,
                           reps=reps, test_timesteps=test_timesteps, system_kwargs=system_kwargs, system_cls=system_cls, 
-                          seed=seed, eval_reps=eval_reps, eval_L=eval_L)
+                          seed=seed, reps_filter=reps_filter, L_filter=L_filter)
         if plot:
             FixedTrainSize.plot(data, n=n[0])   
 
@@ -138,6 +138,6 @@ def test_system(system_module: str,
                     control_horizons=control_horizons, test_examples=test_examples,
                     reps=reps, test_timesteps=test_timesteps, system_kwargs=system_kwargs, system_cls=system_cls, 
                     model_kwargs=model_kwargs,
-                    seed=seed, eval_reps=eval_reps, eval_L=eval_L)
+                    seed=seed, reps_filter=reps_filter, L_filter=L_filter)
         if plot:
             FixedError.plot(data, target_error=target_error)
