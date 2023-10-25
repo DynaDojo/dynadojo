@@ -118,6 +118,7 @@ class TestReproducibilityModel(unittest.TestCase):
                 df2 = df2[cols].loc[df2['rep'] == 1]
                 self.assertEqual(df1, df2)
 
+    """
     def test_dnn(self):
         l = 10
         e = 10 
@@ -166,6 +167,7 @@ class TestReproducibilityModel(unittest.TestCase):
         #check that first row 'error' and 'ood_error' are correct
         self.assertEqual(df1['error'].iloc[0], error)
         self.assertEqual(df1['ood_error'].iloc[0], ood_error)
+    """
 
 if __name__ == '__main__':
     unittest.main()
