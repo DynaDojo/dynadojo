@@ -5,7 +5,12 @@ from .utils.simple import SimpleSystem
 
 
 class LDSystem(SimpleSystem):
-    def __init__(self, latent_dim, embed_dim, A_eigval_range=(-5, 0), A_eigvec_range=(-1, 1), **kwargs):
+    def __init__(self, 
+        latent_dim : int = 2, 
+        embed_dim : int = 2, 
+        A_eigval_range=(-5, 0), 
+        A_eigvec_range=(-1, 1), 
+        **kwargs):
 
         super().__init__(latent_dim, embed_dim, **kwargs)
 

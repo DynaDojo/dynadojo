@@ -8,14 +8,17 @@ from ...abstractions import AbstractSystem
 
 
 class SimpleSystem(AbstractSystem):
-    def __init__(self, latent_dim, embed_dim, seed=None,
-                 # singular values are non-neg by convention; >0 since we don't want a nontrivial null space
-                 embedder_sv_range=(0.1, 1),
-                 controller_sv_range=(0.1, 1),
-                 IND_range=(0, 10),
-                 OOD_range=(-10, 0),
-                 noise_scale=0.01,
-                 t_range=(0, 1),
+    def __init__(self, 
+                latent_dim = 2, 
+                embed_dim = 2, 
+                seed=None,
+                # singular values are non-neg by convention; >0 since we don't want a nontrivial null space
+                embedder_sv_range=(0.1, 1),
+                controller_sv_range=(0.1, 1),
+                IND_range=(0, 10),
+                OOD_range=(-10, 0),
+                noise_scale=0.01,
+                t_range=(0, 1),
                  ):
         super().__init__(latent_dim, embed_dim, seed)
 
