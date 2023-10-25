@@ -23,19 +23,18 @@ class FixedComplexity(Challenge):
         Challenge where complexity is fixed, training set size is varied, and error is measured.
 
         Note! FixedComplexity results are reproducible at the model_run level (by specifying n, l, e, t, model_seed, system_seed) because training trajectories are generated in advance. 
-        
-        Args:
-            l (int): latent dimension
-            t (int): number of timesteps
-            N (list[int]): list of training set sizes
-            system_cls (type[AbstractSystem]): system class
-            reps (int): number of repetitions
-            test_examples (int): number of test examples
-            test_timesteps (int): number of test timesteps
-            e (int, optional): embedding dimension. Defaults to None.
-            max_control_cost_per_dim (int, optional): maximum control cost per dimension. Defaults to 1.
-            control_horizons (int, optional): number of control horizons. Defaults to 0.
-            system_kwargs (dict, optional): system kwargs. Defaults to None.
+
+        :param l (int): latent dimension
+        :param t (int): number of timesteps
+        :param N (list[int]): list of training set sizes
+        :param system_cls (type[AbstractSystem]): system class
+        :param reps (int): number of repetitions
+        :param test_examples (int): number of test examples
+        :param test_timesteps (int): number of test timesteps
+        :param e (int, optional): embedding dimension. Defaults to None.
+        :param max_control_cost_per_dim (int, optional): maximum control cost per dimension. Defaults to 1.
+        :param control_horizons (int, optional): number of control horizons. Defaults to 0.
+        :param system_kwargs (dict, optional): system kwargs. Defaults to None.
         """
         L = [l]
         E = e
@@ -74,18 +73,17 @@ class FixedTrainSize(Challenge):
 
         Note! Fixed Train Size results are reproducible at the model_run level (by specifying n, l, e, model_seed, system_seed) because training trajectories are generated in advance. 
 
-        Args:
-            n: The size of the training set.
-            L: The complexities of the system.
-            E: The embedding dimensions of the system.
-            t: The number of timesteps to simulate.
-            max_control_cost_per_dim: The maximum control cost per dimension.
-            control_horizons: The number of control horizons to consider.
-            system_cls: The system class to use.
-            reps: The number of repetitions to run.
-            test_examples: The number of test examples to use.
-            test_timesteps: The number of timesteps to simulate for the test examples.
-            system_kwargs: The keyword arguments to pass to the system class.
+        :param n: The size of the training set.
+        :param L: The complexities of the system.
+        :param E: The embedding dimensions of the system.
+        :param t: The number of timesteps to simulate.
+        :param max_control_cost_per_dim: The maximum control cost per dimension.
+        :param control_horizons: The number of control horizons to consider.
+        :param system_cls: The system class to use.
+        :param reps: The number of repetitions to run.
+        :param test_examples: The number of test examples to use.
+        :param test_timesteps: The number of timesteps to simulate for the test examples.
+        :param system_kwargs: The keyword arguments to pass to the system class.
 
         """
         N = [n]
