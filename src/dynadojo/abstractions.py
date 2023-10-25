@@ -245,6 +245,7 @@ class Challenge:
                  test_examples: int,
                  test_timesteps: int,
                  system_kwargs: dict | None = None,
+                 verbose: bool = True,
                 #  save_class: bool = False,
                  ):
         """
@@ -277,6 +278,7 @@ class Challenge:
         self._reps = reps
         self._test_examples = test_examples
         self._test_timesteps = test_timesteps
+        self._verbose = verbose
 
     def evaluate(self,
                  model_cls: type[AbstractModel],
@@ -480,7 +482,8 @@ class Challenge:
             duration = end - start
             #TODO: fix logging? Should we use a logger?
             ood_error_str = f"{ood_error=:0.3}" if test_ood else "ood_error=NA"
-            print(f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error_str},model_seed={model._seed}, sys_seed={system._seed}")
+            if self._verbose:
+                print(f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error_str},model_seed={model._seed}, sys_seed={system._seed}")
             Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error=ood_error, duration=duration)
 
         # On each subset of the training set, we retrain the model from scratch (initialized with the same random seed). 

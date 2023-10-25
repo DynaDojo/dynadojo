@@ -18,7 +18,8 @@ class FixedComplexity(Challenge):
                 e: int = None, 
                 max_control_cost_per_dim: int = 1, 
                 control_horizons: int = 0,
-                system_kwargs: dict = None):
+                system_kwargs: dict = None,
+                verbose: bool = True):
         """
         Challenge where complexity is fixed, training set size is varied, and error is measured.
 
@@ -37,7 +38,7 @@ class FixedComplexity(Challenge):
         L = [l]
         E = e
         super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
-                         system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
+                         system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs, verbose=verbose)
 
     @staticmethod
     def plot(data, latent_dim:int=None, embedding_dim:int=None, show: bool=True):
@@ -65,7 +66,8 @@ class FixedComplexity(Challenge):
 class FixedTrainSize(Challenge):
     def __init__(self, n: int, L: list[int], E: list[int] | int | None, t: int, 
                 max_control_cost_per_dim: int, control_horizons: int,
-                system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
+                system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None,
+                verbose: bool = True):
         """
         Challenge where the size of the training set is fixed, the complexity of the system is varied, and the error is measured.
 
@@ -84,7 +86,8 @@ class FixedTrainSize(Challenge):
         """
         N = [n]
         super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
-                         system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
+                         system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs,
+                         verbose=verbose)
 
     @staticmethod
     def plot(data: pd.DataFrame, n: int = None, show : bool =True):
@@ -123,7 +126,8 @@ class FixedError(Challenge):
                 n_precision: int = 5,
                 n_starts: list[int] = None,
                 n_window: int = 0,
-                n_max=10000
+                n_max=10000,
+                verbose: bool = True
             ):
         """
         Challenge where the target error is fixed and the latent dimensionality is varied and the number of training samples to achieve the error is measured.  
@@ -164,7 +168,7 @@ class FixedError(Challenge):
         self.result = None
         self.n_needed = {}
         
-        super().__init__([1], L, E, t, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
+        super().__init__([1], L, E, t, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs, verbose=verbose)
 
     def evaluate(self, 
                 model_cls: type[AbstractModel],
@@ -206,8 +210,9 @@ class FixedError(Challenge):
         targets = results[['latent_dim', 'embed_dim', 'rep',  'n_target', 'model_seed', 'system_seed']].drop_duplicates()
 
         #TODO: use logger instead of print
-        for _, row in targets.iterrows():
-            print(f"!!! rep_id={row['rep']}, latent_dim={row['latent_dim']}, n_target={row['n_target']}, embed_dim={row['embed_dim']}, seed={row['system_seed']},{row['model_seed']} ")
+        if self._verbose:
+            for _, row in targets.iterrows():
+                print(f"!!! rep_id={row['rep']}, latent_dim={row['latent_dim']}, n_target={row['n_target']}, embed_dim={row['embed_dim']}, seed={row['system_seed']},{row['model_seed']} ")
             
         return results
 
@@ -302,8 +307,10 @@ class FixedError(Challenge):
                 total_cost = np.median([r[1] for r in results_window]) #ToDo: make this a mean or median?
             else:
                 error, total_cost = run_helper(n)
-            #TODO: fix logging? Should we use a logger?
-            print(f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, {window=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {test_ood=}, model_seed={model_seed}, sys_seed={system._seed}")
+            
+            if self._verbose:
+                #TODO: fix logging? Should we use a logger?
+                print(f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, {window=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {test_ood=}, model_seed={model_seed}, sys_seed={system._seed}")
             return error, total_cost
             
         # run model for different values of the number of trajectories n, searching for n needed to achieve the target error            
@@ -335,7 +342,8 @@ class FixedError(Challenge):
                     return -1 # target error is never reached within n_max trajectories
                 
                 if (n_curr, increment) in history: #cycle detected, return best answer
-                    print(f"CYCLEEEEEEE {n_curr=}, {increment=}, {error_curr=}, {error_prev=}, {n_prevs=}")
+                    if self._verbose:
+                        print(f"CYCLEEEEEEE {n_curr=}, {increment=}, {error_curr=}, {error_prev=}, {n_prevs=}")
                     return best_answer
 
                 history.add((n_curr, increment))
@@ -416,9 +424,6 @@ class FixedError(Challenge):
 
         # Run search    
         n_target = search()
-        # issue with joblib.Parallellization:
-        # self.n_needed[latent_dim] = self.n_needed.get(latent_dim, []).append(n_target_error)
-        # print(f"!!! {rep_id=}, {latent_dim=}, {n_target=}")
         
         data = pd.DataFrame(result)
         data['n_target'] = n_target
