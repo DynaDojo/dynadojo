@@ -15,7 +15,7 @@ module load singularity
 singularity run --bind $HOME/dynadojo/experiments:/dynadojo/experiments \
                 --bind $HOME/dynadojo/src/dynadojo:/dynadojo/pkgs/dynadojo \
                 --pwd /dynadojo \
-                /home/groups/boahen/mkanwal/simg/dynadojo \
+                $GROUP_HOME/$USER/simg/dynadojo \
                 python -m experiments \
                     --output_dir=$SCRATCH/ \
                     --challenge=$CHALLENGE \
