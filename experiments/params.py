@@ -87,6 +87,10 @@ fts_challenge_params_dict = {
                 },
                 "lr" : {
                     "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)]
+                },
+                "lr_test": {
+                    "L" : [5, 6, 7, 8, 9, 10],
+                    "reps" : 2
                 }
     }
 }
