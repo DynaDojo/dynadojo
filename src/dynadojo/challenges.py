@@ -1,4 +1,5 @@
 import math
+import time
 import pandas as pd
 import numpy as np
 
@@ -213,6 +214,7 @@ class FixedError(Challenge):
                 nonlocal memo
                 if n in memo:
                     return memo[n]
+                start = time.time()
                 model = model_cls(embed_dim, self._t, max_control_cost, **{"seed": model_seed, **model_kwargs})
                 training_set = get_training_set(n)
                 total_cost = self._fit_model(system, model, training_set, self._t, max_control_cost, fit_kwargs, act_kwargs, noisy)
@@ -222,8 +224,10 @@ class FixedError(Challenge):
                 if test_ood:
                     ood_pred = model.predict_wrapper(ood_test_set[:, 0], self._test_timesteps)
                     ood_error = system.calc_error_wrapper(ood_pred, ood_test_set)
+                end = time.time()
+                duration = end - start
                 #append/memoize result
-                Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error=ood_error)
+                Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error=ood_error, duration=duration)
                 if test_ood:
                     memo[n] = (ood_error, total_cost)
                     return ood_error, total_cost
