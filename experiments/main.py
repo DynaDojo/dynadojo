@@ -108,7 +108,14 @@ def make_plots(
     csv_filename = filebase + ".csv"
     figure_filename = filebase + ".pdf"
 
+    if not (os.path.exists(path) and os.path.isdir(path)):
+        print(f"No plot created: Path {path} does not exist or is not a directory")
+        return
     files = _find_matching_files(path, csv_filename)
+    if len(files) <= 0:
+        print(f"No plot created: No files matching {csv_filename} found in {path}")
+        return 
+
     data = pd.DataFrame()
     # Handling split challenge runs
     # Concatenate all files into one dataframe and drop duplicates
@@ -118,7 +125,9 @@ def make_plots(
     data = data.drop_duplicates()
     g = challenge_cls.plot(data, show=False)
     g.figure.savefig(f"{path}/{figure_filename}", bbox_inches='tight')
-
+    print(f"Plot created: {figure_filename} using")
+    for file in files:
+        print(f"\t- {file}")
 
 
 ### Helper functions
