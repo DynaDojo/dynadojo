@@ -2,7 +2,7 @@
 #SBATCH -J dynadojo_$1 # A single job name for the array
 #SBATCH -n 1 # One Core
 #SBATCH -N 1 # All cores on one machine
-#SBATCH -p owners # Partition name
+#SBATCH -p normal # Partition name
 #SBATCH --mem 2000 # Memory (2Gb)
 #SBATCH -t 0-1:00 # Maximum execution time (D-HH:MM)
 #SBATCH -o dynadojo_$1_%A_%a.out # Standard output
