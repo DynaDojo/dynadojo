@@ -166,7 +166,7 @@ def _find_matching_files(path, filename):
     For example, if filename is "fc_lds_lr_l=5.csv", this will return all files in path that contain "fc_lds_lr_l=5" and end with ".csv"
     """
     files = os.listdir(path)
-    file_base = filename.split(".")[0]
+    file_base = filename.split(".")[0]+"_" #include underscore to avoid matching "l=5" with "l=50"
     file_ext = filename.split(".")[1]
     matching = [f"{path}/{f}" for f in files if file_base in f and file_ext in f]
     return matching

@@ -17,3 +17,4 @@ cache
 .DS_Store
 .pdm-python
 experiments/outputs
+experiments/logs
