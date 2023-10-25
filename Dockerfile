@@ -36,8 +36,9 @@ RUN pdm config python.use_venv false && pdm install --prod -G tensorflow --no-lo
 #       mkdir -p $GROUP_HOME/$USER/simg         # make directory for singularity images
 #       cd $GROUP_HOME/$USER/simg
 #       singularity build --sandbox -F dynadojo docker://carynbear/dynadojo:sherlock
-#       singularity shell --writable dynadojo
-#       singularity run --pwd /dynadojo  dynadojo
+#       singularity run  --bind $HOME/dynadojo/experiments:/dynadojo/experiments --bind $HOME/dynadojo/src/dynadojo:/dynadojo/pkgs/dynadojo --pwd /dynadojo /home/groups/boahen/mkanwal/simg/dynadojo python -m experiments --output_dir=$SCRATCH/
+#
+#       singularity shell --writable dynadojo  # to enter sandbox instead of running a command
 
 FROM python:3.10-slim as sherlock
 
@@ -51,7 +52,7 @@ ENV PYTHONPATH=/dynadojo/pkgs
 COPY --from=builder /dynadojo/__pypackages__/3.10/lib /dynadojo/pkgs
 
 # symlink experiments and src to repo in the home directory
-RUN ln -s /home/users/$USER/dynadojo/experiments /dynadojo/experiments && ln -s /home/users/$USER/dynadojo/src /dynadojo/src
+RUN ln -s /home/users/$USER/dynadojo/experiments /dynadojo/experiments && ln -s /home/users/$USER/dynadojo/src/dynadojo /dynadojo/pkgs/dynadojo
 
 WORKDIR /dynadojo
 
