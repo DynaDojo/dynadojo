@@ -312,7 +312,7 @@ class Challenge:
         :param eval_L: if provided, will only evaluate the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
         :param eval_rep_l: if provided, will only evaluate the given (rep_id, latent_dim) pairs. Defaults to None, which evaluates all (rep_id, latent_dim) pairs.
         :
-        return: a pandas DataFrame with experimental results
+        return: a pandas DataFrame where each row is a model_run result -- a model trained and evaluated on a single system. (See model_run() for more details.)
         """
 
         model_kwargs = model_kwargs or {}
@@ -462,8 +462,10 @@ class Challenge:
         
         max_control_cost = self._max_control_cost_per_dim * latent_dim
 
-        # On each subset of the training set, we retrain the model from scratch (initialized with the same random seed). If you don't, then # of training epochs will scale with N. This would confound the effect of training set size with training time.
-        for n in self._N:
+        def model_run(n):
+            """ 
+            For a given number of trajectories n, instantiates model, trains, and evaluates on test set.
+            """
             start = time.time()
             # Create Model. Seed in model_kwargs takes precedence over the seed passed to this function.
             model = model_cls(embed_dim, self._t, max_control_cost, **{"seed": model_seed, **model_kwargs})
@@ -481,6 +483,10 @@ class Challenge:
             print(f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error=:0.3},model_seed={model._seed}, sys_seed={system._seed}")
             Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error=ood_error, duration=duration)
 
+        # On each subset of the training set, we retrain the model from scratch (initialized with the same random seed). If you don't, then # of training epochs will scale with N. This would confound the effect of training set size with training time.
+        for n in self._N:
+            model_run(n)
+            
         data =pd.DataFrame(result)
         data['system_seed'] = system_seed
         data['model_seed'] = model_seed

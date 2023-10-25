@@ -19,6 +19,24 @@ class FixedComplexity(Challenge):
                 max_control_cost_per_dim: int = 1, 
                 control_horizons: int = 0,
                 system_kwargs: dict = None):
+        """
+        Challenge where complexity is fixed, training set size is varied, and error is measured.
+
+        Note! FixedComplexity results are reproducible at the model_run level (by specifying n, l, e, t, model_seed, system_seed) because training trajectories are generated in advance. 
+        
+        Args:
+            l (int): latent dimension
+            t (int): number of timesteps
+            N (list[int]): list of training set sizes
+            system_cls (type[AbstractSystem]): system class
+            reps (int): number of repetitions
+            test_examples (int): number of test examples
+            test_timesteps (int): number of test timesteps
+            e (int, optional): embedding dimension. Defaults to None.
+            max_control_cost_per_dim (int, optional): maximum control cost per dimension. Defaults to 1.
+            control_horizons (int, optional): number of control horizons. Defaults to 0.
+            system_kwargs (dict, optional): system kwargs. Defaults to None.
+        """
         L = [l]
         E = e
         super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
@@ -51,6 +69,25 @@ class FixedTrainSize(Challenge):
     def __init__(self, n: int, L: list[int], E: list[int] | int | None, t: int, 
                 max_control_cost_per_dim: int, control_horizons: int,
                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
+        """
+        Challenge where the size of the training set is fixed, the complexity of the system is varied, and the error is measured.
+
+        Note! Fixed Train Size results are reproducible at the model_run level (by specifying n, l, e, model_seed, system_seed) because training trajectories are generated in advance. 
+
+        Args:
+            n: The size of the training set.
+            L: The complexities of the system.
+            E: The embedding dimensions of the system.
+            t: The number of timesteps to simulate.
+            max_control_cost_per_dim: The maximum control cost per dimension.
+            control_horizons: The number of control horizons to consider.
+            system_cls: The system class to use.
+            reps: The number of repetitions to run.
+            test_examples: The number of test examples to use.
+            test_timesteps: The number of timesteps to simulate for the test examples.
+            system_kwargs: The keyword arguments to pass to the system class.
+
+        """
         N = [n]
         super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
                          system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
@@ -94,7 +131,11 @@ class FixedError(Challenge):
                 n_max=10000
             ):
         """
-        Challenge where the error is fixed and the latent dimensionality is varied. Performs a binary search over the number of training samples to find the minimum number of samples needed to achieve the target error rate.
+        Challenge where the target error is fixed and the latent dimensionality is varied and the number of training samples to achieve the error is measured.  
+        Performs a binary search over the number of training samples to find the minimum number of samples needed to achieve the target error rate.
+
+        Note! FixedError results are only reproducible at the system_run level (by specifying l, e, t, n_start, n_max, n_window, n_precision, model_seed, and system_seed), not at the model_run level because training trajectories are generated incrementally across model_runs.
+        This means that the same system_run will produce the same results, but the same model_run params may not.
 
         :param L: List of latent dimensions to test
         :param t: Number of timesteps of each training trajectory
@@ -141,10 +182,14 @@ class FixedError(Challenge):
         ood=False, noisy=False, id=None, 
         num_parallel_cpu=-1, 
         seed=None, 
-        reps_filter: list[int] = None, L_filter: list[int] | None = None
+        # Filters which system_runs to evaluate (as specified by rep_ids and l). If None, no filtering is performed. 
+        # We recommend using these filters to parallelize evaluation across multiple machines, while retaining reproducibility.
+        reps_filter: list[int] = None, 
+        L_filter: list[int] | None = None,
+        rep_l_filter: list[tuple[int, int]] | None = None,
         ) -> pd.DataFrame:
         
-        results = super().evaluate(model_cls, model_kwargs, fit_kwargs, act_kwargs, ood, noisy, id, num_parallel_cpu, seed, reps_filter, L_filter)
+        results = super().evaluate(model_cls, model_kwargs, fit_kwargs, act_kwargs, ood, noisy, id, num_parallel_cpu, seed, reps_filter, L_filter, rep_l_filter)
         targets = results[['latent_dim', 'embed_dim', 'rep',  'n_target', 'model_seed', 'system_seed']].drop_duplicates()
 
         #TODO: use logger instead of print
@@ -189,7 +234,9 @@ class FixedError(Challenge):
         master_training_set = self._gen_trainset(system, 10, self._t, noisy)
         def get_training_set(n):
             """ 
-            Helper function to get training set of size n. If we have already generated enough trajectories, simply return a subset of the training set. If not, generate more trajectories and add to training set.
+            Helper function to get training set of size n. 
+            If we have already generated enough trajectories, simply return a subset of the training set. 
+            If not, generate more trajectories and add to training set.
             """
             nonlocal master_training_set
             if n <= len(master_training_set): # if we have already generated enough trajectories
@@ -202,7 +249,7 @@ class FixedError(Challenge):
         # memoized run function which stores results in result dictionary and memoizes whether or not we have already run the model for a given n 
         memo = {}
         
-        def run(n, window=0): 
+        def model_run(n, window=0): 
             """
             Helper function to instantiate and run a model once for a given n. If window > 0, then we take the moving average of the error over the last window runs. Results are stored in result dictionary and memoized.
 
@@ -279,7 +326,7 @@ class FixedError(Challenge):
                 history.add((n_curr, increment))
 
                 # run model on n_curr, update our best answer if we have found a new best answer
-                error_curr, total_cost = run(n_curr, window=self.n_window)
+                error_curr, total_cost = model_run(n_curr, window=self.n_window)
                 if error_curr <= self._target_error and n_curr < best_answer:
                     best_answer = n_curr
 
@@ -330,16 +377,16 @@ class FixedError(Challenge):
             # n_curr is the first n_curr that is below target
             # binary search between n_prevs[-1] and n_curr
             n_lower = n_prevs[-1] 
-            error_lower, _ = run(n_lower, window=self.n_window)
+            error_lower, _ = model_run(n_lower, window=self.n_window)
             n_upper = n_curr
-            error_upper, _ = run(n_upper, window=self.n_window)
+            error_upper, _ = model_run(n_upper, window=self.n_window)
             while True:
                 n_curr = (n_lower + n_upper)//2
                 # stop if n_upper and n_lower are within precision
                 if n_upper - n_lower <= max(self.n_precision, 1):
                     return math.ceil((n_lower + n_upper)/2)
 
-                error_curr, _ = run(n_curr, window=self.n_window)
+                error_curr, _ = model_run(n_curr, window=self.n_window)
                 # find which side of the interval to keep
                 # if target is between error_lower and error_curr, keep left side
                 # if target is between error_curr and error_upper, keep right side
