@@ -18,24 +18,23 @@ class DNN(AbstractModel):
         if seed:
             keras.utils.set_random_seed(812)
             # tf.config.experimental.enable_op_determinism()
-
+        kreg = "l2"
         self.model = tf.keras.Sequential([
             keras.Input(shape=(None, embed_dim)),
-            keras.layers.Dense(30, activation=activation, kernel_regularizer="l2"),
-            keras.layers.Dense(30, activation=activation, kernel_regularizer="l2"),
-            keras.layers.Dense(30, activation=activation, kernel_regularizer="l2"),
-            keras.layers.Dense(10, activation="linear"),
-            keras.layers.Dense(30, activation=activation, kernel_regularizer="l2"),
-            keras.layers.Dense(30, activation=activation, kernel_regularizer="l2"),
-            keras.layers.Dense(30, activation=activation, kernel_regularizer="l2"),
-            keras.layers.Dense(embed_dim, kernel_regularizer="l2")
+            keras.layers.Dense(30, activation=activation, kernel_regularizer=kreg),
+            keras.layers.Dense(30, activation=activation, kernel_regularizer=kreg),
+            keras.layers.Dense(30, activation=activation, kernel_regularizer=kreg),
+            keras.layers.Dense(30, activation=activation, kernel_regularizer=kreg),
+            keras.layers.Dense(30, activation=activation, kernel_regularizer=kreg),
+            keras.layers.Dense(embed_dim, kernel_regularizer=kreg)
         ])
         self.model.compile(optimizer="adam", loss="mean_squared_error")
 
-    def fit(self, x: np.ndarray, epochs=20, verbose=0, **kwargs):
+    def fit(self, x: np.ndarray, epochs=2000, verbose=0, **kwargs):
         head = x[:, :-1, :]
         tail = x[:, 1:, :]
-        self.model.fit(head, tail, epochs=epochs, verbose=verbose)
+        callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+        self.model.fit(head, tail, validation_split=0.2, epochs=epochs, callbacks=[callback], verbose=verbose)
 
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         preds = [x0]
