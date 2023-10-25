@@ -41,7 +41,7 @@ singularity pull docker://<username>/dynadojo
 ```
 Run from entrypoint.
 ```
-singularity run dynadojo_latest.sif 
+singularity run --pwd /dynadojo dynadojo_latest.sif 
 ```
 Or run a shell interactively in the container.
 ```
@@ -55,7 +55,7 @@ cd $GROUP_HOME/$USER/simg
 singularity build --sandbox -F dynadojo docker://carynbear/dynadojo:buildx
 singularity shell --writable dynadojo
 
-singularity run dynadojo
+singularity run --pwd /dynadojo  dynadojo
 ```
 # Resources
 

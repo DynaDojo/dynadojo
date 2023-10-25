@@ -1,41 +1,51 @@
+"""
+Command line interface for running experiments.
+Arguments:
+    --challenge: which challenge to run, one of ["fc", "fts", "fe"]
+    --nodes: how many machines to run on
+    --node_id: which node is being run in [0, nodes-1], if None, run on splits
+Usage:
+    python -m experiments --challenge fc --nodes 20
+    python -m experiments --challenge fts --nodes 20
+    python -m experiments --challenge fe --nodes 20
+"""
+
 import argparse
-import dynadojo as dd
-from .experiments import run_fc, make_plots, get_max_splits
+from .main import run_challenge, make_plots, get_max_splits
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 
 # # Accept command line arguments
 parser = argparse.ArgumentParser(description='Run experiments')
-parser.add_argument('--exp', type=int, default=1, help='0=test, 1=experiment')
-parser.add_argument('--test', type=int, default=0, help='0=FixedComplexity, 1=FixedTrain, 2=FixedError')
+parser.add_argument('--challenge', type=str, default="fc", choices=["fc", "fts", "fe"], help='Specify which challenge to run')
 parser.add_argument('--nodes', type=int, default=20, help='how many machines to run on')
+parser.add_argument('--node_id', type=int, default=None, help='which node is being run in [0, nodes-1], if None, run on splits')
+parser.add_argument('--output_dir', type=str, default="experiments/outputs", help='where to save outputs')
 # add argument for test id in [1,2,3]
 args = parser.parse_args()
 
-if args.exp == 1:
 
-    max_splits = min(args.nodes, get_max_splits(s ="lds", m = "lr", challenge_cls = FixedComplexity))
 
-    for split in range(max_splits):
-        run_fc(
-            s ="lds",
-            m = "lr",
-            output_dir="experiments/outputs", 
-            split=(split+1, max_splits)
-        )
-    make_plots(
+if args.challenge == "fc":
+    challenge_cls = FixedComplexity
+elif args.challenge == "fts":
+    challenge_cls = FixedTrainSize
+else:
+    challenge_cls = FixedError
+
+max_splits = min(args.nodes, get_max_splits(s ="lds", m = "lr", challenge_cls = challenge_cls))
+
+for split in range(max_splits):
+    run_challenge(
         s ="lds",
         m = "lr",
-        output_dir="experiments/outputs",
-        challenge_cls = FixedComplexity)
-else:
-    # dd.testing.test_system("dynadojo.systems.lds", seed = 10, reps=2, reps_filter=None, test_ids=[0, 1,2])
-    dd.testing.test_system("dynadojo.systems.lds", seed = 2000, reps=20, reps_filter=[], L_filter=[], test_ids=[args.test],
-        plot = True,
-        # model_kwargs={"seed" : 160033707},
-        # system_kwargs={"seed" : 2144784513},
+        output_dir=args.output_dir, 
+        split=(split+1, max_splits),
+        challenge_cls=challenge_cls,
     )
-    # dd.testing.test_system("dynadojo.systems.lds", L= [20, 100], n_starts=[100,100], t=10, seed = 10, reps=2, reps_filter=[0], L_filter=[20], test_ids=[2])
-
-    # Should not run anything because of L_filter out of range
-    # dd.testing.test_system("dynadojo.systems.lds", seed = 10, reps=2, reps_filter=[0], L_filter=[5] , test_ids=[2])
+make_plots(
+    s ="lds",
+    m = "lr",
+    output_dir=args.output_dir,
+    challenge_cls = challenge_cls)
+    
 

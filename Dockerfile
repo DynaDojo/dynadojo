@@ -1,30 +1,81 @@
+# ------------------------------------------------------------------------------------#
+######### BUILDER IMAGE #########
+# Used to build runtime images. 
+# Install dependencies and copy them to the runtime image.
+
 FROM python:3.10-slim-buster as builder
-# FROM tensorflow/tensorflow:2.14.0 as builder # DOES NOT WORK
-ARG TARGETPLATFORM
+
 RUN apt update -y \
     && apt-get install -y python3-dev build-essential \
     && pip install -U pip setuptools wheel \
     && pip install pdm \
     touch README.md && touch LICENSE
 
-# copy files
+# copy pyproject.toml (with dependencies)
 COPY pyproject.toml /dynadojo/
-# COPY pyproject.toml pdm.lock /dynadojo/
-# COPY src/ /dynadojo/src
-# COPY experiments/ /dynadojo/experiments
 
-# install dependencies and project
+# install dependencies in project
 WORKDIR /dynadojo
 
 #isolate dynadojo from dependencies & install from lockfile
 RUN pdm config python.use_venv false && pdm install --prod -G tensorflow --no-lock --no-editable  --no-self
 
+
+
+
+# ------------------------------------------------------------------------------------#
+######### STANFORD SHERLOCK RUNTIME IMAGE #########
+# Assumes that /home/users/ and /scratch are mounted and the dynadojo git repo is cloned in /home/users/$USER/dynadojo
+# Build image with: 
+#       docker build --target=sherlock --tag=dynadojo:sherlock .
+# To build for multiple arch: 
+#       Load and test locally:  docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=dynadojo:sherlock --load .
+#       Push to dockerhub:      docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=carynbear/dynadojo:sherlock --push .
+# To run on sherlock:
+#       srun -c 4 --pty bash                    # request interactive session
+#       mkdir -p $GROUP_HOME/$USER/simg         # make directory for singularity images
+#       cd $GROUP_HOME/$USER/simg
+#       singularity build --sandbox -F dynadojo docker://carynbear/dynadojo:sherlock
+#       singularity shell --writable dynadojo
+#       singularity run --pwd /dynadojo  dynadojo
+
+FROM python:3.10-slim as sherlock
+
+# make the symlinked directories
+RUN  mkdir -p /home/users \
+    && mkdir -p /scratch 
+# && mkdir -p /share/software/modules && mkdir -p /share/software/user && mkdir -p /oak && mkdir -p /home/groups && mkdir -p /etc/localtime && mkdir -p /etc/hosts
+
+# retrieve dependencies packages from build stage
+ENV PYTHONPATH=/dynadojo/pkgs
+COPY --from=builder /dynadojo/__pypackages__/3.10/lib /dynadojo/pkgs
+
+# symlink experiments and src to repo in the home directory
+RUN ln -s /home/users/$USER/dynadojo/experiments /dynadojo/experiments && ln -s /home/users/$USER/dynadojo/src /dynadojo/src
+
+WORKDIR /dynadojo
+
+#disable GPU
+ENV CUDA_VISIBLE_DEVICES=-1
+
+# set command/entrypoint, adapt to fit your needs
+CMD ["python", "-m", "experiments"]
+
+
+
+
+# ------------------------------------------------------------------------------------#
+######### GENERAL USE RUNTIME IMAGE #########
+# Build image with: 
+#       docker build --target=runtime --tag=dynadojo .
+# To build for multiple arch: 
+#       Load and test locally:  docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=dynadojo --load .
+#       Push to dockerhub:      docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=[username]/dynadojo --push .
+
+
 # run stage
 FROM python:3.10-slim as runtime
 
-RUN  mkdir -p /home/users \
-    && mkdir -p /scratch 
-# && mkdir -p /scratch && mkdir -p /share/software/modules && mkdir -p /share/software/user && mkdir -p /oak && mkdir -p /home/groups && mkdir -p /etc/localtime && mkdir -p /etc/hosts
 # retrieve dependencies packages from build stage
 ENV PYTHONPATH=/dynadojo/pkgs
 COPY --from=builder /dynadojo/__pypackages__/3.10/lib /dynadojo/pkgs

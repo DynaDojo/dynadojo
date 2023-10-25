@@ -237,7 +237,7 @@ class FixedError(Challenge):
             else:
                 error, total_cost = run_helper(n)
             #TODO: fix logging? Should we use a logger?
-            print(f"{n=}, {window=}, {latent_dim=}, {embed_dim=}, t={self._t}, control_h={self._control_horizons}, {rep_id=}, {total_cost=}, {error=:0.3}, {test_ood=}, model_seed={model_seed}, sys_seed={system._seed}")
+            print(f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, {window=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {test_ood=}, model_seed={model_seed}, sys_seed={system._seed}")
             return error, total_cost
             
         # run model for different values of the number of trajectories n, searching for n needed to achieve the target error            
