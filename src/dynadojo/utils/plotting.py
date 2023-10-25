@@ -9,7 +9,7 @@ def _assign_labels(data, labels):
         data[frameidx] = frame.assign(id=labels[frameidx])
 
 
-def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.median, errorbar=("pi", 50), **kwargs):
+def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="id", log=True, estimator=np.median, errorbar=("pi", 100), **kwargs):
     if idlabels:
         _assign_labels(data, idlabels)
 
@@ -31,7 +31,9 @@ def plot_metric(data, xcol, ycol, idlabels=None, xlabel=None, ylabel=None, hue="
 
     ax.set(xticks=data[xcol].unique())
     if log:
+        ax.set(xscale="log")
         ax.set(yscale="log")
+        ax.get_yaxis().get_major_formatter().labelOnlyBase = False
 
     if xlabel:
        ax.set(xlabel=xlabel)
@@ -55,6 +57,11 @@ def plot_target_error(data, xcol, ycol,
     if not isinstance(data, pd.DataFrame):
         data = pd.concat(data)
 
+    
+
+    # remove all rows where n_target is -1 or np.inf
+    filtered = data[data["n_target"] != -1]
+    filtered = data[data["n_target"] != np.inf]
     filtered = data[data[error_col] <= target_error]
     # for each rep in the x dim, get the lowest y that was successful
     successes = filtered.loc[filtered.groupby(["id", "rep", xcol])[ycol].idxmin()].reset_index(drop=True)

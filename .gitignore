@@ -16,4 +16,4 @@ cache
 .vscode
 .DS_Store
 .pdm-python
-experiments/output
+experiments/outputs

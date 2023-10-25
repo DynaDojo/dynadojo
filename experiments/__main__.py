@@ -1,13 +1,18 @@
 """
 Command line interface for running experiments.
 Arguments:
+    --model: which model to run, short name, see params.py model_dict
+    --system: which system to run, short name, see params.py system_dict
     --challenge: which challenge to run, one of ["fc", "fts", "fe"]
-    --total_nodes: how many machines to run on
+    --total_nodes: how many machines to run on (default 1, for running locally)
     --node: which node is being run, [0, nodes-1], default None which runs the whole challenge
+    --output_dir: where to save outputs
+    --plot: whether to plot the results OR to run the challenge
 Usage:
-    python -m experiments --challenge fc --nodes 20
-    python -m experiments --challenge fts --nodes 20
-    python -m experiments --challenge fe --nodes 20
+    (see dynadojo.sbatch)
+    python -m experiments --challenge fc --model lr --system lds
+    python -m experiments --challenge fts --model lr --system lds
+    python -m experiments --challenge fe --model lr --system lds
 """
 
 import argparse
@@ -17,8 +22,8 @@ from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 
 # # Accept command line arguments
 parser = argparse.ArgumentParser(description='Run experiments')
-parser.add_argument('--model', type=str, default='lr', choice=model_dict.keys(), help='Specify which model to run')
-parser.add_argument('--system', type=str, default='lds', choice=system_dict.keys(), help='Specify which system to run')
+parser.add_argument('--model', type=str, default='lr', help='Specify which model to run')
+parser.add_argument('--system', type=str, default='lds', choices=system_dict.keys(), help='Specify which system to run')
 parser.add_argument('--challenge', type=str, default="fc", choices=["fc", "fts", "fe"], help='Specify which challenge to run')
 parser.add_argument('--total_nodes', type=int, default=1, help='how many machines to run on')
 parser.add_argument('--node', type=int, default=None, help='which node is being run in [0, nodes-1], if None, run on splits')
@@ -27,7 +32,7 @@ parser.add_argument('--plot', default=False, action='store_true', help='whether 
 # add argument for test id in [1,2,3]
 args = parser.parse_args()
 
-
+assert args.model.split("_")[0] in model_dict.keys(), f"model {args.model} not in model_dict"
 
 if args.challenge == "fc":
     challenge_cls = FixedComplexity

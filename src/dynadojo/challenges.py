@@ -22,8 +22,6 @@ class FixedComplexity(Challenge):
         """
         Challenge where complexity is fixed, training set size is varied, and error is measured.
 
-        Note! FixedComplexity results are reproducible at the model_run level (by specifying n, l, e, t, model_seed, system_seed) because training trajectories are generated in advance. 
-
         :param l (int): latent dimension
         :param t (int): number of timesteps
         :param N (list[int]): list of training set sizes
@@ -47,10 +45,10 @@ class FixedComplexity(Challenge):
         Returns: matplotlib.axes.Axes object
         """
         if not data['ood_error'].isnull().any():
-            ax = plot_metric(data, "n", ["error", "ood_error"], xlabel=r'$n$', ylabel=r'$\mathcal{E}$')
+            ax = plot_metric(data, "n", ["error", "ood_error"], xlabel=r'$n$', ylabel=r'$\mathcal{E}$', errorbar=("pi", 50))
             ax.legend(title='Distribution')
         else:
-            ax = plot_metric(data, "n", "error", xlabel=r'$n$', ylabel=r'$\mathcal{E}$')
+            ax = plot_metric(data, "n", "error", xlabel=r'$n$', ylabel=r'$\mathcal{E}$', errorbar=("pi", 50))
             ax.get_legend().remove()
         title = "Fixed Complexity"
         if latent_dim:
@@ -70,8 +68,6 @@ class FixedTrainSize(Challenge):
                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int, system_kwargs: dict = None):
         """
         Challenge where the size of the training set is fixed, the complexity of the system is varied, and the error is measured.
-
-        Note! Fixed Train Size results are reproducible at the model_run level (by specifying n, l, e, model_seed, system_seed) because training trajectories are generated in advance. 
 
         :param n: The size of the training set.
         :param L: The complexities of the system.
@@ -96,15 +92,16 @@ class FixedTrainSize(Challenge):
         Returns: matplotlib.axes.Axes object
         """
         if not data['ood_error'].isnull().any():
-            ax = plot_metric(data, "latent_dim", ["error", "ood_error"], xlabel=r'$L$', log=False, ylabel=r'$\mathcal{E}$')
+            ax = plot_metric(data, "latent_dim", ["error", "ood_error"], xlabel=r'$L$', log=True, ylabel=r'$\mathcal{E}$', errorbar=("pi", 50))
             ax.legend(title='Distribution')
         else:
-            ax = plot_metric(data, "latent_dim", "error", xlabel=r'$L$', log=False, ylabel=r'$\mathcal{E}$')
+            ax = plot_metric(data, "latent_dim", "error", xlabel=r'$L$', log=True, ylabel=r'$\mathcal{E}$', errorbar=("pi", 50))
             ax.get_legend().remove()
         title = "Fixed Train Size"
         if n:
             title += f", n={n}"
         ax.set_title(title)
+        
         if show:
             import matplotlib.pyplot as plt
             plt.show()
@@ -131,9 +128,6 @@ class FixedError(Challenge):
         """
         Challenge where the target error is fixed and the latent dimensionality is varied and the number of training samples to achieve the error is measured.  
         Performs a binary search over the number of training samples to find the minimum number of samples needed to achieve the target error rate.
-
-        Note! FixedError results are only reproducible at the system_run level (by specifying l, e, t, n_start, n_max, n_window, n_precision, model_seed, and system_seed), not at the model_run level because training trajectories are generated incrementally across model_runs.
-        This means that the same system_run will produce the same results, but the same model_run params may not.
 
         :param L: List of latent dimensions to test
         :param t: Number of timesteps of each training trajectory
@@ -173,19 +167,40 @@ class FixedError(Challenge):
         super().__init__([1], L, E, t, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     def evaluate(self, 
-        model_cls: type[AbstractModel], 
-        model_kwargs: dict | None = None, 
-        fit_kwargs: dict | None = None, 
-        act_kwargs: dict | None = None, 
-        ood=False, noisy=False, id=None, 
-        num_parallel_cpu=-1, 
-        seed=None, 
-        # Filters which system_runs to evaluate (as specified by rep_ids and l). If None, no filtering is performed. 
-        # We recommend using these filters to parallelize evaluation across multiple machines, while retaining reproducibility.
-        reps_filter: list[int] = None, 
-        L_filter: list[int] | None = None,
-        rep_l_filter: list[tuple[int, int]] | None = None,
-        ) -> pd.DataFrame:
+                model_cls: type[AbstractModel],
+                model_kwargs: dict | None = None,
+                fit_kwargs: dict | None = None,
+                act_kwargs: dict | None = None,
+                ood=False,
+                noisy=False,
+                id=None,
+                num_parallel_cpu=-1,
+                seed=None,
+                # Filters which reps and L to evaluate. If None, no filtering is performed. 
+                # We recommend using these filters to parallelize evaluation across multiple machines, while retaining reproducibility.
+                reps_filter: list[int] = None,
+                L_filter: list[int] | None = None,
+                rep_l_filter: list[tuple[int, int]] | None = None,
+                ) -> pd.DataFrame:
+        """
+        Evaluates a model class (NOT an instance) on a dynamical system over a set of experimental parameters.
+
+        :param model_cls: model class to be evaluated
+        :param model_kwargs: kwargs to be passed to model_cls
+        :param fit_kwargs: kwargs to be passed to model_cls.fit
+        :param act_kwargs: kwargs to be passed to model_cls.act
+        :param ood: Boolean. If True, also test on out-distribution initial conditions for the test set. (For FixedError, search is performed on ood_error if ood=True.) Defaults to False.
+        If False, generate out-of-distribution initial conditions for the test set.
+        :param noisy: Boolean. If True, add noise to train set. Defaults to False. If False, no noise is added.
+        :param id: model ID associated with evaluation results in returned DataFrame
+        :param num_parallel_cpu: number of cpus to use in parallel. Defaults to -1, which uses all available cpu.
+        :param seed: to seed random number generator for seeding systems and models. Defaults to None. Is overriden by seeds in system_kwargs or model_kwargs.
+        :param reps_filter: if provided, will only evaluate system_runs with the given rep_ids. Defaults to None, which evaluates all repetitions.
+        :param L_filter: if provided, will only evaluate system_runs with the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
+        :param rep_l_filter: if provided, will only evaluate system_runs with the given (rep_id, latent_dim) pairs. Defaults to None, which evaluates all (rep_id, latent_dim) pairs.
+        :
+        return: a pandas DataFrame where each row is a model_run result -- a model trained and evaluated on a single system. (See model_run() for more details.)
+        """
         
         results = super().evaluate(model_cls, model_kwargs, fit_kwargs, act_kwargs, ood, noisy, id, num_parallel_cpu, seed, reps_filter, L_filter, rep_l_filter)
         targets = results[['latent_dim', 'embed_dim', 'rep',  'n_target', 'model_seed', 'system_seed']].drop_duplicates()
@@ -229,7 +244,7 @@ class FixedError(Challenge):
         max_control_cost = self._max_control_cost_per_dim * latent_dim
         
         # generating master training set which is used to generate training sets of different sizes
-        master_training_set = self._gen_trainset(system, 10, self._t, noisy)
+        master_training_set = None
         def get_training_set(n):
             """ 
             Helper function to get training set of size n. 
@@ -237,12 +252,14 @@ class FixedError(Challenge):
             If not, generate more trajectories and add to training set.
             """
             nonlocal master_training_set
+            if master_training_set is None: #if we have not generated any trajectories yet
+                master_training_set = self._gen_trainset(system, n, self._t, noisy)
             if n <= len(master_training_set): # if we have already generated enough trajectories
-                return master_training_set[:int(n), : , :] #train on subset of training set
+                return master_training_set[:n] #train on subset of training set
             else: #add more trajectories to training set 
                 to_add = self._gen_trainset(system, n - len(master_training_set), self._t, noisy)
                 master_training_set = np.concatenate((master_training_set, to_add), axis=0)
-                return master_training_set
+                return master_training_set[:n]
 
         # memoized run function which stores results in result dictionary and memoizes whether or not we have already run the model for a given n 
         memo = {}
@@ -342,6 +359,8 @@ class FixedError(Challenge):
                         else: # or halve n_prev
                             n_curr =  n_prevs.pop()
                             if n_curr < self.n_precision:
+                                if error_curr > self._target_error:
+                                    return np.inf
                                 return n_curr #no more backing up can be done
                             n_curr = max(1, n_curr//multiplicative_factor)
                         n_prevs = []
@@ -353,7 +372,7 @@ class FixedError(Challenge):
                         else:
                             n_prevs.append(n_curr)
                             error_prev = error_curr
-                            n_curr = n_curr + increment 
+                            n_curr = n_curr + max(increment, self.n_precision)
                             # scale increment, but not below 1 nor above increment_max
                             increment = min(max(1, math.ceil(increment * multiplicative_factor)), increment_max)
                 else: #no n_prevs
@@ -361,7 +380,7 @@ class FixedError(Challenge):
                         #move forward
                         n_prevs.append(n_curr)
                         error_prev = error_curr
-                        n_curr = n_curr + increment
+                        n_curr = n_curr +  max(increment, self.n_precision) 
                         increment = min(max(1, math.ceil(increment * multiplicative_factor)), increment_max)
                     else: # error_curr < target
                         if n_curr < self.n_precision + 1:
@@ -418,12 +437,16 @@ class FixedError(Challenge):
     @staticmethod
     def plot(data, target_error:float=None, show:bool=True):
         
-        ax = plot_target_error(data, "latent_dim", "n", ylabel=r'$n$', xlabel=r'$L$')
+        
         title = "Fixed Error"
         if not data['ood_error'].isnull().any(): 
             title += ", OOD"
+            ax = plot_target_error(data, "latent_dim", "n_target", ylabel=r'$n$', xlabel=r'$L$', error_col='ood_error')
+        else:
+            ax = plot_target_error(data, "latent_dim", "n_target", ylabel=r'$n$', xlabel=r'$L$')
         if target_error:
             title += f", target error={target_error}"
+        
         ax.set_title(title)
         ax.get_legend().remove()
 
