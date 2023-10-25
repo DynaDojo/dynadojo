@@ -55,6 +55,15 @@ fc_challenge_params_dict = {
                 "lr_30" : { "l" : 30 },
                 "lr_50" : { "l" : 50 },
                 "lr_100" : { "l" : 100 },
+                "dnn" : {
+                    "N" : [int(n) for n in np.logspace(1, 4, num=20, endpoint=True)]
+                },
+                "dnn_5" : { "l" : 5 },
+                "dnn_10" : { "l" : 10 },
+                "dnn_20" : { "l" : 20 },
+                "dnn_30" : { "l" : 30 },
+                "dnn_50" : { "l" : 50 },
+                "dnn_100" : { "l" : 100 },
             }
 }
 
@@ -86,8 +95,12 @@ fts_challenge_params_dict = {
                     "t" : 50,
                 },
                 "lr" : {
-                    "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)]
+                    "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
+                    "n" : 100,
                 },
+                "dnn": {
+                    "n": 10000,
+                }
     }
 }
 
@@ -104,7 +117,7 @@ fe_challenge_params_dict = {
                     "control_horizons": 0,
                     "n_precision" : 5,
                     "n_window" :  5,
-                    "n_max" : 10000,
+                    "n_max" : 20000,
                     "system_kwargs": None,
                     "evaluate": {
                         "seed": 1027,
@@ -125,16 +138,20 @@ fe_challenge_params_dict = {
                 "lr" : { 
                     "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
                     "n_starts" :  [1000]*20, #same length as L
+                    "target_error": 1e-5,
                 },
                 "lr_ood" : {
                     "evaluate": {
                         "ood": True,
                     }
                 },
-                "dnn_ood" : {
-                    "evaluate": {
-                        "ood": True,
-                    }
+                "dnn" : {
+                    "target_error": 5e0,
+                },
+                "dnn_100" : {
+                    "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
+                    "n_starts" :  [int(n) for n in np.logspace(1, 4, num=10, endpoint=True)],
+                    "target_error": 5e0,
                 },
     }
 }

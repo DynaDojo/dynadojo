@@ -45,6 +45,8 @@ class FixedComplexity(Challenge):
         """
         Returns: matplotlib.axes.Axes object
         """
+        if not latent_dim:
+            latent_dim = data["latent_dim"].unique()[0]
         if not data['ood_error'].isnull().any():
             ax = plot_metric(data, "n", ["error", "ood_error"], xlabel=r'$n$', ylabel=r'$\mathcal{E}$', errorbar=("pi", 50))
             ax.legend(title='Distribution')
@@ -94,6 +96,8 @@ class FixedTrainSize(Challenge):
         """
         Returns: matplotlib.axes.Axes object
         """
+        if not n:
+            n = data["n"].unique()[0]
         if not data['ood_error'].isnull().any():
             ax = plot_metric(data, "latent_dim", ["error", "ood_error"], xlabel=r'$L$', log=True, ylabel=r'$\mathcal{E}$', errorbar=("pi", 50))
             ax.legend(title='Distribution')
@@ -440,8 +444,9 @@ class FixedError(Challenge):
         return data
     
     @staticmethod
-    def plot(data, target_error:float=None, show:bool=True):
-        
+    def plot(data, target_error:float=None, show:bool=True, show_stats:bool=False):
+        if not target_error:
+            target_error = data["target_error"].unique()[0]
         
         title = "Fixed Error"
         if not data['ood_error'].isnull().any(): 
@@ -452,6 +457,15 @@ class FixedError(Challenge):
         if target_error:
             title += f", target error={target_error}"
         
+        if show_stats:
+            # get the n_target for each latent_dim
+            stats = data[['rep', 'latent_dim', 'embed_dim','n_target']]
+            stats = stats.drop_duplicates()
+            stats = stats[stats['n_target'] > 0 ]
+            stats = stats[stats['n_target'] != np.inf]
+            stats = stats.groupby(['latent_dim', 'embed_dim'])['n_target'].count()
+            print(stats)
+
         ax.set_title(title)
         ax.get_legend().remove()
 
