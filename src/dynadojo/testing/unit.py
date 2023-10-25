@@ -1,5 +1,5 @@
 import unittest
-from dynadojo.challenges import FixedComplexity
+from dynadojo.challenges import FixedComplexity, FixedTrainSize
 from dynadojo.systems.lds import LDSystem
 from dynadojo.baselines.lr import LinearRegression
 from dynadojo.baselines.dnn import DNN
@@ -118,6 +118,56 @@ class TestReproducibilityModel(unittest.TestCase):
                 df2 = df2[cols].loc[df2['rep'] == 1]
                 self.assertEqual(df1, df2)
 
+    """
+    def test_dnn(self):
+        l = 10
+        e = 10 
+        t = 50
+        n = 100
+        ood = True
+        system_seed = 1276400239
+        model_seed = 2949232388
+        error = 11.755511444519389
+        ood_error = 40.871378000678895
+
+        challenge = FixedComplexity(N=[n], l=l, e=e, t=t, reps=1,
+            test_examples=50, test_timesteps=50, verbose=False, 
+            system_cls=LDSystem, system_kwargs={'seed':system_seed})
+
+        df1 = challenge.evaluate(DNN, noisy=True, ood=ood,
+                        reps_filter=None, 
+                        L_filter = None,
+                        model_kwargs={'seed':model_seed})
+
+        #check that first row 'error' and 'ood_error' are correct
+        self.assertEqual(df1['error'].iloc[0], error)
+        self.assertEqual(df1['ood_error'].iloc[0], ood_error)
+
+    def test_lr(self):
+        l = 10
+        e = 10 
+        t = 50
+        n = 100
+        ood = True
+        system_seed = 2940660954
+        model_seed = 433949338
+        error = 1.1618431384700412e-07
+        ood_error = 1.1343960080211431e-07
+
+        challenge = FixedTrainSize(n=n, L=[l], E=None, t=t, reps=1,
+            test_examples=50, test_timesteps=50, verbose=True, 
+            max_control_cost_per_dim=1, control_horizons=0,
+            system_cls=LDSystem, system_kwargs={'seed':system_seed})
+
+        df1 = challenge.evaluate(LinearRegression, noisy=True, ood=ood,
+                        reps_filter=None, 
+                        L_filter = None,
+                        model_kwargs={'seed':model_seed})
+
+        #check that first row 'error' and 'ood_error' are correct
+        self.assertEqual(df1['error'].iloc[0], error)
+        self.assertEqual(df1['ood_error'].iloc[0], ood_error)
+    """
 
 if __name__ == '__main__':
     unittest.main()
