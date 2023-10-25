@@ -453,7 +453,7 @@ class Challenge:
         # Seed in system_kwargs takes precedence over the seed passed to this function.
         system = self._system_cls(latent_dim, embed_dim, **{"seed":system_seed, **self._system_kwargs})
         
-        # Create data
+        # Create all data
         largest_N = max(self._N)
         training_set = self._gen_trainset(system, largest_N, self._t, noisy)
         test_set = self._gen_testset(system, in_dist=True)
@@ -483,7 +483,8 @@ class Challenge:
             print(f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error=:0.3},model_seed={model._seed}, sys_seed={system._seed}")
             Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error=ood_error, duration=duration)
 
-        # On each subset of the training set, we retrain the model from scratch (initialized with the same random seed). If you don't, then # of training epochs will scale with N. This would confound the effect of training set size with training time.
+        # On each subset of the training set, we retrain the model from scratch (initialized with the same random seed). 
+        # If you don't, then # of training epochs will scale with N. This would confound the effect of training set size with training time.
         for n in self._N:
             model_run(n)
             
