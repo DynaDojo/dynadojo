@@ -134,6 +134,11 @@ fe_challenge_params_dict = {
                     "evaluate": {
                         "ood": True,
                     }
+                },
+                "lr_test" : {
+                    "L" : [5, 6, 7, 8, 9, 10],
+                    "n_starts" :  [10]*5, #same length as L
+                    "reps" : 2
                 }
     }
 }
