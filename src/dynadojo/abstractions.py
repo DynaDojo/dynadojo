@@ -299,18 +299,18 @@ class Challenge:
         Evaluates a model class (NOT an instance) on a dynamical system over a set of experimental parameters.
 
         :param model_cls: model class to be evaluated
-        :param model_kwargs:
-        :param fit_kwargs:
-        :param act_kwargs:
+        :param model_kwargs: kwargs to be passed to model_cls
+        :param fit_kwargs: kwargs to be passed to model_cls.fit
+        :param act_kwargs: kwargs to be passed to model_cls.act
         :param ood: Boolean. If True, also test on out-distribution initial conditions for the test set. (For FixedError, search is performed on ood_error if ood=True.) Defaults to False.
         If False, generate out-of-distribution initial conditions for the test set.
         :param noisy: Boolean. If True, add noise to train set. Defaults to False. If False, no noise is added.
         :param id: model ID associated with evaluation results in returned DataFrame
         :param num_parallel_cpu: number of cpus to use in parallel. Defaults to -1, which uses all available cpu.
         :param seed: to seed random number generator for seeding systems and models. Defaults to None. Is overriden by seeds in system_kwargs or model_kwargs.
-        :param eval_reps: if provided, will only evaluate the given rep_ids. Defaults to None, which evaluates all repetitions.
-        :param eval_L: if provided, will only evaluate the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
-        :param eval_rep_l: if provided, will only evaluate the given (rep_id, latent_dim) pairs. Defaults to None, which evaluates all (rep_id, latent_dim) pairs.
+        :param reps_filter: if provided, will only evaluate system_runs with the given rep_ids. Defaults to None, which evaluates all repetitions.
+        :param L_filter: if provided, will only evaluate system_runs with the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
+        :param rep_l_filter: if provided, will only evaluate system_runs with the given (rep_id, latent_dim) pairs. Defaults to None, which evaluates all (rep_id, latent_dim) pairs.
         :
         return: a pandas DataFrame where each row is a model_run result -- a model trained and evaluated on a single system. (See model_run() for more details.)
         """
@@ -441,9 +441,8 @@ class Challenge:
                     **kwargs
                     ):
         """
-        For a given system latent dimension and embedding dimension, instantiates system and evaluates reps of
-        iterating over the number of trajectories N.
-
+        For a given system latent dimension and embedding dimension, instantiates system and for a specific N, evaluates the model on the system (a model_run).
+        Across model_runs, the model is re-initialized with the same seed. 
         Note that model seed in model_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
         """
         result = Challenge._init_result_dict()
@@ -462,6 +461,7 @@ class Challenge:
         
         max_control_cost = self._max_control_cost_per_dim * latent_dim
 
+        # Define model_run helper function
         def model_run(n):
             """ 
             For a given number of trajectories n, instantiates model, trains, and evaluates on test set.
