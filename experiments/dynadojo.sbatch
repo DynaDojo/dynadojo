@@ -3,11 +3,11 @@
 #SBATCH -n 1 # One Core
 #SBATCH -N 1 # All cores on one machine
 #SBATCH -p normal # Partition name
-#SBATCH --mem 2000 # Memory (2Gb)
+#SBATCH --mem 4000 # Memory (4Gb)
 #SBATCH -t 0-1:00 # Maximum execution time (D-HH:MM)
 #SBATCH -o logs/out/%A_%a.out # Standard output
 #SBATCH -e logs/err/%A_%a.err # Standard error
-#SBATCH --array=1-10   # -10 maps 1 to 10 to SLURM_ARRAY_TASK_ID below
+#SBATCH --array=1-100   # -10 maps 1 to 10 to SLURM_ARRAY_TASK_ID below
 
 CHALLENGE=$1
 SYSTEM=$2
