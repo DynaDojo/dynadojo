@@ -472,7 +472,7 @@ class Challenge:
                 ood_pred = model.predict_wrapper(ood_test_set[:, 0], self._test_timesteps)
                 ood_error = system.calc_error_wrapper(ood_pred, ood_test_set)
             #TODO: fix logging? Should we use a logger?
-            print(f"{id=}, {n=}, {latent_dim=}, {embed_dim=}, t={self._t}, control_h={self._control_horizons}, {rep_id=}, {total_cost}, {error=:0.3}, {ood_error=:0.3},model_seed={model._seed}, sys_seed={system._seed}")
+            print(f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error=:0.3},model_seed={model._seed}, sys_seed={system._seed}")
             Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error)
 
         data =pd.DataFrame(result)
