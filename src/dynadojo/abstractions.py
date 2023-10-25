@@ -1,5 +1,6 @@
 import itertools
 from abc import ABC, abstractmethod
+import time
 
 import numpy as np
 import pandas as pd
@@ -400,7 +401,7 @@ class Challenge:
         return total_cost
 
     @staticmethod
-    def _append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, total_cost , error, ood_error=None):
+    def _append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, total_cost , error, ood_error=None, duration=None):
         result['rep'].append(rep_id)
         result['n'].append(n)
         result['latent_dim'].append(latent_dim)
@@ -409,6 +410,7 @@ class Challenge:
         result['error'].append(error)
         result['total_cost'].append(total_cost)
         result['ood_error'].append(ood_error)
+        result['duration'].append(duration)
     
     @staticmethod
     def _init_result_dict():
@@ -420,7 +422,8 @@ class Challenge:
             "n", 
             "error", 
             "ood_error",
-            "total_cost"]}
+            "total_cost",
+            "duration"]}
         return result
 
     def system_run(self, 
@@ -461,6 +464,7 @@ class Challenge:
 
         # On each subset of the training set, we retrain the model from scratch (initialized with the same random seed). If you don't, then # of training epochs will scale with N. This would confound the effect of training set size with training time.
         for n in self._N:
+            start = time.time()
             # Create Model. Seed in model_kwargs takes precedence over the seed passed to this function.
             model = model_cls(embed_dim, self._t, max_control_cost, **{"seed": model_seed, **model_kwargs})
             training_set_n = training_set[:n] #train on subset of training set
@@ -471,9 +475,11 @@ class Challenge:
             if test_ood:
                 ood_pred = model.predict_wrapper(ood_test_set[:, 0], self._test_timesteps)
                 ood_error = system.calc_error_wrapper(ood_pred, ood_test_set)
+            end = time.time()
+            duration = end - start
             #TODO: fix logging? Should we use a logger?
             print(f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error=:0.3},model_seed={model._seed}, sys_seed={system._seed}")
-            Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error)
+            Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error=ood_error, duration=duration)
 
         data =pd.DataFrame(result)
         data['system_seed'] = system_seed
