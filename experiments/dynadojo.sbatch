@@ -5,8 +5,8 @@
 #SBATCH -p normal # Partition name
 #SBATCH --mem 2000 # Memory (2Gb)
 #SBATCH -t 0-1:00 # Maximum execution time (D-HH:MM)
-#SBATCH -o /logs/%A/dynadojo_%a.out # Standard output
-#SBATCH -e /logs/%A/dynadojo_%a.err # Standard error
+#SBATCH -o /logs/out/%A_dynadojo_%a.out # Standard output
+#SBATCH -e /logs/err/%A_dynadojo_%a.err # Standard error
 #SBATCH --array=1-10   # maps 1 to 10 to SLURM_ARRAY_TASK_ID below
 
 CHALLENGE=$1
@@ -24,3 +24,6 @@ singularity run --bind $HOME/dynadojo/experiments:/dynadojo/experiments \
                     --challenge=$CHALLENGE \
                     --node=$SLURM_ARRAY_TASK_ID \
                     --total_nodes=$SLURM_ARRAY_TASK_MAX \
+
+# To run: sbatch dynadojo.sbatch fc lds lr
+# To get report: smanage report --sacct --name=dynadojo
