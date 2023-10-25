@@ -10,12 +10,17 @@
 #SBATCH --array=1-10   # maps 1 to 10 to SLURM_ARRAY_TASK_ID below
 
 CHALLENGE=$1
+SYSTEM=$2
+MODEL=$3
+
 singularity run --bind $HOME/dynadojo/experiments:/dynadojo/experiments \
                 --bind $HOME/dynadojo/src/dynadojo:/dynadojo/pkgs/dynadojo \
                 --pwd /dynadojo \
                 $GROUP_HOME/$USER/simg/dynadojo \
                 python -m experiments \
                     --output_dir=$SCRATCH/ \
+                    --system=$SYSTEM \
+                    --model=$MODEL \
                     --challenge=$CHALLENGE \
                     --node=$SLURM_ARRAY_TASK_ID \
                     --total_nodes=$SLURM_ARRAY_TASK_MAX \
