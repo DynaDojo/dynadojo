@@ -13,6 +13,8 @@ Usage:
     python -m experiments --challenge fc --model lr --system lds
     python -m experiments --challenge fts --model lr --system lds
     python -m experiments --challenge fe --model lr --system lds
+
+python -m experiments --challenge fe --model lr --system lds --plot --output_dir="experiments/outputs/scratch"
 """
 
 import argparse
