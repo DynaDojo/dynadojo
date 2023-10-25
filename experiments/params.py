@@ -4,7 +4,7 @@ Also contains functions for getting system, model, and challenge parameters.
 """
 import numpy as np
 from dynadojo.baselines import LinearRegression
-from dynadojo.baselines.dnn import DNNSystem
+from dynadojo.baselines.dnn import DNN
 from dynadojo.systems.lds import LDSystem
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 from dynadojo.abstractions import Challenge 
@@ -15,7 +15,7 @@ system_dict = {
 }
 model_dict = {
     "lr" : LinearRegression,
-    "dnn" : DNNSystem,
+    "dnn" : DNN,
 }
 
 fc_challenge_params_dict = {
@@ -88,10 +88,6 @@ fts_challenge_params_dict = {
                 "lr" : {
                     "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)]
                 },
-                "lr_test": {
-                    "L" : [5, 6, 7, 8, 9, 10],
-                    "reps" : 2
-                }
     }
 }
 
@@ -135,11 +131,11 @@ fe_challenge_params_dict = {
                         "ood": True,
                     }
                 },
-                "lr_test" : {
-                    "L" : [5, 6, 7, 8, 9, 10],
-                    "n_starts" :  [10]*5, #same length as L
-                    "reps" : 2
-                }
+                "dnn_ood" : {
+                    "evaluate": {
+                        "ood": True,
+                    }
+                },
     }
 }
 
