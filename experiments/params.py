@@ -88,10 +88,6 @@ fts_challenge_params_dict = {
                 "lr" : {
                     "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)]
                 },
-                "lr_test": {
-                    "L" : [5, 6, 7, 8, 9, 10],
-                    "reps" : 2
-                }
     }
 }
 
@@ -135,11 +131,11 @@ fe_challenge_params_dict = {
                         "ood": True,
                     }
                 },
-                "lr_test" : {
-                    "L" : [5, 6, 7, 8, 9, 10],
-                    "n_starts" :  [10]*5, #same length as L
-                    "reps" : 2
-                }
+                "dnn_ood" : {
+                    "evaluate": {
+                        "ood": True,
+                    }
+                },
     }
 }
 
