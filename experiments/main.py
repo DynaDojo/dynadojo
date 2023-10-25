@@ -123,7 +123,12 @@ def make_plots(
         df = pd.read_csv(file)
         data = pd.concat([data, df])
     data = data.drop_duplicates()
-    g = challenge_cls.plot(data, show=False)
+    kwargs = {}
+    if challenge_cls == FixedError:
+        kwargs["target_error"] = data["target_error"].unique()[0]
+    if challenge_cls == FixedTrainSize:
+        kwargs["n"] = data["n"].unique()[0]
+    g = challenge_cls.plot(data, show=False, **kwargs)
     g.figure.savefig(f"{path}/{figure_filename}", bbox_inches='tight')
     print(f"Plot created: {figure_filename} using")
     for file in files:
@@ -146,10 +151,10 @@ def _get_base_filename(s:str, m:str, challenge_cls:type[Challenge]):
     elif challenge_cls == FixedError:
         params = _get_params(s, m, challenge_cls=challenge_cls)
         e = params["target_error"]
-        ood = params["ood"]
+        ood = params["evaluate"]["ood"]
         filebase = f"fe_{s}_{m}_{e=}"
         if ood:
-            filebase += f"_ood"
+            filebase = f"fe_ood_{s}_{m}_{e=}"
     else:
         raise ValueError("challenge_cls must be FixedComplexity, FixedTrainSize, or FixedError")
 
