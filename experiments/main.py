@@ -98,7 +98,8 @@ def run_challenge(
             rep_l_filter = [run]
         )
         data.to_csv(file, mode='a', index=False, header=not os.path.exists(file))
-
+        print(f"COMPLETED RUN {run} -- {split_num=} / {total_splits=}")
+    print(f"COMPLETED SPLIT -- {split_num=} / {total_splits=}")
     
     
 
