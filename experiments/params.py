@@ -179,7 +179,7 @@ fe_challenge_params_dict = {
                     "n_min": 3,
                     "n_max" : 1e5,
                     "test_examples" : 100,
-                    "reps": 50
+                    "reps": 100
                 },
                 "dnn_test" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
