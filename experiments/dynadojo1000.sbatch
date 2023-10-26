@@ -16,7 +16,6 @@
 CHALLENGE=$1
 SYSTEM=$2
 MODEL=$3
-TOTAL_JOBS=$4
 
 singularity run --bind $HOME/dynadojo/experiments:/dynadojo/experiments \
                 --bind $HOME/dynadojo/src/dynadojo:/dynadojo/pkgs/dynadojo \
@@ -28,7 +27,7 @@ singularity run --bind $HOME/dynadojo/experiments:/dynadojo/experiments \
                     --model=$MODEL \
                     --challenge=$CHALLENGE \
                     --node=$SLURM_ARRAY_TASK_ID \
-                    --total_nodes=$4 #$SLURM_ARRAY_TASK_MAX \
+                    --total_nodes=$SLURM_ARRAY_TASK_MAX \
 
 # To run: sbatch -J dynadojo dynadojo100.sbatch fe lds dnn_simple
 # To get report: smanage report --sacct --name=dynadojo
