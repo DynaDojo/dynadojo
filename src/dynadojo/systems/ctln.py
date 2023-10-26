@@ -6,30 +6,41 @@ import networkx as nx
 import numpy as np
 import random
 
-RNG = np.random.default_rng()
-
-
 class CTLNSystem(AbstractSystem):
-    def __init__(self, latent_dim, embed_dim, p):
-        super().__init__(latent_dim, embed_dim)
+    def __init__(self, 
+            latent_dim = 2, 
+            embed_dim = 2, 
+            p = 0.2, 
+            seed=None):
+        """
+        :param latent_dim: dimension of the latent space
+        :param embed_dim: dimension of the embedding space
+        :param p: probability of an edge in the graph (more edges = more complex dynamics)
+        :param seed: random seed
+        """
+
+        super().__init__(latent_dim, embed_dim, seed=None)
+        self._rng = np.random.default_rng(seed=self._seed)
         self._latent_dim = latent_dim
         self._embed_dim = embed_dim
         self.relu = nn.ReLU()
         self._p = p
         self._nodes = latent_dim
+        if self._seed:
+            torch.manual_seed(self._seed)
 
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
-        self._delta = random.uniform(0, 1) #what should the upper bound on the randomly generated constants be?
-        self._epsilon = random.uniform(0, self._delta/(self._delta+1))
+        self._delta = self._rng.uniform(0, 1) #what should the upper bound on the randomly generated constants be?
+        self._epsilon = self._rng.uniform(0, self._delta/(self._delta+1))
         graph = self._make_graph(self._nodes, self._p)
-        x0 = torch.Tensor(RNG.uniform(0, 1, size=(n, self.embed_dim)))
-        time = torch.tensor([random.uniform(0, 1) for _ in range(self._nodes)])
-        b = torch.Tensor(RNG.uniform(0, 1, size=(self.embed_dim, n)))
+        time = torch.tensor([self._rng.uniform(0, 1) for _ in range(self._nodes)])
+        x0 = torch.Tensor(self._rng.uniform(0, 1, size=(n, self.embed_dim)))
+        b = torch.Tensor(self._rng.uniform(0, 1, size=(self.embed_dim, n)))
         self._state = (x0, time, graph, b)
         return x0
 
     def _make_graph(self, nodes, p):
-        g = nx.erdos_renyi_graph(nodes, p)
+        g = nx.erdos_renyi_graph(nodes, p, seed=self._rng)
         edges = nx.adjacency_matrix(g).todense()
         edges_comp = nx.adjacency_matrix(nx.complement(g)).todense()
         graph = (-edges_comp - self._epsilon) + (-edges + self._delta)      

@@ -107,11 +107,11 @@ fts_challenge_params_dict = {
 fe_challenge_params_dict = {
     "default" : {   "L" : [5, 10, 20, 30, 50, 100],
                     "n_starts" :  [1000]*6, #same length as L 
-                    "t" : 20,
+                    "t" : 50,
                     "reps" : 100,
                     "target_error": 1e-5,
                     "E" : None, #same length as L
-                    "test_examples" : 50,
+                    "test_examples" : 500,
                     "test_timesteps" : 50,
                     "max_control_cost_per_dim": 1,
                     "control_horizons": 0,
@@ -172,23 +172,24 @@ fe_challenge_params_dict = {
                 "dnn_simple" : { #Search Simple #TODO: rename to dnn_simple
                     "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
                     "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
-                    "target_error": 1e-1,
+                    "target_error": 1e0,
                     "n_window": 5,
                     "n_precision": .05,
                     "n_window_density": 0.5,
                     "n_min": 3,
-                    "n_max" : 1e5,
+                    "n_max" : 1e4,
                     "test_examples" : 100,
                     "reps": 100
                 },
                 "dnn_test" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
                     "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
-                    "target_error": 1e1,
+                    "target_error": 1e0,
                     "n_window": 10,
-                    "n_precision": .1,
+                    "n_precision": .2,
                     "n_window_density": 0.25,
                     "n_min": 3,
+                    "reps":3,
                 }
     }
 }
