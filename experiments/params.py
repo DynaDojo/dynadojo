@@ -149,10 +149,10 @@ fe_challenge_params_dict = {
                         "ood": True,
                     }
                 },
-                "dnn" : {
-                    "target_error": 5e0,
-                    "n_max" : 20000,
-                },
+                # "dnn" : {
+                #     "target_error": 5e0,
+                #     "n_max" : 20000,
+                # },
                 "dnn_100" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
                     "n_starts" :  [int(n) for n in np.logspace(1, 4, num=10, endpoint=True)],
@@ -168,6 +168,18 @@ fe_challenge_params_dict = {
                     "n_precision": .05,
                     "n_window_density": 0.5,
                     "n_min": 3,
+                },
+                "dnn" : {
+                    "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
+                    "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
+                    "target_error": 1e-1,
+                    "n_window": 5,
+                    "n_precision": .05,
+                    "n_window_density": 0.5,
+                    "n_min": 3,
+                    "n_max" : 1e5,
+                    "test_examples" : 100,
+                    "reps": 50
                 },
                 "dnn_test" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],

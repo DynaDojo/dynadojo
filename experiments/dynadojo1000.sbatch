@@ -7,7 +7,7 @@
 #SBATCH -t 0-2:00 # Maximum execution time (D-HH:MM)
 #SBATCH -o logs/out/%A_%a.out # Standard output
 #SBATCH -e logs/err/%A_%a.err # Standard error
-#SBATCH --array=1-1000%300   # -10 maps 1 to 10 to SLURM_ARRAY_TASK_ID below
+#SBATCH --array=1-600%300   # -10 maps 1 to 10 to SLURM_ARRAY_TASK_ID below
 #SBATCH --mail-type=begin        # send email when job begins
 #SBATCH --mail-type=end          # send email when job ends
 #SBATCH --mail-type=fail         # send email if job fails

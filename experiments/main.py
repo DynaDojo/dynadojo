@@ -144,10 +144,12 @@ def make_plots(
     if challenge_cls == FixedError:
         kwargs["show_stats"] = True
     g = challenge_cls.plot(data, show=False, **kwargs)
+    # linear axes instead of log
+    # g.set(xscale="linear", yscale="linear")
     g.figure.savefig(f"{path}/{figure_filename}", bbox_inches='tight')
-    print(f"Plot created with {len(data)} rows: {figure_filename} using")
-    for file in files:
-        print(f"\t- {file}")
+    print(f"Plot created with {len(files)} files in {path} and {len(data)} rows: {figure_filename} ")
+    # for file in files:
+    #     print(f"\t- {file}")
 
 
 ### Helper functions
