@@ -57,6 +57,7 @@ else:
         assert args.node >= 1 and args.node <= args.total_nodes, "node must be in [1, total_nodes]"
         max_splits = min(args.total_nodes, get_max_splits(s = args.system, m = args.model, challenge_cls = challenge_cls))
 
+
         if args.node <= max_splits:
             run_challenge(
                 s =args.system,
