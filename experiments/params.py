@@ -117,7 +117,7 @@ fe_challenge_params_dict = {
                     "control_horizons": 0,
                     "n_precision" : .05,
                     "n_window" :  5,
-                    "n_max" : 20000,
+                    "n_max" : 10000,
                     "n_window_density": 1.0,
                     "system_kwargs": None,
                     "evaluate": {
@@ -141,17 +141,17 @@ fe_challenge_params_dict = {
                     "n_starts" :  [1000]*20, #same length as L
                     "target_error": 1e-5,
                     "n_window": 5,
+                    "n_max" : 10000,
                     # "n_precision": 5 #not a percentage....run previously before changing to percentage 
                 },
                 "lr_ood" : {
-                    "n_window": 5,
-                    # "n_precision": 5, #not a percentage....run previously before changing to percentage  
                     "evaluate": {
                         "ood": True,
                     }
                 },
                 "dnn" : {
                     "target_error": 5e0,
+                    "n_max" : 20000,
                 },
                 "dnn_100" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
@@ -167,6 +167,16 @@ fe_challenge_params_dict = {
                     "n_window": 10,
                     "n_precision": .05,
                     "n_window_density": 0.5,
+                    "n_min": 3,
+                },
+                "dnn_test" : {
+                    "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
+                    "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
+                    "target_error": 1e1,
+                    "n_window": 10,
+                    "n_precision": .1,
+                    "n_window_density": 0.25,
+                    "n_min": 3,
                 }
     }
 }
@@ -217,3 +227,28 @@ def _get_system(s:str):
 def _get_model(m:str):
     assert m.split("_")[0] in model_dict, f"m must be one of {model_dict.keys()}"
     return model_dict.get(m, model_dict[m.split("_")[0]])
+
+
+def _serialize_params(challenge_params, evaluate_params):
+    """
+    Serialize params to a string. 
+    This is used to generate a unique ID for each experiment.
+    """
+    serialized = challenge_params.copy()
+    serialized_eval = evaluate_params.copy()
+    serialized['system_cls'] = challenge_params['system_cls'].__name__
+    serialized_eval['model_cls'] = evaluate_params['model_cls'].__name__
+    serialized['evaluate'] = serialized_eval
+    return serialized
+
+def _deserialize_params(params):
+    ""
+    name2cls = {
+        "LDSystem": LDSystem,
+        "LinearRegression": LinearRegression,
+        "DNN": DNN
+    }
+    challenge_params, evaluate_params = params
+    challenge_params['system_cls'] = name2cls[challenge_params['system_cls']]
+    evaluate_params['model_cls'] = name2cls[evaluate_params['model_cls']]
+    return challenge_params, evaluate_params

@@ -127,10 +127,11 @@ class FixedError(Challenge):
                 target_error: float,
                 E: int | list[int] = None,
                 system_kwargs: dict = None,
-                n_precision: int = 5,
+                n_precision: float = 0, # 0 = precision, 0.05 = 5% precision
                 n_starts: list[int] = None,
                 n_window: int = 0,
                 n_max=10000,
+                n_min=1,
                 n_window_density: float = 1.0, # 1 = include all points
                 verbose: bool = True
             ):
@@ -153,9 +154,14 @@ class FixedError(Challenge):
         :param n_window: Number of n to smooth over on left and right when calculating the error rate during search. If 0, no averaging is done.
         :param n_starts: List of starting points for the binary search over the number of training samples for each latent dim in L. len must equal len(L). If None, defaults to 1.
         :param n_max: Maximum number of training samples to use
+        :param n_min: Minimum number of training samples to use
+        :param n_window_density: Density of n to test during smoothing. 1 = test every n. 0.5 = test every other n. 0.25 = test every fourth n. etc.
         """
-        assert (n_precision >= 0), "Precision must be non-negative"
-        assert (L == sorted(L)), "Latent dimensions have to be sorted" #ToDo: is this necessary?
+        assert (1 > n_precision >= 0), "Precision must be between [0 and 1)"
+        assert (0 <= n_window), "Window size must be non-negative"
+        assert ( 0 < n_window_density <= 1), "Window density must be between (0 and 1]"
+        assert (n_max > n_min), "n_max must be greater than n_min"
+        assert (n_min > 0), "n_min must be greater than 0"
         #ToDo: sort L and E if not sorted instead of throwing error.
 
         self.n_starts = {l: 1 for l in L}
@@ -166,6 +172,7 @@ class FixedError(Challenge):
         self.n_precision = n_precision
         self.n_window = n_window
         self.n_max = n_max
+        self.n_min = n_min
         self._target_error = target_error
         self.n_window_density = n_window_density
 
@@ -310,7 +317,7 @@ class FixedError(Challenge):
                     memo[n] = (error, total_cost)
                     return error, total_cost
             if window > 0: #moving average/median 
-                window_range = list(range(max(1,n - window), min(n+window+1, self.n_max)))
+                window_range = list(range(max(self.n_min, n - window), min(n+window+1, self.n_max)))
                 window_len = int((window*2 + 1) * self.n_window_density)
                 if len(window_range) > window_len:
                     step = int(len(window_range) // window_len)
@@ -331,12 +338,10 @@ class FixedError(Challenge):
         # run model for different values of the number of trajectories n, searching for n needed to achieve the target error            
         def search():
             """
+            TODO: Replaced this with search_simple. Remove this function?
             Helper function to search for the number of trajectories N needed to achieve the target error.
-            
             Returns -1 if target error is never reached within n_max trajectories, np.inf if target error is stuck in a local minimum, and the number of trajectories N needed to achieve the target error otherwise.
-            
             Assumption that the test error is a convex function of N. Does an exponential search to narrow down the range of N to search over, then does a binary search to find the number of trajectories N needed to achieve the target error.
-
             In the exponential search, we start with n_curr = 1 or n_starts[latent_dim] if it exists. We then double n_curr until we have found a range of n where the target error is achieved. We handle the case where we have overshot the N needed to achieve the target error by backing up (either by two steps or by halving n_curr) and restarting the exponential search with a smaller increment. We do this until we have found a range of n where the target error is achieved.
             """
             # Doing an exponential search.
@@ -344,8 +349,8 @@ class FixedError(Challenge):
             # If we have overshot the N needed to achieve the target error, back up and restart the exponential search with a smaller increment.
             # If we exceed the maximum number of trajectories, return -1. If we converge to a local minimum, return np.inf.
             # Assumption: the test error is a convex function of N.
-            n_curr = self.n_starts.get(latent_dim, 1) # start with n_curr = 1 or n_starts[latent_dim] if it exists
-            n_prevs = []
+            n_curr = self.n_starts.get(latent_dim, self.n_min) # start with n_curr = 1 or n_starts[latent_dim] if it exists
+            current_path = []
             error_prev = None
             increment = 1
             increment_max = self.n_max//10 #TODO: what is a good value for this?
@@ -353,76 +358,78 @@ class FixedError(Challenge):
             history = set() #keep track of (n_curr, increment) pairs we have already tried to avoid infinite loops
             best_answer = np.inf
             while True:
+
+                # Above n_max, we have exceeded the maximum number of trajectories, so we return -1
                 if n_curr > self.n_max:
                     return -1 # target error is never reached within n_max trajectories
                 
-                if (n_curr, increment) in history: #cycle detected, return best answer
-                    if self._verbose:
-                        print(f"CYCLEEEEEEE {n_curr=}, {increment=}, {error_curr=}, {error_prev=}, {n_prevs=}")
+                # Below n_min, we do not have enough data to fit a model, so we return the best answer we have found so far
+                if n_curr < self.n_min:
                     return best_answer
 
+                # Cycle detection
+                if (n_curr, increment) in history: #cycle detected, return best answer
+                    if self._verbose:
+                        print(f"CYCLEEEEEEE {n_curr=}, {increment=}, {error_curr=}, {error_prev=}, {current_path=}")
+                    return best_answer
+
+                # Track paths we have already tried
                 history.add((n_curr, increment))
 
-                # run model on n_curr, update our best answer if we have found a new best answer
+                # Run model on n_curr, update our best answer if we have found a new best answer
                 error_curr, total_cost = model_run(n_curr, window=self.n_window)
                 if error_curr <= self._target_error and n_curr < best_answer:
                     best_answer = n_curr
 
-                if len(n_prevs) > 0:
-                    if error_curr > error_prev: # error is increasing
-                        # Move backwards
-                        if len(n_prevs) > 1: # Back twice
-                            n_prevs.pop()
-                            n_prev_prev = n_prevs.pop()
+                if len(current_path) > 0: #If not start of a path
+                    if error_curr > error_prev: #Error is increasing
+                        # Move backwards, because of convexity assumption
+                        if len(current_path) > 1: # Can move back twice
+                            current_path.pop()
+                            n_prev_prev = current_path.pop()
                             if n_curr - n_prev_prev <= max(self.n_precision * n_curr, 1):
                                 # target error is never reached, minimum error is above threshold under parabolic assumption
                                 # This ignores the possibility that the target error is reached within the precision (only possible if high curvature)
                                 return np.inf 
                             n_curr = n_prev_prev
                         else: # or halve n_prev
-                            n_curr =  n_prevs.pop()
-
-                            # CYCLES will handle this case
-                            # if n_curr < self.n_precision: #can't move backwards anymore
-                            #     if error_curr > self._target_error:
-                            #         return np.inf
-                            #     return n_curr #no more backing up can be done
-                            
+                            n_curr =  current_path.pop()
                             n_curr = max(1, n_curr//multiplicative_factor)
-                        n_prevs = []
+                        current_path = []
                         increment = 1
                         error_prev = None # reset error_prev
+                        continue
                     else: # error is decreasing
                         if error_curr < self._target_error: # found n_curr below target
                             break # do binary search if n_curr is below target
                         else:
-                            n_prevs.append(n_curr)
+                            current_path.append(n_curr)
                             error_prev = error_curr
                             n_curr = n_curr + max(increment, n_curr * self.n_precision)
                             # scale increment, but not below 1 nor above increment_max
                             increment = min(max(1, math.ceil(increment * multiplicative_factor)), increment_max)
+                            continue
                 else: #no n_prevs
                     if error_curr > self._target_error:
                         #move forward
-                        n_prevs.append(n_curr)
+                        current_path.append(n_curr)
                         error_prev = error_curr
+                        # Increment n_curr by at least n_precision * n_curr
                         n_curr = n_curr +  max(increment, n_curr * self.n_precision) 
+                        # scale increment, but not below 1 nor above increment_max
                         increment = min(max(1, math.ceil(increment * multiplicative_factor)), increment_max)
+                        continue
                     else: # error_curr < target
-                        
-                        # CYCLES will handle this case
-                        # if n_curr < self.n_precision + 1:
-                        #     return n_curr #no more backing up can be done
-                        
                         #move backward
                         n_curr = max(1, n_curr//multiplicative_factor)
+                        continue
 
 
             # do binary search, assuming error is convex and that error(n_lower) > target and error(n_upper) < target. So we can always check the left side of the interval if target is between error_lower and error_curr, and the right side otherwise.
             # n_prevs[-1] is the last n_curr that is above target
             # n_curr is the first n_curr that is below target
             # binary search between n_prevs[-1] and n_curr
-            n_lower = n_prevs[-1] 
+            n_lower = current_path[-1] 
             error_lower, _ = model_run(n_lower, window=self.n_window)
             n_upper = n_curr
             error_upper, _ = model_run(n_upper, window=self.n_window)
@@ -443,8 +450,71 @@ class FixedError(Challenge):
                     n_lower = n_curr
                     error_lower = error_curr
 
+        
+        def search_simple():
+            # Search with exponential search until we find an n_left that is above target and an n_right that is below target
+            # Then do binary search between n_left and n_right to find the left most n_curr that is below target
+
+            # Always track our best answer
+            best_answer = np.inf
+
+            # Our starting point
+            n = self.n_starts.get(latent_dim, self.n_min)
+
+            # Check if this is our n_left or n_right
+            error, _ = model_run(n, window=self.n_window)
+            n_left = n # n_left is the largest n that is above target
+            n_right = n # n_right is the smallest n that is below target
+            if error > self._target_error: 
+                # double n until we find an n that is below target
+                while(n < self.n_max):
+                    n = min(self.n_max, int(n*2))
+                    error, _ = model_run(n, window=self.n_window)
+                    if error > self._target_error:  
+                        #found a larger n that is below target
+                        n_left = n
+                    else: #found an n that is below target
+                        n_right = n
+                        break # do binary search
+            else: 
+                # Below target so look for left boundary!
+                # halve n until we find an n that is above target
+                while(n > self.n_min):
+                    n = max(self.n_min, int(n//2))
+                    error, _ = model_run(n, window=self.n_window)
+                    if error > self._target_error:
+                        n_left = n
+                        break # do binary search if n_left is above target
+                    else: #found a smaller n that is below target
+                        n_right = n
+            
+            # could not find an n_left that is above target, so return best answer
+            if n_right == self.n_min:
+                return n_right
+
+            # could not find an n_right that is below target, so return best answer
+            if n_left == self.n_max:
+                return np.inf
+
+            # Binary Search Time!
+            while True:
+                n = math.ceil((n_left + n_right)//2)
+                # stop if n_upper and n_lower are within precision
+                # n_precision is a percentage of n_curr so if 
+                # n_precision is 0, we must converge to a specific n.
+                if n_right - n_left <= self.n_precision * n:
+                    return n
+
+                error, _ = model_run(n, window=self.n_window)
+                if error > self._target_error:
+                    n_left = n
+                else:
+                    n_right = n
+
+
+
         # Run search    
-        n_target = search()
+        n_target = search_simple()
         
         data = pd.DataFrame(result)
         data['n_target'] = n_target

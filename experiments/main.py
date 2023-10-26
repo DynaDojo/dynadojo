@@ -8,7 +8,9 @@ import pandas as pd
 import numpy as np
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 from dynadojo.abstractions import Challenge 
-from .params import _get_system, _get_model, _get_params
+from .params import _get_system, _get_model, _get_params, _serialize_params, _deserialize_params
+import json
+
 
 def get_max_splits(s="lds", m="lr", challenge_cls:type[Challenge] = FixedComplexity,):
     params = _get_params(s, m, challenge_cls=challenge_cls)
@@ -81,6 +83,11 @@ def run_challenge(
     filename += ".csv"
     file = f"{path}/{filename}"
 
+    # save params
+    if not os.path.exists(f"{path}/params.json"):
+        with open(f"{path}/params.json", "w") as f:
+            json.dump(_serialize_params(challenge_params, evaluate_params), f, indent=4, sort_keys=True)
+
     for run in runs:
         # Evaluate one run at a time and save to csv immediately!
         data = challenge.evaluate(
@@ -91,6 +98,9 @@ def run_challenge(
             rep_l_filter = [run]
         )
         data.to_csv(file, mode='a', index=False, header=not os.path.exists(file))
+
+    
+    
 
 def make_plots(
         s ="lds",
