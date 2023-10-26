@@ -3,7 +3,7 @@
 #SBATCH -n 1 # Num Cores
 #SBATCH -N 1 # All cores on one machine
 #SBATCH -p normal # Partition name
-#SBATCH --mem-per-cpu=4G # Memory (4Gb)
+#SBATCH --mem-per-cpu=8G # Memory (4Gb)
 #SBATCH -t 0-3:00 # Maximum execution time (D-HH:MM)
 #SBATCH -o logs/out/%A_%a.out # Standard output
 #SBATCH -e logs/err/%A_%a.err # Standard error
@@ -29,7 +29,7 @@ singularity run --bind $HOME/dynadojo/experiments:/dynadojo/experiments \
                     --node=$SLURM_ARRAY_TASK_ID \
                     --total_nodes=$SLURM_ARRAY_TASK_MAX \
 
-# To run: sbatch -J dynadojo dynadojo100.sbatch fe lds dnn_simple
+# To run: sbatch -J dynadojo dynadojo1000.sbatch fe lds dnn_simple
 # To get report: smanage report --sacct --name=dynadojo
 # To get details: squeue --user=mkanwal
 # To cancel: scancel [jobid]
