@@ -64,14 +64,6 @@ def run_challenge(
         **challenge_params,
     )
 
-    data = challenge.evaluate(
-        **evaluate_params, 
-        id=_get_base_filename(s, m, challenge_cls), 
-        # Which reps and l pairings to evaluate. If None, evaluate all reps on all L. 
-        # This is calculated by the split argument!
-        rep_l_filter = runs
-    )
-    
     # Save data to csv, specifying split if necessary
     if challenge_cls == FixedComplexity:
         path = f"{output_dir}/fc/{s}"
@@ -87,7 +79,17 @@ def run_challenge(
         filename += f"_{split_num}-of-{total_splits}"
     filename += ".csv"
     file = f"{path}/{filename}"
-    data.to_csv(file, index=False)
+
+    for run in runs:
+        # Evaluate one run at a time and save to csv immediately!
+        data = challenge.evaluate(
+            **evaluate_params, 
+            id=_get_base_filename(s, m, challenge_cls), 
+            # Which reps and l pairings to evaluate. If None, evaluate all reps on all L. 
+            # This is calculated by the split argument!
+            rep_l_filter = [run]
+        )
+        data.to_csv(file, mode='a', index=False, header=not os.path.exists(file))
 
 def make_plots(
         s ="lds",
@@ -125,12 +127,10 @@ def make_plots(
     data = data.drop_duplicates()
     kwargs = {}
     if challenge_cls == FixedError:
-        kwargs["target_error"] = data["target_error"].unique()[0]
-    if challenge_cls == FixedTrainSize:
-        kwargs["n"] = data["n"].unique()[0]
+        kwargs["show_stats"] = True
     g = challenge_cls.plot(data, show=False, **kwargs)
     g.figure.savefig(f"{path}/{figure_filename}", bbox_inches='tight')
-    print(f"Plot created: {figure_filename} using")
+    print(f"Plot created with {len(data)} rows: {figure_filename} using")
     for file in files:
         print(f"\t- {file}")
 
@@ -166,7 +166,7 @@ def _find_matching_files(path, filename):
     For example, if filename is "fc_lds_lr_l=5.csv", this will return all files in path that contain "fc_lds_lr_l=5" and end with ".csv"
     """
     files = os.listdir(path)
-    file_base = filename.split(".")[0]+"_" #include underscore to avoid matching "l=5" with "l=50"
+    file_base = ".".join(filename.split(".")[:-1])+"_" #include underscore to avoid matching "l=5" with "l=50"
     file_ext = filename.split(".")[1]
     matching = [f"{path}/{f}" for f in files if file_base in f and file_ext in f]
     return matching

@@ -117,7 +117,7 @@ fe_challenge_params_dict = {
                     "control_horizons": 0,
                     "n_precision" : 5,
                     "n_window" :  5,
-                    "n_max" : 10000,
+                    "n_max" : 20000,
                     "system_kwargs": None,
                     "evaluate": {
                         "seed": 1027,
@@ -148,8 +148,10 @@ fe_challenge_params_dict = {
                 "dnn" : {
                     "target_error": 5e0,
                 },
-                "dnn_large" : {
-                    "target_error": 1e1,
+                "dnn_100" : {
+                    "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
+                    "n_starts" :  [int(n) for n in np.logspace(1, 4, num=10, endpoint=True)],
+                    "target_error": 5e0,
                 },
     }
 }
