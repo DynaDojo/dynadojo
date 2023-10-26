@@ -139,8 +139,12 @@ fe_challenge_params_dict = {
                     "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
                     "n_starts" :  [1000]*20, #same length as L
                     "target_error": 1e-5,
+                    "n_window": 5,
+                    # "n_precision": 5 #not a percentage....run previously before changing to percentage 
                 },
                 "lr_ood" : {
+                    "n_window": 5,
+                    # "n_precision": 5, #not a percentage....run previously before changing to percentage  
                     "evaluate": {
                         "ood": True,
                     }
@@ -150,8 +154,10 @@ fe_challenge_params_dict = {
                 },
                 "dnn_100" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
-                    "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
+                    "n_starts" :  [int(n) for n in np.logspace(1, 4, num=10, endpoint=True)],
                     "target_error": 5e0,
+                    "n_window": 5,
+                    # "n_precision": 5 #not a percentage....run previously before changing to percentage  
                 },
                 "dnn_100_window" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],

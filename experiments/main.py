@@ -124,7 +124,10 @@ def make_plots(
     # Handling split challenge runs
     # Concatenate all files into one dataframe and drop duplicates
     for file in files:
-        df = pd.read_csv(file)
+        try:
+            df = pd.read_csv(file)
+        except:
+            continue
         data = pd.concat([data, df])
     data = data.drop_duplicates()
     kwargs = {}
