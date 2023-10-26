@@ -149,18 +149,18 @@ fe_challenge_params_dict = {
                         "ood": True,
                     }
                 },
-                # "dnn" : {
-                #     "target_error": 5e0,
-                #     "n_max" : 20000,
-                # },
-                "dnn_100" : {
+                "dnn" : { 
+                    "target_error": 5e0,
+                    "n_max" : 20000,
+                },
+                "dnn_100" : { #Search, Precision as a number of samples not percentage
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
                     "n_starts" :  [int(n) for n in np.logspace(1, 4, num=10, endpoint=True)],
                     "target_error": 5e0,
                     "n_window": 5,
                     # "n_precision": 5 #not a percentage....run previously before changing to percentage  
                 },
-                "dnn_100_window" : {
+                "dnn_100_window" : { #Search
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
                     "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
                     "target_error": 5e0,
@@ -169,7 +169,7 @@ fe_challenge_params_dict = {
                     "n_window_density": 0.5,
                     "n_min": 3,
                 },
-                "dnn" : {
+                "dnn_simple" : { #Search Simple #TODO: rename to dnn_simple
                     "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
                     "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
                     "target_error": 1e-1,

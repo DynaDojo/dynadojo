@@ -7,9 +7,13 @@ from sklearn.decomposition import PCA
 MAX_LINES = 30
 
 
-def _plot2d(trajs_grid, labels: list = None):
-    fig = plt.figure()
-    ax = fig.add_subplot()
+def _plot2d(trajs_grid, labels: list = None, ax=None):
+    
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.add_subplot()
+    else:
+        fig = ax.get_figure()
     for i, trajs in enumerate(trajs_grid):
         if labels is None:
             line_collection = LineCollection(trajs, color=f"C{i}")
@@ -26,9 +30,13 @@ def _plot2d(trajs_grid, labels: list = None):
     return fig, ax
 
 
-def _plot3d(grid, labels: list = None):
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
+def _plot3d(grid, labels: list = None, ax = None):
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(projection='3d')
+    else:
+        fig = ax.get_figure()
+
     for i, trajs in enumerate(grid):
         if labels is None:
             line_collection = Line3DCollection(trajs, color=f"C{i}")
@@ -46,13 +54,13 @@ def _plot3d(grid, labels: list = None):
     return fig, ax
 
 
-def _plot4d(trajs_grid, pca: PCA, labels: list = None):
+def _plot4d(trajs_grid, pca: PCA, labels: list = None, ax=None):
     assert pca.n_components == 2 or pca.n_components == 3
     trajs_grid = _apply_pca_to_grid(trajs_grid, pca)
     if pca.n_components == 2:
-        return _plot2d(trajs_grid, labels)
+        return _plot2d(trajs_grid, labels, ax=ax)
     else:
-        return _plot3d(trajs_grid, labels)
+        return _plot3d(trajs_grid, labels, ax=ax)
 
 
 def make_pca(trajs: np.ndarray, n_components=3):
@@ -73,15 +81,15 @@ def _apply_pca_to_grid(trajs_grid, pca) -> np.ndarray:
     return result
 
 
-def plot(grid: list[np.ndarray], target_dim: int = 3, max_lines=MAX_LINES, labels: list[str] = None):
+def plot(grid: list[np.ndarray], target_dim: int = 3, max_lines=MAX_LINES, labels: list[str] = None, ax=None):
     grid = np.array([x[:max_lines] for x in grid])
     dim = grid.shape[-1]
     assert target_dim <= dim
     assert target_dim <= 3
     if dim == 2:
-        return _plot2d(grid, labels)
+        return _plot2d(grid, labels, ax=ax)
     elif dim == 3 and target_dim == 3:
-        return _plot3d(grid, labels)
+        return _plot3d(grid, labels, ax=ax)
     else:
         pca = make_pca(grid, n_components=target_dim)
-        return _plot4d(grid, pca, labels)
+        return _plot4d(grid, pca, labels, ax=ax)

@@ -3,13 +3,14 @@ from dynadojo.challenges import FixedComplexity, FixedTrainSize
 from dynadojo.systems.lds import LDSystem
 from dynadojo.baselines.lr import LinearRegression
 from dynadojo.baselines.dnn import DNN
+from dynadojo.baselines.sindy import SINDy
 import numpy as np
 import pandas as pd
 import pandas.testing as pd_testing
 
 
 systems = [LDSystem] #To test multiple systems, add them to this list
-models = [LinearRegression, DNN] #To test multiple models, add them to this list
+models = [LinearRegression, DNN, SINDy] #To test multiple models, add them to this list
 
 class TestReproducibility(unittest.TestCase):
     def test_make_init_cond(self):
