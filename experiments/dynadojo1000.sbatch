@@ -3,8 +3,8 @@
 #SBATCH -n 1 # Num Cores
 #SBATCH -N 1 # All cores on one machine
 #SBATCH -p normal # Partition name
-#SBATCH --mem-per-cpu=8G # Memory (4Gb)
-#SBATCH -t 0-3:00 # Maximum execution time (D-HH:MM)
+#SBATCH --mem-per-cpu=4G # Memory (4Gb)
+#SBATCH -t 0-2:00 # Maximum execution time (D-HH:MM)
 #SBATCH -o logs/out/%A_%a.out # Standard output
 #SBATCH -e logs/err/%A_%a.err # Standard error
 #SBATCH --array=1-500   # -10 maps 1 to 10 to SLURM_ARRAY_TASK_ID below
