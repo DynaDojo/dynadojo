@@ -171,7 +171,7 @@ fe_challenge_params_dict = {
                 },
                 "dnn_simple" : { #Search Simple #TODO: rename to dnn_simple
                     "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
-                    "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
+                    "n_starts" :  [int(n) for n in np.logspace(2.2, 4, num=10, endpoint=True)],
                     "target_error": 1e0,
                     "n_window": 5,
                     "n_precision": .05,
@@ -179,7 +179,7 @@ fe_challenge_params_dict = {
                     "n_min": 3,
                     "n_max" : 1e4,
                     "test_examples" : 100,
-                    "reps": 100
+                    "reps": 50
                 },
                 "dnn_test" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],

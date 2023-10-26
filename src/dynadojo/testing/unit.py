@@ -9,6 +9,7 @@ from dynadojo.systems.ctln import CTLNSystem
 from dynadojo.baselines.lr import LinearRegression
 from dynadojo.baselines.dnn import DNN
 from dynadojo.baselines.sindy import SINDy
+from dynadojo.baselines.dmd import DMD
 
 import numpy as np
 import pandas as pd
@@ -16,7 +17,7 @@ import pandas.testing as pd_testing
 
 
 systems = [LDSystem, LorenzSystem]# HeatEquation, CTLNSystem] #To test multiple systems, add them to this list
-models = [LinearRegression, DNN, SINDy] #To test multiple models, add them to this list
+models = [LinearRegression, DNN, SINDy, DMD] #To test multiple models, add them to this list
 
 class TestReproducibility(unittest.TestCase):
     def test_make_init_cond(self):
@@ -86,7 +87,7 @@ class TestReproducibilityModel(unittest.TestCase):
     def test_with_fc(self):
         for model in models:
             with self.subTest(model):
-                challenge = FixedComplexity(N=[4], l=3, t=10, 
+                challenge = FixedComplexity(N=[4], l=4, t=10, 
                                 system_cls=LDSystem, reps=1,
                                 test_examples=2, test_timesteps=2, verbose=False)
                 df1 = challenge.evaluate(model, seed=100, noisy=True,
@@ -109,7 +110,7 @@ class TestReproducibilityModel(unittest.TestCase):
         """
         for model in models:
             with self.subTest(model):
-                challenge = FixedComplexity(N=[2], l=2, t=2, 
+                challenge = FixedComplexity(N=[2], l=2, t=3, 
                                 system_cls=LDSystem, reps=2,
                                 test_examples=2, test_timesteps=2, verbose=False)
                 df1 = challenge.evaluate(model, seed=100, noisy=True,
