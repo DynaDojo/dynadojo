@@ -154,6 +154,8 @@ class FixedError(Challenge):
         :param n_window: Number of n to smooth over on left and right when calculating the error rate during search. If 0, no averaging is done.
         :param n_starts: List of starting points for the binary search over the number of training samples for each latent dim in L. len must equal len(L). If None, defaults to 1.
         :param n_max: Maximum number of training samples to use
+        :param n_min: Minimum number of training samples to use
+        :param n_window_density: Density of n to test during smoothing. 1 = test every n. 0.5 = test every other n. 0.25 = test every fourth n. etc.
         """
         assert (n_precision >= 0), "Precision must be non-negative"
         assert (L == sorted(L)), "Latent dimensions have to be sorted" #ToDo: is this necessary?
