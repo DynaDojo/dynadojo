@@ -108,16 +108,16 @@ def make_plots(
         path = f"{output_dir}/fe/{s}"
 
     filebase = _get_base_filename(s, m, challenge_cls)
-    path = f"{path}/{filebase}"
+    csv_path = f"{path}/{filebase}"
     csv_filename = filebase + ".csv"
     figure_filename = filebase + ".pdf"
 
-    if not (os.path.exists(path) and os.path.isdir(path)):
-        print(f"No plot created: Path {path} does not exist or is not a directory")
+    if not (os.path.exists(csv_path) and os.path.isdir(csv_path)):
+        print(f"No plot created: Path {csv_path} does not exist or is not a directory")
         return
-    files = _find_matching_files(path, csv_filename)
+    files = _find_matching_files(csv_path, csv_filename)
     if len(files) <= 0:
-        print(f"No plot created: No files matching {csv_filename} found in {path}")
+        print(f"No plot created: No files matching {csv_filename} found in {csv_path}")
         return 
 
     data = pd.DataFrame()

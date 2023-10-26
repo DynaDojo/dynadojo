@@ -5,7 +5,11 @@ from sklearn.linear_model import LinearRegression as SKLinearRegression
 
 
 class LinearRegression(AbstractModel):
-    def __init__(self, embed_dim, timesteps, max_control_cost, seed=None):
+    def __init__(self, 
+        embed_dim, 
+        timesteps, 
+        max_control_cost, 
+        seed=None):
         super().__init__(embed_dim, timesteps, max_control_cost, seed)
         self.A_hat = []
         self.U = None

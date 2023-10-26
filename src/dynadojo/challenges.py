@@ -131,6 +131,7 @@ class FixedError(Challenge):
                 n_starts: list[int] = None,
                 n_window: int = 0,
                 n_max=10000,
+                n_window_density: float = 1.0, # 1 = include all points
                 verbose: bool = True
             ):
         """
@@ -166,7 +167,7 @@ class FixedError(Challenge):
         self.n_window = n_window
         self.n_max = n_max
         self._target_error = target_error
-        
+        self.n_window_density = n_window_density
 
         self.rep_id = None
         self.result = None
@@ -280,6 +281,9 @@ class FixedError(Challenge):
             param n: number of trajectories to train on
             param window: number of runs to the left of and right of the current run to take the moving average over; ToDo: make this the absolute window size...lazy
             """
+            n = int(n // 1) #make sure n is an integer
+            window = int(window // 1) #make sure window is an integer
+
             def run_helper(n):  #for a given n, fit model and return error
                 #check memo
                 nonlocal memo
@@ -306,7 +310,14 @@ class FixedError(Challenge):
                     memo[n] = (error, total_cost)
                     return error, total_cost
             if window > 0: #moving average/median 
-                results_window = [run_helper(nn) for nn in range(max(1,n - window), min(n+window+1, self.n_max))]
+                window_range = list(range(max(1,n - window), min(n+window+1, self.n_max)))
+                window_len = int((window*2 + 1) * self.n_window_density)
+                if len(window_range) > window_len:
+                    step = int(len(window_range) // window_len)
+                    window_range = window_range[::step]
+                    if n not in window_range:
+                        window_range.append(n)
+                results_window = [run_helper(nn) for nn in window_range]
                 error = np.median([r[0] for r in results_window]) #TODO: allow for choosing density of median points
                 total_cost = np.median([r[1] for r in results_window])
             else:
