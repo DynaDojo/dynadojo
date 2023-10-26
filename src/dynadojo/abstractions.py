@@ -1,5 +1,6 @@
 import itertools
 from abc import ABC, abstractmethod
+import json
 import time
 
 import numpy as np
@@ -22,6 +23,7 @@ class AbstractModel(ABC):
         self._max_control_cost = max_control_cost
         self._seed = seed
 
+        
     @abstractmethod
     def fit(self, x: np.ndarray, **kwargs) -> None:
         """
