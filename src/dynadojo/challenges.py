@@ -316,7 +316,7 @@ class FixedError(Challenge):
                     memo[n] = (error, total_cost)
                     return error, total_cost
             if window > 0: #moving average/median 
-                window_range = list(range(max(self.n_min, n - window), min(n+window+1, self.n_max)))
+                window_range = list(range(int(max(self.n_min, n - window)), int(min(n+window+1, self.n_max))))
                 window_len = int((window*2 + 1) * self.n_window_density)
                 if len(window_range) > window_len:
                     step = int(len(window_range) // window_len)
