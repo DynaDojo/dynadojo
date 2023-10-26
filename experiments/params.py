@@ -169,7 +169,7 @@ fe_challenge_params_dict = {
                     "n_window_density": 0.5,
                     "n_min": 3,
                 },
-                "dnn_simple_10" : { #Search Simple #TODO: rename to dnn_simple
+                "dnn_simple_2" : { #Search Simple #TODO: rename to dnn_simple
                     "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
                     "n_starts" :  [int(n) for n in np.logspace(4, 5, num=10, endpoint=True)],
                     "target_error": 1e0,
@@ -178,7 +178,7 @@ fe_challenge_params_dict = {
                     "n_window_density": 0.5,
                     "n_min": 3,
                     "n_max" : 1e6,
-                    "reps": 10
+                    "reps": 100,
                 },
                 "dnn_test" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
