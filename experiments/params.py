@@ -99,6 +99,7 @@ fts_challenge_params_dict = {
                     "n" : 100,
                 },
                 "dnn": {
+                    "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
                     "n": 10000,
                 },
     }
