@@ -242,8 +242,8 @@ class FixedError(Challenge):
                     model_seed=None
                     ):
         """
-        For a given system latent dimension and embedding dimension, instantiates system and evaluates reps of
-        iterating over the number of trajectories N.
+        For a given system latent dimension and embedding dimension, instantiates system and evaluates a single trial of finding an 
+        number of training examples that achieves the target error. 
 
         Note that model seed in model_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
         """
@@ -280,7 +280,6 @@ class FixedError(Challenge):
 
         # memoized run function which stores results in result dictionary and memoizes whether or not we have already run the model for a given n 
         memo = {}
-        
         def model_run(n, window=0): 
             """
             Helper function to instantiate and run a model once for a given n. If window > 0, then we take the moving average of the error over the last window runs. Results are stored in result dictionary and memoized.
@@ -510,7 +509,6 @@ class FixedError(Challenge):
                     n_left = n
                 else:
                     n_right = n
-
 
 
         # Run search    
