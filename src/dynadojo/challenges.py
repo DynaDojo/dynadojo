@@ -158,7 +158,10 @@ class FixedError(Challenge):
         :param n_window_density: Density of n to test during smoothing. 1 = test every n. 0.5 = test every other n. 0.25 = test every fourth n. etc.
         """
         assert (n_precision >= 0), "Precision must be non-negative"
-        assert (L == sorted(L)), "Latent dimensions have to be sorted" #ToDo: is this necessary?
+        assert (0 <= n_window), "Window size must be non-negative"
+        assert ( 0 < n_window_density >= 1), "Window density must be between 0 and 1"
+        assert (n_max > n_min), "n_max must be greater than n_min"
+        assert (n_min > 0), "n_min must be greater than 0"
         #ToDo: sort L and E if not sorted instead of throwing error.
 
         self.n_starts = {l: 1 for l in L}
