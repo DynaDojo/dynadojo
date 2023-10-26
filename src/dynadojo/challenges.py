@@ -131,6 +131,7 @@ class FixedError(Challenge):
                 n_starts: list[int] = None,
                 n_window: int = 0,
                 n_max=10000,
+                n_min=1,
                 n_window_density: float = 1.0, # 1 = include all points
                 verbose: bool = True
             ):
@@ -166,6 +167,7 @@ class FixedError(Challenge):
         self.n_precision = n_precision
         self.n_window = n_window
         self.n_max = n_max
+        self.n_min = n_min
         self._target_error = target_error
         self.n_window_density = n_window_density
 
@@ -310,7 +312,7 @@ class FixedError(Challenge):
                     memo[n] = (error, total_cost)
                     return error, total_cost
             if window > 0: #moving average/median 
-                window_range = list(range(max(1,n - window), min(n+window+1, self.n_max)))
+                window_range = list(range(max(self.n_min, n - window), min(n+window+1, self.n_max)))
                 window_len = int((window*2 + 1) * self.n_window_density)
                 if len(window_range) > window_len:
                     step = int(len(window_range) // window_len)
@@ -356,6 +358,9 @@ class FixedError(Challenge):
                 if n_curr > self.n_max:
                     return -1 # target error is never reached within n_max trajectories
                 
+                if n_curr < self.n_min:
+                    return best_answer
+
                 if (n_curr, increment) in history: #cycle detected, return best answer
                     if self._verbose:
                         print(f"CYCLEEEEEEE {n_curr=}, {increment=}, {error_curr=}, {error_prev=}, {n_prevs=}")

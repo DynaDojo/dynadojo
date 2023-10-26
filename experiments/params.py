@@ -167,6 +167,7 @@ fe_challenge_params_dict = {
                     "n_window": 10,
                     "n_precision": .05,
                     "n_window_density": 0.5,
+                    "n_min": 5
                 }
     }
 }
