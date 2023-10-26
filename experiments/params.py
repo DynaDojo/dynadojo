@@ -100,7 +100,7 @@ fts_challenge_params_dict = {
                 },
                 "dnn": {
                     "n": 10000,
-                }
+                },
     }
 }
 
@@ -115,7 +115,7 @@ fe_challenge_params_dict = {
                     "test_timesteps" : 50,
                     "max_control_cost_per_dim": 1,
                     "control_horizons": 0,
-                    "n_precision" : 5,
+                    "n_precision" : .05,
                     "n_window" :  5,
                     "n_max" : 20000,
                     "system_kwargs": None,
@@ -150,9 +150,16 @@ fe_challenge_params_dict = {
                 },
                 "dnn_100" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
-                    "n_starts" :  [int(n) for n in np.logspace(1, 4, num=10, endpoint=True)],
+                    "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
                     "target_error": 5e0,
                 },
+                "dnn_100_window" : {
+                    "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
+                    "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
+                    "target_error": 5e0,
+                    "n_window": 10,
+                    "n_precision": .05
+                }
     }
 }
 
