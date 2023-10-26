@@ -67,7 +67,6 @@ fc_challenge_params_dict = {
             }
 }
 
-
 fts_challenge_params_dict = {
     "default" : {   "L" : [5, 10, 20, 30, 50, 100], 
                     "n" : 100,
@@ -119,6 +118,7 @@ fe_challenge_params_dict = {
                     "n_precision" : .05,
                     "n_window" :  5,
                     "n_max" : 20000,
+                    "n_window_density": 1.0,
                     "system_kwargs": None,
                     "evaluate": {
                         "seed": 1027,
@@ -165,7 +165,8 @@ fe_challenge_params_dict = {
                     "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
                     "target_error": 5e0,
                     "n_window": 10,
-                    "n_precision": .05
+                    "n_precision": .05,
+                    "n_window_density": 0.5,
                 }
     }
 }
