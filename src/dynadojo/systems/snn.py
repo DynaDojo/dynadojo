@@ -13,12 +13,16 @@ class SNNSystem(LDSSystem):
 
     def __init__(self, latent_dim, embed_dim,
                  IND_range=(0, 1),
-                 OOD_range=(-1, 0)
+                 OOD_range=(-1, 0),
+                 seed=None,
+                 **kwargs,
                  ):
         assert embed_dim >= 2 * latent_dim, "REQUIRED: embed_dim ≥ 2 * latent_dim"
         super().__init__(latent_dim, embed_dim,
                          IND_range=IND_range,
                          OOD_range=OOD_range,
+                         seed=seed,
+                        **kwargs,
                          )
         c = lambda t: np.zeros(latent_dim)
         self.LDS = LinearDynamicalSystem(self.A, self._controller, c)

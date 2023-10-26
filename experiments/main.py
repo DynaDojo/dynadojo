@@ -77,7 +77,7 @@ def run_challenge(
     filename = _get_base_filename(s, m, challenge_cls)
     path = f"{path}/{filename}" #add subdir for experiment
     if not os.path.exists(path):
-        os.makedirs(path)
+        os.makedirs(path, exist_ok=True)
     if split is not None:
         filename += f"_{split_num}-of-{total_splits}"
     filename += ".csv"

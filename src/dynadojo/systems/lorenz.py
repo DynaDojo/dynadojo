@@ -8,7 +8,10 @@ from .utils.simple import SimpleSystem
 
 
 class LorenzSystem(SimpleSystem):
-    def __init__(self, latent_dim, embed_dim, sigma=10, r=28, a_squared=1/2, b=8/3, **kwargs):
+    def __init__(self, 
+        latent_dim = 3, 
+        embed_dim = 3, 
+        sigma=10, r=28, a_squared=1/2, b=8/3, **kwargs):
         assert latent_dim % 2 == 1 and latent_dim >= 3, "Latent dimension must be odd number at least 3."
         self._sigma = sigma
         self._r = r
