@@ -367,10 +367,19 @@ class Challenge:
             "noisy":noisy, 
             "test_ood": ood 
         }
-        # Run systems in parallel
-        data = Parallel(n_jobs=num_parallel_cpu, timeout=1e6)(
-            delayed(self.system_run)(rep_id, l, e, **fixed_run_args ,system_seed=system_seed, model_seed=model_seed) 
-            for rep_id, l, e, system_seed, model_seed in system_run_args)
+
+        if num_parallel_cpu == 0:
+            print(f"Running systems sequentially. {num_parallel_cpu=}") #TODO: logger
+            data = []
+            for rep_id, l, e, system_seed, model_seed in system_run_args:
+                data.append(self.system_run(rep_id, l, e, **fixed_run_args ,system_seed=system_seed, model_seed=model_seed))
+
+        else:
+            print(f"Running systems in parallel. {num_parallel_cpu=}")
+            # Run systems in parallel
+            data = Parallel(n_jobs=num_parallel_cpu, timeout=1e6)(
+                delayed(self.system_run)(rep_id, l, e, **fixed_run_args ,system_seed=system_seed, model_seed=model_seed) 
+                for rep_id, l, e, system_seed, model_seed in system_run_args)
 
         if data:
             data = pd.concat(data)

@@ -25,6 +25,7 @@ def run_challenge(
         output_dir="experiments/outputs", 
         split=(1,1),
         challenge_cls:type[Challenge] = FixedComplexity,
+        num_cpu_parallel=None
         ):
     """
     Run a fixed complexity challenge and save the results to a csv file.
@@ -48,6 +49,10 @@ def run_challenge(
 
     # Override system class
     challenge_params["system_cls"] = system
+
+    # Override num_cpu_parallel
+    if num_cpu_parallel:
+        evaluate_params['num_cpu_parallel'] = num_cpu_parallel
 
     # Get L and reps
     L = challenge_params.get("L", [challenge_params.get("l", 0)])
@@ -84,7 +89,7 @@ def run_challenge(
     file = f"{path}/{filename}"
 
     # save params
-    if not os.path.exists(f"{path}/params.json"):
+    if split_num == 1 or not os.path.exists(f"{path}/params.json"):
         with open(f"{path}/params.json", "w") as f:
             json.dump(_serialize_params(challenge_params, evaluate_params), f, indent=4, sort_keys=True)
 

@@ -31,14 +31,14 @@ class SINDy(AbstractModel):
 
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
         np.random.seed(self._seed)
-        optimizer = ps.STLSQ(threshold=0.2)
+        optimizer = ps.STLSQ(threshold=0.1)
 
         # optimizer = TrappingSR3(threshold=0.1)
-
+        poly_order = 5
         self._model = ps.SINDy(
             differentiation_method=differentiation_method,
-            optimizer=optimizer
-
+            optimizer=optimizer,
+            feature_library=ps.PolynomialLibrary(degree=poly_order)
         )
 
     #TODO: add control!
