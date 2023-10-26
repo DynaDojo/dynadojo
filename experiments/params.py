@@ -5,17 +5,22 @@ Also contains functions for getting system, model, and challenge parameters.
 import numpy as np
 from dynadojo.baselines import LinearRegression
 from dynadojo.baselines.dnn import DNN
+from dynadojo.baselines.sindy import SINDy
+
 from dynadojo.systems.lds import LDSystem
+from dynadojo.systems.lorenz import LorenzSystem
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 from dynadojo.abstractions import Challenge 
 
 system_dict = {
     "lds" : LDSystem,
+    "lorenz": LorenzSystem,
     
 }
 model_dict = {
     "lr" : LinearRegression,
     "dnn" : DNN,
+    "sindy": SINDy
 }
 
 fc_challenge_params_dict = {
@@ -34,7 +39,7 @@ fc_challenge_params_dict = {
                         "model_kwargs" : None,
                         "fit_kwargs" : None,
                         "act_kwargs" : None,
-                        "num_parallel_cpu" : -1,
+                        "num_parallel_cpu" : 0,
                         "noisy": True, 
                         "ood": True,
                     }
@@ -55,6 +60,7 @@ fc_challenge_params_dict = {
                 "lr_30" : { "l" : 30 },
                 "lr_50" : { "l" : 50 },
                 "lr_100" : { "l" : 100 },
+                # DNN
                 "dnn" : {
                     "N" : [int(n) for n in np.logspace(1, 4, num=20, endpoint=True)]
                 },
@@ -64,7 +70,30 @@ fc_challenge_params_dict = {
                 "dnn_30" : { "l" : 30 },
                 "dnn_50" : { "l" : 50 },
                 "dnn_100" : { "l" : 100 },
+                # SINDY
+                "sindy_5" : { "l" : 5 },
+                "sindy_10" : { "l" : 10 },
+                "sindy_20" : { "l" : 20 },
+                "sindy_30" : { "l" : 30 },
+                "sindy_50" : { "l" : 50 },
+                "sindy_100" : { "l" : 100 },
             }
+    ,
+    "lorenz" : {
+        "default" : {
+            "l" : 10,  
+            "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
+            "t" : 50,
+        },
+        "lr" : {
+            "N" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
+        },
+        "sindy" : {
+            "t": 50,
+            "test_timesteps" : 50,
+            "N" : [int(n) for n in np.logspace(1, 3, num=15, endpoint=True)],
+        },
+    }
 }
 
 fts_challenge_params_dict = {
@@ -83,7 +112,7 @@ fts_challenge_params_dict = {
                         "model_kwargs" : None,
                         "fit_kwargs" : None,
                         "act_kwargs" : None,
-                        "num_parallel_cpu" : -1,
+                        "num_parallel_cpu" : 0,
                         "noisy": True, 
                         "ood": True,
                     }
@@ -125,7 +154,7 @@ fe_challenge_params_dict = {
                         "model_kwargs" : None,
                         "fit_kwargs" : None,
                         "act_kwargs" : None,
-                        "num_parallel_cpu" : -1,
+                        "num_parallel_cpu" : 0,
                         "noisy": True, 
                         "ood": False,
                     }
@@ -169,17 +198,16 @@ fe_challenge_params_dict = {
                     "n_window_density": 0.5,
                     "n_min": 3,
                 },
-                "dnn_simple" : { #Search Simple #TODO: rename to dnn_simple
+                "dnn_simple_2" : { #Search Simple #TODO: rename to dnn_simple
                     "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
-                    "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
+                    "n_starts" :  [int(n) for n in np.logspace(4, 4.7, num=10, endpoint=True)],
                     "target_error": 1e0,
                     "n_window": 5,
                     "n_precision": .05,
                     "n_window_density": 0.5,
                     "n_min": 3,
-                    "n_max" : 1e4,
-                    "test_examples" : 100,
-                    "reps": 100
+                    "n_max" : 1e5,
+                    "reps": 100,
                 },
                 "dnn_test" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],

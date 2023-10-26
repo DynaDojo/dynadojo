@@ -31,6 +31,7 @@ parser.add_argument('--total_nodes', type=int, default=1, help='how many machine
 parser.add_argument('--node', type=int, default=None, help='which node is being run in [1, total_nodes], if None, run on splits')
 parser.add_argument('--output_dir', type=str, default="experiments/outputs", help='where to save outputs')
 parser.add_argument('--plot', default=False, action='store_true', help='whether to plot results')
+parser.add_argument('--num_cpu_parallel', type=int, default=None, help='number of cpus to use for parallelization')
 # add argument for test id in [1,2,3]
 args = parser.parse_args()
 
@@ -57,6 +58,7 @@ else:
         assert args.node >= 1 and args.node <= args.total_nodes, "node must be in [1, total_nodes]"
         max_splits = min(args.total_nodes, get_max_splits(s = args.system, m = args.model, challenge_cls = challenge_cls))
 
+
         if args.node <= max_splits:
             run_challenge(
                 s =args.system,
@@ -64,6 +66,7 @@ else:
                 output_dir=args.output_dir, 
                 split=(args.node, max_splits),
                 challenge_cls=challenge_cls,
+                num_cpu_parallel=args.num_cpu_parallel,
         )
     else: # run the whole challenge
         run_challenge(
@@ -71,6 +74,7 @@ else:
             m = args.model,
             output_dir=args.output_dir, 
             challenge_cls=challenge_cls,
+            num_cpu_parallel=args.num_cpu_parallel,
         )
     
 

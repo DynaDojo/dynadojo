@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -J dynadojo # A single job name for the array
-#SBATCH -n 2 # Four Cores
+#SBATCH -n 2 # 2 Cores
 #SBATCH -N 1 # All cores on one machine
 #SBATCH -p normal # Partition name
 #SBATCH --mem 4000 # Memory (4Gb)
