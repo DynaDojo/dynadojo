@@ -307,8 +307,8 @@ class FixedError(Challenge):
                     return error, total_cost
             if window > 0: #moving average/median 
                 results_window = [run_helper(nn) for nn in range(max(1,n - window), min(n+window+1, self.n_max))]
-                error = np.median([r[0] for r in results_window]) #ToDo: make this a mean or median?
-                total_cost = np.median([r[1] for r in results_window]) #ToDo: make this a mean or median?
+                error = np.median([r[0] for r in results_window]) #TODO: allow for choosing density of median points
+                total_cost = np.median([r[1] for r in results_window])
             else:
                 error, total_cost = run_helper(n)
             
@@ -363,17 +363,20 @@ class FixedError(Challenge):
                         if len(n_prevs) > 1: # Back twice
                             n_prevs.pop()
                             n_prev_prev = n_prevs.pop()
-                            if n_curr - n_prev_prev <= max(self.n_precision, 1):
+                            if n_curr - n_prev_prev <= max(self.n_precision * n_curr, 1):
                                 # target error is never reached, minimum error is above threshold under parabolic assumption
                                 # This ignores the possibility that the target error is reached within the precision (only possible if high curvature)
                                 return np.inf 
                             n_curr = n_prev_prev
                         else: # or halve n_prev
                             n_curr =  n_prevs.pop()
-                            if n_curr < self.n_precision:
-                                if error_curr > self._target_error:
-                                    return np.inf
-                                return n_curr #no more backing up can be done
+
+                            # CYCLES will handle this case
+                            # if n_curr < self.n_precision: #can't move backwards anymore
+                            #     if error_curr > self._target_error:
+                            #         return np.inf
+                            #     return n_curr #no more backing up can be done
+                            
                             n_curr = max(1, n_curr//multiplicative_factor)
                         n_prevs = []
                         increment = 1
@@ -384,7 +387,7 @@ class FixedError(Challenge):
                         else:
                             n_prevs.append(n_curr)
                             error_prev = error_curr
-                            n_curr = n_curr + max(increment, self.n_precision)
+                            n_curr = n_curr + max(increment, n_curr * self.n_precision)
                             # scale increment, but not below 1 nor above increment_max
                             increment = min(max(1, math.ceil(increment * multiplicative_factor)), increment_max)
                 else: #no n_prevs
@@ -392,11 +395,14 @@ class FixedError(Challenge):
                         #move forward
                         n_prevs.append(n_curr)
                         error_prev = error_curr
-                        n_curr = n_curr +  max(increment, self.n_precision) 
+                        n_curr = n_curr +  max(increment, n_curr * self.n_precision) 
                         increment = min(max(1, math.ceil(increment * multiplicative_factor)), increment_max)
                     else: # error_curr < target
-                        if n_curr < self.n_precision + 1:
-                            return n_curr #no more backing up can be done
+                        
+                        # CYCLES will handle this case
+                        # if n_curr < self.n_precision + 1:
+                        #     return n_curr #no more backing up can be done
+                        
                         #move backward
                         n_curr = max(1, n_curr//multiplicative_factor)
 
@@ -461,9 +467,13 @@ class FixedError(Challenge):
             # get the n_target for each latent_dim
             stats = data[['rep', 'latent_dim', 'embed_dim','n_target']]
             stats = stats.drop_duplicates()
+            total = stats.groupby(['latent_dim', 'embed_dim'])['n_target'].count().reset_index(name="total")
+            total.reset_index()
             stats = stats[stats['n_target'] > 0 ]
             stats = stats[stats['n_target'] != np.inf]
-            stats = stats.groupby(['latent_dim', 'embed_dim'])['n_target'].count()
+            stats = stats.groupby(['latent_dim', 'embed_dim'])['n_target'].count().reset_index(name="plotted")
+            stats.reset_index()
+            stats = pd.merge(total, stats,how="outer")
             print(stats)
 
         ax.set_title(title)

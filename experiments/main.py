@@ -72,9 +72,10 @@ def run_challenge(
     else: # challenge_cls == FixedError:
         path = f"{output_dir}/fe/{s}"
 
+    filename = _get_base_filename(s, m, challenge_cls)
+    path = f"{path}/{filename}" #add subdir for experiment
     if not os.path.exists(path):
         os.makedirs(path)
-    filename = _get_base_filename(s, m, challenge_cls)
     if split is not None:
         filename += f"_{split_num}-of-{total_splits}"
     filename += ".csv"
@@ -107,6 +108,7 @@ def make_plots(
         path = f"{output_dir}/fe/{s}"
 
     filebase = _get_base_filename(s, m, challenge_cls)
+    path = f"{path}/{filebase}"
     csv_filename = filebase + ".csv"
     figure_filename = filebase + ".pdf"
 
