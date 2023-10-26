@@ -178,7 +178,6 @@ fe_challenge_params_dict = {
                     "n_window_density": 0.5,
                     "n_min": 3,
                     "n_max" : 1e4,
-                    "test_examples" : 100,
                     "reps": 50
                 },
                 "dnn_test" : {
