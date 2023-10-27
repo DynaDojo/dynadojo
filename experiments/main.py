@@ -52,7 +52,7 @@ def run_challenge(
 
     # Override num_cpu_parallel
     if num_cpu_parallel:
-        evaluate_params['num_cpu_parallel'] = num_cpu_parallel
+        evaluate_params['num_parallel_cpu'] = num_cpu_parallel
 
     # Get L and reps
     L = challenge_params.get("L", [challenge_params.get("l", 0)])
@@ -147,8 +147,7 @@ def make_plots(
         data = pd.concat([data, df])
     data = data.drop_duplicates()
     kwargs = {}
-    if challenge_cls == FixedError:
-        kwargs["show_stats"] = True
+    kwargs["show_stats"] = True
     g = challenge_cls.plot(data, show=False, **kwargs)
     # linear axes instead of log
     # g.set(xscale="linear", yscale="linear")

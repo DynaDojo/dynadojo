@@ -4,13 +4,11 @@ from joblib import Parallel, delayed
 
 from ..abstractions import AbstractSystem
 
-RNG = np.random.default_rng()
-
 
 class CASystem(AbstractSystem):
-    def __init__(self, latent_dim, embed_dim, in_dist_p=0.25, out_dist_p=0.75, mutation_p=0.00):
-        super().__init__(latent_dim, embed_dim)
-        lambda_val = RNG.uniform()
+    def __init__(self, latent_dim, embed_dim, in_dist_p=0.25, out_dist_p=0.75, mutation_p=0.00, seed=None):
+        super().__init__(latent_dim, embed_dim, seed=seed)
+        lambda_val = self._rng.uniform()
         self.rule_table, _, _ = cpl.random_rule_table(lambda_val=lambda_val, k=2, r=self.latent_dim,
                                                       strong_quiescence=True,
                                                       isotropic=True)
@@ -21,16 +19,16 @@ class CASystem(AbstractSystem):
     @AbstractSystem.latent_dim.setter
     def latent_dim(self, value):
         self._latent_dim = value
-        lambda_val = RNG.uniform()
+        lambda_val = self._rng.uniform()
         self.rule_table, _, _ = cpl.random_rule_table(lambda_val=lambda_val, k=2, r=self.latent_dim,
                                                       strong_quiescence=True,
                                                       isotropic=True)
 
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         if in_dist:
-            return RNG.binomial(1, self._in_dist_p, size=(n, self.embed_dim))
+            return self._rng.binomial(1, self._in_dist_p, size=(n, self.embed_dim))
         else:
-            return RNG.binomial(1, self._out_dist_p, size=(n, self.embed_dim))
+            return self._rng.binomial(1, self._out_dist_p, size=(n, self.embed_dim))
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
@@ -45,7 +43,7 @@ class CASystem(AbstractSystem):
                                                r=self.latent_dim)
                 cellular_automata[-1] = np.clip(cellular_automata[-1] + u[t], 0, 1).astype(np.int32)
                 if noisy:
-                    mask = RNG.binomial(1, self._mutation_p, size=(self.embed_dim,)).astype(bool)
+                    mask = self._rng.binomial(1, self._mutation_p, size=(self.embed_dim,)).astype(bool)
                     cellular_automata[-1][mask] = (~cellular_automata[-1][mask].astype(bool)).astype(np.int32)
             return cellular_automata
 

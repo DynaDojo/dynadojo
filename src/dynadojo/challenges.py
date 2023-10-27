@@ -41,10 +41,22 @@ class FixedComplexity(Challenge):
                          system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs, verbose=verbose)
 
     @staticmethod
-    def plot(data, latent_dim:int=None, embedding_dim:int=None, show: bool=True):
+    def plot(data, latent_dim:int=None, embedding_dim:int=None, show: bool=True, show_stats: bool=False):
         """
         Returns: matplotlib.axes.Axes object
         """
+        if show_stats:
+            # get the n_target for each latent_dim
+            stats = data[['rep', 'latent_dim', 'embed_dim', 'n', 'error', 'ood_error']]
+            stats = stats.drop_duplicates()
+            total = stats.groupby(['latent_dim', 'embed_dim','n'])['rep'].count().reset_index(name="total")
+            total.reset_index()
+            stats = stats.dropna(subset=['error', 'ood_error'])
+            stats = stats.groupby(['latent_dim', 'embed_dim','n'])['rep'].count().reset_index(name="plotted")
+            stats.reset_index()
+            stats = pd.merge(total, stats,how="outer")
+            print(stats)
+        data = data.dropna(subset=['error', 'ood_error'])
         if not latent_dim:
             latent_dim = data["latent_dim"].unique()[0]
         if not data['ood_error'].isnull().any():
@@ -92,7 +104,7 @@ class FixedTrainSize(Challenge):
                          verbose=verbose)
 
     @staticmethod
-    def plot(data: pd.DataFrame, n: int = None, show : bool =True):
+    def plot(data: pd.DataFrame, n: int = None, show : bool =True, show_stats: bool = False):
         """
         Returns: matplotlib.axes.Axes object
         """
@@ -108,6 +120,14 @@ class FixedTrainSize(Challenge):
         if n:
             title += f", n={n}"
         ax.set_title(title)
+
+        if show_stats:
+            # get the n_target for each latent_dim
+            stats = data[['rep', 'latent_dim', 'embed_dim']]
+            stats = stats.drop_duplicates()
+            stats = stats.groupby(['latent_dim', 'embed_dim'])['rep'].count().reset_index(name="total")
+            stats.reset_index()
+            print(stats)
         
         if show:
             import matplotlib.pyplot as plt

@@ -5,6 +5,7 @@ from dynadojo.systems.lds import LDSystem
 from dynadojo.systems.lorenz import LorenzSystem
 from dynadojo.systems.heat import HeatEquation
 from dynadojo.systems.ctln import CTLNSystem
+from dynadojo.systems.ca import CA
 
 from dynadojo.baselines.lr import LinearRegression
 from dynadojo.baselines.dnn import DNN
@@ -16,7 +17,7 @@ import pandas as pd
 import pandas.testing as pd_testing
 
 
-systems = [LDSystem, LorenzSystem]# HeatEquation, CTLNSystem] #To test multiple systems, add them to this list
+systems = [LDSystem, LorenzSystem, ]# HeatEquation, CTLNSystem] #To test multiple systems, add them to this list
 models = [LinearRegression, DNN, SINDy, DMD] #To test multiple models, add them to this list
 
 class TestReproducibility(unittest.TestCase):
