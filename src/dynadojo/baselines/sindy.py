@@ -33,8 +33,9 @@ class SINDy(AbstractModel):
         np.random.seed(self._seed)
         optimizer = ps.STLSQ(threshold=0.1)
 
-        # optimizer = TrappingSR3(threshold=0.1)
-        poly_order = 5
+        # optimizer = TrappingSR3(threshold=0.1) #TODO: add trappingSR3 for better stability
+        poly_order = max(2, int(np.log2(embed_dim)//1))
+        print(poly_order)
         self._model = ps.SINDy(
             differentiation_method=differentiation_method,
             optimizer=optimizer,

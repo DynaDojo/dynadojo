@@ -437,7 +437,7 @@ class Challenge:
             "duration"]}
         return result
 
-    def system_run(self, 
+    def system_run( self, 
                     rep_id, 
                     latent_dim, 
                     embed_dim, 
