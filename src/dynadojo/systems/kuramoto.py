@@ -29,7 +29,7 @@ self.dt, controls the step size between 0 - timesteps
 
 class KuramotoSystem(AbstractSystem):
 
-    def __init__(self, latent_dim, embed_dim,
+    def __init__(self, latent_dim=2, embed_dim=2,
                  noise_scale=0.25,
                  IND_range=(0, 10),
                  OOD_range=(10, 20),
@@ -38,7 +38,7 @@ class KuramotoSystem(AbstractSystem):
                  dt=0.05,
                  seed=None):
 
-        super().__init__(latent_dim, embed_dim)
+        super().__init__(latent_dim, embed_dim, seed)
 
         assert embed_dim == latent_dim
 
@@ -75,7 +75,7 @@ class KuramotoSystem(AbstractSystem):
             else:
                 x0.append(self._rng.uniform(
                     self.OOD_range[0], self.OOD_range[1], (self.latent_dim)))
-        return x0
+        return np.array(x0)
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []

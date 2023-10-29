@@ -26,7 +26,7 @@ More info: https://en.wikipedia.org/wiki/Competitive_Lotka%E2%80%93Volterra_equa
 
 
 class CompetitiveLVSystem(AbstractSystem):
-    def __init__(self, latent_dim, embed_dim,
+    def __init__(self, latent_dim=2, embed_dim=2,
                  minK=1,
                  maxK=10,
                  noise_scale=0.01,
@@ -35,7 +35,7 @@ class CompetitiveLVSystem(AbstractSystem):
                  R_range=(0.0, 0.5),
                  interspecies_range=(0, 1),
                  seed=None):
-        super().__init__(latent_dim, embed_dim)
+        super().__init__(latent_dim, embed_dim, seed)
 
         assert embed_dim == latent_dim
 

@@ -18,3 +18,4 @@ cache
 .pdm-python
 experiments/outputs
 experiments/logs
+demos

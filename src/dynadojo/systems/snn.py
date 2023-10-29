@@ -4,14 +4,12 @@ from scipy.integrate import solve_ivp
 from scipy.interpolate import interp1d
 from scipy.optimize import minimize, NonlinearConstraint
 
-from .lds import LDSSystem
-
-RNG = np.random.default_rng()
+from .lds import LDSystem
 
 
-class SNNSystem(LDSSystem):
+class SNNSystem(LDSystem):
 
-    def __init__(self, latent_dim, embed_dim,
+    def __init__(self, latent_dim=2, embed_dim=4,
                  IND_range=(0, 1),
                  OOD_range=(-1, 0),
                  seed=None,
@@ -22,12 +20,13 @@ class SNNSystem(LDSSystem):
                          IND_range=IND_range,
                          OOD_range=OOD_range,
                          seed=seed,
-                        **kwargs,
+                         **kwargs,
                          )
         c = lambda t: np.zeros(latent_dim)
         self.LDS = LinearDynamicalSystem(self.A, self._controller, c)
         self.SNN = SpikingNeuralNetwork(self.LDS,
                                         N=embed_dim,
+                                        seed=seed,
                                         max_error=1 / 2)  # hyperparam: max_error
 
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
@@ -89,11 +88,14 @@ class LinearDynamicalSystem:
                             vectorized=False
                             )
         return results
+
+
 #
 
 class SpikingNeuralNetwork:
 
-    def __init__(self, LDS, N=None, max_error=1 / np.sqrt(2)):
+    def __init__(self, LDS, N=None, max_error=1 / np.sqrt(2), seed=None):
+        self._rng = np.random.default_rng(seed=seed)
         self.LDS = LDS
         self.N = N if N else 2 * LDS.dim
         self.threshold = (2 * max_error) ** 2 / 2.0
@@ -117,7 +119,7 @@ class SpikingNeuralNetwork:
             return np.linalg.norm(X, axis=0)
 
         def generate_decoder(magnitude):
-            X = np.random.normal(size=(d, self.N))
+            X = self._rng.normal(size=(d, self.N))
             X *= magnitude / np.linalg.norm(X, axis=0)
             result = minimize(min_distance,
                               X.flatten(),

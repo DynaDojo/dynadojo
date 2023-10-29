@@ -18,22 +18,22 @@ class FBSNNSystem(AbstractSystem):
                  T,
                  seed=None):
 
-        super().__init__(latent_dim, embed_dim)
+        super().__init__(latent_dim, embed_dim, seed)
 
         assert embed_dim == 1
         
         tf.compat.v1.disable_v2_behavior()
         tf.compat.v1.disable_eager_execution()
 
-        self.T = T # terminal time
-        self.latent_dim = latent_dim # number of dimensions
+        self.T = T  # terminal time
+        self.latent_dim = latent_dim  # number of dimensions
         
         
         # layers
         if layers:
             self.layers = layers
         else:
-            self.layers = [self.latent_dim+1] + 4*[256] + [1] # (latent_dim+1) --> 1
+            self.layers = [self.latent_dim+1] + 4*[256] + [1]  # (latent_dim+1) --> 1
         
        
         

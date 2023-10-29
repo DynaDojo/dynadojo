@@ -1,10 +1,10 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from ..abstractions import AbstractModel
+from ..abstractions import AbstractAlgorithm
 
 
-class DNN(AbstractModel):
+class DNN(AbstractAlgorithm):
 
     def __init__(
         self, 

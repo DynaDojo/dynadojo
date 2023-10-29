@@ -3,22 +3,21 @@ import numpy as np
 from scipy.stats import ortho_group
 from scipy.integrate import solve_ivp
 
-
 from ...abstractions import AbstractSystem
 
 
 class SimpleSystem(AbstractSystem):
-    def __init__(self, 
-                latent_dim = 2, 
-                embed_dim = 2, 
-                seed=None,
-                # singular values are non-neg by convention; >0 since we don't want a nontrivial null space
-                embedder_sv_range=(0.1, 1),
-                controller_sv_range=(0.1, 1),
-                IND_range=(0, 10),
-                OOD_range=(-10, 0),
-                noise_scale=0.01,
-                t_range=(0, 1),
+    def __init__(self,
+                 latent_dim=2,
+                 embed_dim=2,
+                 seed=None,
+                 # singular values are non-neg by convention; >0 since we don't want a nontrivial null space
+                 embedder_sv_range=(0.1, 1),
+                 controller_sv_range=(0.1, 1),
+                 IND_range=(0, 10),
+                 OOD_range=(-10, 0),
+                 noise_scale=0.01,
+                 t_range=(0, 1),
                  ):
         super().__init__(latent_dim, embed_dim, seed)
 
@@ -88,15 +87,16 @@ class SimpleSystem(AbstractSystem):
             return dx
 
         for x0, u in zip(init_conds, control):
-            sol = solve_ivp(dynamics, t_span=[self._t_range[0], self._t_range[1]], y0=x0, t_eval=time, dense_output=True, args=(u,))
+            sol = solve_ivp(dynamics, t_span=[self._t_range[0], self._t_range[1]], y0=x0, t_eval=time,
+                            dense_output=True, args=(u,))
             data.append(sol.y)
-            
+
         data = np.transpose(np.array(data), axes=(0, 2, 1)) @ self.embedder
         return data
 
     def _sv_to_matrix(self, m, n, sv_range):
-        U = ortho_group.rvs(m, random_state=self._rng)
+        U = ortho_group.rvs(m, random_state=self._seed)
         sigma = np.eye(m, n) * self._rng.uniform(*sv_range, size=n)
-        V = ortho_group.rvs(n, random_state=self._rng)
+        V = ortho_group.rvs(n, random_state=self._seed)
         N = U @ sigma @ V
         return N

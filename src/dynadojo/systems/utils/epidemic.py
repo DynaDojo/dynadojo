@@ -12,7 +12,7 @@ class EpidemicSystem(AbstractSystem):
                  group_status,
                  seed=None):
 
-        super().__init__(latent_dim, embed_dim)
+        super().__init__(latent_dim, embed_dim, seed)
 
         if not group_status:
             assert embed_dim == latent_dim

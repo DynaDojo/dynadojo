@@ -1,10 +1,10 @@
 import numpy as np
 import pydmd
 
-from ..abstractions import AbstractModel
+from ..abstractions import AbstractAlgorithm
 
 
-class DMD(AbstractModel):
+class DMD(AbstractAlgorithm):
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
         self._model = pydmd.OptDMD(svd_rank=embed_dim, factorization="svd")

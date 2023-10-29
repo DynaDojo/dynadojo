@@ -186,7 +186,7 @@ Next, let's create our nonlinear model using DynaDojo's baseline `DNN` class.
 
 ```python
 nonlinear_model = dd.baselines.DNN(embed_dim, timesteps, activation="tanh", max_control_cost=0)
-nonlinear_model.fit(x, epochs=10, verbose='auto')
+nonlinear_model.fit(x)
 x_pred = nonlinear_model.predict(x[:, 0], 50)
 y_pred = nonlinear_model.predict(y[:, 0], 50)
 dd.utils.lds.plot([x_pred, y_pred], target_dim=min(3, latent_dim), labels=["in pred", "out pred"], max_lines=15)
@@ -212,7 +212,7 @@ Next, let's try `DNN` with a linear activation.
 
 ```python
 linear_model = dd.baselines.DNN(embed_dim, timesteps, activation=None, max_control_cost=0)
-linear_model.fit(x, epochs=10, verbose='auto')
+linear_model.fit(x)
 x_pred = linear_model.predict(x[:, 0], 50)
 y_pred = linear_model.predict(y[:, 0], 50)
 dd.utils.lds.plot([x_pred, y_pred], target_dim=min(3, latent_dim), labels=["in pred", "out pred"], max_lines=15)

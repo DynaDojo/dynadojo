@@ -29,7 +29,7 @@ Predator:
 """
 
 class PreyPredatorSystem(AbstractSystem):
-    def __init__(self, latent_dim, embed_dim,
+    def __init__(self, latent_dim=2, embed_dim=2,
                  minK=1,
                  maxK=10,
                  noise_scale=0.05,
@@ -41,7 +41,7 @@ class PreyPredatorSystem(AbstractSystem):
                  pZeroInteraction=0.1,
                  nPrey=None,
                  seed=None):
-        super().__init__(latent_dim, embed_dim)
+        super().__init__(latent_dim, embed_dim, seed)
 
         assert embed_dim == latent_dim
         if nPrey:

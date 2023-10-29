@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 from .utils.plotting import plot_target_error, plot_metric
-from .abstractions import Challenge, AbstractSystem, AbstractModel
+from .abstractions import Challenge, AbstractSystem, AbstractAlgorithm
 
 class FixedComplexity(Challenge):
     def __init__(self, 
@@ -202,22 +202,22 @@ class FixedError(Challenge):
         
         super().__init__([1], L, E, t, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs, verbose=verbose)
 
-    def evaluate(self, 
-                model_cls: type[AbstractModel],
-                model_kwargs: dict | None = None,
-                fit_kwargs: dict | None = None,
-                act_kwargs: dict | None = None,
-                ood=False,
-                noisy=False,
-                id=None,
-                num_parallel_cpu=-1,
-                seed=None,
-                # Filters which reps and L to evaluate. If None, no filtering is performed. 
-                # We recommend using these filters to parallelize evaluation across multiple machines, while retaining reproducibility.
-                reps_filter: list[int] = None,
-                L_filter: list[int] | None = None,
-                rep_l_filter: list[tuple[int, int]] | None = None,
-                ) -> pd.DataFrame:
+    def evaluate(self,
+                 model_cls: type[AbstractAlgorithm],
+                 model_kwargs: dict | None = None,
+                 fit_kwargs: dict | None = None,
+                 act_kwargs: dict | None = None,
+                 ood=False,
+                 noisy=False,
+                 id=None,
+                 num_parallel_cpu=-1,
+                 seed=None,
+                 # Filters which reps and L to evaluate. If None, no filtering is performed.
+                 # We recommend using these filters to parallelize evaluation across multiple machines, while retaining reproducibility.
+                 reps_filter: list[int] = None,
+                 L_filter: list[int] | None = None,
+                 rep_l_filter: list[tuple[int, int]] | None = None,
+                 ) -> pd.DataFrame:
         """
         Evaluates a model class (NOT an instance) on a dynamical system over a set of experimental parameters.
 
@@ -248,19 +248,19 @@ class FixedError(Challenge):
             
         return results
 
-    def system_run(self, 
-                    rep_id, 
-                    latent_dim, 
-                    embed_dim, 
-                    model_cls : type[AbstractModel],
-                    model_kwargs : dict = None,
-                    fit_kwargs : dict = None,
-                    act_kwargs : dict = None,
-                    noisy : bool = False,
-                    test_ood : bool = False,
-                    system_seed=None, 
-                    model_seed=None
-                    ):
+    def system_run(self,
+                   rep_id,
+                   latent_dim,
+                   embed_dim,
+                   model_cls : type[AbstractAlgorithm],
+                   model_kwargs : dict = None,
+                   fit_kwargs : dict = None,
+                   act_kwargs : dict = None,
+                   noisy : bool = False,
+                   test_ood : bool = False,
+                   system_seed=None,
+                   model_seed=None
+                   ):
         """
         For a given system latent dimension and embedding dimension, instantiates system and evaluates a single trial of finding an 
         number of training examples that achieves the target error. 

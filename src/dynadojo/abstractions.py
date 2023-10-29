@@ -7,8 +7,9 @@ import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 
-class AbstractModel(ABC):
-    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, seed: int | None, **kwargs):
+
+class AbstractAlgorithm(ABC):
+    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, seed: int | None = None, **kwargs):
         """
         Base class for all models. Your models should subclass this class.
 
@@ -23,7 +24,6 @@ class AbstractModel(ABC):
         self._max_control_cost = max_control_cost
         self._seed = seed
 
-        
     @abstractmethod
     def fit(self, x: np.ndarray, **kwargs) -> None:
         """
@@ -248,7 +248,7 @@ class Challenge:
                  test_timesteps: int,
                  system_kwargs: dict | None = None,
                  verbose: bool = True,
-                #  save_class: bool = False,
+                 #  save_class: bool = False,
                  ):
         """
         :param N: train sizes, (# of trajectories)
@@ -283,7 +283,7 @@ class Challenge:
         self._verbose = verbose
 
     def evaluate(self,
-                 model_cls: type[AbstractModel],
+                 model_cls: type[AbstractAlgorithm],
                  model_kwargs: dict | None = None,
                  fit_kwargs: dict | None = None,
                  act_kwargs: dict | None = None,
@@ -322,9 +322,8 @@ class Challenge:
         fit_kwargs = fit_kwargs or {}
         act_kwargs = act_kwargs or {}
 
-
-        # Sets embedded dim array when self._E is None, constant, or an array    
-        if self._E is None: 
+        # Sets embedded dim array when self._E is None, constant, or an array
+        if self._E is None:
             E = self._L
         elif isinstance(self._E, int):
             assert self._E >= max(self._L), "E must be greater than or equal to max(L)."
@@ -341,44 +340,46 @@ class Challenge:
         else:
             rng = np.random.default_rng()
         ## We have to have the model seeded so that it is the same for each iteration of training in system_run (which may vary/search through N)
-        system_seeds = rng.integers(0, 2**32, size=self._reps*len(self._L))
-        model_seeds = rng.integers(0, 2**32, size=self._reps*len(self._L))
+        system_seeds = rng.integers(0, 2 ** 32, size=self._reps * len(self._L))
+        model_seeds = rng.integers(0, 2 ** 32, size=self._reps * len(self._L))
 
         ## Second creating all system_run arguments (rep_id, latent_dim, embed_dim, system_seed, model_seed)
         system_run_args = zip(itertools.product(range(self._reps), zip(self._L, E)), system_seeds, model_seeds)
         ## flatten system_args to a list of tuples
-        system_run_args = [(r, l, e, system_seed, model_seed) for (r, (l, e)), system_seed, model_seed in system_run_args]
+        system_run_args = [(r, l, e, system_seed, model_seed) for (r, (l, e)), system_seed, model_seed in
+                           system_run_args]
         ## Third, figuring out which reps to run based on specified subset of reps
-        if reps_filter is not None and len(reps_filter)> 0:
+        if reps_filter is not None and len(reps_filter) > 0:
             system_run_args = [args for args in system_run_args if args[0] in reps_filter]
         ## Fourth, figuring out which systems to run based on specified subset of L
-        if L_filter is not None and len(L_filter)> 0:
+        if L_filter is not None and len(L_filter) > 0:
             system_run_args = [args for args in system_run_args if args[1] in L_filter]
         ## Fifth, figuring out which systems to run based on specified subset of (rep_id, L)
-        if rep_l_filter is not None and len(rep_l_filter)> 0:
+        if rep_l_filter is not None and len(rep_l_filter) > 0:
             system_run_args = [args for args in system_run_args if (args[0], args[1]) in rep_l_filter]
 
-        fixed_run_args = { 
+        fixed_run_args = {
             # **kwargs, #ToDo: consider adding extra kwargs to pass to system_run
-            "model_cls" : model_cls, 
-            "model_kwargs" : model_kwargs, 
-            "fit_kwargs": fit_kwargs, 
-            "act_kwargs":act_kwargs, 
-            "noisy":noisy, 
-            "test_ood": ood 
+            "model_cls": model_cls,
+            "model_kwargs": model_kwargs,
+            "fit_kwargs": fit_kwargs,
+            "act_kwargs": act_kwargs,
+            "noisy": noisy,
+            "test_ood": ood
         }
 
         if num_parallel_cpu == 0:
-            print(f"Running systems sequentially. {num_parallel_cpu=}") #TODO: logger
+            print(f"Running systems sequentially. {num_parallel_cpu=}")  # TODO: logger
             data = []
             for rep_id, l, e, system_seed, model_seed in system_run_args:
-                data.append(self.system_run(rep_id, l, e, **fixed_run_args ,system_seed=system_seed, model_seed=model_seed))
+                data.append(
+                    self.system_run(rep_id, l, e, **fixed_run_args, system_seed=system_seed, model_seed=model_seed))
 
         else:
             print(f"Running systems in parallel. {num_parallel_cpu=}")
             # Run systems in parallel
             data = Parallel(n_jobs=num_parallel_cpu, timeout=1e6)(
-                delayed(self.system_run)(rep_id, l, e, **fixed_run_args ,system_seed=system_seed, model_seed=model_seed) 
+                delayed(self.system_run)(rep_id, l, e, **fixed_run_args, system_seed=system_seed, model_seed=model_seed)
                 for rep_id, l, e, system_seed, model_seed in system_run_args)
 
         if data:
@@ -386,7 +387,7 @@ class Challenge:
             data["id"] = id or next(self._id)
             data["control_horizon"] = self._control_horizons
         return data
-        
+
     def _gen_trainset(self, system, n: int, timesteps: int, noisy=False):
         train_init_conds = system.make_init_conds_wrapper(n)
         return system.make_data_wrapper(train_init_conds, timesteps=timesteps, noisy=noisy)
@@ -395,10 +396,10 @@ class Challenge:
         test_init_conds = system.make_init_conds_wrapper(self._test_examples, in_dist)
         return system.make_data_wrapper(test_init_conds, timesteps=self._test_timesteps)
 
-    def _fit_model(self, system, model, x: np.ndarray, timesteps: int,  max_control_cost: int,  fit_kwargs: dict = None,
+    def _fit_model(self, system, model, x: np.ndarray, timesteps: int, max_control_cost: int, fit_kwargs: dict = None,
                    act_kwargs: dict = None, noisy=False) -> int:
         total_cost = 0
-        model.fit(x, **fit_kwargs)
+        model.fit(x)
 
         for _ in range(self._control_horizons):
             control = model.act_wrapper(x, **act_kwargs)
@@ -407,12 +408,13 @@ class Challenge:
             assert np.all(cost <= max_control_cost), "Control cost exceeded!"
             x = system.make_data_wrapper(
                 init_conds=x[:, -1], control=control, timesteps=timesteps, noisy=noisy)
-            model.fit(x, **fit_kwargs)
+            model.fit(x)
 
         return total_cost
 
     @staticmethod
-    def _append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, total_cost , error, ood_error=None, duration=None):
+    def _append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, total_cost, error, ood_error=None,
+                       duration=None):
         result['rep'].append(rep_id)
         result['n'].append(n)
         result['latent_dim'].append(latent_dim)
@@ -422,54 +424,54 @@ class Challenge:
         result['total_cost'].append(total_cost)
         result['ood_error'].append(ood_error)
         result['duration'].append(duration)
-    
+
     @staticmethod
     def _init_result_dict():
         result = {k: [] for k in [
-            "rep", 
-            "latent_dim", 
-            "embed_dim", 
+            "rep",
+            "latent_dim",
+            "embed_dim",
             "timesteps",
-            "n", 
-            "error", 
+            "n",
+            "error",
             "ood_error",
             "total_cost",
             "duration"]}
         return result
 
-    def system_run( self, 
-                    rep_id, 
-                    latent_dim, 
-                    embed_dim, 
-                    model_cls : type[AbstractModel],
-                    model_kwargs : dict = None,
-                    fit_kwargs : dict = None,
-                    act_kwargs : dict = None,
-                    noisy : bool = False,
-                    test_ood : bool = False,
-                    system_seed=None, 
-                    model_seed=None,
-                    **kwargs
-                    ):
+    def system_run(self,
+                   rep_id,
+                   latent_dim,
+                   embed_dim,
+                   model_cls: type[AbstractAlgorithm],
+                   model_kwargs: dict = None,
+                   fit_kwargs: dict = None,
+                   act_kwargs: dict = None,
+                   noisy: bool = False,
+                   test_ood: bool = False,
+                   system_seed=None,
+                   model_seed=None,
+                   **kwargs
+                   ):
         """
         For a given system latent dimension and embedding dimension, instantiates system and for a specific N, evaluates the model on the system (a model_run).
         Across model_runs, the model is re-initialized with the same seed. 
         Note that model seed in model_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
         """
         result = Challenge._init_result_dict()
-        
+
         if embed_dim < latent_dim:
             return
 
         # Seed in system_kwargs takes precedence over the seed passed to this function.
-        system = self._system_cls(latent_dim, embed_dim, **{"seed":system_seed, **self._system_kwargs})
-        
+        system = self._system_cls(latent_dim, embed_dim, **{"seed": system_seed, **self._system_kwargs})
+
         # Create all data
         test_set = self._gen_testset(system, in_dist=True)
         ood_test_set = self._gen_testset(system, in_dist=False)
         largest_N = max(self._N)
         training_set = self._gen_trainset(system, largest_N, self._t, noisy)
-        
+
         max_control_cost = self._max_control_cost_per_dim * latent_dim
 
         # Define model_run helper function
@@ -480,8 +482,9 @@ class Challenge:
             start = time.time()
             # Create Model. Seed in model_kwargs takes precedence over the seed passed to this function.
             model = model_cls(embed_dim, self._t, max_control_cost, **{"seed": model_seed, **model_kwargs})
-            training_set_n = training_set[:n] #train on subset of training set
-            total_cost = self._fit_model(system, model, training_set_n, self._t, max_control_cost, fit_kwargs, act_kwargs, noisy)
+            training_set_n = training_set[:n]  # train on subset of training set
+            total_cost = self._fit_model(system, model, training_set_n, self._t, max_control_cost, fit_kwargs,
+                                         act_kwargs, noisy)
             pred = model.predict_wrapper(test_set[:, 0], self._test_timesteps)
             error = system.calc_error_wrapper(pred, test_set)
             ood_error = None
@@ -490,18 +493,20 @@ class Challenge:
                 ood_error = system.calc_error_wrapper(ood_pred, ood_test_set)
             end = time.time()
             duration = end - start
-            #TODO: fix logging? Should we use a logger?
+            # TODO: fix logging? Should we use a logger?
             ood_error_str = f"{ood_error=:0.3}" if test_ood else "ood_error=NA"
             if self._verbose:
-                print(f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error_str},model_seed={model._seed}, sys_seed={system._seed}")
-            Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error=ood_error, duration=duration)
+                print(
+                    f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error_str},model_seed={model._seed}, sys_seed={system._seed}")
+            Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error,
+                                     ood_error=ood_error, duration=duration)
 
         # On each subset of the training set, we retrain the model from scratch (initialized with the same random seed). 
         # If you don't, then # of training epochs will scale with N. This would confound the effect of training set size with training time.
         for n in self._N:
             model_run(n)
-            
-        data =pd.DataFrame(result)
+
+        data = pd.DataFrame(result)
         data['system_seed'] = system_seed
         data['model_seed'] = model_seed
         return data

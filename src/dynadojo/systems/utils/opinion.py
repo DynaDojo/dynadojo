@@ -10,7 +10,7 @@ class OpinionSystem(AbstractSystem):
                  OOD_range,
                  seed=None):
 
-        super().__init__(latent_dim, embed_dim)
+        super().__init__(latent_dim, embed_dim, seed)
 
         assert embed_dim == latent_dim
         self._rng = np.random.default_rng(seed)
@@ -31,7 +31,7 @@ class OpinionSystem(AbstractSystem):
             else:
                 x0.append({node: np.random.uniform(
                     self.OOD_range[0], self.OOD_range[1]) for node in range(self.latent_dim)})
-        return np.array(x0)
+        return x0
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []

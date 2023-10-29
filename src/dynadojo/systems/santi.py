@@ -5,7 +5,7 @@ from .utils.simple import SimpleSystem
 
 
 class NBodySystem(SimpleSystem):
-    def __init__(self, latent_dim, embed_dim, mass=10e-3, plot_data=False,
+    def __init__(self, latent_dim=4, embed_dim=4, mass=10e-3, plot_data=False,
                  IND_range=(-1, 1), OOD_range=(-1, 1),
                  **kwargs):
         assert latent_dim >= 4 and latent_dim % 4 == 0

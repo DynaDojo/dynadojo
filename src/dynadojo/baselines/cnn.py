@@ -2,10 +2,10 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from ..abstractions import AbstractModel
+from ..abstractions import AbstractAlgorithm
 
 
-class CNN(AbstractModel):
+class CNN(AbstractAlgorithm):
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, lr=6e-2, k=3, **kwargs):
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
 
