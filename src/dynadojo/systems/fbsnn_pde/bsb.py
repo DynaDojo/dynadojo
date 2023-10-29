@@ -11,7 +11,7 @@ self.latent_dim, controls dimension of the systems
 
 '''
 class BSBSystem(FBSNNSystem):
-    def __init__(self, latent_dim, embed_dim,
+    def __init__(self, latent_dim=1, embed_dim=1,
                  noise_scale=0.001,
                  IND_range=(0, 0.8),
                  OOD_range=(0.8, 1),

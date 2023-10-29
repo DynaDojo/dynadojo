@@ -5,19 +5,18 @@ from .utils.simple import SimpleSystem
 
 
 class LDSystem(SimpleSystem):
-    def __init__(self, 
-        latent_dim : int = 2, 
-        embed_dim : int = 2, 
-        A_eigval_range=(-5, 0), 
-        A_eigvec_range=(-1, 1), 
-        **kwargs):
+    def __init__(self,
+                 latent_dim: int = 2,
+                 embed_dim: int = 2,
+                 A_eigval_range=(-5, 0),
+                 A_eigvec_range=(-1, 1),
+                 **kwargs):
 
         super().__init__(latent_dim, embed_dim, **kwargs)
 
         self._A_eigval_range = A_eigval_range
         self._A_eigvec_range = A_eigvec_range
         self.A = self._make_A(latent_dim)
-        
 
     def _eigenvalues_to_matrix(self, dim, eig_range, eigvec_range):
         # use eigendecomposition to produce a real-valued matrix with target eigenvalues
@@ -37,8 +36,11 @@ class LDSystem(SimpleSystem):
             real_eigenvectors = self._rng.uniform(*eigvec_range, size=(dim, num_real))
 
             # complex eigenvectors and eigenvalues must have conjugate pairs in the diagonalization for A to be real
-            complex_eigenvalues = self._rng.uniform(*eig_range, size=num_complex // 2) + 1j * self._rng.uniform(*eig_range, size=num_complex // 2)
-            complex_eigenvectors = self._rng.uniform(*eigvec_range, size=(dim, num_complex // 2)) + 1j * self._rng.uniform(*eigvec_range, size=(dim, num_complex // 2))
+            complex_eigenvalues = self._rng.uniform(*eig_range, size=num_complex // 2) + 1j * self._rng.uniform(
+                *eig_range, size=num_complex // 2)
+            complex_eigenvectors = self._rng.uniform(*eigvec_range,
+                                                     size=(dim, num_complex // 2)) + 1j * self._rng.uniform(
+                *eigvec_range, size=(dim, num_complex // 2))
 
             eigenvalues = np.concatenate((real_eigenvalues, complex_eigenvalues, complex_eigenvalues.conjugate()))
             Q = np.hstack((real_eigenvectors, complex_eigenvectors, complex_eigenvectors.conjugate()))

@@ -5,7 +5,7 @@ import ndlib.models.epidemics as ep
 from ..utils.epidemic import EpidemicSystem
 
 class SEISSystem(EpidemicSystem):
-    def __init__(self, latent_dim, embed_dim,
+    def __init__(self, latent_dim=2, embed_dim=2,
                  noise_scale=0.01,
                  IND_range=(0, 3),
                  OOD_range=(0, 3),
@@ -13,7 +13,7 @@ class SEISSystem(EpidemicSystem):
                  p_recovery=0.5,
                  p_edge=0.1,
                  latency=0.05,
-                 fraction_infected=0.1, #initial infections
+                 fraction_infected=0.1,  # initial infections
                  group_status=False,
                  seed=None):
 

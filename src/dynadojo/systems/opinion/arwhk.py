@@ -7,7 +7,7 @@ from ..utils.opinion import OpinionSystem
 import numpy as np
 
 class ARWHKSystem(OpinionSystem):
-    def __init__(self, latent_dim, embed_dim,
+    def __init__(self, latent_dim=2, embed_dim=2,
                  noise_scale=0.01,
                  IND_range=(-0.5, 0.5),
                  OOD_range=(-1, 1),

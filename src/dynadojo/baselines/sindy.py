@@ -1,10 +1,10 @@
 import numpy as np
 import pysindy as ps
 
-from ..abstractions import AbstractModel
+from ..abstractions import AbstractAlgorithm
 
 
-class SINDy(AbstractModel):
+class SINDy(AbstractAlgorithm):
     def __init__(self, 
             embed_dim: int, 
             timesteps: int, 
@@ -20,7 +20,7 @@ class SINDy(AbstractModel):
 
         """
         #TODO: latent dim > 1 ??? 
-        assert timesteps > 2, "timesteps must be greater than 3, "
+        assert timesteps > 2, "timesteps must be greater than 2. "
         if differentiation_method == 'smoothed_fd':
             differentiation_method = ps.SmoothedFiniteDifference(
                 smoother_kws={
@@ -35,14 +35,13 @@ class SINDy(AbstractModel):
 
         # optimizer = TrappingSR3(threshold=0.1) #TODO: add trappingSR3 for better stability
         poly_order = max(2, int(np.log2(embed_dim)//1))
-        print(poly_order)
         self._model = ps.SINDy(
             differentiation_method=differentiation_method,
             optimizer=optimizer,
             feature_library=ps.PolynomialLibrary(degree=poly_order)
         )
 
-    #TODO: add control!
+    # TODO: add control!
 
     def fit(self, x: np.ndarray, **kwargs) -> None:
         # for example in x:
@@ -52,6 +51,6 @@ class SINDy(AbstractModel):
         self._model.fit(X, t=t, multiple_trajectories=True, quiet=True, ensemble=True, n_models=5)
 
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
-        results = [ self._model.simulate(point, np.linspace(0, 1, timesteps), integrator="odeint") for point in x0 ]
+        results = [self._model.simulate(point, np.linspace(0, 1, timesteps), integrator="odeint") for point in x0]
         results = np.array(results)
         return results

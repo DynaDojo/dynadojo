@@ -1,24 +1,26 @@
 import unittest
-from dynadojo.challenges import FixedComplexity, FixedTrainSize
+from src.dynadojo.challenges import FixedComplexity, FixedTrainSize
 
-from dynadojo.systems.lds import LDSystem
-from dynadojo.systems.lorenz import LorenzSystem
-from dynadojo.systems.heat import HeatEquation
-from dynadojo.systems.ctln import CTLNSystem
-from dynadojo.systems.ca import CA
+# from src.dynadojo.systems.lds import LDSystem
+# from src.dynadojo.systems.lorenz import LorenzSystem
+# from src.dynadojo.systems.heat import HeatEquation
+# from src.dynadojo.systems.ctln import CTLNSystem
+# from src.dynadojo.systems.ca import CASystem
+from src.dynadojo.systems import ALL_SYSTEMS
 
-from dynadojo.baselines.lr import LinearRegression
-from dynadojo.baselines.dnn import DNN
-from dynadojo.baselines.sindy import SINDy
-from dynadojo.baselines.dmd import DMD
+# from src.dynadojo.baselines.lr import LinearRegression
+# from src.dynadojo.baselines.dnn import DNN
+# from src.dynadojo.baselines.sindy import SINDy
+# from src.dynadojo.baselines.dmd import DMD
+from src.dynadojo.baselines import ALL_BASELINES
 
 import numpy as np
 import pandas as pd
 import pandas.testing as pd_testing
 
 
-systems = [LDSystem, LorenzSystem, ]# HeatEquation, CTLNSystem] #To test multiple systems, add them to this list
-models = [LinearRegression, DNN, SINDy, DMD] #To test multiple models, add them to this list
+systems = ALL_SYSTEMS  # To test multiple systems, add them to this list
+models = ALL_BASELINES  # To test multiple models, add them to this list
 
 class TestReproducibility(unittest.TestCase):
     def test_make_init_cond(self):
@@ -177,6 +179,7 @@ class TestReproducibilityModel(unittest.TestCase):
         self.assertEqual(df1['error'].iloc[0], error)
         self.assertEqual(df1['ood_error'].iloc[0], ood_error)
     """
+
 
 if __name__ == '__main__':
     unittest.main()
