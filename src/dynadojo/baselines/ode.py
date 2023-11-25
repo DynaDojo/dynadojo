@@ -19,10 +19,10 @@ class ODE(AbstractAlgorithm):
         dx = self.model(state)
         return dx
 
-    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
+    def _predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         pass
 
-    def fit(self, x: np.ndarray, epochs=100, **kwargs):
+    def _fit(self, x: np.ndarray, epochs=100, **kwargs):
         x = torch.tensor(x, dtype=torch.float32)
         state = x[:, 0, :]
         t = torch.linspace(0.0, self._timesteps, self._timesteps)

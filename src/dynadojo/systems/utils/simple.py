@@ -57,24 +57,24 @@ class SimpleSystem(AbstractSystem):
         self._latent_dim = value
         self._update_embedder_and_controller()
 
-    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         """Uniformly samples embedded-dimensional points from an inside or outside distribution"""
         init_cond_range = self.IND_range if in_dist else self.OOD_range
         return self._rng.uniform(*init_cond_range, (n, self.embed_dim))
 
-    def calc_error(self, x, y) -> float:
+    def _calc_error(self, x, y) -> float:
         """Returns NSE"""
         error = x - y
         return np.mean(error ** 2) / self.embed_dim
 
-    def calc_control_cost(self, control: np.ndarray) -> float:
+    def _calc_control_cost(self, control: np.ndarray) -> float:
         """Calculates the L2 norm / dimension of every vector in the control"""
         return np.linalg.norm(control, axis=(1, 2), ord=2) / self.embed_dim
 
     def calc_dynamics(self, t, x):
         raise NotImplementedError
 
-    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
         init_conds = init_conds @ np.linalg.pinv(self.embedder)
         time = np.linspace(self._t_range[0], self._t_range[1], num=timesteps)

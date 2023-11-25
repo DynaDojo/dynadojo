@@ -9,10 +9,10 @@ class DMD(AbstractAlgorithm):
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
         self._model = pydmd.OptDMD(svd_rank=embed_dim, factorization="svd")
 
-    def fit(self, x: np.ndarray, **kwargs) -> None:
+    def _fit(self, x: np.ndarray, **kwargs) -> None:
         self._model = self._model.fit(x[0].T)
 
-    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
+    def _predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         result = [x0.T]
         for _ in range(timesteps - 1):
             result.append(self._model.predict(result[-1]))

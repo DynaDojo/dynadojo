@@ -28,20 +28,20 @@ class TestReproducibility(unittest.TestCase):
             with self.subTest(system):
                 s1 = system(seed=100)
                 s2 = system(seed=100)
-                i1 = s1.make_init_conds_wrapper(n=5)
-                i2 = s2.make_init_conds_wrapper(n=5)
+                i1 = s1.make_init_conds(n=5)
+                i2 = s2.make_init_conds(n=5)
                 np.testing.assert_array_equal(i1, i2)
 
     def test_make_data(self):
         for system in systems:
             with self.subTest(system):
                 s1 = system(seed=100)
-                i1 = s1.make_init_conds_wrapper(n=5)
-                d1 = s1.make_data_wrapper(i1, timesteps=3, noisy=True)
+                i1 = s1.make_init_conds(n=5)
+                d1 = s1.make_data(i1, timesteps=3, noisy=True)
                 
                 s2 = system(seed=100)
-                i2 = s2.make_init_conds_wrapper(n=5)
-                d2 = s2.make_data_wrapper(i2, timesteps=3, noisy=True)
+                i2 = s2.make_init_conds(n=5)
+                d2 = s2.make_data(i2, timesteps=3, noisy=True)
                 np.testing.assert_array_equal(d1, d2)
 
     def test_make_initial_conditions_less_more(self):
@@ -52,10 +52,10 @@ class TestReproducibility(unittest.TestCase):
         for system in systems:
             with self.subTest(system):
                 s1 = system(seed=100)
-                i1 = s1.make_init_conds_wrapper(n=5)
+                i1 = s1.make_init_conds(n=5)
 
                 s2 = system(seed=100)
-                i2 = s2.make_init_conds_wrapper(n=10)
+                i2 = s2.make_init_conds(n=10)
                 np.testing.assert_array_equal(i1, i2[:5])
 
     # TODO: Reproducibility test w/ control
@@ -94,13 +94,13 @@ class TestReproducibilityModel(unittest.TestCase):
                                 system_cls=LDSystem, reps=1,
                                 test_examples=2, test_timesteps=2, verbose=False)
                 df1 = challenge.evaluate(model, seed=100, noisy=True,
-                        reps_filter=None, 
-                        L_filter = None,
-                        model_kwargs=None)
+                                         reps_filter=None,
+                                         L_filter = None,
+                                         algo_kwargs=None)
                 df2 = challenge.evaluate(model, seed=100, noisy=True,
-                        reps_filter=None, 
-                        L_filter = None,
-                        model_kwargs=None)
+                                         reps_filter=None,
+                                         L_filter = None,
+                                         algo_kwargs=None)
                 cols = ['rep','latent_dim','embed_dim','timesteps','n','error','ood_error','total_cost','system_seed','model_seed']
                 df1 = df1[cols]
                 df2 = df2[cols]
@@ -117,13 +117,13 @@ class TestReproducibilityModel(unittest.TestCase):
                                 system_cls=LDSystem, reps=2,
                                 test_examples=2, test_timesteps=2, verbose=False)
                 df1 = challenge.evaluate(model, seed=100, noisy=True,
-                        reps_filter=[1], 
-                        L_filter = None,
-                        model_kwargs=None)
+                                         reps_filter=[1],
+                                         L_filter = None,
+                                         algo_kwargs=None)
                 df2 = challenge.evaluate(model, seed=100, noisy=True,
-                        reps_filter=None, 
-                        L_filter = None,
-                        model_kwargs=None)
+                                         reps_filter=None,
+                                         L_filter = None,
+                                         algo_kwargs=None)
                 cols = ['rep','latent_dim','embed_dim','timesteps','n','error','ood_error','total_cost','system_seed','model_seed']
                 df1 = df1[cols]
                 df2 = df2[cols].loc[df2['rep'] == 1]

@@ -203,8 +203,8 @@ class FixedError(Challenge):
         super().__init__([1], L, E, t, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs, verbose=verbose)
 
     def evaluate(self,
-                 model_cls: type[AbstractAlgorithm],
-                 model_kwargs: dict | None = None,
+                 algo_cls: type[AbstractAlgorithm],
+                 algo_kwargs: dict | None = None,
                  fit_kwargs: dict | None = None,
                  act_kwargs: dict | None = None,
                  ood=False,
@@ -221,8 +221,8 @@ class FixedError(Challenge):
         """
         Evaluates a model class (NOT an instance) on a dynamical system over a set of experimental parameters.
 
-        :param model_cls: model class to be evaluated
-        :param model_kwargs: kwargs to be passed to model_cls
+        :param algo_cls: model class to be evaluated
+        :param algo_kwargs: kwargs to be passed to model_cls
         :param fit_kwargs: kwargs to be passed to model_cls.fit
         :param act_kwargs: kwargs to be passed to model_cls.act
         :param ood: Boolean. If True, also test on out-distribution initial conditions for the test set. (For FixedError, search is performed on ood_error if ood=True.) Defaults to False.
@@ -238,7 +238,7 @@ class FixedError(Challenge):
         return: a pandas DataFrame where each row is a model_run result -- a model trained and evaluated on a single system. (See model_run() for more details.)
         """
         
-        results = super().evaluate(model_cls, model_kwargs, fit_kwargs, act_kwargs, ood, noisy, id, num_parallel_cpu, seed, reps_filter, L_filter, rep_l_filter)
+        results = super().evaluate(algo_cls, algo_kwargs, fit_kwargs, act_kwargs, ood, noisy, id, num_parallel_cpu, seed, reps_filter, L_filter, rep_l_filter)
         targets = results[['latent_dim', 'embed_dim', 'rep',  'n_target', 'model_seed', 'system_seed']].drop_duplicates()
 
         #TODO: use logger instead of print
@@ -252,8 +252,8 @@ class FixedError(Challenge):
                    rep_id,
                    latent_dim,
                    embed_dim,
-                   model_cls : type[AbstractAlgorithm],
-                   model_kwargs : dict = None,
+                   algo_cls : type[AbstractAlgorithm],
+                   algo_kwargs : dict = None,
                    fit_kwargs : dict = None,
                    act_kwargs : dict = None,
                    noisy : bool = False,
@@ -316,15 +316,15 @@ class FixedError(Challenge):
                 if n in memo:
                     return memo[n]
                 start = time.time()
-                model = model_cls(embed_dim, self._t, max_control_cost, **{"seed": model_seed, **model_kwargs})
+                model = algo_cls(embed_dim, self._t, max_control_cost, **{"seed": model_seed, **algo_kwargs})
                 training_set = get_training_set(n)
                 total_cost = self._fit_model(system, model, training_set, self._t, max_control_cost, fit_kwargs, act_kwargs, noisy)
-                pred = model.predict_wrapper(test_set[:, 0], self._test_timesteps)
-                error = system.calc_error_wrapper(pred, test_set)
+                pred = model.predict(test_set[:, 0], self._test_timesteps)
+                error = system.calc_error(pred, test_set)
                 ood_error = None
                 if test_ood:
-                    ood_pred = model.predict_wrapper(ood_test_set[:, 0], self._test_timesteps)
-                    ood_error = system.calc_error_wrapper(ood_pred, ood_test_set)
+                    ood_pred = model.predict(ood_test_set[:, 0], self._test_timesteps)
+                    ood_error = system.calc_error(ood_pred, ood_test_set)
                 end = time.time()
                 duration = end - start
                 #append/memoize result

@@ -25,7 +25,7 @@ class AugODE(AbstractAlgorithm):
         dx = self.model(aug_state)
         return dx
 
-    def fit(self, x: np.ndarray, epochs=100, **kwargs):
+    def _fit(self, x: np.ndarray, epochs=100, **kwargs):
         x = torch.tensor(x, dtype=torch.float32)
         state = x[:, 0, :]
         step = end = epochs / self._timesteps
@@ -41,7 +41,7 @@ class AugODE(AbstractAlgorithm):
             loss.backward()
             self.opt.step()
 
-    def predict(self, x0, timesteps):
+    def _predict(self, x0, timesteps):
         x0 = torch.tensor(x0, dtype=torch.float32)
         t = torch.linspace(0.0, timesteps, timesteps)
         return odeint(self, x0, t).detach().numpy()

@@ -73,7 +73,7 @@ class CompetitiveLVSystem(AbstractSystem):
 
         return A / self.K
 
-    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         all = []
         for _ in range(n):
             x0 = []
@@ -90,7 +90,7 @@ class CompetitiveLVSystem(AbstractSystem):
 
         return all
 
-    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
         time = np.linspace(0, timesteps, timesteps)
 
@@ -121,9 +121,9 @@ class CompetitiveLVSystem(AbstractSystem):
         data = np.transpose(np.array(data), axes=(0, 2, 1))
         return data
 
-    def calc_error(self, x, y) -> float:
+    def _calc_error(self, x, y) -> float:
         error = x - y
         return np.mean(error ** 2) / self.latent_dim
 
-    def calc_control_cost(self, control: np.ndarray) -> float:
+    def _calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)

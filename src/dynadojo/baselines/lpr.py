@@ -54,13 +54,13 @@ class LowestPossibleRadius(AbstractAlgorithm):
                             return False
         return True
 
-    def fit(self, samples, **kwargs):
+    def _fit(self, samples, **kwargs):
         while (not self.isValidRadius(self.currRadius, samples)):
             newRadius = self.currRadius+1
             self.radiiTables[newRadius] = self.generateRadiusTable(newRadius)
             self.currRadius = newRadius
 
-    def act(self, x, **kwargs):
+    def _act(self, x, **kwargs):
         with temp_random_seed(self._seed):
             control = []
             lastState = x[:, -1, :]
@@ -152,7 +152,7 @@ class LowestPossibleRadius(AbstractAlgorithm):
             evolved.append(sampleResult)
         return evolved
 
-    def predict(self, x0, timesteps, **kwargs):
+    def _predict(self, x0, timesteps, **kwargs):
         preds = [x0]
 
         for _ in range(timesteps-1):

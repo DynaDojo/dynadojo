@@ -29,7 +29,7 @@ class CTLNSystem(AbstractSystem):
         if self._seed is not None:
             torch.manual_seed(self._seed)  # TODO: make sure you relenquish the seed
 
-    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         self._delta = self._rng.uniform(0, 1)  # what should the upper bound on the randomly generated constants be?
         self._epsilon = self._rng.uniform(0, self._delta / (self._delta + 1))
         graph = self._make_graph(self._nodes, self._p)
@@ -47,7 +47,7 @@ class CTLNSystem(AbstractSystem):
         np.fill_diagonal(graph, 0)
         return torch.tensor(graph)
 
-    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
         time = torch.linspace(0, 1, timesteps)
 
@@ -66,9 +66,9 @@ class CTLNSystem(AbstractSystem):
         result = np.transpose(sol[0].detach().numpy(), axes=(1, 0, 2))
         return result
 
-    def calc_error(self, x, y) -> float:
+    def _calc_error(self, x, y) -> float:
         error = x - y
         return np.mean(error ** 2) / self.embed_dim
 
-    def calc_control_cost(self, control: np.ndarray) -> float:
+    def _calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)

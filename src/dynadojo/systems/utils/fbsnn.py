@@ -154,7 +154,7 @@ class FBSNNSystem(AbstractSystem):
         return X_star, Y_star
         
 
-    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         # initialize NN
         self.weights, self.biases = self._initialize_NN(self.layers)
         self.DW_seed = np.random.randint(0,100)
@@ -167,7 +167,7 @@ class FBSNNSystem(AbstractSystem):
         return X0
         
 
-    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         self.N = len(init_conds) 
         self.timesteps = timesteps
 
@@ -200,11 +200,11 @@ class FBSNNSystem(AbstractSystem):
         
         return sol
 
-    def calc_error(self, x, y) -> float:
+    def _calc_error(self, x, y) -> float:
         error = x - y
         return np.mean(error ** 2) / self.latent_dim
 
-    def calc_control_cost(self, control: np.ndarray) -> float:
+    def _calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)
 
     @abstractmethod
