@@ -21,7 +21,7 @@ class CNN(AbstractAlgorithm):
         n_channels = self.c1(torch.empty(1, 1, self._embed_dim)).size(-1)
         self.lin = nn.Sequential(nn.Linear(n_channels, embed_dim), nn.Sigmoid())
 
-    def fit(self, x: np.ndarray, epochs=100, **kwargs):
+    def _fit(self, x: np.ndarray, epochs=100, **kwargs):
         state = torch.tensor(x, dtype=torch.float32)
         batch_size = len(state)
 
@@ -46,7 +46,7 @@ class CNN(AbstractAlgorithm):
             loss.backward()
             opt.step()
 
-    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
+    def _predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         state = torch.tensor(x0, dtype=torch.float32)
         pred = state.unsqueeze(1)
 

@@ -1,5 +1,5 @@
-import pylab as plt
 import numpy as np
+import pylab as plt
 
 MAX_LINES = 30
 

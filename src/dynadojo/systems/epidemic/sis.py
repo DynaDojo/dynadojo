@@ -1,8 +1,9 @@
-import networkx as nx
 import ndlib.models.ModelConfig as mc
 import ndlib.models.epidemics as ep
+import networkx as nx
 
 from ..utils.epidemic import EpidemicSystem
+
 
 class SISSystem(EpidemicSystem):
     def __init__(self, latent_dim=2, embed_dim=2,

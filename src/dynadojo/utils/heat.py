@@ -1,6 +1,7 @@
-import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import matplotlib.pyplot as plt
 import numpy as np
+
 
 def plot(u, timesteps, dt, savefile=None):
     plate_length = int(np.sqrt(u.shape[1]))

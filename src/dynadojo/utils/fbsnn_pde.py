@@ -1,6 +1,6 @@
-from matplotlib.collections import LineCollection
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.collections import LineCollection
 
 MAX_LINES = 30
 

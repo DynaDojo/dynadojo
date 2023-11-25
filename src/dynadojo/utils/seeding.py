@@ -1,6 +1,7 @@
 import contextlib
-import numpy as np
 import random
+
+import numpy as np
 
 
 @contextlib.contextmanager

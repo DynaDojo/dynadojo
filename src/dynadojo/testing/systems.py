@@ -1,12 +1,10 @@
-import sys
+import importlib
 import inspect
-import doctest
+import sys
 
 from ..abstractions import AbstractSystem
-from ..challenges import FixedError, FixedComplexity, FixedTrainSize
 from ..baselines import LinearRegression
-
-import importlib
+from ..challenges import FixedError, FixedComplexity, FixedTrainSize
 
 
 def get_test_system(module):
@@ -36,10 +34,10 @@ def test_fixed_complexity(N: list[int], l: int, e: int, t: int, max_control_cost
     noisy = True
     # for  noisy in [True, False]:
     print(f"\nTesting {ood=} {noisy=}")
-    df = challenge.evaluate(LinearRegression, seed=seed, ood=ood, noisy=noisy, 
-                        reps_filter=reps_filter, 
-                        L_filter = L_filter,
-                        model_kwargs=model_kwargs)
+    df = challenge.evaluate(LinearRegression, seed=seed, ood=ood, noisy=noisy,
+                            reps_filter=reps_filter,
+                            L_filter = L_filter,
+                            algo_kwargs=model_kwargs)
     return df
 
 def test_fixed_training(n: int, L: list[int], t: int, max_control_cost_per_dim: int, control_horizons: int,
@@ -58,10 +56,10 @@ def test_fixed_training(n: int, L: list[int], t: int, max_control_cost_per_dim: 
     noisy = True
     print(f"\nTesting {ood=} {noisy=}")
     df = challenge.evaluate(LinearRegression, seed=seed,
-                        ood=ood, noisy=noisy, 
-                        reps_filter=reps_filter, 
-                        L_filter = L_filter,
-                        model_kwargs=model_kwargs)
+                            ood=ood, noisy=noisy,
+                            reps_filter=reps_filter,
+                            L_filter = L_filter,
+                            algo_kwargs=model_kwargs)
     return df
 
 def test_fixed_error(   target_error: float, L: list[int], t: int, max_control_cost_per_dim: int, control_horizons: int,
@@ -85,10 +83,10 @@ def test_fixed_error(   target_error: float, L: list[int], t: int, max_control_c
     noisy = True
     print(f"\nTesting {ood=} {noisy=}")
     df = challenge.evaluate(LinearRegression, seed=seed,
-                        ood=ood, noisy=noisy, 
-                            reps_filter=reps_filter, 
+                            ood=ood, noisy=noisy,
+                            reps_filter=reps_filter,
                             L_filter = L_filter,
-                            model_kwargs=model_kwargs)
+                            algo_kwargs=model_kwargs)
     return df
 
 
