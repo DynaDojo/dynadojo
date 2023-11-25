@@ -1,10 +1,8 @@
-import networkx as nx
 import ndlib.models.ModelConfig as mc
 import ndlib.models.opinions as op
+import networkx as nx
 
 from ..utils.opinion import OpinionSystem
-
-import numpy as np
 
 ''' 
 Note: in the current pip release of ndlib, AlgorithmicBiasMediaModel is not implemented. It is coming shortly (https://github.com/GiulioRossetti/ndlib/issues/251).

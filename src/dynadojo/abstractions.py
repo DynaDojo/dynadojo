@@ -1,6 +1,6 @@
 import itertools
-from abc import ABC, abstractmethod
 import time
+from abc import ABC, abstractmethod
 
 import numpy as np
 import pandas as pd

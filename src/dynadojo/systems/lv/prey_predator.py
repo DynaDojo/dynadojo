@@ -1,8 +1,7 @@
-from ...abstractions import AbstractSystem
-
-from scipy.integrate import solve_ivp
-import scipy as scipy
 import numpy as np
+from scipy.integrate import solve_ivp
+
+from ...abstractions import AbstractSystem
 
 """
 PreyPredator Lotka Volterra, generalized to n-species

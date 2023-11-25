@@ -1,6 +1,5 @@
 import numpy as np
 
-
 from ...abstractions import AbstractSystem
 
 

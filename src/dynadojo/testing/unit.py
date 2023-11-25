@@ -1,26 +1,56 @@
 import unittest
-from src.dynadojo.challenges import FixedComplexity, FixedTrainSize
-
-# from src.dynadojo.systems.lds import LDSystem
-# from src.dynadojo.systems.lorenz import LorenzSystem
-# from src.dynadojo.systems.heat import HeatEquation
-# from src.dynadojo.systems.ctln import CTLNSystem
-# from src.dynadojo.systems.ca import CASystem
-from src.dynadojo.systems import ALL_SYSTEMS
-
-# from src.dynadojo.baselines.lr import LinearRegression
-# from src.dynadojo.baselines.dnn import DNN
-# from src.dynadojo.baselines.sindy import SINDy
-# from src.dynadojo.baselines.dmd import DMD
-from src.dynadojo.baselines import ALL_BASELINES
 
 import numpy as np
 import pandas as pd
 import pandas.testing as pd_testing
 
+# baselines
+from ..baselines.aug_ode import AugODE
+from ..baselines.cnn import CNN
+from ..baselines.dmd import DMD
+from ..baselines.dnn import DNN
+from ..baselines.ode import ODE
+from ..baselines.sindy import SINDy
+
+ALL_BASELINES = [
+    AugODE,
+    CNN,
+    DMD,
+    DNN,
+    ODE,
+    SINDy
+]
+
+# systems
+from ..systems.ca import CASystem
+from ..systems.ctln import CTLNSystem
+from ..systems.heat import HeatEquation
+from ..systems.kuramoto import KuramotoSystem
+from ..systems.lds import LDSystem
+from ..systems.santi import NBodySystem
+from ..systems.snn import SNNSystem
+from ..systems.epidemic import SEISSystem, SISSystem, SIRSystem
+from ..systems.fbsnn_pde import BSBSystem, HJBSystem
+from ..systems.lv import CompetitiveLVSystem, PreyPredatorSystem
+from ..systems.opinion import ARWHKSystem, DeffuantSystem, HKSystem, MediaBiasSystem, WHKSystem
+
+ALL_SYSTEMS = [
+    CASystem,
+    CTLNSystem,
+    HeatEquation,
+    KuramotoSystem,
+    LDSystem,
+    NBodySystem,
+    SNNSystem,
+    SEISSystem, SISSystem, SIRSystem,
+    BSBSystem, HJBSystem,
+    CompetitiveLVSystem, PreyPredatorSystem,
+    ARWHKSystem, DeffuantSystem, HKSystem, MediaBiasSystem, WHKSystem
+]
 
 systems = ALL_SYSTEMS  # To test multiple systems, add them to this list
 models = ALL_BASELINES  # To test multiple models, add them to this list
+
 
 class TestReproducibility(unittest.TestCase):
     def test_make_init_cond(self):
@@ -38,7 +68,7 @@ class TestReproducibility(unittest.TestCase):
                 s1 = system(seed=100)
                 i1 = s1.make_init_conds(n=5)
                 d1 = s1.make_data(i1, timesteps=3, noisy=True)
-                
+
                 s2 = system(seed=100)
                 i2 = s2.make_init_conds(n=5)
                 d2 = s2.make_data(i2, timesteps=3, noisy=True)
@@ -59,7 +89,7 @@ class TestReproducibility(unittest.TestCase):
                 np.testing.assert_array_equal(i1, i2[:5])
 
     # TODO: Reproducibility test w/ control
-                
+
     # TODO: Improve reproducibility of data generation
     # def test_make_data_less_more(self):
     #     """
@@ -77,6 +107,7 @@ class TestReproducibility(unittest.TestCase):
     #             d2 = s2.make_data_wrapper(i2, timesteps=3, noisy=True)
     #             np.testing.assert_array_equal(d1, d2[:5])
 
+
 class TestReproducibilityModel(unittest.TestCase):
     def assertDataframeEqual(self, a, b, msg):
         try:
@@ -86,22 +117,23 @@ class TestReproducibilityModel(unittest.TestCase):
 
     def setUp(self):
         self.addTypeEqualityFunc(pd.DataFrame, self.assertDataframeEqual)
-    
+
     def test_with_fc(self):
         for model in models:
             with self.subTest(model):
-                challenge = FixedComplexity(N=[4], l=4, t=10, 
-                                system_cls=LDSystem, reps=1,
-                                test_examples=2, test_timesteps=2, verbose=False)
+                challenge = FixedComplexity(N=[4], l=4, t=10,
+                                            system_cls=LDSystem, reps=1,
+                                            test_examples=2, test_timesteps=2, verbose=False)
                 df1 = challenge.evaluate(model, seed=100, noisy=True,
                                          reps_filter=None,
-                                         L_filter = None,
+                                         L_filter=None,
                                          algo_kwargs=None)
                 df2 = challenge.evaluate(model, seed=100, noisy=True,
                                          reps_filter=None,
-                                         L_filter = None,
+                                         L_filter=None,
                                          algo_kwargs=None)
-                cols = ['rep','latent_dim','embed_dim','timesteps','n','error','ood_error','total_cost','system_seed','model_seed']
+                cols = ['rep', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
+                        'system_seed', 'model_seed']
                 df1 = df1[cols]
                 df2 = df2[cols]
                 self.assertEqual(df1, df2)
@@ -113,18 +145,19 @@ class TestReproducibilityModel(unittest.TestCase):
         """
         for model in models:
             with self.subTest(model):
-                challenge = FixedComplexity(N=[2], l=2, t=3, 
-                                system_cls=LDSystem, reps=2,
-                                test_examples=2, test_timesteps=2, verbose=False)
+                challenge = FixedComplexity(N=[2], l=2, t=3,
+                                            system_cls=LDSystem, reps=2,
+                                            test_examples=2, test_timesteps=2, verbose=False)
                 df1 = challenge.evaluate(model, seed=100, noisy=True,
                                          reps_filter=[1],
-                                         L_filter = None,
+                                         L_filter=None,
                                          algo_kwargs=None)
                 df2 = challenge.evaluate(model, seed=100, noisy=True,
                                          reps_filter=None,
-                                         L_filter = None,
+                                         L_filter=None,
                                          algo_kwargs=None)
-                cols = ['rep','latent_dim','embed_dim','timesteps','n','error','ood_error','total_cost','system_seed','model_seed']
+                cols = ['rep', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
+                        'system_seed', 'model_seed']
                 df1 = df1[cols]
                 df2 = df2[cols].loc[df2['rep'] == 1]
                 self.assertEqual(df1, df2)

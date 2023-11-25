@@ -1,9 +1,9 @@
+from abc import abstractmethod
+
 import numpy as np
 import tensorflow as tf
 
 from ...abstractions import AbstractSystem
-from abc import abstractmethod
-
 
 '''
 Forward-Backward Neural Network Systems, adapted from Maziar Raissi https://github.com/maziarraissi/FBSNNs

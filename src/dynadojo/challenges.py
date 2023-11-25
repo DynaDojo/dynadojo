@@ -1,10 +1,12 @@
 import math
 import time
-import pandas as pd
-import numpy as np
 
-from .utils.plotting import plot_target_error, plot_metric
+import numpy as np
+import pandas as pd
+
 from .abstractions import Challenge, AbstractSystem, AbstractAlgorithm
+from .utils.plotting import plot_target_error, plot_metric
+
 
 class FixedComplexity(Challenge):
     def __init__(self, 

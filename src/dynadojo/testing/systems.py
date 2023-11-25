@@ -1,12 +1,10 @@
-import sys
+import importlib
 import inspect
-import doctest
+import sys
 
 from ..abstractions import AbstractSystem
-from ..challenges import FixedError, FixedComplexity, FixedTrainSize
 from ..baselines import LinearRegression
-
-import importlib
+from ..challenges import FixedError, FixedComplexity, FixedTrainSize
 
 
 def get_test_system(module):

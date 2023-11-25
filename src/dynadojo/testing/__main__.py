@@ -1,5 +1,3 @@
-from .systems import test_system
-
 # test_id = 0 is FixedComplexity
 # test_id = 1 is FixedTrainSize
 # test_id = 2 is FixedError

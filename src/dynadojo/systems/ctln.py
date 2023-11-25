@@ -1,9 +1,10 @@
-from ..abstractions import AbstractSystem
+import networkx as nx
+import numpy as np
 import torch
 import torch.nn as nn
 from torchdiffeq import odeint
-import networkx as nx
-import numpy as np
+
+from ..abstractions import AbstractSystem
 
 
 class CTLNSystem(AbstractSystem):

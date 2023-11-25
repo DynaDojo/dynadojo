@@ -1,7 +1,7 @@
 import numpy as np
-from ..abstractions import AbstractAlgorithm
-
 from sklearn.linear_model import LinearRegression as SKLinearRegression
+
+from ..abstractions import AbstractAlgorithm
 
 
 class LinearRegression(AbstractAlgorithm):

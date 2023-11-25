@@ -4,9 +4,6 @@
 import numpy as np
 from scipy.integrate import ode
 
-import numpy as np
-import scipy as sp
-
 from ..abstractions import AbstractSystem
 
 """

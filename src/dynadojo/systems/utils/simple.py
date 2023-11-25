@@ -1,7 +1,7 @@
 # import sys
 import numpy as np
-from scipy.stats import ortho_group
 from scipy.integrate import solve_ivp
+from scipy.stats import ortho_group
 
 from ...abstractions import AbstractSystem
 
