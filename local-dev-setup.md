@@ -4,7 +4,8 @@
 
 If you don't have these installed, you can install them with `homebrew` on MacOS. 
 
-# Python Version
+# Installing locally
+## Python Version
 Make sure you are working with Python 3.10 to 3.11
 If using pyenv,
 ```
@@ -13,12 +14,22 @@ pyenv install 3.10
 pyenv local 3.10 #set the current directory default version
 ```
 
-# Package Installation
+## Package Installation
 ```
 pdm install 
 ```
+Reload terminal to activate the venv.
 
-Make sure to reload terminal to activate venv.
+# Using Docker
 
-Todo:
-Build/publish
+## Get the image
+```
+docker pull
+```
+
+## Run the image
+```
+```
+
+# Todos:
+* Document how to build/publish

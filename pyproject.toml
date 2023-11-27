@@ -4,7 +4,8 @@ authors = [
     {name = "Logan Mondal Bhamidipaty", email = "loganmb@stanford.edu"},
     {name = "Tommy Anthony Bruzzese", email = "tbru@stanford.edu"},
     {name = "Max Kanwal", email = "mkanwal@stanford.edu"},
-    {name = "Rami Ratl Mrad", email = "ramiratlmrad@berkeley.edu"}
+    {name = "Rami Ratl Mrad", email = "ramiratlmrad@berkeley.edu"},
+    {name = "Caryn Tran", email = "caryn.tran@berkeley.edu"}
 ]
 dependencies = [
     "numpy",
@@ -47,7 +48,7 @@ tensorflow = [
     "tensorflow",
     "tensorflow-macos; sys_platform=='darwin' and platform_machine=='arm64'",
     "tensorflow-intel; sys_platform=='win32'",
-    "tensorflow-cpu; (sys_platform=='linux' or sys_platform=='darwin') and platform_machine!='arm64' and platform_machine!='aarch64'",
+    "tensorflow-cpu; (sys_platform=='linux' or sys_platform=='darwin') and (platform_machine!='arm64' and platform_machine!='aarch64')",
     "tensorflow-cpu-aws; sys_platform=='linux' and (platform_machine=='arm64' or platform_machine=='aarch64')",
     "tensorflow-io-gcs-filesystem; sys_platform!='darwin' or platform_machine!='arm64' or  sys_platform=='win32'"
 ]

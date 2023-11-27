@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 from dynadojo.abstractions import Challenge 
-from .params import _get_system, _get_model, _get_params, _serialize_params, _deserialize_params
+from .params import _get_system, _get_algo, _get_params, _serialize_params, _deserialize_params
 import json
 
 
@@ -30,14 +30,14 @@ def run_challenge(
     """
     Run a fixed complexity challenge and save the results to a csv file.
     :param s: system short name, defined in params.py system_dict
-    :param m: model short name, defined in params.py model_dict
+    :param m: algo short name, defined in params.py algo_dict
     :param output_dir: directory to save results
     :param split: tuple (split_num, total_splits) to run a subset of the total number of system runs, as specified by L and reps the challenge parameters
     """
     print(f"Running {_get_base_filename(s, m, challenge_cls)} {split=}")
 
     system = _get_system(s)
-    model = _get_model(m)
+    algo = _get_algo(m)
     
     # Get challenge parameters
     challenge_params = _get_params(s, m, challenge_cls=challenge_cls)
@@ -45,7 +45,7 @@ def run_challenge(
     # Get evaluate parameters and remove from challenge parameters
     evaluate_params = challenge_params.get("evaluate", {})
     del challenge_params["evaluate"]
-    evaluate_params["model_cls"] = model
+    evaluate_params["algo_cls"] = algo
 
     # Override system class
     challenge_params["system_cls"] = system

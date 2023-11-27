@@ -20,3 +20,4 @@ experiments/outputs
 experiments/logs
 demos
 _dev_import_testing
+*.code-workspace
