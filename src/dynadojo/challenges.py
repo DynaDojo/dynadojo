@@ -104,13 +104,13 @@ class FixedTrainSize(Challenge):
                          verbose=verbose)
 
     @staticmethod
-    def plot(data: pd.DataFrame, n: int = None, show : bool =True, show_stats: bool = False):
+    def plot(data: pd.DataFrame, n: int = None, show : bool =True, show_stats: bool = False, plot_ood=True, ax=None):
         """
         Returns: matplotlib.axes.Axes object
         """
         if not n:
             n = data["n"].unique()[0]
-        if not data['ood_error'].isnull().any():
+        if plot_ood and not data['ood_error'].isnull().any():
             ax = plot_metric(data, "latent_dim", ["error", "ood_error"], xlabel=r'$L$', log=True, ylabel=r'$\mathcal{E}$', errorbar=("pi", 50))
             ax.legend(title='Distribution')
         else:

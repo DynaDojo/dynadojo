@@ -8,7 +8,7 @@ class SINDy(AbstractModel):
     def __init__(self, 
             embed_dim: int, 
             timesteps: int, 
-            max_control_cost: float, 
+            max_control_cost: float = 0, 
             differentiation_method = None, 
             **kwargs):
         """

@@ -113,6 +113,7 @@ def make_plots(
         m = "lr",
         output_dir="experiments/outputs",
         challenge_cls:type[Challenge] = FixedComplexity,
+        save=True
     ):
     if challenge_cls == FixedComplexity:
         path = f"{output_dir}/fc/{s}"
@@ -128,10 +129,12 @@ def make_plots(
     csv_filename = filebase + ".csv"
     figure_filename = filebase + ".pdf"
 
-    if not (os.path.exists(csv_path) and os.path.isdir(csv_path)):
-        print(f"No plot created: Path {csv_path} does not exist or is not a directory")
-        return
-    files = _find_matching_files(csv_path, csv_filename)
+    
+    files = _find_matching_files(csv_path, csv_filename) 
+    # if not (os.path.exists(csv_path) and os.path.isdir(csv_path)):
+    #     print(f"No plot created: Path {csv_path} does not exist or is not a directory")
+    #     return
+    # TODO: provide proper error message if no files found
     if len(files) <= 0:
         print(f"No plot created: No files matching {csv_filename} found in {csv_path}")
         return 
@@ -151,10 +154,12 @@ def make_plots(
     g = challenge_cls.plot(data, show=False, **kwargs)
     # linear axes instead of log
     # g.set(xscale="linear", yscale="linear")
-    g.figure.savefig(f"{path}/{figure_filename}", bbox_inches='tight')
+    if save:
+        g.figure.savefig(f"{path}/{figure_filename}", bbox_inches='tight')
     print(f"Plot created with {len(files)} files in {path} and {len(data)} rows: {figure_filename} ")
     # for file in files:
     #     print(f"\t- {file}")
+    return g, data
 
 
 ### Helper functions
@@ -182,14 +187,20 @@ def _get_base_filename(s:str, m:str, challenge_cls:type[Challenge]):
 
     return filebase
 
-def _find_matching_files(path, filename):
+def _find_matching_files(path, filename, extended=False):
     """
     Find all files in path that match filename.
     For example, if filename is "fc_lds_lr_l=5.csv", this will return all files in path that contain "fc_lds_lr_l=5" and end with ".csv"
     """
-    files = os.listdir(path)
-    file_base = ".".join(filename.split(".")[:-1])+"_" #include underscore to avoid matching "l=5" with "l=50"
+    file_base = ".".join(filename.split(".")[:-1])
     file_ext = filename.split(".")[1]
+    
+    
+    if not (os.path.exists(path) and os.path.isdir(path)):
+        print(f" Path {path} does not exist or is not a directory")
+        return []
+    file_base += "_"
+    files = os.listdir(path)
     matching = [f"{path}/{f}" for f in files if file_base in f and file_ext in f]
     return matching
 

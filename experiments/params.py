@@ -54,8 +54,8 @@ fc_challenge_params_dict = {
                     "t" : 50,
                     "N" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
                 },
-                "lr_5" : { "l" : 5 },
-                "lr_10" : { "l" : 10 },
+                "lr_5" : { "l" : 5 }, #DONE
+                "lr_10" : { "l" : 10 }, 
                 "lr_20" : { "l" : 20 },
                 "lr_30" : { "l" : 30 },
                 "lr_50" : { "l" : 50 },
@@ -71,6 +71,7 @@ fc_challenge_params_dict = {
                 "dnn_50" : { "l" : 50 },
                 "dnn_100" : { "l" : 100 },
                 # SINDY
+                "sindy_3" : { "l" : 3 },
                 "sindy_5" : { "l" : 5 },
                 "sindy_10" : { "l" : 10 },
                 "sindy_20" : { "l" : 20 },
@@ -81,18 +82,34 @@ fc_challenge_params_dict = {
     ,
     "lorenz" : {
         "default" : {
-            "l" : 10,  
+            "l" : 9,  #MUST BE ODD > 3
             "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
             "t" : 50,
         },
-        "lr" : {
+        "lr" : { #FAIL
             "N" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
+            "reps":5
         },
-        "sindy" : {
+        "sindy" : { #FAIL
             "t": 50,
             "test_timesteps" : 50,
             "N" : [int(n) for n in np.logspace(1, 3, num=15, endpoint=True)],
         },
+        "lr_3" : { #SUCCESS
+            "t": 50,
+            "test_timesteps" : 50,
+            "l" : 3,
+            "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
+        },
+        "sindy_3" : { #SUCCESS
+            "l" : 3,
+            "t": 50,
+            "test_timesteps" : 50,
+            "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
+        }
+        , "sindy_5" : { #FAIL
+            "l" : 5,
+        }
     }
 }
 
@@ -117,10 +134,11 @@ fts_challenge_params_dict = {
                         "ood": True,
                     }
                 },
-    "lds" : {
+    "lds" : { #DONE
                 "default" : {
                     "L" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
                     "t" : 50,
+                    "n" : 1000,
                 },
                 "lr" : {
                     "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
@@ -130,6 +148,11 @@ fts_challenge_params_dict = {
                     "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
                     "n": 10000,
                 },
+    },
+    "lorenz" : {
+            "default" : {
+                "n": 1000,
+            }
     }
 }
 
@@ -159,13 +182,13 @@ fe_challenge_params_dict = {
                         "ood": False,
                     }
                 },
-    "lds" : {
+    "lds" : { 
                 "default" : {
                     "L" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
                     "n_starts" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)], #same length as L
                     "t" : 50,
                 },
-                "lr" : { 
+                "lr" : { #DONE w/ mem fails
                     "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
                     "n_starts" :  [1000]*20, #same length as L
                     "target_error": 1e-5,
@@ -173,7 +196,7 @@ fe_challenge_params_dict = {
                     "n_max" : 10000,
                     # "n_precision": 5 #not a percentage....run previously before changing to percentage 
                 },
-                "lr_ood" : {
+                "lr_ood" : { #DONE w/ mem fails
                     "evaluate": {
                         "ood": True,
                     }
@@ -182,14 +205,14 @@ fe_challenge_params_dict = {
                     "target_error": 5e0,
                     "n_max" : 20000,
                 },
-                "dnn_100" : { #Search, Precision as a number of samples not percentage
+                "dnn_100" : { #FAILED, too many np.infs #Search, Precision as a number of samples not percentage
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
                     "n_starts" :  [int(n) for n in np.logspace(1, 4, num=10, endpoint=True)],
                     "target_error": 5e0,
                     "n_window": 5,
                     # "n_precision": 5 #not a percentage....run previously before changing to percentage  
                 },
-                "dnn_100_window" : { #Search
+                "dnn_100_window" : { #FAILED #Search
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
                     "n_starts" :  [int(n) for n in np.logspace(2, 4, num=10, endpoint=True)],
                     "target_error": 5e0,
@@ -198,13 +221,35 @@ fe_challenge_params_dict = {
                     "n_window_density": 0.5,
                     "n_min": 3,
                 },
-                "dnn_simple_2" : { #Search Simple #TODO: rename to dnn_simple
+                "dnn_simple_2" : { #PROMISING BUT MEMORY FAIL #Search Simple #TODO: rename to dnn_simple
                     "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
                     "n_starts" :  [int(n) for n in np.logspace(4, 4.7, num=10, endpoint=True)],
                     "target_error": 1e0,
                     "n_window": 5,
                     "n_precision": .05,
                     "n_window_density": 0.5,
+                    "n_min": 3,
+                    "n_max" : 1e5,
+                    "reps": 100,
+                },
+                "dnn_simple_q" : { #PROMISING BUT NMAX TOO LOW #Search Simple #TODO: rename to dnn_simple
+                    "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
+                    "n_starts" :  [int(n) for n in np.logspace(3, 4, num=10, endpoint=True)],
+                    "target_error": 1e0,
+                    "n_window": 5,
+                    "n_precision": .05,
+                    "n_window_density": 0.6,
+                    "n_min": 3,
+                    "n_max" : 1e4,
+                    "reps": 100,
+                },
+                "dnn_simple_q2" : { #??? Running 4949151 #Search Simple #TODO: rename to dnn_simple
+                    "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
+                    "n_starts" :  [int(n) for n in np.logspace(3, 4, num=10, endpoint=True)],
+                    "target_error": 1e0,
+                    "n_window": 5,
+                    "n_precision": .05,
+                    "n_window_density": 0.6,
                     "n_min": 3,
                     "n_max" : 1e5,
                     "reps": 100,
