@@ -1,9 +1,9 @@
 """
-This file contains parameters for experiments, including system and model parameters, and challenge parameters.
-Also contains functions for getting system, model, and challenge parameters.
+This file contains parameters for experiments, including system and algo parameters, and challenge parameters.
+Also contains functions for getting system, algo, and challenge parameters.
 """
 import numpy as np
-from dynadojo.baselines import LinearRegression
+from dynadojo.baselines.lr import LinearRegression
 from dynadojo.baselines.dnn import DNN
 from dynadojo.baselines.sindy import SINDy
 
@@ -17,7 +17,7 @@ system_dict = {
     "lorenz": LorenzSystem,
     
 }
-model_dict = {
+algo_dict = {
     "lr" : LinearRegression,
     "dnn" : DNN,
     "sindy": SINDy
@@ -36,7 +36,7 @@ fc_challenge_params_dict = {
                     "system_kwargs": None,
                     "evaluate": {
                         "seed": 100,
-                        "model_kwargs" : None,
+                        "algo_kwargs" : None,
                         "fit_kwargs" : None,
                         "act_kwargs" : None,
                         "num_parallel_cpu" : 0,
@@ -126,7 +126,7 @@ fts_challenge_params_dict = {
                     "system_kwargs": None,
                     "evaluate": {
                         "seed": 1027,
-                        "model_kwargs" : None,
+                        "algo_kwargs" : None,
                         "fit_kwargs" : None,
                         "act_kwargs" : None,
                         "num_parallel_cpu" : 0,
@@ -174,7 +174,7 @@ fe_challenge_params_dict = {
                     "system_kwargs": None,
                     "evaluate": {
                         "seed": 1027,
-                        "model_kwargs" : None,
+                        "algo_kwargs" : None,
                         "fit_kwargs" : None,
                         "act_kwargs" : None,
                         "num_parallel_cpu" : 0,
@@ -269,14 +269,14 @@ fe_challenge_params_dict = {
 
 def _get_params(s, m, challenge_cls: type[Challenge]=FixedComplexity):
     """
-    Get challenge parameters for a given system, model, and challenge class, overriding defaults with system and model specific parameters.
+    Get challenge parameters for a given system, algo, and challenge class, overriding defaults with system and algo specific parameters.
 
     :param s: system short name, defined in system_dict
-    :param m: model short name, defined in model_dict
+    :param m: algo short name, defined in algo_dict
     :param challenge_cls: challenge class, one of Challenge.__subclasses__()
     """
     assert s in system_dict, f"s must be one of {system_dict.keys()}"
-    assert m.split("_")[0] in model_dict, f"m must be one of {model_dict.keys()}"
+    assert m.split("_")[0] in algo_dict, f"m must be one of {algo_dict.keys()}"
     if challenge_cls == FixedComplexity:
         challenge_params_dict = fc_challenge_params_dict
     elif challenge_cls == FixedTrainSize:
@@ -310,9 +310,9 @@ def _get_system(s:str):
     assert s in system_dict, f"s must be one of {system_dict.keys()}"
     return system_dict[s]
 
-def _get_model(m:str):
-    assert m.split("_")[0] in model_dict, f"m must be one of {model_dict.keys()}"
-    return model_dict.get(m, model_dict[m.split("_")[0]])
+def _get_algo(a:str):
+    assert a.split("_")[0] in algo_dict, f"m must be one of {algo_dict.keys()}"
+    return algo_dict.get(a, algo_dict[a.split("_")[0]])
 
 
 def _serialize_params(challenge_params, evaluate_params):
@@ -323,7 +323,7 @@ def _serialize_params(challenge_params, evaluate_params):
     serialized = challenge_params.copy()
     serialized_eval = evaluate_params.copy()
     serialized['system_cls'] = challenge_params['system_cls'].__name__
-    serialized_eval['model_cls'] = evaluate_params['model_cls'].__name__
+    serialized_eval['algo_cls'] = evaluate_params['algo_cls'].__name__
     serialized['evaluate'] = serialized_eval
     return serialized
 
@@ -336,5 +336,5 @@ def _deserialize_params(params):
     }
     challenge_params, evaluate_params = params
     challenge_params['system_cls'] = name2cls[challenge_params['system_cls']]
-    evaluate_params['model_cls'] = name2cls[evaluate_params['model_cls']]
+    evaluate_params['algo_cls'] = name2cls[evaluate_params['algo_cls']]
     return challenge_params, evaluate_params
