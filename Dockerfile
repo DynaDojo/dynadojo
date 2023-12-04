@@ -66,11 +66,12 @@ CMD ["python", "-m", "experiments"]
 
 # ------------------------------------------------------------------------------------#
 ######### GENERAL USE RUNTIME IMAGE #########
-# Build image with (on a M1 Mac; omit platform if building on an amd machine): 
-#       docker build --platform=linux/arm64 --target=runtime --tag=dynadojo .
+# Build image with: 
+#       docker build --target=runtime --tag=dynadojo .
 # To build for multiple arch: 
-#       Load and test locally:  docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=dynadojo --load .
-#       Push to dockerhub:      docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=[username]/dynadojo --push .
+#       Create buildx driver image:         docker buildx create --use
+#       Build & Load to test locally:       docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=dynadojo --load .
+#       Or Build & Push to dockerhub:       docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=[username]/dynadojo --push .
 
 
 # run stage

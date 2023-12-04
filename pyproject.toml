@@ -43,6 +43,14 @@ name = "pytorch"
 
 # Tensorflow Wheel Issues https://github.com/python-poetry/poetry/issues/8271
 # Specifying Env Markers https://peps.python.org/pep-0508/#environment-markers
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "pylint",
+    "jupyter>=1.0.0",
+    "parameterized>=0.9.0",
+]
+
 [project.optional-dependencies]
 tensorflow = [
     "tensorflow",
@@ -52,11 +60,8 @@ tensorflow = [
     "tensorflow-cpu-aws; sys_platform=='linux' and (platform_machine=='arm64' or platform_machine=='aarch64')",
     "tensorflow-io-gcs-filesystem; sys_platform!='darwin' or platform_machine!='arm64' or  sys_platform=='win32'"
 ]
-
-[tool.pdm.dev-dependencies]
-dev = [
-    "pylint",
-    "jupyter>=1.0.0",
+rebound = [
+    "rebound>=4.0.1",
 ]
 
 [project.urls]

@@ -2,11 +2,10 @@
 # It is not intended for manual editing.
 
 [metadata]
-groups = ["default", "dev", "tensorflow", "sindy"]
-cross_platform = true
-static_urls = false
-lock_version = "4.3"
-content_hash = "sha256:f919645fdb786bc79828a06fae30fd54b371247b87abe1dd502034871c36c75c"
+groups = ["default", "dev", "tensorflow", "rebound"]
+strategy = ["cross_platform"]
+lock_version = "4.4"
+content_hash = "sha256:3d817f9cd98c7eb7f9b2fbbdaf15e1b21b963a3263cc92caf5528b26f88a1bc1"
 
 [[package]]
 name = "absl-py"
@@ -1646,6 +1645,16 @@ files = [
 ]
 
 [[package]]
+name = "parameterized"
+version = "0.9.0"
+requires_python = ">=3.7"
+summary = "Parameterized testing with any Python test framework"
+files = [
+    {file = "parameterized-0.9.0-py2.py3-none-any.whl", hash = "sha256:4e0758e3d41bea3bbd05ec14fc2c24736723f243b28d702081aef438c9372b1b"},
+    {file = "parameterized-0.9.0.tar.gz", hash = "sha256:7fc905272cefa4f364c1a3429cbbe9c0f98b793988efb5bf90aac80f08db09b1"},
+]
+
+[[package]]
 name = "parso"
 version = "0.8.3"
 requires_python = ">=3.6"
@@ -2082,6 +2091,46 @@ files = [
 ]
 
 [[package]]
+name = "rebound"
+version = "4.0.1"
+summary = "An open-source multi-purpose N-body code"
+files = [
+    {file = "rebound-4.0.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:6cd9e1a8b0e001e23d59203375df8b65d1308d7b3b55eacd9f4dda92c90e1fee"},
+    {file = "rebound-4.0.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:bc9731241997c6a6b128ae401fc5bf9b9e62bf6366842c32cd028664440b84ea"},
+    {file = "rebound-4.0.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d2a2c55b2814f218e1ea7d043bbd053d7dedc4f357eb7bb258027e1a0a93fb74"},
+    {file = "rebound-4.0.1-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:00b30a71829a22dc8a1ee76de92b9bdbc071675219c1bd064cb09afc8aee43aa"},
+    {file = "rebound-4.0.1-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:46240662facfb253388df5a6ef97cff8c1b8a959f221f7dd09875a5c4ba858ab"},
+    {file = "rebound-4.0.1-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:70271f1ba68fa3b4ded315b9b1adcf9c1456b330248346745adc3b313ac01531"},
+    {file = "rebound-4.0.1-cp310-cp310-win32.whl", hash = "sha256:03289db431a46f61eeb76f835fe09bb1f6a758357d4a264fd9f7e0ad3cc57eb7"},
+    {file = "rebound-4.0.1-cp310-cp310-win_amd64.whl", hash = "sha256:6c4ef610d12e48e4ce6b61f3a288f7c28fbba3591758531c6d60397b0d6a4690"},
+    {file = "rebound-4.0.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:0cb51246ace2b32d88ebfad82307690303de266637ee2b98ff0bf75eb27f6dcd"},
+    {file = "rebound-4.0.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:42a63c92d090d79ae34b4af903fa8465c37d10d4f7b1a992691558bccfea7851"},
+    {file = "rebound-4.0.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:be46f9cbcc7ae8b6f7800db0f81ecd0346204e6eef8bdf4f9e50f34e69c7b954"},
+    {file = "rebound-4.0.1-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2d61e4ce439dbe96905b3acc8b230ccaeecc333a92da8e14b2832531063c1d03"},
+    {file = "rebound-4.0.1-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:a3bb2e53caf0275c3a9887f7411f33b88230c8dfc7096d426975b196726ed7f9"},
+    {file = "rebound-4.0.1-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:efba33f551f6dcdd33e52ce7d2923ec5b51d6de0fcff5da680d71fc49cee5a24"},
+    {file = "rebound-4.0.1-cp311-cp311-win32.whl", hash = "sha256:abc3e7facab958c6574f01741b8eed8485ead3340fce84e86340e08798cc68a6"},
+    {file = "rebound-4.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:4f8dd20330d78b7de564204bc604e4e254f4e335ebfd8cc33251a36487f0ae29"},
+    {file = "rebound-4.0.1-pp310-pypy310_pp73-macosx_10_9_x86_64.whl", hash = "sha256:b7d4b9971652061977ca147b86c8109a172852bb8f90ddf732f1b11ddfa0a5ea"},
+    {file = "rebound-4.0.1-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5ac1eb573304862713e0555b973df979bafed91fb443f25e71b7f996b8db035e"},
+    {file = "rebound-4.0.1-pp310-pypy310_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c43615997fe80105b7213b0114defebf97c7e73329719abb85bddd321f5be3b4"},
+    {file = "rebound-4.0.1-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:55631405d200a67da0430040ae62d27a0baf53050f64dcf7e5b442b3c88aa757"},
+    {file = "rebound-4.0.1-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:f71a6124657bda1b7e10686344a4c6970aadda54a68857482079a03ecddbcc7d"},
+    {file = "rebound-4.0.1-pp37-pypy37_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:702290f13e2a4defe617fb31e302a14abbcd2e209dd88e5613c755905e7882f0"},
+    {file = "rebound-4.0.1-pp37-pypy37_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e9c345d3cf620fd41830640447ac3db70add355fc6ce9e6b07cbf69af43887e9"},
+    {file = "rebound-4.0.1-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:37fbda81723748f28ca47ac61c5a87a707a390f0b39623de19f7445b5a77a6d4"},
+    {file = "rebound-4.0.1-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:f72a79e3e2a869ba20b2a839b69776de51d82af39575adfd28b23cf9e0ddc276"},
+    {file = "rebound-4.0.1-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:85f618a50e92c950bf6aa61f898f9af37bc0dd50202d212d8978a01b47a7a88c"},
+    {file = "rebound-4.0.1-pp38-pypy38_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f1610bf30ce3e21b7254b78b12c3b352de4c47cee9a187d610b74fbeb5538ff2"},
+    {file = "rebound-4.0.1-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:7a74470a1a1b52a9a53a28165e6aac67bdfd5f084c0ded997877226fb11a5353"},
+    {file = "rebound-4.0.1-pp39-pypy39_pp73-macosx_10_9_x86_64.whl", hash = "sha256:10194a705fb52d63bd520d781cb3aab0a2740b7c524eb99c8f44fd54bee4fda9"},
+    {file = "rebound-4.0.1-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a7f8f60008d97fb78677b584b3c29461ce9ed6f0f9744495084c1731cd071d8d"},
+    {file = "rebound-4.0.1-pp39-pypy39_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a625859b7471afc35c6fb4e536b15e97ae4c377d9bdc26e870a841fc2f164e6f"},
+    {file = "rebound-4.0.1-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:37013aaf6b04ffd71d8bbec22ef7cbaa7fe01a0d22005d97e4ea5e43d8a96ba8"},
+    {file = "rebound-4.0.1.tar.gz", hash = "sha256:8f76ceacf072f5e73b0cf6e3247ec5dbf9769f4ea72d69e3d034e5aec9207cdc"},
+]
+
+[[package]]
 name = "referencing"
 version = "0.30.2"
 requires_python = ">=3.8"
@@ -2420,29 +2469,6 @@ files = [
     {file = "tensorboard_data_server-0.7.1-py3-none-any.whl", hash = "sha256:9938bd39f5041797b33921066fba0eab03a0dd10d1887a05e62ae58841ad4c3f"},
     {file = "tensorboard_data_server-0.7.1-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:be8d016a1aa394e6198280d4a3dc37898f56467310c5f5e617cac10a783e055a"},
     {file = "tensorboard_data_server-0.7.1-py3-none-manylinux2014_x86_64.whl", hash = "sha256:255c02b7f5b03dd5c0a88c928e563441ff39e1d4b4a234cdbe09f016e53d9594"},
-]
-
-[[package]]
-name = "tensorflow"
-version = "2.14.0"
-requires_python = ">=3.9"
-summary = "TensorFlow is an open source machine learning framework for everyone."
-dependencies = [
-    "tensorflow-cpu-aws==2.14.0; platform_system == \"Linux\" and (platform_machine == \"arm64\" or platform_machine == \"aarch64\")",
-    "tensorflow-intel==2.14.0; platform_system == \"Windows\"",
-    "tensorflow-macos==2.14.0; platform_system == \"Darwin\" and platform_machine == \"arm64\"",
-]
-files = [
-    {file = "tensorflow-2.14.0-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:318b21b18312df6d11f511d0f205d55809d9ad0f46d5f9c13d8325ce4fe3b159"},
-    {file = "tensorflow-2.14.0-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:927868c9bd4b3d2026ac77ec65352226a9f25e2d24ec3c7d088c68cff7583c9b"},
-    {file = "tensorflow-2.14.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c3870063433aebbd1b8da65ed4dcb09495f9239397f8cb5a8822025b6bb65e04"},
-    {file = "tensorflow-2.14.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0c9c1101269efcdb63492b45c8e83df0fc30c4454260a252d507dfeaebdf77ff"},
-    {file = "tensorflow-2.14.0-cp310-cp310-win_amd64.whl", hash = "sha256:0b7eaab5e034f1695dc968f7be52ce7ccae4621182d1e2bf6d5b3fab583be98c"},
-    {file = "tensorflow-2.14.0-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:00c42e7d8280c660b10cf5d0b3164fdc5e38fd0bf16b3f9963b7cd0e546346d8"},
-    {file = "tensorflow-2.14.0-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:c92f5526c2029d31a036be06eb229c71f1c1821472876d34d0184d19908e318c"},
-    {file = "tensorflow-2.14.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c224c076160ef9f60284e88f59df2bed347d55e64a0ca157f30f9ca57e8495b0"},
-    {file = "tensorflow-2.14.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a80cabe6ab5f44280c05533e5b4a08e5b128f0d68d112564cffa3b96638e28aa"},
-    {file = "tensorflow-2.14.0-cp311-cp311-win_amd64.whl", hash = "sha256:0587ece626c4f7c4fcb2132525ea6c77ad2f2f5659a9b0f4451b1000be1b5e16"},
 ]
 
 [[package]]

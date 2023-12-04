@@ -267,7 +267,7 @@ fe_challenge_params_dict = {
     }
 }
 
-def _get_params(s, m, challenge_cls: type[Challenge]=FixedComplexity):
+def _get_params(s, a, challenge_cls: type[Challenge]=FixedComplexity):
     """
     Get challenge parameters for a given system, algo, and challenge class, overriding defaults with system and algo specific parameters.
 
@@ -276,7 +276,7 @@ def _get_params(s, m, challenge_cls: type[Challenge]=FixedComplexity):
     :param challenge_cls: challenge class, one of Challenge.__subclasses__()
     """
     assert s in system_dict, f"s must be one of {system_dict.keys()}"
-    assert m.split("_")[0] in algo_dict, f"m must be one of {algo_dict.keys()}"
+    assert a.split("_")[0] in algo_dict, f"m must be one of {algo_dict.keys()}"
     if challenge_cls == FixedComplexity:
         challenge_params_dict = fc_challenge_params_dict
     elif challenge_cls == FixedTrainSize:
@@ -290,17 +290,17 @@ def _get_params(s, m, challenge_cls: type[Challenge]=FixedComplexity):
     default_params = challenge_params_dict["default"]
     default_eval_params = default_params["evaluate"]
 
-    s_m_base_params = challenge_params_dict.get(s, {}).get(m.split("_")[0], {})
-    s_m_base_eval_params =  s_m_base_params.get("evaluate", {})
+    s_a_base_params = challenge_params_dict.get(s, {}).get(a.split("_")[0], {})
+    s_a_base_eval_params =  s_a_base_params.get("evaluate", {})
 
-    s_m_params = challenge_params_dict.get(s, {}).get(m, {})
-    s_m_eval_params = s_m_params.get("evaluate", {})
+    s_a_params = challenge_params_dict.get(s, {}).get(a, {})
+    s_a_eval_params = s_a_params.get("evaluate", {})
 
     s_default_params = challenge_params_dict.get(s, {}).get("default", {})
     s_default_eval_params = s_default_params.get("evaluate", {})
 
-    challenge_params = { **default_params, **s_default_params, **s_m_base_params, **s_m_params }
-    eval_params = { **default_eval_params, **s_default_eval_params, **s_m_base_eval_params,  **s_m_eval_params }
+    challenge_params = { **default_params, **s_default_params, **s_a_base_params, **s_a_params }
+    eval_params = { **default_eval_params, **s_default_eval_params, **s_a_base_eval_params,  **s_a_eval_params }
     challenge_params["evaluate"] = eval_params
     assert ("L" in challenge_params or "l" in challenge_params) and "reps" in challenge_params, "must specify L (or l) and reps in challenge parameters"
 

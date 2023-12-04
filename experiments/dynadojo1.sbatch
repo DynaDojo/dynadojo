@@ -14,6 +14,12 @@ CHALLENGE=$1
 SYSTEM=$2
 MODEL=$3
 
+# if test -f $GROUP_HOME/$USER/simg/dynadojo; then
+#   echo “docker image exists”
+# else
+#   singularity pull --tmpdir=/global/scratch/users/$USER/tmp sinergym.sif docker://doseokjang/sinergym:savio
+# fi
+
 singularity run --bind $HOME/dynadojo/experiments:/dynadojo/experiments \
                 --bind $HOME/dynadojo/src/dynadojo:/dynadojo/pkgs/dynadojo \
                 --pwd /dynadojo \

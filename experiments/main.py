@@ -21,7 +21,7 @@ def get_max_splits(s="lds", m="lr", challenge_cls:type[Challenge] = FixedComplex
 
 def run_challenge(
         s ="lds",
-        m = "lr",
+        a = "lr",
         output_dir="experiments/outputs", 
         split=(1,1),
         challenge_cls:type[Challenge] = FixedComplexity,
@@ -34,13 +34,13 @@ def run_challenge(
     :param output_dir: directory to save results
     :param split: tuple (split_num, total_splits) to run a subset of the total number of system runs, as specified by L and reps the challenge parameters
     """
-    print(f"Running {_get_base_filename(s, m, challenge_cls)} {split=}")
+    print(f"Running {_get_base_filename(s, a, challenge_cls)} {split=}")
 
     system = _get_system(s)
-    algo = _get_algo(m)
+    algo = _get_algo(a)
     
     # Get challenge parameters
-    challenge_params = _get_params(s, m, challenge_cls=challenge_cls)
+    challenge_params = _get_params(s, a, challenge_cls=challenge_cls)
     
     # Get evaluate parameters and remove from challenge parameters
     evaluate_params = challenge_params.get("evaluate", {})
@@ -79,7 +79,7 @@ def run_challenge(
     else: # challenge_cls == FixedError:
         path = f"{output_dir}/fe/{s}"
 
-    filename = _get_base_filename(s, m, challenge_cls)
+    filename = _get_base_filename(s, a, challenge_cls)
     path = f"{path}/{filename}" #add subdir for experiment
     if not os.path.exists(path):
         os.makedirs(path, exist_ok=True)
@@ -97,7 +97,7 @@ def run_challenge(
         # Evaluate one run at a time and save to csv immediately!
         data = challenge.evaluate(
             **evaluate_params, 
-            id=_get_base_filename(s, m, challenge_cls), 
+            id=_get_base_filename(s, a, challenge_cls), 
             # Which reps and l pairings to evaluate. If None, evaluate all reps on all L. 
             # This is calculated by the split argument!
             rep_l_filter = [run]
@@ -110,7 +110,7 @@ def run_challenge(
 
 def make_plots(
         s ="lds",
-        m = "lr",
+        a = "lr",
         output_dir="experiments/outputs",
         challenge_cls:type[Challenge] = FixedComplexity,
         save=True
@@ -124,7 +124,7 @@ def make_plots(
     if challenge_cls == FixedError:
         path = f"{output_dir}/fe/{s}"
 
-    filebase = _get_base_filename(s, m, challenge_cls)
+    filebase = _get_base_filename(s, a, challenge_cls)
     csv_path = f"{path}/{filebase}"
     csv_filename = filebase + ".csv"
     figure_filename = filebase + ".pdf"
@@ -164,24 +164,24 @@ def make_plots(
 
 ### Helper functions
 
-def _get_base_filename(s:str, m:str, challenge_cls:type[Challenge]):
+def _get_base_filename(sys:str, algo:str, challenge_cls:type[Challenge]):
     if challenge_cls == FixedComplexity:
-        params = _get_params(s, m, challenge_cls=challenge_cls)
+        params = _get_params(sys, algo, challenge_cls=challenge_cls)
         l = params["l"]
-        filebase = f"fc_{s}_{m}_{l=}"
+        filebase = f"fc_{sys}_{algo}_{l=}"
 
     elif challenge_cls == FixedTrainSize:
-        params = _get_params(s, m, challenge_cls=challenge_cls)
+        params = _get_params(sys, algo, challenge_cls=challenge_cls)
         n = params["n"]
-        filebase = f"fts_{s}_{m}_{n=}"
+        filebase = f"fts_{sys}_{algo}_{n=}"
     
     elif challenge_cls == FixedError:
-        params = _get_params(s, m, challenge_cls=challenge_cls)
+        params = _get_params(sys, algo, challenge_cls=challenge_cls)
         e = params["target_error"]
         ood = params["evaluate"]["ood"]
-        filebase = f"fe_{s}_{m}_{e=}"
+        filebase = f"fe_{sys}_{algo}_{e=}"
         if ood:
-            filebase = f"fe_ood_{s}_{m}_{e=}"
+            filebase = f"fe_ood_{sys}_{algo}_{e=}"
     else:
         raise ValueError("challenge_cls must be FixedComplexity, FixedTrainSize, or FixedError")
 
@@ -219,8 +219,8 @@ def _get_runs(L, reps, split_num, total_splits):
     assert 1 <= total_splits <= reps * len(L), "cannot split into more reps x L than there are"
     assert 1 <= split_num <= total_splits, "split_num must be less than total_splits and greater than 0"
     runs = list(itertools.product(range(reps), L))
-    k, m = divmod(len(runs), total_splits)
-    splits = list(runs[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(total_splits))
+    k, mod = divmod(len(runs), total_splits)
+    splits = list(runs[i*k+min(i, mod):(i+1)*k+min(i+1, mod)] for i in range(total_splits))
     return splits[split_num-1]
 
 
