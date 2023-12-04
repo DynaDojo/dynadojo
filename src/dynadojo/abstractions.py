@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
-
+import logging
 
 class AbstractAlgorithm(ABC):
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, seed: int | None = None, **kwargs):
@@ -368,14 +368,14 @@ class Challenge:
         }
 
         if num_parallel_cpu == 0:
-            print(f"Running systems sequentially. {num_parallel_cpu=}")  # TODO: logger
+            logging.info(f"Running systems sequentially. {num_parallel_cpu=}")
             data = []
             for rep_id, l, e, system_seed, algo_seed in system_run_args:
                 data.append(
                     self.system_run(rep_id, l, e, **fixed_run_args, system_seed=system_seed, algo_seed=algo_seed))
 
         else:
-            print(f"Running systems in parallel. {num_parallel_cpu=}")
+            logging.warning(f"Running systems in parallel. {num_parallel_cpu=}")
             # Run systems in parallel
             data = Parallel(n_jobs=num_parallel_cpu, timeout=1e6)(
                 delayed(self.system_run)(rep_id, l, e, **fixed_run_args, system_seed=system_seed, algo_seed=algo_seed)
@@ -494,9 +494,8 @@ class Challenge:
             duration = end - start
             # TODO: fix logging? Should we use a logger?
             ood_error_str = f"{ood_error=:0.3}" if test_ood else "ood_error=NA"
-            if self._verbose:
-                print(
-                    f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error_str},algo_seed={algo._seed}, sys_seed={system._seed}")
+            logging.debug(
+                f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error_str},algo_seed={algo._seed}, sys_seed={system._seed}")
             Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error,
                                      ood_error=ood_error, duration=duration)
 

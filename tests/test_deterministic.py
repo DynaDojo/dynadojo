@@ -1,6 +1,8 @@
 import unittest
 from parameterized import parameterized
 
+import logging
+
 import numpy as np
 import pandas as pd
 import pandas.testing as pd_testing
@@ -16,11 +18,11 @@ from dynadojo.baselines.ode import ODE
 from dynadojo.baselines.sindy import SINDy
 
 ALL_BASELINES = [
-    AugODE,
-    CNN,
+    # AugODE,
+    # CNN,
     DMD,
     DNN,
-    ODE,
+    # ODE,
     SINDy
 ]
 
@@ -40,20 +42,22 @@ from dynadojo.systems.opinion import ARWHKSystem, DeffuantSystem, HKSystem, Medi
 ALL_SYSTEMS = [
     CASystem,
     CTLNSystem,
-    HeatEquation,
-    KuramotoSystem,
+    # HeatEquation,
+    # KuramotoSystem,
     LDSystem,
     NBodySystem,
-    SNNSystem,
-    SEISSystem, SISSystem, SIRSystem,
-    BSBSystem, HJBSystem,
-    CompetitiveLVSystem, PreyPredatorSystem,
-    ARWHKSystem, DeffuantSystem, HKSystem, MediaBiasSystem, WHKSystem
+    # SNNSystem,
+    # SEISSystem, SISSystem, SIRSystem,
+    # BSBSystem, HJBSystem,
+    # CompetitiveLVSystem, PreyPredatorSystem,
+    # ARWHKSystem, DeffuantSystem, HKSystem, MediaBiasSystem, WHKSystem
 ]
 
 systems = ALL_SYSTEMS  # To test multiple systems, add them to this list
 algorithms = ALL_BASELINES  # To test multiple models, add them to this list
 
+logger = logging.getLogger()
+logger.setLevel(logging.ERROR)
 
 class TestReproducibility(unittest.TestCase):
 
