@@ -26,7 +26,7 @@ class EpidemicSystem(AbstractSystem):
     def create_model(self, x0):
         return
 
-    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         x0 = []
         for _ in range(n):
             if in_dist:
@@ -38,7 +38,7 @@ class EpidemicSystem(AbstractSystem):
 
         return x0 
 
-    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
 
         if noisy:
@@ -79,10 +79,10 @@ class EpidemicSystem(AbstractSystem):
         data = np.transpose(data, axes=(0, 2, 1))
         return data
 
-    def _calc_error(self, x, y) -> float:
+    def calc_error(self, x, y) -> float:
         error = x - y
         return np.mean(error ** 2) / self.latent_dim
 
-    def _calc_control_cost(self, control: np.ndarray) -> float:
+    def calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)
 

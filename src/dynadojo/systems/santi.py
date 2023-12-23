@@ -15,7 +15,7 @@ class NBodySystem(SimpleSystem):
         self._plot_data = plot_data
         super().__init__(latent_dim, embed_dim, IND_range=IND_range, OOD_range=OOD_range, **kwargs)
 
-    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         assert not np.any(control), "Control must be zero."
 
         data = []
