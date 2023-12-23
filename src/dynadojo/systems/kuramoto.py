@@ -63,7 +63,7 @@ class KuramotoSystem(AbstractSystem):
         _K2 = self._rng.uniform(0, 1, (self.latent_dim, self.latent_dim))
         return np.dstack((_K, _K2)).T
 
-    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         x0 = []
         for _ in range(n):
             if in_dist:
@@ -74,7 +74,7 @@ class KuramotoSystem(AbstractSystem):
                     self.OOD_range[0], self.OOD_range[1], (self.latent_dim)))
         return np.array(x0)
 
-    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
         t0, t1, dt = 0, timesteps, self.dt
         T = np.arange(t0, t1, dt)
@@ -130,9 +130,9 @@ class KuramotoSystem(AbstractSystem):
         data = np.transpose(np.array(data), axes=(0, 2, 1))
         return data
 
-    def _calc_error(self, x, y) -> float:
+    def calc_error(self, x, y) -> float:
         error = x - y
         return np.mean(error ** 2) / self.latent_dim
 
-    def _calc_control_cost(self, control: np.ndarray) -> float:
+    def calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)

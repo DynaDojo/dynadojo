@@ -43,14 +43,14 @@ class SINDy(AbstractAlgorithm):
 
     # TODO: add control!
 
-    def _fit(self, x: np.ndarray, **kwargs) -> None:
+    def fit(self, x: np.ndarray, **kwargs) -> None:
         # for example in x:
         #     self._model.fit(example, t=np.linspace(0, 1, self._timesteps), quiet=True)
         X = [*x]
         t = [np.linspace(0, 1, self._timesteps) for _ in range(len(x))]
         self._model.fit(X, t=t, multiple_trajectories=True, quiet=True, ensemble=True, n_models=5)
 
-    def _predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
+    def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         results = [self._model.simulate(point, np.linspace(0, 1, timesteps), integrator="odeint") for point in x0]
         results = np.array(results)
         return results

@@ -30,13 +30,13 @@ class CASystem(AbstractSystem):
         self._latent_dim = value
         self._rule_table = self._get_rule_table()
 
-    def _make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
+    def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         if in_dist:
             return self._rng.binomial(1, self._in_dist_p, size=(n, self.embed_dim))
         else:
             return self._rng.binomial(1, self._out_dist_p, size=(n, self.embed_dim))
 
-    def _make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         def get_trajectory(x0, u):
             cellular_automata = np.clip([x0 + u[0]], 0, 1).astype(np.int32)
             for t in range(1, timesteps):
@@ -54,9 +54,9 @@ class CASystem(AbstractSystem):
         data = np.array(data)
         return data
 
-    def _calc_error(self, x, y):
+    def calc_error(self, x, y):
         # averaged across all samples and all predicted timesteps
         return 1 - (np.count_nonzero(x == y) / self.embed_dim) / len(y) / len(y[1])
 
-    def _calc_control_cost(self, control: np.ndarray) -> float:
+    def calc_control_cost(self, control: np.ndarray) -> float:
         return np.sum(control, axis=(1, 2))

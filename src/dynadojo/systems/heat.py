@@ -38,11 +38,11 @@ class HeatEquation(SimpleSystem):
 
         return u
 
-    def _make_data(self,
-                   init_conds: np.ndarray,
-                   control: np.ndarray,
-                   timesteps: int,
-                   noisy=False) -> np.ndarray:
+    def make_data(self,
+                  init_conds: np.ndarray,
+                  control: np.ndarray,
+                  timesteps: int,
+                  noisy=False) -> np.ndarray:
         assert not np.any(control), "Control must be zero."
 
         data = []

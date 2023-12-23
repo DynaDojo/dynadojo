@@ -55,13 +55,13 @@ class LowestPossibleRadius(AbstractAlgorithm):
                             return False
         return True
 
-    def _fit(self, samples, **kwargs):
+    def fit(self, samples, **kwargs):
         while (not self.isValidRadius(self.currRadius, samples)):
             newRadius = self.currRadius+1
             self.radiiTables[newRadius] = self.generateRadiusTable(newRadius)
             self.currRadius = newRadius
 
-    def _act(self, x, **kwargs):
+    def act(self, x, **kwargs):
         with temp_random_seed(self._seed):
             control = []
             lastState = x[:, -1, :]
@@ -70,7 +70,7 @@ class LowestPossibleRadius(AbstractAlgorithm):
             # find a smart control for 1st next state of traj
             for sampleidx, sample in enumerate(lastState):
                 tempControl = []
-                for _ in range(math.floor(self._embed_dim / ((self.currRadius*2) + 1))):
+                for _ in range(math.floor(self.embed_dim / ((self.currRadius * 2) + 1))):
                     cellidx = self.currRadius
                     neighborhood = ""
 
@@ -110,7 +110,7 @@ class LowestPossibleRadius(AbstractAlgorithm):
                     cellidx += (self.currRadius*2)+1
 
                 # finish the row of control if not done
-                while (len(tempControl) < self._embed_dim):
+                while (len(tempControl) < self.embed_dim):
                     tempControl.append(0)
 
                 control.append([tempControl])
@@ -118,7 +118,7 @@ class LowestPossibleRadius(AbstractAlgorithm):
             # for all other states of traj, choose no control
             for sampleidx in range(len(x)):
                 for _ in range(1, self._timesteps):
-                    control[sampleidx].append(np.zeros(self._embed_dim))
+                    control[sampleidx].append(np.zeros(self.embed_dim))
 
             return np.array(control)
 
@@ -153,7 +153,7 @@ class LowestPossibleRadius(AbstractAlgorithm):
             evolved.append(sampleResult)
         return evolved
 
-    def _predict(self, x0, timesteps, **kwargs):
+    def predict(self, x0, timesteps, **kwargs):
         preds = [x0]
 
         for _ in range(timesteps-1):
