@@ -1,7 +1,16 @@
-from abstractions import AbstractAlgorithm, AbstractSystem
+"""
+Wrappers
+=========
+Wrappers are a convenient way to modify an existing DynaDojo object without having to alter the underlying code directly. Using wrappers will allow you to avoid a lot of boilerplate code and make your project more modular. Wrappers can also be chained to combine their effects. To use the wrappers, use dynadojo.wrappers.make_alg or dynadojo.wrappers.make_system.
+"""
+
+from .abstractions import AbstractAlgorithm, AbstractSystem
 
 import numpy as np
+
+
 class AlgorithmChecker:
+    """Wrapper class for algorithms that ensures proper input and output handling."""
     def __init__(self, alg: AbstractAlgorithm):
         self._alg = alg
 
@@ -16,17 +25,26 @@ class AlgorithmChecker:
     @property
     def max_control_cost(self):
         return self._alg.max_control_cost
+
     @property
     def seed(self):
         return self._alg.seed
 
     def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
         """
-        Wrapper for act() called in evaluate(). Verifies control tensor is the right shape. You should NOT override this.
+        Verifies control tensor is the right shape.
 
-        :param x: (n, timesteps, embed_dim) trajectories tensor
-        :param kwargs:
-        :return: (n, timesteps, embed_dim) controls tensor
+        Parameters
+        ----------
+        x : np.ndarray
+            (n, timesteps, embed_dim) Trajectories tensor.
+        **kwargs
+            Additional keyword arguments.
+
+        Returns
+        -------
+        np.ndarray
+            (n, timesteps, embed_dim) Controls tensor.
         """
         control = self._alg.act(x, **kwargs)
         assert control.shape == x.shape
@@ -34,16 +52,21 @@ class AlgorithmChecker:
 
     def predict(self, x0: np.ndarray, timesteps, **kwargs) -> np.ndarray:
         """
-        Wrapper for predict() called in evaluate(). Verifies predicted trajectories tensor has the right shape.
-        You should NOT override this.
+        Verifies predicted trajectories tensor has the right shape.
 
-        NOTE: Does not enforce that the first coordinate of each trajectory is the same as the initial condition. This
-        allows DynaDojo to handle algos that completely mispredict trajectory evolution.
+        Parameters
+        ----------
+        x0 : np.ndarray
+            (n, embed_dim) Initial conditions matrix.
+        timesteps : int
+            Timesteps per predicted trajectory (most commonly the same as the system timesteps).
+        **kwargs
+            Additional keyword arguments.
 
-        :param x0: (n, embed_dim) initial conditions matrix
-        :param timesteps: timesteps per predicted trajectory
-        :param kwargs:
-        :return: (n, timesteps, embed_dim) trajectories tensor
+        Returns
+        -------
+        np.ndarray
+            (n, timesteps, embed_dim) Predicted trajectories tensor.
         """
         pred = self._alg.predict(x0, timesteps, **kwargs)
         n = x0.shape[0]
@@ -52,12 +75,20 @@ class AlgorithmChecker:
 
     def fit(self, x: np.ndarray, **kwargs) -> None:
         """
-        Trains the algo. Your algos must implement this method.
+        Verifies algorithm trains on properly sized data.
 
-        :param x: (n, timesteps, embed_dim) trajectories tensor
-        :param kwargs:
-        :return: None
+        Parameters
+        ----------
+        x : np.ndarray
+            (n, timesteps, embed_dim) Trajectories tensor.
+        **kwargs
+            Additional keyword arguments.
+
+        Returns
+        -------
+        None
         """
+        assert x.shape == (x.shape[0], self.timesteps, self.embed_dim)
         self._alg.fit(x, **kwargs)
 
 def make_alg(alg):

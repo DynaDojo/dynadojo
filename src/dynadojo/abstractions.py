@@ -41,12 +41,20 @@ class AbstractAlgorithm(ABC):
 
     @abstractmethod
     def fit(self, x: np.ndarray, **kwargs) -> None:
-        """
-        Trains the algo. Your algos must implement this method.
+        """Fits the algorithm.
 
-        :param x: (n, timesteps, embed_dim) trajectories tensor
-        :param kwargs:
-        :return: None
+        Trains algorithm on a tensor of trajectories.
+
+        Parameters
+        ----------
+        x : np.ndarray
+            (n, timesteps, embed_dim) Trajectories tensor.
+        **kwargs
+            Additional keyword arguments.
+
+        Returns
+        -------
+        None
         """
         raise NotImplementedError
 
