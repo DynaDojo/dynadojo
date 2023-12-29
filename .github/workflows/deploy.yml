@@ -1,2 +1,18 @@
-- name: Sphinx to GitHub Pages
-  uses: sphinx-notes/pages@3.0
+name: Deploy Sphinx documentation to Pages
+
+on:
+  push:
+    branches: [docs] # branch to trigger deployment
+
+jobs:
+  pages:
+    runs-on: ubuntu-20.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+    - id: deployment
+      uses: sphinx-notes/pages@v3
