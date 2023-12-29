@@ -1,3 +1,6 @@
+"""
+Dynamical systems
+"""
 # from . import opinion
 # from . import lv
 # from . import epidemic

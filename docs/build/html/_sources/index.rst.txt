@@ -9,7 +9,6 @@ DynaDojo Documentation
 
    getting-started
    user-guide/index
-   api-reference
    _autosummary/dynadojo
 
 

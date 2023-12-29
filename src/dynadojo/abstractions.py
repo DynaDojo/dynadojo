@@ -10,6 +10,8 @@ class AbstractAlgorithm(ABC):
     """Base class for all algorithms. Your algorithms should subclass this class."""
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, seed: int | None = None, **kwargs):
         """
+        Initialize the abstract base class.
+
         Parameters
         ----------
         embed_dim : int
@@ -121,6 +123,8 @@ class AbstractSystem(ABC):
     """Base class for all systems. Your systems should subclass this class."""
     def __init__(self, latent_dim, embed_dim, seed: int | None, **kwargs):
         """
+        Initialize the abstract base class.
+
         Parameters
         ----------
         latent_dim : int
