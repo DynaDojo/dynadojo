@@ -1,0 +1,6 @@
+/* Removes the double colon in autodoc
+   Ref: https://stackoverflow.com/questions/70426337/sphinx-documentation-showing-double-colon-in-fields
+*/
+dl.field-list > dt:after {
+    content: "";
+}
