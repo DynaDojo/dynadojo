@@ -1,7 +1,4 @@
 """
-====================
-API Documentation
-====================
 An extensible platform for benchmarking sample efficiency in dynamical system identification
 """
 

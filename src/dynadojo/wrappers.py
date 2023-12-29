@@ -1,6 +1,4 @@
 """
-Wrappers
-=========
 Wrappers are a convenient way to modify an existing DynaDojo object without having to alter the underlying code directly. Using wrappers will allow you to avoid a lot of boilerplate code and make your project more modular.
 """
 from .abstractions import AbstractAlgorithm, AbstractSystem

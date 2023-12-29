@@ -1,6 +1,4 @@
 """
-Challenges
-===========
 Contains a `Challenge` class and several commonly used subclasses. The `Challenge` class is a stand-alone class that
 can also be extended.
 """
@@ -19,6 +17,7 @@ from .utils.plotting import plot_target_error, plot_metric
 
 
 class Challenge:
+    """Challenge class used to benchmark algorithms and systems."""
     def __init__(self,
                  N: list[int],
                  L: list[int],
@@ -32,23 +31,39 @@ class Challenge:
                  test_timesteps: int,
                  system_kwargs: dict | None = None,
                  verbose: bool = True,
-                 #  save_class: bool = False,
                  ):
         """
-        :param N: train sizes, (# of trajectories)
-        :param L: latent dimensions
-        :param E: embedded dimensions. Optional.
+        Initializes a Challenge instance.
+
+        Parameters
+        ----------
+        N : list of int
+            Train sizes, (# of trajectories).
+        L : list of int
+            Latent dimensions.
+        E : int or list or None, optional
+            Embedded dimensions.
             If list, then evaluate iterates across embedded dimensions. (e >= l)
             If int, then evaluate uses a fixed embedded dimension. (E >= max(L))
             If None, then evaluate sets the embedded dimension equal to the latent dimension. (e = l)
-        :param t: timesteps (length of a trajectory)
-        :param max_control_cost_per_dim: max control cost per control trajectory
-        :param control_horizons: number of times to generate training data with control
-        :param system_cls: class constructor (NOT instance) for a concrete system
-        :param reps: number of times to repeat each experiment
-        :param test_examples: test size
-        :param test_timesteps: test timesteps
-        :param system_kwargs:
+        t : int
+            Timesteps (length of a trajectory).
+        max_control_cost_per_dim : int
+            Max control cost per control trajectory.
+        control_horizons : int
+            Number of times to generate training data with control.
+        system_cls : type[AbstractSystem]
+            Class constructor (NOT instance) for a concrete system.
+        reps : int
+            Number of times to repeat each experiment.
+        test_examples : int
+            Test size.
+        test_timesteps : int
+            Test timesteps.
+        system_kwargs : dict or None, optional
+            Additional keyword arguments for the system constructor.
+        verbose : bool, optional
+            Whether to print verbose output. Defaults to True.
         """
         assert control_horizons >= 0
 
@@ -85,23 +100,42 @@ class Challenge:
         """
         Evaluates an algorithm class (NOT an instance) on a dynamical system over a set of experimental parameters.
 
-        :param algo_cls: algo class to be evaluated
-        :param algo_kwargs: kwargs to be passed to algo_cls
-        :param fit_kwargs: kwargs to be passed to algo_cls.fit
-        :param act_kwargs: kwargs to be passed to algo_cls.act
-        :param ood: Boolean. If True, also test on out-distribution initial conditions for the test set. (For FixedError, search is performed on ood_error if ood=True.) Defaults to False.
-        If False, generate out-of-distribution initial conditions for the test set.
-        :param noisy: Boolean. If True, add noise to train set. Defaults to False. If False, no noise is added.
-        :param id: algo ID associated with evaluation results in returned DataFrame
-        :param num_parallel_cpu: number of cpus to use in parallel. Defaults to -1, which uses all available cpu.
-        :param seed: to seed random number generator for seeding systems and algos. Defaults to None. Is overriden by seeds in system_kwargs or algo_kwargs.
-        :param reps_filter: if provided, will only evaluate system_runs with the given rep_ids. Defaults to None, which evaluates all repetitions.
-        :param L_filter: if provided, will only evaluate system_runs with the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
-        :param rep_l_filter: if provided, will only evaluate system_runs with the given (rep_id, latent_dim) pairs. Defaults to None, which evaluates all (rep_id, latent_dim) pairs.
-        :
-        return: a pandas DataFrame where each row is a algo_run result -- a algo trained and evaluated on a single system. (See algo_run() for more details.)
-        """
+        Parameters
+        ----------
+        algo_cls : type[AbstractAlgorithm]
+            Algorithm class to be evaluated.
+        algo_kwargs : dict or None, optional
+            Keyword arguments to be passed to algo_cls.
+        fit_kwargs : dict or None, optional
+            Keyword arguments to be passed to algo_cls.fit.
+        act_kwargs : dict or None, optional
+            Keyword arguments to be passed to algo_cls.act.
+        ood : bool, optional
+            If True, also test on out-distribution initial conditions for the test set.
+            (For FixedError, search is performed on ood_error if ood=True.) Defaults to False.
+            If False, generate out-of-distribution initial conditions for the test set.
+        noisy : bool, optional
+            If True, add noise to the train set. Defaults to False. If False, no noise is added.
+        id : int or None, optional
+            Algorithm ID associated with evaluation results in the returned DataFrame.
+        num_parallel_cpu : int, optional
+            Number of CPUs to use in parallel. Defaults to -1, which uses all available CPUs.
+        seed : int or None, optional
+            Seed to seed the random number generator for seeding systems and algorithms. Defaults to None.
+            Is overridden by seeds in system_kwargs or algo_kwargs.
+        reps_filter : list of int or None, optional
+            If provided, will only evaluate system_runs with the given rep_ids. Defaults to None, which evaluates all repetitions.
+        L_filter : list of int or None, optional
+            If provided, will only evaluate system_runs with the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
+        rep_l_filter : list of tuple(int, int) or None, optional
+            If provided, will only evaluate system_runs with the given (rep_id, latent_dim) pairs.
+            Defaults to None, which evaluates all (rep_id, latent_dim) pairs.
 
+        Returns
+        -------
+        pandas.DataFrame
+            A DataFrame where each row is the result of an algorithm trained and evaluated on a single system.
+        """
         algo_kwargs = algo_kwargs or {}
         fit_kwargs = fit_kwargs or {}
         act_kwargs = act_kwargs or {}
@@ -238,9 +272,12 @@ class Challenge:
                    **kwargs
                    ):
         """
-        For a given system latent dimension and embedding dimension, instantiates system and for a specific N, evaluates the algo on the system (a algo_run).
-        Across algo_runs, the algo is re-initialized with the same seed.
-        Note that algo seed in algo_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
+        For a given system latent dimension and embedding dimension, instantiates system and for a specific N,
+        evaluates the algorithm on the system. Across runs, the algorithm is re-initialized with the same seed.
+
+        Note
+        -----
+        The seed in algo_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
         """
         result = Challenge._init_result_dict()
 
@@ -297,6 +334,7 @@ class Challenge:
 
 
 class FixedComplexity(Challenge):
+    """Challenge where complexity is fixed, training set size is varied, and error is measured."""
     def __init__(self,
                  l: int,
                  t: int,
@@ -311,19 +349,30 @@ class FixedComplexity(Challenge):
                  system_kwargs: dict = None,
                  verbose: bool = True):
         """
-        Challenge where complexity is fixed, training set size is varied, and error is measured.
-
-        :param l (int): latent dimension
-        :param t (int): number of timesteps
-        :param N (list[int]): list of training set sizes
-        :param system_cls (type[AbstractSystem]): system class
-        :param reps (int): number of repetitions
-        :param test_examples (int): number of test examples
-        :param test_timesteps (int): number of test timesteps
-        :param e (int, optional): embedding dimension. Defaults to None.
-        :param max_control_cost_per_dim (int, optional): maximum control cost per dimension. Defaults to 1.
-        :param control_horizons (int, optional): number of control horizons. Defaults to 0.
-        :param system_kwargs (dict, optional): system kwargs. Defaults to None.
+        Parameters
+        ----------
+        l : int
+            Latent dimension.
+        t : int
+            Number of timesteps.
+        N : list[int]
+            List of training set sizes.
+        system_cls : type[AbstractSystem]
+            System class.
+        reps : int
+            Number of repetitions.
+        test_examples : int
+            Number of test examples.
+        test_timesteps : int
+            Number of test timesteps.
+        e : int, optional
+            Embedding dimension. Defaults to None.
+        max_control_cost_per_dim : int, optional
+            Maximum control cost per dimension. Defaults to 1.
+        control_horizons : int, optional
+            Number of control horizons. Defaults to 0.
+        system_kwargs : dict, optional
+            System kwargs. Defaults to None.
         """
         L = [l]
         E = e
@@ -333,7 +382,10 @@ class FixedComplexity(Challenge):
     @staticmethod
     def plot(data, latent_dim: int = None, embedding_dim: int = None, show: bool = True, show_stats: bool = False):
         """
-        Returns: matplotlib.axes.Axes object
+        Returns
+        --------
+        matplotlib.axes.Axes
+            A plot of the data.
         """
         if show_stats:
             # get the n_target for each latent_dim
@@ -370,36 +422,51 @@ class FixedComplexity(Challenge):
 
 
 class FixedTrainSize(Challenge):
+    """Challenge where the size of the training set is fixed, the complexity of the system is varied, and the error is measured."""
     def __init__(self, n: int, L: list[int], E: list[int] | int | None, t: int,
                  max_control_cost_per_dim: int, control_horizons: int,
                  system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int,
                  system_kwargs: dict = None,
                  verbose: bool = True):
+
         """
-        Challenge where the size of the training set is fixed, the complexity of the system is varied, and the error is measured.
-
-        :param n: The size of the training set.
-        :param L: The complexities of the system.
-        :param E: The embedding dimensions of the system.
-        :param t: The number of timesteps to simulate.
-        :param max_control_cost_per_dim: The maximum control cost per dimension.
-        :param control_horizons: The number of control horizons to consider.
-        :param system_cls: The system class to use.
-        :param reps: The number of repetitions to run.
-        :param test_examples: The number of test examples to use.
-        :param test_timesteps: The number of timesteps to simulate for the test examples.
-        :param system_kwargs: The keyword arguments to pass to the system class.
-
+        Parameters
+        ----------
+        n : int
+            The size of the training set.
+        L : int
+            The complexities of the system.
+        E : int
+            The embedding dimensions of the system.
+        t : int
+            The number of timesteps to simulate.
+        max_control_cost_per_dim : int
+            The maximum control cost per dimension.
+        control_horizons : int
+            The number of control horizons to consider.
+        system_cls : type
+            The system class to use.
+        reps : int
+            The number of repetitions to run.
+        test_examples : int
+            The number of test examples to use.
+        test_timesteps : int
+            The number of timesteps to simulate for the test examples.
+        system_kwargs : dict
+            The keyword arguments to pass to the system class.
         """
         N = [n]
         super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
-                         system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs,
-                         verbose=verbose)
+                 system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs,
+                 verbose=verbose)
 
     @staticmethod
     def plot(data: pd.DataFrame, n: int = None, show: bool = True, show_stats: bool = False, plot_ood=True, ax=None):
         """
-        Returns: matplotlib.axes.Axes object
+        Returns
+        --------
+        matplotlib.axes.Axes
+            A plot of the data.
         """
         if not n:
             n = data["n"].unique()[0]
@@ -431,6 +498,10 @@ class FixedTrainSize(Challenge):
 
 
 class FixedError(Challenge):
+    """
+    Challenge where the target error is fixed and the latent dimensionality is varied and the number of training samples to achieve the error is measured.
+    Performs a binary search over the number of training samples to find the minimum number of samples needed to achieve the target error rate.
+    """
     def __init__(self,
                  L: list[int],
                  t: int,
@@ -452,26 +523,42 @@ class FixedError(Challenge):
                  verbose: bool = True
                  ):
         """
-        Challenge where the target error is fixed and the latent dimensionality is varied and the number of training samples to achieve the error is measured.  
-        Performs a binary search over the number of training samples to find the minimum number of samples needed to achieve the target error rate.
-
-        :param L: List of latent dimensions to test
-        :param t: Number of timesteps of each training trajectory
-        :param max_control_cost_per_dim: Maximum control cost per dimension
-        :param control_horizons: Number of control horizons to test
-        :param system_cls: System class to use
-        :param reps: Number of repetitions to run for each latent dimension
-        :param test_examples: Number of test examples to use
-        :param test_timesteps: Number of timesteps of each test trajectory
-        :param target_error: Target error to test
-        :param E: List of embedding dimensions to test. If None, defaults to L.
-        :param system_kwargs: Keyword arguments to pass to the system class
-        :param n_precision: Uncertainty interval around number of training samples to achieve target error. (i.e. the true number of samples needed for the target error rate will be in [samples_needed - sample_precision, samples_needed + sample_precision]). If 0, we find the exact minimum number of samples needed to achieve the target error rate.
-        :param n_window: Number of n to smooth over on left and right when calculating the error rate during search. If 0, no averaging is done.
-        :param n_starts: List of starting points for the binary search over the number of training samples for each latent dim in L. len must equal len(L). If None, defaults to 1.
-        :param n_max: Maximum number of training samples to use
-        :param n_min: Minimum number of training samples to use
-        :param n_window_density: Density of n to test during smoothing. 1 = test every n. 0.5 = test every other n. 0.25 = test every fourth n. etc.
+        Parameters
+        ----------
+        L : list
+            List of latent dimensions to test.
+        t : int
+            Number of timesteps of each training trajectory.
+        max_control_cost_per_dim : int
+            Maximum control cost per dimension.
+        control_horizons : int
+            Number of control horizons to test.
+        system_cls : type
+            System class to use.
+        reps : int
+            Number of repetitions to run for each latent dimension.
+        test_examples : int
+            Number of test examples to use.
+        test_timesteps : int
+            Number of timesteps of each test trajectory.
+        target_error : float
+            Target error to test.
+        E : list, optional
+            List of embedding dimensions to test. If None, defaults to L.
+        system_kwargs : dict
+            Keyword arguments to pass to the system class.
+        n_precision : float
+            Uncertainty interval around number of training samples to achieve target error. If 0, we find the exact minimum number of samples needed to achieve the target error rate.
+        n_window : int
+            Number of n to smooth over on left and right when calculating the error rate during search. If 0, no averaging is done.
+        n_starts : list, optional
+            List of starting points for the binary search over the number of training samples for each latent dim in L. len must equal len(L). If None, defaults to 1.
+        n_max : int
+            Maximum number of training samples to use.
+        n_min : int
+            Minimum number of training samples to use.
+        n_window_density : float
+            Density of n to test during smoothing. 1 = test every n. 0.5 = test every other n. 0.25 = test every fourth n. etc.
         """
         assert (1 > n_precision >= 0), "Precision must be between [0 and 1)"
         assert (0 <= n_window), "Window size must be non-negative"
@@ -518,23 +605,39 @@ class FixedError(Challenge):
         """
         Evaluates a model class (NOT an instance) on a dynamical system over a set of experimental parameters.
 
-        :param algo_cls: model class to be evaluated
-        :param algo_kwargs: kwargs to be passed to model_cls
-        :param fit_kwargs: kwargs to be passed to model_cls.fit
-        :param act_kwargs: kwargs to be passed to model_cls.act
-        :param ood: Boolean. If True, also test on out-distribution initial conditions for the test set. (For FixedError, search is performed on ood_error if ood=True.) Defaults to False.
-        If False, generate out-of-distribution initial conditions for the test set.
-        :param noisy: Boolean. If True, add noise to train set. Defaults to False. If False, no noise is added.
-        :param id: model ID associated with evaluation results in returned DataFrame
-        :param num_parallel_cpu: number of cpus to use in parallel. Defaults to -1, which uses all available cpu.
-        :param seed: to seed random number generator for seeding systems and models. Defaults to None. Is overriden by seeds in system_kwargs or model_kwargs.
-        :param reps_filter: if provided, will only evaluate system_runs with the given rep_ids. Defaults to None, which evaluates all repetitions.
-        :param L_filter: if provided, will only evaluate system_runs with the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
-        :param rep_l_filter: if provided, will only evaluate system_runs with the given (rep_id, latent_dim) pairs. Defaults to None, which evaluates all (rep_id, latent_dim) pairs.
-        :
-        return: a pandas DataFrame where each row is a model_run result -- a model trained and evaluated on a single system. (See model_run() for more details.)
-        """
+        Parameters
+        ----------
+        algo_cls : type
+            Model class to be evaluated.
+        algo_kwargs : dict
+            Keyword arguments to be passed to algo_cls.
+        fit_kwargs : dict
+            Keyword arguments to be passed to algo_cls.fit.
+        act_kwargs : dict
+            Keyword arguments to be passed to algo_cls.act.
+        ood : bool, optional
+            If True, also test on out-distribution initial conditions for the test set. (For FixedError, search is performed on ood_error if ood=True.) Defaults to False.
+            If False, generate out-of-distribution initial conditions for the test set.
+        noisy : bool, optional
+            If True, add noise to the train set. Defaults to False. If False, no noise is added.
+        id : str
+            Model ID associated with evaluation results in the returned DataFrame.
+        num_parallel_cpu : int, optional
+            Number of CPUs to use in parallel. Defaults to -1, which uses all available CPUs.
+        seed : int, optional
+            Seed to initialize the random number generator for seeding systems and models. Defaults to None. Is overridden by seeds in system_kwargs or model_kwargs.
+        reps_filter : list, optional
+            If provided, will only evaluate system_runs with the given rep_ids. Defaults to None, which evaluates all repetitions.
+        L_filter : list, optional
+            If provided, will only evaluate system_runs with the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
+        rep_l_filter : list, optional
+            If provided, will only evaluate system_runs with the given (rep_id, latent_dim) pairs. Defaults to None, which evaluates all (rep_id, latent_dim) pairs.
 
+        Returns
+        -------
+        pandas.DataFrame
+            A DataFrame where each row is a result from an algorithm trained and evaluated on a single system.
+        """
         results = super().evaluate(algo_cls, algo_kwargs, fit_kwargs, act_kwargs, ood, noisy, id, num_parallel_cpu,
                                    seed, reps_filter, L_filter, rep_l_filter)
         targets = results[['latent_dim', 'embed_dim', 'rep', 'n_target', 'model_seed', 'system_seed']].drop_duplicates()
@@ -561,10 +664,12 @@ class FixedError(Challenge):
                    model_seed=None
                    ):
         """
-        For a given system latent dimension and embedding dimension, instantiates system and evaluates a single trial of finding an 
+        For a given system latent dimension and embedding dimension, instantiates system and evaluates a single trial of finding a
         number of training examples that achieves the target error. 
 
-        Note that model seed in model_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
+        Note
+        -----
+        The model seed in model_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
         """
         result = Challenge._init_result_dict()
 
@@ -599,7 +704,7 @@ class FixedError(Challenge):
                 master_training_set = np.concatenate((master_training_set, to_add), axis=0)
                 return master_training_set[:n]
 
-        # memoized run function which stores results in result dictionary and memoizes whether or not we have already run the model for a given n 
+        # memoized run function which stores results in result dictionary and memoizes whether we have already run the model for a given n
         memo = {}
 
         def model_run(n, window=0):
@@ -663,12 +768,12 @@ class FixedError(Challenge):
         # run model for different values of the number of trajectories n, searching for n needed to achieve the target error            
         def search():
             """
-            TODO: Replaced this with search_simple. Remove this function?
             Helper function to search for the number of trajectories N needed to achieve the target error.
             Returns -1 if target error is never reached within n_max trajectories, np.inf if target error is stuck in a local minimum, and the number of trajectories N needed to achieve the target error otherwise.
             Assumption that the test error is a convex function of N. Does an exponential search to narrow down the range of N to search over, then does a binary search to find the number of trajectories N needed to achieve the target error.
             In the exponential search, we start with n_curr = 1 or n_starts[latent_dim] if it exists. We then double n_curr until we have found a range of n where the target error is achieved. We handle the case where we have overshot the N needed to achieve the target error by backing up (either by two steps or by halving n_curr) and restarting the exponential search with a smaller increment. We do this until we have found a range of n where the target error is achieved.
             """
+            # TODO: Replaced this with search_simple. Remove this function?
             # Doing an exponential search.
             # Narrow down the range of N to search over, giving a left and right bound where the target error is achieved. 
             # If we have overshot the N needed to achieve the target error, back up and restart the exponential search with a smaller increment.

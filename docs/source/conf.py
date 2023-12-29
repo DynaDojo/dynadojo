@@ -37,9 +37,13 @@ release = dynadojo.__version__
 extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',  # Create neat summary tables
     'sphinx.ext.coverage',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon'  # For NumPy formatted docstrings
 ]
+# Autosummary settings
+autosummary_generate = True  # Turn on sphinx.ext.autosummary
+
 
 # Napoleon settings
 napoleon_google_docstring = False
@@ -57,19 +61,12 @@ napoleon_preprocess_types = False
 napoleon_type_aliases = None
 napoleon_attr_annotations = True
 
-
-# -- Options for autodoc ----------------------------------------------------
+# Autodoc settings
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
 
-# Automatically extract typehints when specified and place them in
-# descriptions of the relevant function/method.
-autodoc_typehints = "description"
-
-# Don't show class signature with the class' name.
-autodoc_class_signature = "separated"
-
+autodoc_typehints = "description"  # Automatically extract typehints when specified and place them in descriptions of the relevant function/method.
+autodoc_class_signature = "separated"  # Don't show class signature with the class' name.
 autodoc_inherit_docstrings = False
-# -----------------------------------------------------------------------------
 
 
 # Add any paths that contain templates here, relative to this directory.
