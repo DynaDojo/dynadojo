@@ -7,6 +7,7 @@ from ...abstractions import AbstractSystem
 
 
 class SimpleSystem(AbstractSystem):
+    """An extension of :class:`AbstractSystem` with some useful methods."""
     def __init__(self,
                  latent_dim=2,
                  embed_dim=2,

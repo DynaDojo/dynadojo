@@ -1,6 +1,6 @@
 """
-Generalized Lorenz system formulation based on
-paper from Shen: https://www.worldscientific.com/doi/epdf/10.1142/S0218127419500378
+Generalized Lorenz System
+==========================
 """
 import numpy as np
 
@@ -8,10 +8,33 @@ from .utils.simple import SimpleSystem
 
 
 class LorenzSystem(SimpleSystem):
+    """
+    Generalized Lorenz system. More details in the DynaDojo paper appendix.
+
+    References
+    -----------
+    Formulation based on [1]_
+
+    .. [1] https://www.worldscientific.com/doi/epdf/10.1142/S0218127419500378
+    """
     def __init__(self,
                  latent_dim=3,
                  embed_dim=3,
                  sigma=10, r=28, a_squared=1 / 2, b=8 / 3, **kwargs):
+        """
+        Parameters
+        -----------
+        latent_dim : int
+            Must be an odd number at least 3.
+        sigma : int
+            the Prandtl number
+        r : int
+            normalized Rayleigh number (or heating parameter)
+        a_squared : float
+            :math:`a^2 = 1 / 2` Used default value from [1]_
+        b_squared : float
+            :math:`b^2 = 8 / 3`Used default value from [1]_
+        """
         assert latent_dim % 2 == 1 and latent_dim >= 3, "Latent dimension must be odd number at least 3."
         self._sigma = sigma
         self._r = r
@@ -20,6 +43,7 @@ class LorenzSystem(SimpleSystem):
         super().__init__(latent_dim, embed_dim, **kwargs)
 
     def calc_dynamics(self, t, x):
+        """See the appendix of the DynaDojo paper for the full details."""
         X, Y, Z = x[:3]
         dX = -self._sigma * X + self._sigma * Y
         dY = -X * Z + self._r * X - Y

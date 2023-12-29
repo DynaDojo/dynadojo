@@ -43,12 +43,12 @@ from dynadojo.systems.lv import CompetitiveLVSystem, PreyPredatorSystem
 from dynadojo.systems.opinion import ARWHKSystem, DeffuantSystem, HKSystem, MediaBiasSystem, WHKSystem
 
 ALL_SYSTEMS = [
-    CASystem,
-    CTLNSystem,
+    # CASystem,
+    # CTLNSystem,
     # HeatEquation,
     # KuramotoSystem,
     LDSystem,
-    NBodySystem,
+    # NBodySystem,
     # SNNSystem,
     # SEISSystem, SISSystem, SIRSystem,
     # BSBSystem, HJBSystem,

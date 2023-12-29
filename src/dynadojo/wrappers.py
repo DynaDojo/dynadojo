@@ -20,7 +20,7 @@ class AlgorithmChecker:
     """
 
     def __init__(self, alg: AbstractAlgorithm):
-        """Initialize the AlgorithmChecker object
+        """Initialize the `AlgorithmChecker` object
 
         Parameters
         -----------
@@ -205,8 +205,7 @@ class SystemChecker:
         if control is None:
             control = np.zeros((n, timesteps, self.embed_dim))
         assert control.shape == (n, timesteps, self.embed_dim)
-        data = self.make_data(init_conds=init_conds,
-                              control=control, timesteps=timesteps, noisy=noisy)
+        data = self._system.make_data(init_conds=init_conds, control=control, timesteps=timesteps, noisy=noisy)
         assert data.shape == (n, timesteps, self.embed_dim)
         return data
 
