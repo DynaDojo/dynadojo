@@ -33,7 +33,7 @@ class Challenge:
                  verbose: bool = True,
                  ):
         """
-        Initializes a Challenge instance.
+        Initialize the class.
 
         Parameters
         ----------
@@ -349,6 +349,8 @@ class FixedComplexity(Challenge):
                  system_kwargs: dict = None,
                  verbose: bool = True):
         """
+        Initialize the class.
+
         Parameters
         ----------
         l : int
@@ -430,6 +432,8 @@ class FixedTrainSize(Challenge):
                  verbose: bool = True):
 
         """
+        Initialize the class.
+
         Parameters
         ----------
         n : int

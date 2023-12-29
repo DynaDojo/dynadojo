@@ -1,3 +1,6 @@
+"""
+Baseline and state-of-the-art algorithms for dynamical systems identification.
+"""
 # from .lr import LinearRegression
 # from .cnn import CNN
 # from .dnn import DNN
