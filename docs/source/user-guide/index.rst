@@ -17,8 +17,3 @@ Challenges
 ===========
 
 DynaDojo challenges benchmark how DynaDojo algorithms perform on DynaDojo systems.
-
-Demos
-=======
-
-Links WIP

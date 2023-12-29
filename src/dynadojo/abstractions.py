@@ -1,6 +1,4 @@
 """
-Abstractions
-=============
 This module contains abstract base classes for systems and algorithms.
 """
 from abc import ABC, abstractmethod
