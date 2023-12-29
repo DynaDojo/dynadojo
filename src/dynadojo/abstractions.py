@@ -26,7 +26,7 @@ class AbstractAlgorithm(ABC):
         Note
         ------
         Timesteps refer to the timesteps of the training data, NOT the length of the predicted trajectories. The length
-        of the predicted trajectories is specified in an argument provided in the `predict()` method.
+        of the predicted trajectories is specified in an argument provided in the :func:`~predict` method.
         """
         self._embed_dim = embed_dim
         # NOTE: this is the timesteps of the training data; NOT the predicted trajectories
@@ -237,9 +237,9 @@ class AbstractSystem(ABC):
         Parameters
         ----------
         x : numpy.ndarray
-            Trajectories tensor of shape (n, timesteps, embed_dim).
+            (n, timesteps, embed_dim) Trajectories tensor.
         y : numpy.ndarray
-            Trajectories tensor of shape (n, timesteps, embed_dim).
+            (n, timesteps, embed_dim) Trajectories tensor.
 
         Returns
         -------
@@ -257,11 +257,11 @@ class AbstractSystem(ABC):
         Parameters
         ----------
         control : numpy.ndarray
-            Controls tensor of shape (n, timesteps, embed_dim).
+            (n, timesteps, embed_dim) Controls tensor.
 
         Returns
         -------
         numpy.ndarray
-            Control costs vector of shape (n,).
+            (n,) Control costs vector.
         """
         raise NotImplementedError
