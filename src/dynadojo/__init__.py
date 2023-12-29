@@ -1,4 +1,9 @@
-"""An extensible platform for benchmarking sample efficiency in dynamical system identification"""
+"""
+====================
+API Documentation
+====================
+An extensible platform for benchmarking sample efficiency in dynamical system identification
+"""
 
 # from . import abstractions
 # from . import baselines

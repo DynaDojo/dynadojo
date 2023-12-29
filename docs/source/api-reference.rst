@@ -2,11 +2,17 @@
 API Reference
 ===============
 
-.. automodule:: src.temp
+.. automodule:: dynadojo.abstractions
     :members:
+    :show-inheritance:
 
-.. automodule:: src.dynadojo.temp
-    :members:
 
-.. automodule:: src.dynadojo.wrappers
+.. automodule:: dynadojo.wrappers
     :members:
+    :show-inheritance:
+
+
+.. automodule:: dynadojo.challenges
+    :members:
+    :show-inheritance:
+
