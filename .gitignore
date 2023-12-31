@@ -21,5 +21,3 @@ experiments/logs
 demos
 _dev_import_testing
 *.code-workspace
-
-docs/build
