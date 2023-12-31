@@ -1,4 +1,4 @@
-﻿dynadojo.utils.plotting
+dynadojo.utils.plotting
 =======================
 
 .. automodule:: dynadojo.utils.plotting

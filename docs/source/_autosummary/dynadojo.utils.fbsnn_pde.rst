@@ -1,4 +1,4 @@
-﻿dynadojo.utils.fbsnn\_pde
+dynadojo.utils.fbsnn\_pde
 =========================
 
 .. automodule:: dynadojo.utils.fbsnn_pde

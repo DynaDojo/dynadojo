@@ -1,4 +1,4 @@
-﻿dynadojo.systems.ctln
+dynadojo.systems.ctln
 =====================
 
 .. automodule:: dynadojo.systems.ctln

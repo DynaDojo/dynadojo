@@ -1,4 +1,4 @@
-﻿dynadojo.utils.kuramoto
+dynadojo.utils.kuramoto
 =======================
 
 .. automodule:: dynadojo.utils.kuramoto

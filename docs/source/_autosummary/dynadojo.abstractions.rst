@@ -1,4 +1,4 @@
-dynadojo.abstractions
+﻿dynadojo.abstractions
 =====================
 
 .. automodule:: dynadojo.abstractions

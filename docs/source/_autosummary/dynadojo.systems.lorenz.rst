@@ -1,4 +1,4 @@
-﻿dynadojo.systems.lorenz
+dynadojo.systems.lorenz
 =======================
 
 .. automodule:: dynadojo.systems.lorenz

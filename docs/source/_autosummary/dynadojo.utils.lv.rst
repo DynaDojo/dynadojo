@@ -1,4 +1,4 @@
-﻿dynadojo.utils.lv
+dynadojo.utils.lv
 =================
 
 .. automodule:: dynadojo.utils.lv

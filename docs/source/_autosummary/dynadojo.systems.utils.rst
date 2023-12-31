@@ -1,4 +1,4 @@
-﻿dynadojo.systems.utils
+dynadojo.systems.utils
 ======================
 
 .. automodule:: dynadojo.systems.utils

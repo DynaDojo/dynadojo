@@ -1,4 +1,4 @@
-﻿dynadojo.wrappers.SystemChecker
+dynadojo.wrappers.SystemChecker
 ===============================
 
 .. currentmodule:: dynadojo.wrappers

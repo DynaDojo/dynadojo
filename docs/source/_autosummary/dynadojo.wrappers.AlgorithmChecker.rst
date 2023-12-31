@@ -1,4 +1,4 @@
-﻿dynadojo.wrappers.AlgorithmChecker
+dynadojo.wrappers.AlgorithmChecker
 ==================================
 
 .. currentmodule:: dynadojo.wrappers

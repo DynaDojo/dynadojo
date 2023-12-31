@@ -1,4 +1,4 @@
-﻿dynadojo.systems.epidemic
+dynadojo.systems.epidemic
 =========================
 
 .. automodule:: dynadojo.systems.epidemic

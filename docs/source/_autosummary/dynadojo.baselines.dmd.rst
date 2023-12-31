@@ -1,4 +1,4 @@
-﻿dynadojo.baselines.dmd
+dynadojo.baselines.dmd
 ======================
 
 .. automodule:: dynadojo.baselines.dmd
