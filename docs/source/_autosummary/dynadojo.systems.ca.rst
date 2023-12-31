@@ -1,4 +1,4 @@
-﻿dynadojo.systems.ca
+dynadojo.systems.ca
 ===================
 
 .. automodule:: dynadojo.systems.ca

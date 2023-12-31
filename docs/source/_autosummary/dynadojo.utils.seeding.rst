@@ -1,4 +1,4 @@
-﻿dynadojo.utils.seeding
+dynadojo.utils.seeding
 ======================
 
 .. automodule:: dynadojo.utils.seeding

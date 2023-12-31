@@ -1,4 +1,4 @@
-﻿dynadojo.challenges.FixedError
+dynadojo.challenges.FixedError
 ==============================
 
 .. currentmodule:: dynadojo.challenges

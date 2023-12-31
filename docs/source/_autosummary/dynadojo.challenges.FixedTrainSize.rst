@@ -1,4 +1,4 @@
-﻿dynadojo.challenges.FixedTrainSize
+dynadojo.challenges.FixedTrainSize
 ==================================
 
 .. currentmodule:: dynadojo.challenges

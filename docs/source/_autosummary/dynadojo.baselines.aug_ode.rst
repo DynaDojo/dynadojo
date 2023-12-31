@@ -1,4 +1,4 @@
-﻿dynadojo.baselines.aug\_ode
+dynadojo.baselines.aug\_ode
 ===========================
 
 .. automodule:: dynadojo.baselines.aug_ode

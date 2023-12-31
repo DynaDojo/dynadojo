@@ -1,14 +1,12 @@
-DynaDojo Documentation
+DynaDojo documentation
 =======================
 
 **Release**: |release|
 
 .. toctree::
    :maxdepth: 2
-   :caption: Docs
 
    getting-started
    user-guide/index
-   _autosummary/dynadojo
-
+   api-reference
 

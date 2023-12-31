@@ -1,4 +1,4 @@
-﻿dynadojo.baselines.cnn
+dynadojo.baselines.cnn
 ======================
 
 .. automodule:: dynadojo.baselines.cnn

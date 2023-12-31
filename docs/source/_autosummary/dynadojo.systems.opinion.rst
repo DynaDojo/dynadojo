@@ -1,4 +1,4 @@
-﻿dynadojo.systems.opinion
+dynadojo.systems.opinion
 ========================
 
 .. automodule:: dynadojo.systems.opinion

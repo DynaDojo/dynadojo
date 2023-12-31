@@ -1,4 +1,4 @@
-﻿dynadojo.abstractions.AbstractSystem
+dynadojo.abstractions.AbstractSystem
 ====================================
 
 .. currentmodule:: dynadojo.abstractions

@@ -1,4 +1,4 @@
-﻿dynadojo.systems.lds
+dynadojo.systems.lds
 ====================
 
 .. automodule:: dynadojo.systems.lds

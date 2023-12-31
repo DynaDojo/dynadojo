@@ -1,4 +1,4 @@
-﻿dynadojo.systems.snn
+dynadojo.systems.snn
 ====================
 
 .. automodule:: dynadojo.systems.snn

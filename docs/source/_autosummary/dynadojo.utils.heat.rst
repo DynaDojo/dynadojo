@@ -1,4 +1,4 @@
-﻿dynadojo.utils.heat
+dynadojo.utils.heat
 ===================
 
 .. automodule:: dynadojo.utils.heat

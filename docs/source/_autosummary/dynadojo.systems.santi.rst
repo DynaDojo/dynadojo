@@ -1,4 +1,4 @@
-﻿dynadojo.systems.santi
+dynadojo.systems.santi
 ======================
 
 .. automodule:: dynadojo.systems.santi

@@ -1,4 +1,4 @@
-﻿dynadojo.challenges.Challenge
+dynadojo.challenges.Challenge
 =============================
 
 .. currentmodule:: dynadojo.challenges

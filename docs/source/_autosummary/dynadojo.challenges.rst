@@ -1,4 +1,4 @@
-dynadojo.challenges
+﻿dynadojo.challenges
 ===================
 
 .. automodule:: dynadojo.challenges

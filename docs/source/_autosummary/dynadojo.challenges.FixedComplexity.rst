@@ -1,4 +1,4 @@
-﻿dynadojo.challenges.FixedComplexity
+dynadojo.challenges.FixedComplexity
 ===================================
 
 .. currentmodule:: dynadojo.challenges
