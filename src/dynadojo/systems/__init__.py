@@ -1,5 +1,5 @@
 """
-Dynamical systems
+Collection of off-the-shelf dynamical systems and common abstract baseclass extensions of `AbstractSystem`.
 """
 # from . import opinion
 # from . import lv
