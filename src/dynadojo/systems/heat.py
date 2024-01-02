@@ -1,5 +1,9 @@
 """
-Adapted from: https://levelup.gitconnected.com/solving-2d-heat-equation-numerically-using-python-3334004aa01a
+2D Heat Equation. Adapted from [1]_.
+
+References
+------------
+.. [1] https://levelup.gitconnected.com/solving-2d-heat-equation-numerically-using-python-3334004aa01a
 """
 import numpy as np
 
@@ -8,7 +12,7 @@ from .utils.simple import SimpleSystem
 
 class HeatEquation(SimpleSystem):
     """
-    Implements the 2D heat equation
+    2D Heat Equation.
     """
 
     def __init__(self,
