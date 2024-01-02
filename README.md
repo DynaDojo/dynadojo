@@ -1,7 +1,10 @@
+$${\color{red}\textbf{We are currently in the middle of a major refactor. The anticipated completion date is January 2024.}}$$
+
+$${\color{red}\textbf{Thank you for your patience and understanding.}}$$
+
 ![Logo](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/297b41d5-d967-4b63-8b46-6fa54aca8703)
 
-
-**DynaDojo** is a Python gym environment for testing how models generalize and efficently use samples in dynamical system idenficiation. Our platform lets you understand how a model performs as various parameters are adjusted, including tuning the complexity of the system (e.g., dimension), increasing the dataset size, changing the number of timesteps per trajectory, active learning (control), adding noise, adjusting the distribution of initial conditions, and more.
+DynaDojo is a Python API for testing how models generalize and efficiently use samples in dynamical system identification. Our platform lets you understand how a model performs as various parameters are adjusted, including tuning the complexity of the system (e.g., dimension), increasing the dataset size, changing the number of timesteps per trajectory, control, adding noise, adjusting the distribution of initial conditions, and more.
 
 You can install DynaDojo with `pip`:
 
