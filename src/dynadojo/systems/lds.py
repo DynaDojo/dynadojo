@@ -10,8 +10,8 @@ from .utils.simple import SimpleSystem
 
 class LDSystem(SimpleSystem):
     """
-    Linear dynamical systems. Implements a system of the form :math:`\dot{x} = Ax + Bu`
-    where :math:`Ax` is the drift term of :math:`\dot{x}` and :math:`Bu` is input term of :math:`\dot{x}`.
+    Linear dynamical system (LDS). Implements an LDS of the form :math:`\dot{x} = Ax + Bu` where :math:`Ax` is the drift term of :math:`\dot{x}`
+    and :math:`Bu` is input term of :math:`\dot{x}`.
     """
     def __init__(self,
                  latent_dim: int = 2,

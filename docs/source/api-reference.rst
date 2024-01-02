@@ -1,8 +1,14 @@
 API Reference
 ===============
 
-.. toctree::
-   :maxdepth: 2
+.. autosummary::
+   :caption: API Reference
+   :toctree: _autosummary
+   :template: custom-module-template.rst
+   :recursive:
 
-   _autosummary/dynadojo
+   dynadojo
+
+
+
 

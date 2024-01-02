@@ -39,11 +39,11 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',  # Create neat summary tables
     'sphinx.ext.coverage',
-    'sphinx.ext.napoleon'  # For NumPy formatted docstrings
+    'sphinx.ext.napoleon',  # For NumPy formatted docstrings
 ]
 # Autosummary settings
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
-
+autosummary_imported_members = False
 
 # Napoleon settings
 napoleon_google_docstring = False
@@ -85,20 +85,15 @@ html_css_files = [
 
 # -- Options for HTML output -------------------------------------------------
 
-html_theme = 'pydata_sphinx_theme'
-
+html_theme = 'furo'
+html_logo = '_static/logo.svg'
 html_theme_options = {
-    "logo": {
-      "image_light": "_static/logo.svg",
-      "image_dark": "_static/logo.svg",
+    "light_css_variables": {
+        "color-brand-primary": "#2c6213",
+        "color-brand-content": "#2c6213",
     },
-    "github_url": "https://github.com/FlyingWorkshop/dynadojo",
-    "collapse_navigation": True,
-    "external_links": [
-         {"name": "Learn", "url": "https://github.com/FlyingWorkshop/dynadojo/tree/5de20a885d8db45bc2cea35d39258aa04b931bae/demos"},
-    ],
-    "header_links_before_dropdown": 6,
-    # Add light/dark mode and documentation version switcher:
-    "navbar_end": ["theme-switcher", "navbar-icon-links"],
-    "content_footer_items": ["last-updated"],
+    "dark_css_variables": {
+        "color-brand-primary": "#2c6213",
+        "color-brand-content": "#2c6213",
+    },
 }

@@ -1,5 +1,6 @@
 """
-
+Cellular Automata
+========================
 """
 import cellpylib as cpl
 import numpy as np
@@ -10,7 +11,42 @@ from ..utils.seeding import temp_numpy_seed, temp_random_seed
 
 
 class CASystem(AbstractSystem):
+    """
+    Cellular automaton (CA). Implements a one-dimensional CA.
+
+    Example
+    ---------
+    >>> from dynadojo.utils.ca import plot
+    >>> from dynadojo.wrappers import SystemChecker
+    >>> latent_dim = 3
+    >>> embed_dim = 64
+    >>> timesteps = 30
+    >>> n = 10
+    >>> system = SystemChecker((latent_dim, embed_dim, seed=1))
+    >>> x0 = system.make_init_conds(n=n)
+    >>> x = system.make_data(x0, timesteps=timesteps)
+    >>> plot([x], labels=["X"])
+
+    .. image:: ../_static/ca.png
+    """
     def __init__(self, latent_dim = 2, embed_dim = 64, in_dist_p=0.25, out_dist_p=0.75, mutation_p=0.00, seed=None):
+        """
+        Initializes a CASystem instance.
+
+        Parameters
+        -------------
+        latent_dim : int
+            The radius of the CA.
+        embed_dim : int
+            The number of cells in each row of the grid.
+        in_dist_p : float
+            The parameter of the binomial that generate the initial condition for in distribution initial conditions.
+        out_dist_p : float
+            The parameter of the binomial that generate the initial condition for out-of-distribution initial conditions.
+        mutation_p : float
+            If noisy, `mutation_p` is the chance that any cell of completed generation is flipped. For example, with
+            `mutation_p = 1`, an unmutated generation `0010` would become `1101`.
+        """
         super().__init__(latent_dim, embed_dim, seed=seed)
         self._rng = np.random.default_rng(seed=seed)
         self._rule_table = self._get_rule_table()
