@@ -3,7 +3,7 @@ name: Sphinx Build and Deploy
 on:
   push:
     branches:
-      - main  # Change this to your main branch name
+      - docs  # Change this to your main branch name
 
 jobs:
   build:
