@@ -1,3 +1,7 @@
+"""
+Collection of helper functions mainly used for visualizing DynaDojo systems.
+"""
+
 # from . import lds
 # from . import ca
 # from . import lv
