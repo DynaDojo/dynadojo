@@ -27,7 +27,7 @@ class CASystem(AbstractSystem):
     >>> x = system.make_data(x0, timesteps=timesteps)
     >>> plot([x], labels=["X"])
 
-    .. image:: ../_static/ca.png
+    .. image:: ../_images/ca.png
     """
     def __init__(self, latent_dim = 2, embed_dim = 64, in_dist_p=0.25, out_dist_p=0.75, mutation_p=0.00, seed=None):
         """
