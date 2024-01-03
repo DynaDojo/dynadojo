@@ -66,7 +66,7 @@ napoleon_attr_annotations = True
 
 autodoc_typehints = "description"  # Automatically extract typehints when specified and place them in descriptions of the relevant function/method.
 autodoc_class_signature = "separated"  # Don't show class signature with the class' name.
-autodoc_inherit_docstrings = False
+autodoc_inherit_docstrings = True
 
 
 # Add any paths that contain templates here, relative to this directory.

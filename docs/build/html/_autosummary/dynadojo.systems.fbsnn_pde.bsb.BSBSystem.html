@@ -424,20 +424,20 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>([latent_dim, embed_dim, ...])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.__init__" title="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([latent_dim, embed_dim, ...])</p></td>
+<td><p>Initialize the abstract base class.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_control_cost</span></code>(control)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_control_cost" title="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_control_cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_control_cost</span></code></a>(control)</p></td>
+<td><p>Calculate the control cost for each control trajectory (i.e., calculates the costs for every control matrix, not for the whole tensor).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_error</span></code>(x, y)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_error" title="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_error</span></code></a>(x, y)</p></td>
+<td><p>Calculates the error between two tensors of trajectories.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_data</span></code>(init_conds, control, timesteps[, ...])</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_data" title="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_data</span></code></a>(init_conds, control, timesteps[, ...])</p></td>
+<td><p>Abstract method that makes trajectories from initial conditions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_init_conds</span></code>(n[, in_dist])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_init_conds" title="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_init_conds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_init_conds</span></code></a>(n[, in_dist])</p></td>
+<td><p>Abstract method to generate initial conditions.</p></td>
 </tr>
 </tbody>
 </table>
@@ -458,6 +458,60 @@
 </tbody>
 </table>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IND_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0.8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OOD_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.8,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize the abstract base class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>latent_dim</strong> (<em>int</em>) – Dimension of the latent space.</p></li>
+<li><p><strong>embed_dim</strong> (<em>int</em>) – Embedded dimension of the system.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Seed for random number generation.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_control_cost">
+<span class="sig-name descname"><span class="pre">calc_control_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">control</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_control_cost" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the control cost for each control trajectory (i.e., calculates the costs for every
+control matrix, not for the whole tensor). Your systems must implement this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>control</strong> (<em>numpy.ndarray</em>) – (n, timesteps, embed_dim) Controls tensor.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(n,) Control costs vector.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_error">
+<span class="sig-name descname"><span class="pre">calc_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_error" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the error between two tensors of trajectories. Your systems must implement this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – (n, timesteps, embed_dim) Trajectories tensor.</p></li>
+<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – (n, timesteps, embed_dim) Trajectories tensor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The error between x and y.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.embed_dim">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">embed_dim</span></span><a class="headerlink" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.embed_dim" title="Link to this definition">#</a></dt>
@@ -468,6 +522,54 @@
 <dt class="sig sig-object py" id="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.latent_dim">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">latent_dim</span></span><a class="headerlink" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.latent_dim" title="Link to this definition">#</a></dt>
 <dd><p>The latent dimension for the system.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_data">
+<span class="sig-name descname"><span class="pre">make_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_conds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_data" title="Link to this definition">#</a></dt>
+<dd><p>Abstract method that makes trajectories from initial conditions. Your system must implement this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init_conds</strong> (<em>numpy.ndarray</em>) – (n, embed_dim) Initial conditions matrix.</p></li>
+<li><p><strong>control</strong> (<em>numpy.ndarray</em>) – (n, timesteps, embed_dim) Controls tensor.</p></li>
+<li><p><strong>timesteps</strong> (<em>int</em>) – Timesteps per training trajectory (per action horizon).</p></li>
+<li><p><strong>noisy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, add noise to trajectories. Defaults to False. If False, no noise is added.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(n, timesteps, embed_dim) Trajectories tensor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_init_conds">
+<span class="sig-name descname"><span class="pre">make_init_conds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_init_conds" title="Link to this definition">#</a></dt>
+<dd><p>Abstract method to generate initial conditions. Your system should implement this method.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Systems developers determine what counts as in vs out-of-distribution. DynaDojo doesn’t provide
+any verification that this distinction makes sense or even exists. See <code class="xref py py-class docutils literal notranslate"><span class="pre">LDSystem</span></code> for a principled example.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – Number of initial conditions.</p></li>
+<li><p><strong>in_dist</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, generate in-distribution initial conditions. Defaults to True.
+If False, generate out-of-distribution initial conditions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(n, embed_dim) Initial conditions matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -537,8 +639,13 @@
             <ul>
 <li><a class="reference internal" href="#">dynadojo.systems.fbsnn_pde.bsb.BSBSystem</a><ul>
 <li><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem"><code class="docutils literal notranslate"><span class="pre">BSBSystem</span></code></a><ul>
+<li><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.__init__"><code class="docutils literal notranslate"><span class="pre">BSBSystem.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_control_cost"><code class="docutils literal notranslate"><span class="pre">BSBSystem.calc_control_cost()</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_error"><code class="docutils literal notranslate"><span class="pre">BSBSystem.calc_error()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.embed_dim"><code class="docutils literal notranslate"><span class="pre">BSBSystem.embed_dim</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.latent_dim"><code class="docutils literal notranslate"><span class="pre">BSBSystem.latent_dim</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_data"><code class="docutils literal notranslate"><span class="pre">BSBSystem.make_data()</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_init_conds"><code class="docutils literal notranslate"><span class="pre">BSBSystem.make_init_conds()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.seed"><code class="docutils literal notranslate"><span class="pre">BSBSystem.seed</span></code></a></li>
 </ul>
 </li>

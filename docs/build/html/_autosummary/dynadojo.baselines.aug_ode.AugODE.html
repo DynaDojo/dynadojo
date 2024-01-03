@@ -424,20 +424,20 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(embed_dim, timesteps, max_control_cost)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.__init__" title="dynadojo.baselines.aug_ode.AugODE.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(embed_dim, timesteps, max_control_cost)</p></td>
+<td><p>Initialize the abstract base class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.act" title="dynadojo.baselines.aug_ode.AugODE.act"><code class="xref py py-obj docutils literal notranslate"><span class="pre">act</span></code></a>(x, **kwargs)</p></td>
 <td><p>Determines the control for each action horizon.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(x[, epochs])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.fit" title="dynadojo.baselines.aug_ode.AugODE.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(x[, epochs])</p></td>
+<td><p>Fits the algorithm on a tensor of trajectories.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">forward</span></code>(t, state)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(x0, timesteps)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.predict" title="dynadojo.baselines.aug_ode.AugODE.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x0, timesteps)</p></td>
+<td><p>Predict how initial conditions matrix evolves over a given number of timesteps.</p></td>
 </tr>
 </tbody>
 </table>
@@ -461,6 +461,27 @@
 </tbody>
 </table>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.baselines.aug_ode.AugODE.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_control_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.03</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aug_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.baselines.aug_ode.AugODE.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize the abstract base class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>embed_dim</strong> (<em>int</em>) – Embedded dimension of the dynamics.</p></li>
+<li><p><strong>timesteps</strong> (<em>int</em>) – Timesteps per training trajectory (per action horizon).</p></li>
+<li><p><strong>max_control_cost</strong> (<em>float</em>) – Maximum control cost per trajectory (per action horizon).</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Timesteps refer to the timesteps of the training data, NOT the length of the predicted trajectories. The length
+of the predicted trajectories is specified in an argument provided in the <a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.predict" title="dynadojo.baselines.aug_ode.AugODE.predict"><code class="xref py py-func docutils literal notranslate"><span class="pre">predict()</span></code></a> method.</p>
+</div>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="dynadojo.baselines.aug_ode.AugODE.act">
 <span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.baselines.aug_ode.AugODE.act" title="Link to this definition">#</a></dt>
@@ -488,10 +509,55 @@ control.</p>
 <dd><p>The embedded dimension of the dynamics.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.baselines.aug_ode.AugODE.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.baselines.aug_ode.AugODE.fit" title="Link to this definition">#</a></dt>
+<dd><p>Fits the algorithm on a tensor of trajectories. Your subclass must implement this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.ndarray</em>) – (n, timesteps, embed_dim) Trajectories tensor.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="dynadojo.baselines.aug_ode.AugODE.max_control_cost">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_control_cost</span></span><a class="headerlink" href="#dynadojo.baselines.aug_ode.AugODE.max_control_cost" title="Link to this definition">#</a></dt>
 <dd><p>The maximum control cost.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.baselines.aug_ode.AugODE.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.baselines.aug_ode.AugODE.predict" title="Link to this definition">#</a></dt>
+<dd><p>Predict how initial conditions matrix evolves over a given number of timesteps. Your algorithms must implement
+this method.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The timesteps argument can differ from the ._timesteps attribute. This allows algorithms to train on a dataset
+of a given size and then predict trajectories of arbitrary lengths.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The first coordinate of each trajectory should match the initial condition x0.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x0</strong> (<em>np.ndarray</em>) – (n, embed_dim) initial conditions matrix</p></li>
+<li><p><strong>timesteps</strong> (<em>int</em>) – timesteps per predicted trajectory</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(n, timesteps, embed_dim) trajectories tensor</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -567,9 +633,12 @@ control.</p>
             <ul>
 <li><a class="reference internal" href="#">dynadojo.baselines.aug_ode.AugODE</a><ul>
 <li><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE"><code class="docutils literal notranslate"><span class="pre">AugODE</span></code></a><ul>
+<li><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.__init__"><code class="docutils literal notranslate"><span class="pre">AugODE.__init__()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.act"><code class="docutils literal notranslate"><span class="pre">AugODE.act()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.embed_dim"><code class="docutils literal notranslate"><span class="pre">AugODE.embed_dim</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.fit"><code class="docutils literal notranslate"><span class="pre">AugODE.fit()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.max_control_cost"><code class="docutils literal notranslate"><span class="pre">AugODE.max_control_cost</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.predict"><code class="docutils literal notranslate"><span class="pre">AugODE.predict()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.seed"><code class="docutils literal notranslate"><span class="pre">AugODE.seed</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.baselines.aug_ode.AugODE.timesteps"><code class="docutils literal notranslate"><span class="pre">AugODE.timesteps</span></code></a></li>
 </ul>

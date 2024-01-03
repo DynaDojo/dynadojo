@@ -437,14 +437,14 @@ and <span class="math notranslate nohighlight">\(Bu\)</span> is input term of <s
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.calc_control_cost" title="dynadojo.systems.lds.LDSystem.calc_control_cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_control_cost</span></code></a>(control)</p></td>
 <td><p>Calculates the L2 norm / dimension of every vector in the control</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_dynamics</span></code>(t, x)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.calc_dynamics" title="dynadojo.systems.lds.LDSystem.calc_dynamics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_dynamics</span></code></a>(t, x)</p></td>
+<td><p>Calculates the dynamics for the system.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.calc_error" title="dynadojo.systems.lds.LDSystem.calc_error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_error</span></code></a>(x, y)</p></td>
-<td><p>Returns NSE</p></td>
+<td><p>Returns the MSE error normalized by the embedded dimension.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_data</span></code>(init_conds, control, timesteps[, ...])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.make_data" title="dynadojo.systems.lds.LDSystem.make_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_data</span></code></a>(init_conds, control, timesteps[, ...])</p></td>
+<td><p>Uses the <a class="reference internal" href="#dynadojo.systems.lds.LDSystem.calc_dynamics" title="dynadojo.systems.lds.LDSystem.calc_dynamics"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_dynamics()</span></code></a> method to generate data.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.make_init_conds" title="dynadojo.systems.lds.LDSystem.make_init_conds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_init_conds</span></code></a>(n[, in_dist])</p></td>
 <td><p>Uniformly samples embedded-dimensional points from an inside or outside distribution</p></td>
@@ -456,14 +456,14 @@ and <span class="math notranslate nohighlight">\(Bu\)</span> is input term of <s
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">controller</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.controller" title="dynadojo.systems.lds.LDSystem.controller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">controller</span></code></a></p></td>
+<td><p>The controller matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.embed_dim" title="dynadojo.systems.lds.LDSystem.embed_dim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">embed_dim</span></code></a></p></td>
 <td><p>The embedded dimension for the system.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">embedder</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.embedder" title="dynadojo.systems.lds.LDSystem.embedder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">embedder</span></code></a></p></td>
+<td><p>The embedder matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.latent_dim" title="dynadojo.systems.lds.LDSystem.latent_dim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latent_dim</span></code></a></p></td>
 <td><p>The latent dimension for the system.</p></td>
@@ -506,14 +506,26 @@ for stable systems.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.systems.lds.LDSystem.calc_dynamics">
+<span class="sig-name descname"><span class="pre">calc_dynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.lds.LDSystem.calc_dynamics" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the dynamics for the system. Your class must implement this.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dynadojo.systems.lds.LDSystem.calc_error">
 <span class="sig-name descname"><span class="pre">calc_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.lds.LDSystem.calc_error" title="Link to this definition">#</a></dt>
-<dd><p>Returns NSE</p>
+<dd><p>Returns the MSE error normalized by the embedded dimension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dynadojo.systems.lds.LDSystem.controller">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">controller</span></span><a class="headerlink" href="#dynadojo.systems.lds.LDSystem.controller" title="Link to this definition">#</a></dt>
+<dd><p>The controller matrix. For example, in a system <span class="math notranslate nohighlight">\(\dot{x} = Ax + Bu\)</span>, the controller is <span class="math notranslate nohighlight">\(B\)</span>.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -523,21 +535,62 @@ for stable systems.</p></li>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="dynadojo.systems.lds.LDSystem.embedder">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">embedder</span></span><a class="headerlink" href="#dynadojo.systems.lds.LDSystem.embedder" title="Link to this definition">#</a></dt>
+<dd><p>The embedder matrix. An invertible map from the latent space to the embedding space.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="dynadojo.systems.lds.LDSystem.latent_dim">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">latent_dim</span></span><a class="headerlink" href="#dynadojo.systems.lds.LDSystem.latent_dim" title="Link to this definition">#</a></dt>
 <dd><p>The latent dimension for the system.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.systems.lds.LDSystem.make_data">
+<span class="sig-name descname"><span class="pre">make_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_conds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.lds.LDSystem.make_data" title="Link to this definition">#</a></dt>
+<dd><p>Uses the <a class="reference internal" href="#dynadojo.systems.lds.LDSystem.calc_dynamics" title="dynadojo.systems.lds.LDSystem.calc_dynamics"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_dynamics()</span></code></a> method to generate data. Mathematically, data is generated like <span class="math notranslate nohighlight">\(\dot{x} = f(x) + Bu\)</span>.
+Where <span class="math notranslate nohighlight">\(f(x)\)</span> is given by <a class="reference internal" href="#dynadojo.systems.lds.LDSystem.calc_dynamics" title="dynadojo.systems.lds.LDSystem.calc_dynamics"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_dynamics()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init_conds</strong> (<em>numpy.ndarray</em>) – (n, embed_dim) Initial conditions matrix.</p></li>
+<li><p><strong>control</strong> (<em>numpy.ndarray</em>) – (n, timesteps, embed_dim) Controls tensor.</p></li>
+<li><p><strong>timesteps</strong> (<em>int</em>) – Timesteps per training trajectory (per action horizon).</p></li>
+<li><p><strong>noisy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, add noise to trajectories. Defaults to False. If False, no noise is added.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(n, timesteps, embed_dim) Trajectories tensor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dynadojo.systems.lds.LDSystem.make_init_conds">
 <span class="sig-name descname"><span class="pre">make_init_conds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.lds.LDSystem.make_init_conds" title="Link to this definition">#</a></dt>
 <dd><p>Uniformly samples embedded-dimensional points from an inside or outside distribution</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Systems developers determine what counts as in vs out-of-distribution. DynaDojo doesn’t provide
+any verification that this distinction makes sense or even exists. See <a class="reference internal" href="#dynadojo.systems.lds.LDSystem" title="dynadojo.systems.lds.LDSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">LDSystem</span></code></a> for a principled example.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – Number of initial conditions.</p></li>
+<li><p><strong>in_dist</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, generate in-distribution initial conditions. Defaults to True.
+If False, generate out-of-distribution initial conditions.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>ndarray</em></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(n, embed_dim) Initial conditions matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -611,9 +664,13 @@ for stable systems.</p></li>
 <li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem"><code class="docutils literal notranslate"><span class="pre">LDSystem</span></code></a><ul>
 <li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.__init__"><code class="docutils literal notranslate"><span class="pre">LDSystem.__init__()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.calc_control_cost"><code class="docutils literal notranslate"><span class="pre">LDSystem.calc_control_cost()</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.calc_dynamics"><code class="docutils literal notranslate"><span class="pre">LDSystem.calc_dynamics()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.calc_error"><code class="docutils literal notranslate"><span class="pre">LDSystem.calc_error()</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.controller"><code class="docutils literal notranslate"><span class="pre">LDSystem.controller</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.embed_dim"><code class="docutils literal notranslate"><span class="pre">LDSystem.embed_dim</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.embedder"><code class="docutils literal notranslate"><span class="pre">LDSystem.embedder</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.latent_dim"><code class="docutils literal notranslate"><span class="pre">LDSystem.latent_dim</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.make_data"><code class="docutils literal notranslate"><span class="pre">LDSystem.make_data()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.make_init_conds"><code class="docutils literal notranslate"><span class="pre">LDSystem.make_init_conds()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.lds.LDSystem.seed"><code class="docutils literal notranslate"><span class="pre">LDSystem.seed</span></code></a></li>
 </ul>

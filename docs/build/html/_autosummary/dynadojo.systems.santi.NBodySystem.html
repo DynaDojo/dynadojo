@@ -421,24 +421,45 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dynadojo.systems.santi.</span></span><span class="sig-name descname"><span class="pre">NBodySystem</span></span><a class="headerlink" href="#dynadojo.systems.santi.NBodySystem" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem" title="dynadojo.systems.utils.simple.SimpleSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleSystem</span></code></a></p>
 <p>N-Body system.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We implement a very simple version of the n-body problem. We assume a system with <span class="math notranslate nohighlight">\(n\)</span> planetary bodies and <span class="math notranslate nohighlight">\(1\)</span> sun.
+All planetary bodies have the same mass. The initial conditions are a matrix with 4 dimensions for every planetary body.
+These dimensions give us the <cite>(x, y, z, vy)</cite> of the planetary body where the first three coordinates are the <span class="math notranslate nohighlight">\(xyz\)</span> position
+and the last coordinate <span class="math notranslate nohighlight">\(vy\)</span> is the <span class="math notranslate nohighlight">\(y\)</span> velocity. For simplicity, this is the only component of velocity that you can specify.
+So if we wanted 5 planetary bodies, then our latent dimension would be <span class="math notranslate nohighlight">\(5 \times 4 = 20\)</span>.</p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dynadojo.wrappers</span> <span class="kn">import</span> <span class="n">SystemChecker</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n_bodies</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">latent_dim</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">n_bodies</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">embed_dim</span> <span class="o">=</span> <span class="n">latent_dim</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># we only want 1 system with several bodies</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timesteps</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span> <span class="o">=</span> <span class="n">SystemChecker</span><span class="p">(</span><span class="n">NBodySystem</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x0</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">make_init_conds</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">make_data</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="n">timesteps</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/santi.png" src="../_images/santi.png" />
 <p class="rubric">Methods</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>([latent_dim, embed_dim, mass, ...])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.__init__" title="dynadojo.systems.santi.NBodySystem.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([latent_dim, embed_dim, mass, ...])</p></td>
+<td><p>Initialize the class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.calc_control_cost" title="dynadojo.systems.santi.NBodySystem.calc_control_cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_control_cost</span></code></a>(control)</p></td>
 <td><p>Calculates the L2 norm / dimension of every vector in the control</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_dynamics</span></code>(t, x)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.calc_dynamics" title="dynadojo.systems.santi.NBodySystem.calc_dynamics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_dynamics</span></code></a>(t, x)</p></td>
+<td><p>Calculates the dynamics for the system.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.calc_error" title="dynadojo.systems.santi.NBodySystem.calc_error"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_error</span></code></a>(x, y)</p></td>
-<td><p>Returns NSE</p></td>
+<td><p>Returns the MSE error normalized by the embedded dimension.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_data</span></code>(init_conds, control, timesteps[, ...])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.make_data" title="dynadojo.systems.santi.NBodySystem.make_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_data</span></code></a>(init_conds, control, timesteps[, ...])</p></td>
+<td><p>Uses the <a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.calc_dynamics" title="dynadojo.systems.santi.NBodySystem.calc_dynamics"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_dynamics()</span></code></a> method to generate data.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.make_init_conds" title="dynadojo.systems.santi.NBodySystem.make_init_conds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_init_conds</span></code></a>(n[, in_dist])</p></td>
 <td><p>Uniformly samples embedded-dimensional points from an inside or outside distribution</p></td>
@@ -450,14 +471,14 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">controller</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.controller" title="dynadojo.systems.santi.NBodySystem.controller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">controller</span></code></a></p></td>
+<td><p>The controller matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.embed_dim" title="dynadojo.systems.santi.NBodySystem.embed_dim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">embed_dim</span></code></a></p></td>
 <td><p>The embedded dimension for the system.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">embedder</span></code></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.embedder" title="dynadojo.systems.santi.NBodySystem.embedder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">embedder</span></code></a></p></td>
+<td><p>The embedder matrix.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.latent_dim" title="dynadojo.systems.santi.NBodySystem.latent_dim"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latent_dim</span></code></a></p></td>
 <td><p>The latent dimension for the system.</p></td>
@@ -468,6 +489,22 @@
 </tbody>
 </table>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.systems.santi.NBodySystem.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IND_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(-1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OOD_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(-1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.santi.NBodySystem.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize the class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>latent_dim</strong> (<em>int</em>) – The latent dimension should be <span class="math notranslate nohighlight">\(4 \times \text{# of desired planetary bodies}\)</span></p></li>
+<li><p><strong>embed_dim</strong> (<em>int</em>) – Must be the same as the latent dimension.</p></li>
+<li><p><strong>mass</strong> (<em>float</em>) – The mass for all planetary bodies. In practice, small values between 0 and 1 will work best.</p></li>
+<li><p><strong>plot_data</strong> (<em>bool</em>) – If True, visualize the results of the system in a Jupyter notebook. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="dynadojo.systems.santi.NBodySystem.calc_control_cost">
 <span class="sig-name descname"><span class="pre">calc_control_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">control</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.santi.NBodySystem.calc_control_cost" title="Link to this definition">#</a></dt>
@@ -483,14 +520,26 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.systems.santi.NBodySystem.calc_dynamics">
+<span class="sig-name descname"><span class="pre">calc_dynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.santi.NBodySystem.calc_dynamics" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the dynamics for the system. Your class must implement this.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dynadojo.systems.santi.NBodySystem.calc_error">
 <span class="sig-name descname"><span class="pre">calc_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.santi.NBodySystem.calc_error" title="Link to this definition">#</a></dt>
-<dd><p>Returns NSE</p>
+<dd><p>Returns the MSE error normalized by the embedded dimension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dynadojo.systems.santi.NBodySystem.controller">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">controller</span></span><a class="headerlink" href="#dynadojo.systems.santi.NBodySystem.controller" title="Link to this definition">#</a></dt>
+<dd><p>The controller matrix. For example, in a system <span class="math notranslate nohighlight">\(\dot{x} = Ax + Bu\)</span>, the controller is <span class="math notranslate nohighlight">\(B\)</span>.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -500,21 +549,62 @@
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="dynadojo.systems.santi.NBodySystem.embedder">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">embedder</span></span><a class="headerlink" href="#dynadojo.systems.santi.NBodySystem.embedder" title="Link to this definition">#</a></dt>
+<dd><p>The embedder matrix. An invertible map from the latent space to the embedding space.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="dynadojo.systems.santi.NBodySystem.latent_dim">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">latent_dim</span></span><a class="headerlink" href="#dynadojo.systems.santi.NBodySystem.latent_dim" title="Link to this definition">#</a></dt>
 <dd><p>The latent dimension for the system.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.systems.santi.NBodySystem.make_data">
+<span class="sig-name descname"><span class="pre">make_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_conds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.santi.NBodySystem.make_data" title="Link to this definition">#</a></dt>
+<dd><p>Uses the <a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.calc_dynamics" title="dynadojo.systems.santi.NBodySystem.calc_dynamics"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_dynamics()</span></code></a> method to generate data. Mathematically, data is generated like <span class="math notranslate nohighlight">\(\dot{x} = f(x) + Bu\)</span>.
+Where <span class="math notranslate nohighlight">\(f(x)\)</span> is given by <a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.calc_dynamics" title="dynadojo.systems.santi.NBodySystem.calc_dynamics"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_dynamics()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init_conds</strong> (<em>numpy.ndarray</em>) – (n, embed_dim) Initial conditions matrix.</p></li>
+<li><p><strong>control</strong> (<em>numpy.ndarray</em>) – (n, timesteps, embed_dim) Controls tensor.</p></li>
+<li><p><strong>timesteps</strong> (<em>int</em>) – Timesteps per training trajectory (per action horizon).</p></li>
+<li><p><strong>noisy</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, add noise to trajectories. Defaults to False. If False, no noise is added.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(n, timesteps, embed_dim) Trajectories tensor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dynadojo.systems.santi.NBodySystem.make_init_conds">
 <span class="sig-name descname"><span class="pre">make_init_conds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.santi.NBodySystem.make_init_conds" title="Link to this definition">#</a></dt>
 <dd><p>Uniformly samples embedded-dimensional points from an inside or outside distribution</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Systems developers determine what counts as in vs out-of-distribution. DynaDojo doesn’t provide
+any verification that this distinction makes sense or even exists. See <code class="xref py py-class docutils literal notranslate"><span class="pre">LDSystem</span></code> for a principled example.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n</strong> (<em>int</em>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – Number of initial conditions.</p></li>
+<li><p><strong>in_dist</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, generate in-distribution initial conditions. Defaults to True.
+If False, generate out-of-distribution initial conditions.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>ndarray</em></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(n, embed_dim) Initial conditions matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -586,10 +676,15 @@
             <ul>
 <li><a class="reference internal" href="#">dynadojo.systems.santi.NBodySystem</a><ul>
 <li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem"><code class="docutils literal notranslate"><span class="pre">NBodySystem</span></code></a><ul>
+<li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.__init__"><code class="docutils literal notranslate"><span class="pre">NBodySystem.__init__()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.calc_control_cost"><code class="docutils literal notranslate"><span class="pre">NBodySystem.calc_control_cost()</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.calc_dynamics"><code class="docutils literal notranslate"><span class="pre">NBodySystem.calc_dynamics()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.calc_error"><code class="docutils literal notranslate"><span class="pre">NBodySystem.calc_error()</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.controller"><code class="docutils literal notranslate"><span class="pre">NBodySystem.controller</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.embed_dim"><code class="docutils literal notranslate"><span class="pre">NBodySystem.embed_dim</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.embedder"><code class="docutils literal notranslate"><span class="pre">NBodySystem.embedder</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.latent_dim"><code class="docutils literal notranslate"><span class="pre">NBodySystem.latent_dim</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.make_data"><code class="docutils literal notranslate"><span class="pre">NBodySystem.make_data()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.make_init_conds"><code class="docutils literal notranslate"><span class="pre">NBodySystem.make_init_conds()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.systems.santi.NBodySystem.seed"><code class="docutils literal notranslate"><span class="pre">NBodySystem.seed</span></code></a></li>
 </ul>
@@ -609,5 +704,6 @@
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
