@@ -424,14 +424,14 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code>(embed_dim, timesteps, ...)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.__init__" title="dynadojo.baselines.lpr.LowestPossibleRadius.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(embed_dim, timesteps, ...)</p></td>
+<td><p>Initialize the abstract base class.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">act</span></code>(x, **kwargs)</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.act" title="dynadojo.baselines.lpr.LowestPossibleRadius.act"><code class="xref py py-obj docutils literal notranslate"><span class="pre">act</span></code></a>(x, **kwargs)</p></td>
+<td><p>Determines the control for each action horizon.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code>(samples, **kwargs)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.fit" title="dynadojo.baselines.lpr.LowestPossibleRadius.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(samples, **kwargs)</p></td>
+<td><p>Fits the algorithm on a tensor of trajectories.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">generateCombos</span></code>(n)</p></td>
 <td><p></p></td>
@@ -442,8 +442,8 @@
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">isValidRadius</span></code>(radius, samples)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code>(x0, timesteps, **kwargs)</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.predict" title="dynadojo.baselines.lpr.LowestPossibleRadius.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(x0, timesteps, **kwargs)</p></td>
+<td><p>Predict how initial conditions matrix evolves over a given number of timesteps.</p></td>
 </tr>
 </tbody>
 </table>
@@ -467,16 +467,103 @@
 </tbody>
 </table>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.baselines.lpr.LowestPossibleRadius.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_control_cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.baselines.lpr.LowestPossibleRadius.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize the abstract base class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>embed_dim</strong> (<em>int</em>) – Embedded dimension of the dynamics.</p></li>
+<li><p><strong>timesteps</strong> (<em>int</em>) – Timesteps per training trajectory (per action horizon).</p></li>
+<li><p><strong>max_control_cost</strong> (<em>float</em>) – Maximum control cost per trajectory (per action horizon).</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Timesteps refer to the timesteps of the training data, NOT the length of the predicted trajectories. The length
+of the predicted trajectories is specified in an argument provided in the <a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.predict" title="dynadojo.baselines.lpr.LowestPossibleRadius.predict"><code class="xref py py-func docutils literal notranslate"><span class="pre">predict()</span></code></a> method.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.baselines.lpr.LowestPossibleRadius.act">
+<span class="sig-name descname"><span class="pre">act</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.baselines.lpr.LowestPossibleRadius.act" title="Link to this definition">#</a></dt>
+<dd><p>Determines the control for each action horizon. Your algos should override this method if they use non-trivial
+control.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – (n, timesteps, embed_dim) Trajectories tensor.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(n, timesteps, embed_dim) controls tensor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="dynadojo.baselines.lpr.LowestPossibleRadius.embed_dim">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">embed_dim</span></span><a class="headerlink" href="#dynadojo.baselines.lpr.LowestPossibleRadius.embed_dim" title="Link to this definition">#</a></dt>
 <dd><p>The embedded dimension of the dynamics.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.baselines.lpr.LowestPossibleRadius.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.baselines.lpr.LowestPossibleRadius.fit" title="Link to this definition">#</a></dt>
+<dd><p>Fits the algorithm on a tensor of trajectories. Your subclass must implement this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.ndarray</em>) – (n, timesteps, embed_dim) Trajectories tensor.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="dynadojo.baselines.lpr.LowestPossibleRadius.max_control_cost">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_control_cost</span></span><a class="headerlink" href="#dynadojo.baselines.lpr.LowestPossibleRadius.max_control_cost" title="Link to this definition">#</a></dt>
 <dd><p>The maximum control cost.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.baselines.lpr.LowestPossibleRadius.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.baselines.lpr.LowestPossibleRadius.predict" title="Link to this definition">#</a></dt>
+<dd><p>Predict how initial conditions matrix evolves over a given number of timesteps. Your algorithms must implement
+this method.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The timesteps argument can differ from the ._timesteps attribute. This allows algorithms to train on a dataset
+of a given size and then predict trajectories of arbitrary lengths.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The first coordinate of each trajectory should match the initial condition x0.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x0</strong> (<em>np.ndarray</em>) – (n, embed_dim) initial conditions matrix</p></li>
+<li><p><strong>timesteps</strong> (<em>int</em>) – timesteps per predicted trajectory</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(n, timesteps, embed_dim) trajectories tensor</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -552,8 +639,12 @@
             <ul>
 <li><a class="reference internal" href="#">dynadojo.baselines.lpr.LowestPossibleRadius</a><ul>
 <li><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius"><code class="docutils literal notranslate"><span class="pre">LowestPossibleRadius</span></code></a><ul>
+<li><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.__init__"><code class="docutils literal notranslate"><span class="pre">LowestPossibleRadius.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.act"><code class="docutils literal notranslate"><span class="pre">LowestPossibleRadius.act()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.embed_dim"><code class="docutils literal notranslate"><span class="pre">LowestPossibleRadius.embed_dim</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.fit"><code class="docutils literal notranslate"><span class="pre">LowestPossibleRadius.fit()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.max_control_cost"><code class="docutils literal notranslate"><span class="pre">LowestPossibleRadius.max_control_cost</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.predict"><code class="docutils literal notranslate"><span class="pre">LowestPossibleRadius.predict()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.seed"><code class="docutils literal notranslate"><span class="pre">LowestPossibleRadius.seed</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.baselines.lpr.LowestPossibleRadius.timesteps"><code class="docutils literal notranslate"><span class="pre">LowestPossibleRadius.timesteps</span></code></a></li>
 </ul>

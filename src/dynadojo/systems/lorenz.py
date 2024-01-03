@@ -9,7 +9,7 @@ from .utils.simple import SimpleSystem
 
 class LorenzSystem(SimpleSystem):
     """
-    Generalized Lorenz system. More details in the DynaDojo paper appendix. Formulation based on [1]_
+    Generalized Lorenz system. More details and formulation based on [1]_
 
     References
     -----------
@@ -61,7 +61,6 @@ class LorenzSystem(SimpleSystem):
         super().__init__(latent_dim, embed_dim, **kwargs)
 
     def calc_dynamics(self, t, x):
-        """See the appendix of the DynaDojo paper for the full details."""
         X, Y, Z = x[:3]
         dX = -self._sigma * X + self._sigma * Y
         dY = -X * Z + self._r * X - Y

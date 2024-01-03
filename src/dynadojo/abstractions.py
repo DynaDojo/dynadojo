@@ -191,7 +191,7 @@ class AbstractSystem(ABC):
         Note
         ------
         Systems developers determine what counts as in vs out-of-distribution. DynaDojo doesn't provide
-        any verification that this distinction makes sense or even exists. See `LDSystem` for a principled example.
+        any verification that this distinction makes sense or even exists. See :class:`LDSystem` for a principled example.
 
         Parameters
         ----------
