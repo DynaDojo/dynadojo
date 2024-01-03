@@ -31,7 +31,7 @@ class LorenzSystem(SimpleSystem):
     >>> y = system.make_data(y0, timesteps=timesteps, noisy=True)
     >>> plot([x, y], target_dim=min(latent_dim, 3), labels=["in", "out"], max_lines=15)
 
-    .. image:: ../_images/ca.png
+    .. image:: ../_images/lorenz.png
     """
     def __init__(self,
                  latent_dim=3,
