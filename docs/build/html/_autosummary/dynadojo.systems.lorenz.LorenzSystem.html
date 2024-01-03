@@ -420,27 +420,37 @@
 <dt class="sig sig-object py" id="dynadojo.systems.lorenz.LorenzSystem">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dynadojo.systems.lorenz.</span></span><span class="sig-name descname"><span class="pre">LorenzSystem</span></span><a class="headerlink" href="#dynadojo.systems.lorenz.LorenzSystem" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem" title="dynadojo.systems.utils.simple.SimpleSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleSystem</span></code></a></p>
-<p>Generalized Lorenz system. More details in the DynaDojo paper appendix.</p>
+<p>Generalized Lorenz system. More details in the DynaDojo paper appendix. Formulation based on <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
 <p class="rubric">References</p>
-<p>Formulation based on <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id2" role="note">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>,<a role="doc-backlink" href="#id6">3</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>,<a role="doc-backlink" href="#id4">3</a>)</span>
 <p><a class="reference external" href="https://www.worldscientific.com/doi/epdf/10.1142/S0218127419500378">https://www.worldscientific.com/doi/epdf/10.1142/S0218127419500378</a></p>
 </aside>
 </aside>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dynadojo.wrappers</span> <span class="kn">import</span> <span class="n">SystemChecker</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dynadojo.utils.lds</span> <span class="kn">import</span> <span class="n">plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">latent_dim</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">embed_dim</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timesteps</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span> <span class="o">=</span> <span class="n">SystemChecker</span><span class="p">(</span><span class="n">LorenzSystem</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">,</span> <span class="n">noise_scale</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1912</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x0</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">make_init_conds</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y0</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">make_init_conds</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">in_dist</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">make_data</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="n">timesteps</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">make_data</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="n">timesteps</span><span class="p">,</span> <span class="n">noisy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">target_dim</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;in&quot;</span><span class="p">,</span> <span class="s2">&quot;out&quot;</span><span class="p">],</span> <span class="n">max_lines</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/lorenz.png" src="../_images/lorenz.png" />
 <p class="rubric">Methods</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.lorenz.LorenzSystem.__init__" title="dynadojo.systems.lorenz.LorenzSystem.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([latent_dim, embed_dim, sigma, r, ...])</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">param latent_dim<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Must be an odd number at least 3.</p>
-</dd>
-</dl>
-</p></td>
+<td><p>Initialize the class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.lorenz.LorenzSystem.calc_control_cost" title="dynadojo.systems.lorenz.LorenzSystem.calc_control_cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_control_cost</span></code></a>(control)</p></td>
 <td><p>Calculates the L2 norm / dimension of every vector in the control</p></td>
@@ -485,14 +495,15 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="dynadojo.systems.lorenz.LorenzSystem.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">28</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_squared</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.6666666666666665</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.lorenz.LorenzSystem.__init__" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Initialize the class.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>latent_dim</strong> (<em>int</em>) – Must be an odd number at least 3.</p></li>
 <li><p><strong>sigma</strong> (<em>int</em>) – the Prandtl number</p></li>
 <li><p><strong>r</strong> (<em>int</em>) – normalized Rayleigh number (or heating parameter)</p></li>
 <li><p><strong>a_squared</strong> (<em>float</em>) – <span class="math notranslate nohighlight">\(a^2 = 1 / 2\)</span> Used default value from <a class="footnote-reference brackets" href="#id2" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
-<li><p><strong>b_squared</strong> (<em>float</em>) – :math:<a href="#id4"><span class="problematic" id="id5">`</span></a>b^2 = 8 / 3`Used default value from <a class="footnote-reference brackets" href="#id2" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
+<li><p><strong>b_squared</strong> (<em>float</em>) – <span class="math notranslate nohighlight">\(b^2 = 8 / 3\)</span> Used default value from <a class="footnote-reference brackets" href="#id2" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
 </ul>
 </dd>
 </dl>
