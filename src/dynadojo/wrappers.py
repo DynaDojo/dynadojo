@@ -202,9 +202,9 @@ class SystemChecker:
         n = init_conds.shape[0]
         if control is None:
             control = np.zeros((n, timesteps, self.embed_dim))
-        assert control.shape == (n, timesteps, self.embed_dim)
+        assert control.shape == (n, timesteps, self.embed_dim), f"control has shape {control.shape}, but it should be ({n}, {timesteps}, {self.embed_dim})"
         data = self._system.make_data(init_conds=init_conds, control=control, timesteps=timesteps, noisy=noisy)
-        assert data.shape == (n, timesteps, self.embed_dim)
+        assert data.shape == (n, timesteps, self.embed_dim), f"data has shape {data.shape}, but it should be ({n}, {timesteps}, {self.embed_dim})"
         return data
 
     def calc_error(self, x, y) -> float:

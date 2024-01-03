@@ -1,0 +1,2 @@
+* add better assertion errors
+* move AbstractSystem and SystemChecker into some file in the systems submodule, do the same for algorithms
