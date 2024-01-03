@@ -475,14 +475,18 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>latent_dim</strong> (<em>int</em>) – Dimension of the latent space.</p></li>
-<li><p><strong>embed_dim</strong> (<em>int</em>) – Embedded dimension of the system.</p></li>
+<li><p><strong>latent_dim</strong> (<em>int</em><em>, </em><em>optional</em>) – Dimension of the latent space.</p></li>
+<li><p><strong>embed_dim</strong> (<em>int</em><em>, </em><em>optional</em>) – Embedded dimension of the system.</p></li>
 <li><p><strong>seed</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Seed for random number generation.</p></li>
-<li><p><strong>embedder_sv_range</strong> (<em>tuple</em>) – The singular value range for the embedder matrix. Singular values are non-negative by convention.
+<li><p><strong>embedder_sv_range</strong> (<em>tuple</em><em>, </em><em>optional</em>) – The singular value range for the embedder matrix. Singular values are non-negative by convention.
 The singular values should exclude 0 to ensure the embedder is invertible.</p></li>
-<li><p><strong>controller_sv_range</strong> (<em>tuple</em>) – The singular value range for the controller matrix.</p></li>
-<li><p><strong>IND_range</strong> (<em>tuple</em>) – The in-distribution initial condition range.</p></li>
+<li><p><strong>controller_sv_range</strong> (<em>tuple</em><em>, </em><em>optional</em>) – The singular value range for the controller matrix.</p></li>
+<li><p><strong>IND_range</strong> (<em>tuple</em><em>, </em><em>optional</em>) – The in-distribution initial condition range.</p></li>
 <li><p><strong>OOD_Range</strong> (<em>tuple</em>) – The out-of-distribution initial condition range.</p></li>
+<li><p><strong>t_range</strong> (<em>tuple</em><em>, </em><em>optional</em>) – The interval over which to generate the solution trajectories. For example, if <a href="#id1"><span class="problematic" id="id2">:py:`t_range = (0, 1)`</span></a> and <a class="reference internal" href="#dynadojo.systems.utils.simple.SimpleSystem.make_data" title="dynadojo.systems.utils.simple.SimpleSystem.make_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_data()</span></code></a>
+were called with <a href="#id3"><span class="problematic" id="id4">:py:`timesteps = 10`</span></a>, then the trajectory would be generated with 10 timesteps between 0 and 1.</p></li>
+<li><p><strong>noise_scale</strong> (<em>float</em><em>, </em><em>optional</em>) – Normal noise is added per timestep to a solution. Standard deviation (spread or “width”) of the distribution.
+Must be non-negative.</p></li>
 <li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
 </ul>
 </dd>

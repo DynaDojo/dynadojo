@@ -13,6 +13,11 @@ class HeatEquation(SimpleSystem):
     References
     ------------
     .. [1] https://levelup.gitconnected.com/solving-2d-heat-equation-numerically-using-python-3334004aa01a
+
+
+    Example
+    --------
+    .. include:: ../heat_example.rst
     """
 
     def __init__(self,

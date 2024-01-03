@@ -28,21 +28,27 @@ class SimpleSystem(AbstractSystem):
 
         Parameters
         ----------
-        latent_dim : int
+        latent_dim : int, optional
             Dimension of the latent space.
-        embed_dim : int
+        embed_dim : int, optional
             Embedded dimension of the system.
         seed : int or None, optional
             Seed for random number generation.
-        embedder_sv_range : tuple
+        embedder_sv_range : tuple, optional
             The singular value range for the embedder matrix. Singular values are non-negative by convention.
             The singular values should exclude 0 to ensure the embedder is invertible.
-        controller_sv_range : tuple
+        controller_sv_range : tuple, optional
             The singular value range for the controller matrix.
-        IND_range : tuple
+        IND_range : tuple, optional
             The in-distribution initial condition range.
         OOD_Range : tuple
             The out-of-distribution initial condition range.
+        t_range : tuple, optional
+            The interval over which to generate the solution trajectories. For example, if :py:`t_range = (0, 1)` and :func:`~make_data`
+            were called with :py:`timesteps = 10`, then the trajectory would be generated with 10 timesteps between 0 and 1.
+        noise_scale : float, optional
+            Normal noise is added per timestep to a solution. Standard deviation (spread or “width”) of the distribution.
+            Must be non-negative.
         **kwargs
             Additional keyword arguments.
         """
