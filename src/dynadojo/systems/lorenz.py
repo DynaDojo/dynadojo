@@ -9,12 +9,10 @@ from .utils.simple import SimpleSystem
 
 class LorenzSystem(SimpleSystem):
     """
-    Generalized Lorenz system. More details in the DynaDojo paper appendix.
+    Generalized Lorenz system. More details in the DynaDojo paper appendix. Formulation based on [1]_
 
     References
     -----------
-    Formulation based on [1]_
-
     .. [1] https://www.worldscientific.com/doi/epdf/10.1142/S0218127419500378
 
 
