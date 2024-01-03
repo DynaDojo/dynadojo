@@ -44,8 +44,8 @@ class SimpleSystem(AbstractSystem):
         OOD_Range : tuple
             The out-of-distribution initial condition range.
         t_range : tuple, optional
-            The interval over which to generate the solution trajectories. For example, if :py:`t_range = (0, 1)` and :func:`~make_data`
-            were called with :py:`timesteps = 10`, then the trajectory would be generated with 10 timesteps between 0 and 1.
+            The interval over which to generate the solution trajectories. For example, if ``t_range = (0, 1)`` and :func:`~make_data`
+            were called with ``timesteps = 10``, then the trajectory would be generated with 10 timesteps between 0 and 1.
         noise_scale : float, optional
             Normal noise is added per timestep to a solution. Standard deviation (spread or “width”) of the distribution.
             Must be non-negative.

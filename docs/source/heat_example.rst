@@ -1,6 +1,8 @@
 You can download the source image `here <https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/dino.png>`_.
 
+
 .. code:: python
+
     import numpy as np
     from PIL import Image
     import matplotlib.pyplot as plt

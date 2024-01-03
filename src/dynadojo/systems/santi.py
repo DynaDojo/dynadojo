@@ -1,6 +1,7 @@
 """
-N-Body System
+N-Body System.
 ===============
+
 Note
 ------
 The name `santi` is a reference to the Chinese name for the 3-body problem and the famous eponymous novel from Cixin Liu.
