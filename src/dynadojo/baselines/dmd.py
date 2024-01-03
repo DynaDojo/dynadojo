@@ -1,3 +1,8 @@
+"""
+Dynamic Mode Decomposition
+============================
+"""
+
 import numpy as np
 import pydmd
 
@@ -5,6 +10,13 @@ from ..abstractions import AbstractAlgorithm
 
 
 class DMD(AbstractAlgorithm):
+    """
+    Dynamic mode decomposition. Implementation uses the ``pydmd`` library [1]_.
+
+    References
+    ------------
+    .. [1] https://pydmd.github.io/PyDMD/
+    """
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
         self._model = pydmd.OptDMD(svd_rank=embed_dim, factorization="svd")

@@ -20,6 +20,26 @@ class LDSystem(SimpleSystem):
                  A_eigvec_range=(-1, 1),
                  **kwargs):
         """
+        Initialize the class.
+
+        Example
+        --------
+        >>> from dynadojo.systems.lds import LDSystem
+        >>> from dynadojo.wrappers import SystemChecker
+        >>> from dynadojo.utils.lds import plot
+        >>> latent_dim = 9
+        >>> embed_dim = 14
+        >>> n = 500
+        >>> timesteps = 50
+        >>> system = SystemChecker(LDSystem(latent_dim, embed_dim, noise_scale=0, seed=0))
+        >>> x0 = system.make_init_conds(n)
+        >>> y0 = system.make_init_conds(30, in_dist=False)
+        >>> x = system.make_data(x0, timesteps=timesteps)
+        >>> y = system.make_data(y0, timesteps=timesteps, noisy=True)
+        >>> plot([x, y], target_dim=min(latent_dim, 3), labels=["in", "out"], max_lines=15)
+
+        .. image:: ../_images/lds.png
+
         Parameters
         ----------
         latent_dim : int, optional
