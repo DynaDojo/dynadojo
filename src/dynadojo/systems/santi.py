@@ -1,3 +1,8 @@
+"""
+N-Body System
+===============
+
+"""
 import numpy as np
 import rebound
 
@@ -5,6 +10,8 @@ from .utils.simple import SimpleSystem
 
 
 class NBodySystem(SimpleSystem):
+    """N-Body system.
+    """
     def __init__(self, latent_dim=4, embed_dim=4, mass=10e-3, plot_data=False,
                  IND_range=(-1, 1), OOD_range=(-1, 1),
                  **kwargs):
