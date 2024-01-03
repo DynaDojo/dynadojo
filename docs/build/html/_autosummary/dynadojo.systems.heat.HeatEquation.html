@@ -428,6 +428,26 @@
 <p><a class="reference external" href="https://levelup.gitconnected.com/solving-2d-heat-equation-numerically-using-python-3334004aa01a">https://levelup.gitconnected.com/solving-2d-heat-equation-numerically-using-python-3334004aa01a</a></p>
 </aside>
 </aside>
+<p class="rubric">Example</p>
+<p>You can download the source image <a class="reference external" href="https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/dino.png">here</a>.</p>
+<img alt="../_images/bw_dino.png" src="../_images/bw_dino.png" />
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dynadojo.systems.heat</span> <span class="kn">import</span> <span class="n">HeatEquation</span>
+<span class="kn">from</span> <span class="nn">dynadojo.wrappers</span> <span class="kn">import</span> <span class="n">SystemChecker</span>
+<span class="kn">from</span> <span class="nn">dynadojo.utils.heat</span> <span class="kn">import</span> <span class="n">plot</span>
+
+<span class="c1"># Create the init conds from the image</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">dino</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">x0</span> <span class="o">*=</span> <span class="mi">2</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">timesteps</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">embed_dim</span> <span class="o">=</span> <span class="n">latent_dim</span>
+<span class="n">system</span> <span class="o">=</span> <span class="n">SystemChecker</span><span class="p">(</span><span class="n">HeatEquation</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">,</span> <span class="n">noise_scale</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">make_data</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="n">timesteps</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">timesteps</span><span class="p">,</span> <span class="n">system</span><span class="o">.</span><span class="n">_system</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="s2">&quot;../graphics/hot_dino.gif&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/hot_dino.gif" src="../_images/hot_dino.gif" />
 <p class="rubric">Methods</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
