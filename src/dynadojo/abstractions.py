@@ -10,7 +10,7 @@ class AbstractAlgorithm(ABC):
     """Base class for all algorithms. Your algorithms should subclass this class."""
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, seed: int | None = None, **kwargs):
         """
-        Initialize the abstract base class.
+        Initialize the class.
 
         Parameters
         ----------
@@ -37,7 +37,7 @@ class AbstractAlgorithm(ABC):
     @property
     def embed_dim(self):
         """The embedded dimension of the dynamics."""
-        return self.embed_dim
+        return self._embed_dim
 
     @property
     def timesteps(self):
@@ -57,7 +57,7 @@ class AbstractAlgorithm(ABC):
     @abstractmethod
     def fit(self, x: np.ndarray, **kwargs) -> None:
         """
-        Fits the algorithm on a tensor of trajectories. Your subclass must implement this method.
+        Fits the algorithm on a tensor of trajectories.
 
         Parameters
         ----------
@@ -70,7 +70,7 @@ class AbstractAlgorithm(ABC):
 
     def act(self, x: np.ndarray, **kwargs) -> np.ndarray:
         """
-        Determines the control for each action horizon. Your algos should override this method if they use non-trivial
+        Determines the control for each action horizon.
         control.
 
         Parameters
@@ -90,8 +90,7 @@ class AbstractAlgorithm(ABC):
     @abstractmethod
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         """
-        Predict how initial conditions matrix evolves over a given number of timesteps. Your algorithms must implement
-        this method.
+        Predict how initial conditions matrix evolves over a given number of timesteps.
 
         Note
         ------
@@ -123,7 +122,7 @@ class AbstractSystem(ABC):
     """Base class for all systems. Your systems should subclass this class."""
     def __init__(self, latent_dim, embed_dim, seed: int | None, **kwargs):
         """
-        Initialize the abstract base class.
+        Initialize the class.
 
         Parameters
         ----------
@@ -153,8 +152,7 @@ class AbstractSystem(ABC):
     @latent_dim.setter
     def latent_dim(self, value):
         """
-        Set the latent dimension for the system. Implement this method if you want precise control over what attributes
-        change when the latent dimension is changed.
+        Set the latent dimension for the system.
 
         Notes
         -----
@@ -167,8 +165,7 @@ class AbstractSystem(ABC):
     @embed_dim.setter
     def embed_dim(self, value):
         """
-        Set the embedded dimension for the system. Implement this method if you want precise control over what attributes
-        change when the embedded dimension is changed.
+        Set the embedded dimension for the system.
 
         Notes
         -----
@@ -186,7 +183,7 @@ class AbstractSystem(ABC):
     @abstractmethod
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         """
-        Abstract method to generate initial conditions. Your system should implement this method.
+        Generate initial conditions..
 
         Note
         ------
@@ -211,7 +208,7 @@ class AbstractSystem(ABC):
     @abstractmethod
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         """
-        Abstract method that makes trajectories from initial conditions. Your system must implement this.
+        Makes trajectories from initial conditions.
 
         Parameters
         ----------
@@ -234,7 +231,7 @@ class AbstractSystem(ABC):
     @abstractmethod
     def calc_error(self, x, y) -> float:
         """
-        Calculates the error between two tensors of trajectories. Your systems must implement this.
+        Calculates the error between two tensors of trajectories.
 
         Parameters
         ----------
@@ -254,7 +251,7 @@ class AbstractSystem(ABC):
     def calc_control_cost(self, control: np.ndarray) -> np.ndarray:
         """
         Calculate the control cost for each control trajectory (i.e., calculates the costs for every
-        control matrix, not for the whole tensor). Your systems must implement this.
+        control matrix, not for the whole tensor).
 
         Parameters
         ----------
