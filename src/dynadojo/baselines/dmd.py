@@ -1,6 +1,5 @@
 """
-Dynamic Mode Decomposition
-============================
+Dynamic Mode Decomposition.
 """
 
 import numpy as np
@@ -16,8 +15,26 @@ class DMD(AbstractAlgorithm):
     References
     ------------
     .. [1] https://pydmd.github.io/PyDMD/
+
+    Example
+    ---------
+    .. include:: ../dmd_example.rst
     """
-    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
+    def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float = 0, **kwargs):
+        """
+        Initialize the class.
+
+        Parameters
+        -------------
+        embed_dim : int
+            Recommended embedding dimension should be <5.
+        timesteps : int
+            Timesteps in the training trajectories.
+        max_control_cost : float
+            Ignores control, defaults to 0.
+        **kwargs :
+            Additional keyword arguments.
+        """
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
         self._model = pydmd.OptDMD(svd_rank=embed_dim, factorization="svd")
 
