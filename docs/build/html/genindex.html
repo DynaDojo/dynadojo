@@ -1,0 +1,1894 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="search.html" />
+
+    <link rel="shortcut icon" href="_static/favicon.ico"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 --><title>Index - DynaDojo 0.2.6 documentation</title>
+<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=c83d31a6" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-primary: #2c6213;
+  --color-brand-content: #2c6213;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #2c6213;
+  --color-brand-content: #2c6213;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #2c6213;
+  --color-brand-content: #2c6213;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">DynaDojo 0.2.6 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/logo.svg" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">DynaDojo 0.2.6 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide/index.html">User Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api-reference.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="_autosummary/dynadojo.html">dynadojo</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of dynadojo</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="_autosummary/dynadojo.abstractions.html">dynadojo.abstractions</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of dynadojo.abstractions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/dynadojo.abstractions.AbstractAlgorithm.html">dynadojo.abstractions.AbstractAlgorithm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/dynadojo.abstractions.AbstractSystem.html">dynadojo.abstractions.AbstractSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="_autosummary/dynadojo.baselines.html">dynadojo.baselines</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of dynadojo.baselines</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.baselines.aug_ode.html">dynadojo.baselines.aug_ode</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of dynadojo.baselines.aug_ode</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.baselines.aug_ode.AugODE.html">dynadojo.baselines.aug_ode.AugODE</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.baselines.cnn.html">dynadojo.baselines.cnn</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of dynadojo.baselines.cnn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.baselines.cnn.CNN.html">dynadojo.baselines.cnn.CNN</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.baselines.dmd.html">dynadojo.baselines.dmd</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of dynadojo.baselines.dmd</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.baselines.dmd.DMD.html">dynadojo.baselines.dmd.DMD</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.baselines.dnn.html">dynadojo.baselines.dnn</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of dynadojo.baselines.dnn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.baselines.dnn.DNN.html">dynadojo.baselines.dnn.DNN</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.baselines.lpr.html">dynadojo.baselines.lpr</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of dynadojo.baselines.lpr</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.baselines.lpr.LowestPossibleRadius.html">dynadojo.baselines.lpr.LowestPossibleRadius</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.baselines.lr.html">dynadojo.baselines.lr</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of dynadojo.baselines.lr</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.baselines.lr.LinearRegression.html">dynadojo.baselines.lr.LinearRegression</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.baselines.ode.html">dynadojo.baselines.ode</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of dynadojo.baselines.ode</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.baselines.ode.ODE.html">dynadojo.baselines.ode.ODE</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.baselines.sindy.html">dynadojo.baselines.sindy</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of dynadojo.baselines.sindy</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.baselines.sindy.SINDy.html">dynadojo.baselines.sindy.SINDy</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="_autosummary/dynadojo.challenges.html">dynadojo.challenges</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of dynadojo.challenges</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/dynadojo.challenges.Challenge.html">dynadojo.challenges.Challenge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/dynadojo.challenges.FixedComplexity.html">dynadojo.challenges.FixedComplexity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/dynadojo.challenges.FixedError.html">dynadojo.challenges.FixedError</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/dynadojo.challenges.FixedTrainSize.html">dynadojo.challenges.FixedTrainSize</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.html">dynadojo.systems</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of dynadojo.systems</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.ca.html">dynadojo.systems.ca</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle navigation of dynadojo.systems.ca</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.systems.ca.CASystem.html">dynadojo.systems.ca.CASystem</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.ctln.html">dynadojo.systems.ctln</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle navigation of dynadojo.systems.ctln</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.systems.ctln.CTLNSystem.html">dynadojo.systems.ctln.CTLNSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.epidemic.html">dynadojo.systems.epidemic</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle navigation of dynadojo.systems.epidemic</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.epidemic.seis.html">dynadojo.systems.epidemic.seis</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle navigation of dynadojo.systems.epidemic.seis</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.epidemic.seis.SEISSystem.html">dynadojo.systems.epidemic.seis.SEISSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.epidemic.sir.html">dynadojo.systems.epidemic.sir</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle navigation of dynadojo.systems.epidemic.sir</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.epidemic.sir.SIRSystem.html">dynadojo.systems.epidemic.sir.SIRSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.epidemic.sis.html">dynadojo.systems.epidemic.sis</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle navigation of dynadojo.systems.epidemic.sis</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.epidemic.sis.SISSystem.html">dynadojo.systems.epidemic.sis.SISSystem</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.fbsnn_pde.html">dynadojo.systems.fbsnn_pde</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle navigation of dynadojo.systems.fbsnn_pde</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.html">dynadojo.systems.fbsnn_pde.bsb</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle navigation of dynadojo.systems.fbsnn_pde.bsb</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.BSBSystem.html">dynadojo.systems.fbsnn_pde.bsb.BSBSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.html">dynadojo.systems.fbsnn_pde.hjb</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle navigation of dynadojo.systems.fbsnn_pde.hjb</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.HJBSystem.html">dynadojo.systems.fbsnn_pde.hjb.HJBSystem</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.heat.html">dynadojo.systems.heat</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle navigation of dynadojo.systems.heat</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.systems.heat.HeatEquation.html">dynadojo.systems.heat.HeatEquation</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.kuramoto.html">dynadojo.systems.kuramoto</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle navigation of dynadojo.systems.kuramoto</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.systems.kuramoto.KuramotoSystem.html">dynadojo.systems.kuramoto.KuramotoSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.lds.html">dynadojo.systems.lds</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle navigation of dynadojo.systems.lds</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.systems.lds.LDSystem.html">dynadojo.systems.lds.LDSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.lorenz.html">dynadojo.systems.lorenz</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle navigation of dynadojo.systems.lorenz</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html">dynadojo.systems.lorenz.LorenzSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.lv.html">dynadojo.systems.lv</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle navigation of dynadojo.systems.lv</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.lv.competitive.html">dynadojo.systems.lv.competitive</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle navigation of dynadojo.systems.lv.competitive</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.lv.competitive.CompetitiveLVSystem.html">dynadojo.systems.lv.competitive.CompetitiveLVSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.lv.prey_predator.html">dynadojo.systems.lv.prey_predator</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle navigation of dynadojo.systems.lv.prey_predator</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.lv.prey_predator.PreyPredatorSystem.html">dynadojo.systems.lv.prey_predator.PreyPredatorSystem</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.opinion.html">dynadojo.systems.opinion</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle navigation of dynadojo.systems.opinion</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.opinion.arwhk.html">dynadojo.systems.opinion.arwhk</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle navigation of dynadojo.systems.opinion.arwhk</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.opinion.arwhk.ARWHKSystem.html">dynadojo.systems.opinion.arwhk.ARWHKSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.opinion.deffuant.html">dynadojo.systems.opinion.deffuant</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle navigation of dynadojo.systems.opinion.deffuant</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.opinion.deffuant.DeffuantSystem.html">dynadojo.systems.opinion.deffuant.DeffuantSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.opinion.hk.html">dynadojo.systems.opinion.hk</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle navigation of dynadojo.systems.opinion.hk</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.opinion.hk.HKSystem.html">dynadojo.systems.opinion.hk.HKSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.opinion.media_bias.html">dynadojo.systems.opinion.media_bias</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle navigation of dynadojo.systems.opinion.media_bias</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.opinion.media_bias.MediaBiasSystem.html">dynadojo.systems.opinion.media_bias.MediaBiasSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.opinion.whk.html">dynadojo.systems.opinion.whk</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle navigation of dynadojo.systems.opinion.whk</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.opinion.whk.WHKSystem.html">dynadojo.systems.opinion.whk.WHKSystem</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.santi.html">dynadojo.systems.santi</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle navigation of dynadojo.systems.santi</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.systems.santi.NBodySystem.html">dynadojo.systems.santi.NBodySystem</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.snn.html">dynadojo.systems.snn</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle navigation of dynadojo.systems.snn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.systems.snn.LinearDynamicalSystem.html">dynadojo.systems.snn.LinearDynamicalSystem</a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.systems.snn.SNNSystem.html">dynadojo.systems.snn.SNNSystem</a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.systems.snn.SpikingNeuralNetwork.html">dynadojo.systems.snn.SpikingNeuralNetwork</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.utils.html">dynadojo.systems.utils</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle navigation of dynadojo.systems.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.utils.epidemic.html">dynadojo.systems.utils.epidemic</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle navigation of dynadojo.systems.utils.epidemic</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.utils.epidemic.EpidemicSystem.html">dynadojo.systems.utils.epidemic.EpidemicSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.utils.fbsnn.html">dynadojo.systems.utils.fbsnn</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle navigation of dynadojo.systems.utils.fbsnn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.utils.fbsnn.FBSNNSystem.html">dynadojo.systems.utils.fbsnn.FBSNNSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.utils.opinion.html">dynadojo.systems.utils.opinion</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle navigation of dynadojo.systems.utils.opinion</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.utils.opinion.OpinionSystem.html">dynadojo.systems.utils.opinion.OpinionSystem</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="_autosummary/dynadojo.systems.utils.simple.html">dynadojo.systems.utils.simple</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle navigation of dynadojo.systems.utils.simple</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html">dynadojo.systems.utils.simple.SimpleSystem</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="_autosummary/dynadojo.utils.html">dynadojo.utils</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle navigation of dynadojo.utils</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.utils.ca.html">dynadojo.utils.ca</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle navigation of dynadojo.utils.ca</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.ca.plot.html">dynadojo.utils.ca.plot</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.utils.fbsnn_pde.html">dynadojo.utils.fbsnn_pde</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle navigation of dynadojo.utils.fbsnn_pde</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.fbsnn_pde.plot.html">dynadojo.utils.fbsnn_pde.plot</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.utils.heat.html">dynadojo.utils.heat</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle navigation of dynadojo.utils.heat</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.heat.plot.html">dynadojo.utils.heat.plot</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.utils.kuramoto.html">dynadojo.utils.kuramoto</a><input class="toctree-checkbox" id="toctree-checkbox-48" name="toctree-checkbox-48" role="switch" type="checkbox"/><label for="toctree-checkbox-48"><div class="visually-hidden">Toggle navigation of dynadojo.utils.kuramoto</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.kuramoto.plot.html">dynadojo.utils.kuramoto.plot</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.utils.lds.html">dynadojo.utils.lds</a><input class="toctree-checkbox" id="toctree-checkbox-49" name="toctree-checkbox-49" role="switch" type="checkbox"/><label for="toctree-checkbox-49"><div class="visually-hidden">Toggle navigation of dynadojo.utils.lds</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.lds.make_pca.html">dynadojo.utils.lds.make_pca</a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.lds.plot.html">dynadojo.utils.lds.plot</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.utils.lv.html">dynadojo.utils.lv</a><input class="toctree-checkbox" id="toctree-checkbox-50" name="toctree-checkbox-50" role="switch" type="checkbox"/><label for="toctree-checkbox-50"><div class="visually-hidden">Toggle navigation of dynadojo.utils.lv</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.lv.make_pca.html">dynadojo.utils.lv.make_pca</a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.lv.plot.html">dynadojo.utils.lv.plot</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.utils.opinion.html">dynadojo.utils.opinion</a><input class="toctree-checkbox" id="toctree-checkbox-51" name="toctree-checkbox-51" role="switch" type="checkbox"/><label for="toctree-checkbox-51"><div class="visually-hidden">Toggle navigation of dynadojo.utils.opinion</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.opinion.plot.html">dynadojo.utils.opinion.plot</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.utils.plotting.html">dynadojo.utils.plotting</a><input class="toctree-checkbox" id="toctree-checkbox-52" name="toctree-checkbox-52" role="switch" type="checkbox"/><label for="toctree-checkbox-52"><div class="visually-hidden">Toggle navigation of dynadojo.utils.plotting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.plotting.plot_metric.html">dynadojo.utils.plotting.plot_metric</a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.plotting.plot_target_error.html">dynadojo.utils.plotting.plot_target_error</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="_autosummary/dynadojo.utils.seeding.html">dynadojo.utils.seeding</a><input class="toctree-checkbox" id="toctree-checkbox-53" name="toctree-checkbox-53" role="switch" type="checkbox"/><label for="toctree-checkbox-53"><div class="visually-hidden">Toggle navigation of dynadojo.utils.seeding</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.seeding.temp_numpy_seed.html">dynadojo.utils.seeding.temp_numpy_seed</a></li>
+<li class="toctree-l5"><a class="reference internal" href="_autosummary/dynadojo.utils.seeding.temp_random_seed.html">dynadojo.utils.seeding.temp_random_seed</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="_autosummary/dynadojo.wrappers.html">dynadojo.wrappers</a><input class="toctree-checkbox" id="toctree-checkbox-54" name="toctree-checkbox-54" role="switch" type="checkbox"/><label for="toctree-checkbox-54"><div class="visually-hidden">Toggle navigation of dynadojo.wrappers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/dynadojo.wrappers.AlgorithmChecker.html">dynadojo.wrappers.AlgorithmChecker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/dynadojo.wrappers.SystemChecker.html">dynadojo.wrappers.SystemChecker</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          
+<section class="genindex-section">
+  <h1 id="index">Index</h1>
+  <div class="genindex-jumpbox"><a href="#_"><strong>_</strong></a> | <a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#K"><strong>K</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#W"><strong>W</strong></a></div>
+</section>
+<section id="_" class="genindex-section">
+  <h2>_</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractAlgorithm.html#dynadojo.abstractions.AbstractAlgorithm.__init__">__init__() (dynadojo.abstractions.AbstractAlgorithm method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.abstractions.AbstractSystem.html#dynadojo.abstractions.AbstractSystem.__init__">(dynadojo.abstractions.AbstractSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.aug_ode.AugODE.html#dynadojo.baselines.aug_ode.AugODE.__init__">(dynadojo.baselines.aug_ode.AugODE method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.cnn.CNN.html#dynadojo.baselines.cnn.CNN.__init__">(dynadojo.baselines.cnn.CNN method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dmd.DMD.html#dynadojo.baselines.dmd.DMD.__init__">(dynadojo.baselines.dmd.DMD method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dnn.DNN.html#dynadojo.baselines.dnn.DNN.__init__">(dynadojo.baselines.dnn.DNN method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lpr.LowestPossibleRadius.html#dynadojo.baselines.lpr.LowestPossibleRadius.__init__">(dynadojo.baselines.lpr.LowestPossibleRadius method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lr.LinearRegression.html#dynadojo.baselines.lr.LinearRegression.__init__">(dynadojo.baselines.lr.LinearRegression method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.ode.ODE.html#dynadojo.baselines.ode.ODE.__init__">(dynadojo.baselines.ode.ODE method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.sindy.SINDy.html#dynadojo.baselines.sindy.SINDy.__init__">(dynadojo.baselines.sindy.SINDy method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.challenges.Challenge.html#dynadojo.challenges.Challenge.__init__">(dynadojo.challenges.Challenge method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.challenges.FixedComplexity.html#dynadojo.challenges.FixedComplexity.__init__">(dynadojo.challenges.FixedComplexity method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.challenges.FixedError.html#dynadojo.challenges.FixedError.__init__">(dynadojo.challenges.FixedError method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.challenges.FixedTrainSize.html#dynadojo.challenges.FixedTrainSize.__init__">(dynadojo.challenges.FixedTrainSize method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ca.CASystem.html#dynadojo.systems.ca.CASystem.__init__">(dynadojo.systems.ca.CASystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ctln.CTLNSystem.html#dynadojo.systems.ctln.CTLNSystem.__init__">(dynadojo.systems.ctln.CTLNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.seis.SEISSystem.html#dynadojo.systems.epidemic.seis.SEISSystem.__init__">(dynadojo.systems.epidemic.seis.SEISSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sir.SIRSystem.html#dynadojo.systems.epidemic.sir.SIRSystem.__init__">(dynadojo.systems.epidemic.sir.SIRSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sis.SISSystem.html#dynadojo.systems.epidemic.sis.SISSystem.__init__">(dynadojo.systems.epidemic.sis.SISSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.BSBSystem.html#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.__init__">(dynadojo.systems.fbsnn_pde.bsb.BSBSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.HJBSystem.html#dynadojo.systems.fbsnn_pde.hjb.HJBSystem.__init__">(dynadojo.systems.fbsnn_pde.hjb.HJBSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation.__init__">(dynadojo.systems.heat.HeatEquation method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.kuramoto.KuramotoSystem.html#dynadojo.systems.kuramoto.KuramotoSystem.__init__">(dynadojo.systems.kuramoto.KuramotoSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem.__init__">(dynadojo.systems.lds.LDSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem.__init__">(dynadojo.systems.lorenz.LorenzSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.competitive.CompetitiveLVSystem.html#dynadojo.systems.lv.competitive.CompetitiveLVSystem.__init__">(dynadojo.systems.lv.competitive.CompetitiveLVSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.prey_predator.PreyPredatorSystem.html#dynadojo.systems.lv.prey_predator.PreyPredatorSystem.__init__">(dynadojo.systems.lv.prey_predator.PreyPredatorSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.arwhk.ARWHKSystem.html#dynadojo.systems.opinion.arwhk.ARWHKSystem.__init__">(dynadojo.systems.opinion.arwhk.ARWHKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.deffuant.DeffuantSystem.html#dynadojo.systems.opinion.deffuant.DeffuantSystem.__init__">(dynadojo.systems.opinion.deffuant.DeffuantSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.hk.HKSystem.html#dynadojo.systems.opinion.hk.HKSystem.__init__">(dynadojo.systems.opinion.hk.HKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.media_bias.MediaBiasSystem.html#dynadojo.systems.opinion.media_bias.MediaBiasSystem.__init__">(dynadojo.systems.opinion.media_bias.MediaBiasSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.whk.WHKSystem.html#dynadojo.systems.opinion.whk.WHKSystem.__init__">(dynadojo.systems.opinion.whk.WHKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem.__init__">(dynadojo.systems.santi.NBodySystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.LinearDynamicalSystem.html#dynadojo.systems.snn.LinearDynamicalSystem.__init__">(dynadojo.systems.snn.LinearDynamicalSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem.__init__">(dynadojo.systems.snn.SNNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SpikingNeuralNetwork.html#dynadojo.systems.snn.SpikingNeuralNetwork.__init__">(dynadojo.systems.snn.SpikingNeuralNetwork method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.epidemic.EpidemicSystem.html#dynadojo.systems.utils.epidemic.EpidemicSystem.__init__">(dynadojo.systems.utils.epidemic.EpidemicSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.fbsnn.FBSNNSystem.html#dynadojo.systems.utils.fbsnn.FBSNNSystem.__init__">(dynadojo.systems.utils.fbsnn.FBSNNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.opinion.OpinionSystem.html#dynadojo.systems.utils.opinion.OpinionSystem.__init__">(dynadojo.systems.utils.opinion.OpinionSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem.__init__">(dynadojo.systems.utils.simple.SimpleSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.AlgorithmChecker.html#dynadojo.wrappers.AlgorithmChecker.__init__">(dynadojo.wrappers.AlgorithmChecker method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.SystemChecker.html#dynadojo.wrappers.SystemChecker.__init__">(dynadojo.wrappers.SystemChecker method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="A" class="genindex-section">
+  <h2>A</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractAlgorithm.html#dynadojo.abstractions.AbstractAlgorithm">AbstractAlgorithm (class in dynadojo.abstractions)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractSystem.html#dynadojo.abstractions.AbstractSystem">AbstractSystem (class in dynadojo.abstractions)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractAlgorithm.html#dynadojo.abstractions.AbstractAlgorithm.act">act() (dynadojo.abstractions.AbstractAlgorithm method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.aug_ode.AugODE.html#dynadojo.baselines.aug_ode.AugODE.act">(dynadojo.baselines.aug_ode.AugODE method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.cnn.CNN.html#dynadojo.baselines.cnn.CNN.act">(dynadojo.baselines.cnn.CNN method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dmd.DMD.html#dynadojo.baselines.dmd.DMD.act">(dynadojo.baselines.dmd.DMD method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dnn.DNN.html#dynadojo.baselines.dnn.DNN.act">(dynadojo.baselines.dnn.DNN method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lpr.LowestPossibleRadius.html#dynadojo.baselines.lpr.LowestPossibleRadius.act">(dynadojo.baselines.lpr.LowestPossibleRadius method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lr.LinearRegression.html#dynadojo.baselines.lr.LinearRegression.act">(dynadojo.baselines.lr.LinearRegression method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.ode.ODE.html#dynadojo.baselines.ode.ODE.act">(dynadojo.baselines.ode.ODE method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.sindy.SINDy.html#dynadojo.baselines.sindy.SINDy.act">(dynadojo.baselines.sindy.SINDy method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.AlgorithmChecker.html#dynadojo.wrappers.AlgorithmChecker.act">(dynadojo.wrappers.AlgorithmChecker method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.wrappers.AlgorithmChecker.html#dynadojo.wrappers.AlgorithmChecker">AlgorithmChecker (class in dynadojo.wrappers)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.systems.opinion.arwhk.ARWHKSystem.html#dynadojo.systems.opinion.arwhk.ARWHKSystem">ARWHKSystem (class in dynadojo.systems.opinion.arwhk)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.baselines.aug_ode.AugODE.html#dynadojo.baselines.aug_ode.AugODE">AugODE (class in dynadojo.baselines.aug_ode)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="B" class="genindex-section">
+  <h2>B</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.BSBSystem.html#dynadojo.systems.fbsnn_pde.bsb.BSBSystem">BSBSystem (class in dynadojo.systems.fbsnn_pde.bsb)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="C" class="genindex-section">
+  <h2>C</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractSystem.html#dynadojo.abstractions.AbstractSystem.calc_control_cost">calc_control_cost() (dynadojo.abstractions.AbstractSystem method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.ca.CASystem.html#dynadojo.systems.ca.CASystem.calc_control_cost">(dynadojo.systems.ca.CASystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ctln.CTLNSystem.html#dynadojo.systems.ctln.CTLNSystem.calc_control_cost">(dynadojo.systems.ctln.CTLNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.seis.SEISSystem.html#dynadojo.systems.epidemic.seis.SEISSystem.calc_control_cost">(dynadojo.systems.epidemic.seis.SEISSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sir.SIRSystem.html#dynadojo.systems.epidemic.sir.SIRSystem.calc_control_cost">(dynadojo.systems.epidemic.sir.SIRSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sis.SISSystem.html#dynadojo.systems.epidemic.sis.SISSystem.calc_control_cost">(dynadojo.systems.epidemic.sis.SISSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.BSBSystem.html#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_control_cost">(dynadojo.systems.fbsnn_pde.bsb.BSBSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.HJBSystem.html#dynadojo.systems.fbsnn_pde.hjb.HJBSystem.calc_control_cost">(dynadojo.systems.fbsnn_pde.hjb.HJBSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation.calc_control_cost">(dynadojo.systems.heat.HeatEquation method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.kuramoto.KuramotoSystem.html#dynadojo.systems.kuramoto.KuramotoSystem.calc_control_cost">(dynadojo.systems.kuramoto.KuramotoSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem.calc_control_cost">(dynadojo.systems.lds.LDSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem.calc_control_cost">(dynadojo.systems.lorenz.LorenzSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.competitive.CompetitiveLVSystem.html#dynadojo.systems.lv.competitive.CompetitiveLVSystem.calc_control_cost">(dynadojo.systems.lv.competitive.CompetitiveLVSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.prey_predator.PreyPredatorSystem.html#dynadojo.systems.lv.prey_predator.PreyPredatorSystem.calc_control_cost">(dynadojo.systems.lv.prey_predator.PreyPredatorSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.arwhk.ARWHKSystem.html#dynadojo.systems.opinion.arwhk.ARWHKSystem.calc_control_cost">(dynadojo.systems.opinion.arwhk.ARWHKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.deffuant.DeffuantSystem.html#dynadojo.systems.opinion.deffuant.DeffuantSystem.calc_control_cost">(dynadojo.systems.opinion.deffuant.DeffuantSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.hk.HKSystem.html#dynadojo.systems.opinion.hk.HKSystem.calc_control_cost">(dynadojo.systems.opinion.hk.HKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.media_bias.MediaBiasSystem.html#dynadojo.systems.opinion.media_bias.MediaBiasSystem.calc_control_cost">(dynadojo.systems.opinion.media_bias.MediaBiasSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.whk.WHKSystem.html#dynadojo.systems.opinion.whk.WHKSystem.calc_control_cost">(dynadojo.systems.opinion.whk.WHKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem.calc_control_cost">(dynadojo.systems.santi.NBodySystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem.calc_control_cost">(dynadojo.systems.snn.SNNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.epidemic.EpidemicSystem.html#dynadojo.systems.utils.epidemic.EpidemicSystem.calc_control_cost">(dynadojo.systems.utils.epidemic.EpidemicSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.fbsnn.FBSNNSystem.html#dynadojo.systems.utils.fbsnn.FBSNNSystem.calc_control_cost">(dynadojo.systems.utils.fbsnn.FBSNNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.opinion.OpinionSystem.html#dynadojo.systems.utils.opinion.OpinionSystem.calc_control_cost">(dynadojo.systems.utils.opinion.OpinionSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem.calc_control_cost">(dynadojo.systems.utils.simple.SimpleSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.SystemChecker.html#dynadojo.wrappers.SystemChecker.calc_control_cost">(dynadojo.wrappers.SystemChecker method)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation.calc_dynamics">calc_dynamics() (dynadojo.systems.heat.HeatEquation method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem.calc_dynamics">(dynadojo.systems.lds.LDSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem.calc_dynamics">(dynadojo.systems.lorenz.LorenzSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem.calc_dynamics">(dynadojo.systems.santi.NBodySystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem.calc_dynamics">(dynadojo.systems.snn.SNNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem.calc_dynamics">(dynadojo.systems.utils.simple.SimpleSystem method)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractSystem.html#dynadojo.abstractions.AbstractSystem.calc_error">calc_error() (dynadojo.abstractions.AbstractSystem method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.ca.CASystem.html#dynadojo.systems.ca.CASystem.calc_error">(dynadojo.systems.ca.CASystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ctln.CTLNSystem.html#dynadojo.systems.ctln.CTLNSystem.calc_error">(dynadojo.systems.ctln.CTLNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.seis.SEISSystem.html#dynadojo.systems.epidemic.seis.SEISSystem.calc_error">(dynadojo.systems.epidemic.seis.SEISSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sir.SIRSystem.html#dynadojo.systems.epidemic.sir.SIRSystem.calc_error">(dynadojo.systems.epidemic.sir.SIRSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sis.SISSystem.html#dynadojo.systems.epidemic.sis.SISSystem.calc_error">(dynadojo.systems.epidemic.sis.SISSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.BSBSystem.html#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.calc_error">(dynadojo.systems.fbsnn_pde.bsb.BSBSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.HJBSystem.html#dynadojo.systems.fbsnn_pde.hjb.HJBSystem.calc_error">(dynadojo.systems.fbsnn_pde.hjb.HJBSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation.calc_error">(dynadojo.systems.heat.HeatEquation method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.kuramoto.KuramotoSystem.html#dynadojo.systems.kuramoto.KuramotoSystem.calc_error">(dynadojo.systems.kuramoto.KuramotoSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem.calc_error">(dynadojo.systems.lds.LDSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem.calc_error">(dynadojo.systems.lorenz.LorenzSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.competitive.CompetitiveLVSystem.html#dynadojo.systems.lv.competitive.CompetitiveLVSystem.calc_error">(dynadojo.systems.lv.competitive.CompetitiveLVSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.prey_predator.PreyPredatorSystem.html#dynadojo.systems.lv.prey_predator.PreyPredatorSystem.calc_error">(dynadojo.systems.lv.prey_predator.PreyPredatorSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.arwhk.ARWHKSystem.html#dynadojo.systems.opinion.arwhk.ARWHKSystem.calc_error">(dynadojo.systems.opinion.arwhk.ARWHKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.deffuant.DeffuantSystem.html#dynadojo.systems.opinion.deffuant.DeffuantSystem.calc_error">(dynadojo.systems.opinion.deffuant.DeffuantSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.hk.HKSystem.html#dynadojo.systems.opinion.hk.HKSystem.calc_error">(dynadojo.systems.opinion.hk.HKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.media_bias.MediaBiasSystem.html#dynadojo.systems.opinion.media_bias.MediaBiasSystem.calc_error">(dynadojo.systems.opinion.media_bias.MediaBiasSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.whk.WHKSystem.html#dynadojo.systems.opinion.whk.WHKSystem.calc_error">(dynadojo.systems.opinion.whk.WHKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem.calc_error">(dynadojo.systems.santi.NBodySystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem.calc_error">(dynadojo.systems.snn.SNNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.epidemic.EpidemicSystem.html#dynadojo.systems.utils.epidemic.EpidemicSystem.calc_error">(dynadojo.systems.utils.epidemic.EpidemicSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.fbsnn.FBSNNSystem.html#dynadojo.systems.utils.fbsnn.FBSNNSystem.calc_error">(dynadojo.systems.utils.fbsnn.FBSNNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.opinion.OpinionSystem.html#dynadojo.systems.utils.opinion.OpinionSystem.calc_error">(dynadojo.systems.utils.opinion.OpinionSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem.calc_error">(dynadojo.systems.utils.simple.SimpleSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.SystemChecker.html#dynadojo.wrappers.SystemChecker.calc_error">(dynadojo.wrappers.SystemChecker method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.ca.CASystem.html#dynadojo.systems.ca.CASystem">CASystem (class in dynadojo.systems.ca)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.challenges.Challenge.html#dynadojo.challenges.Challenge">Challenge (class in dynadojo.challenges)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.baselines.cnn.CNN.html#dynadojo.baselines.cnn.CNN">CNN (class in dynadojo.baselines.cnn)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.systems.lv.competitive.CompetitiveLVSystem.html#dynadojo.systems.lv.competitive.CompetitiveLVSystem">CompetitiveLVSystem (class in dynadojo.systems.lv.competitive)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation.controller">controller (dynadojo.systems.heat.HeatEquation property)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem.controller">(dynadojo.systems.lds.LDSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem.controller">(dynadojo.systems.lorenz.LorenzSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem.controller">(dynadojo.systems.santi.NBodySystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem.controller">(dynadojo.systems.snn.SNNSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem.controller">(dynadojo.systems.utils.simple.SimpleSystem property)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/dynadojo.systems.ctln.CTLNSystem.html#dynadojo.systems.ctln.CTLNSystem">CTLNSystem (class in dynadojo.systems.ctln)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="D" class="genindex-section">
+  <h2>D</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.opinion.deffuant.DeffuantSystem.html#dynadojo.systems.opinion.deffuant.DeffuantSystem">DeffuantSystem (class in dynadojo.systems.opinion.deffuant)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.baselines.dmd.DMD.html#dynadojo.baselines.dmd.DMD">DMD (class in dynadojo.baselines.dmd)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.baselines.dnn.DNN.html#dynadojo.baselines.dnn.DNN">DNN (class in dynadojo.baselines.dnn)</a>
+</li>
+        <li>
+    dynadojo
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.html#module-dynadojo">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.abstractions
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.abstractions.html#module-dynadojo.abstractions">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.baselines
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.html#module-dynadojo.baselines">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.baselines.aug_ode
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.aug_ode.html#module-dynadojo.baselines.aug_ode">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.baselines.cnn
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.cnn.html#module-dynadojo.baselines.cnn">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.baselines.dmd
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.dmd.html#module-dynadojo.baselines.dmd">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.baselines.dnn
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.dnn.html#module-dynadojo.baselines.dnn">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.baselines.lpr
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.lpr.html#module-dynadojo.baselines.lpr">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.baselines.lr
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.lr.html#module-dynadojo.baselines.lr">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.baselines.ode
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.ode.html#module-dynadojo.baselines.ode">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.baselines.sindy
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.sindy.html#module-dynadojo.baselines.sindy">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.challenges
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.challenges.html#module-dynadojo.challenges">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.html#module-dynadojo.systems">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.ca
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.ca.html#module-dynadojo.systems.ca">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.ctln
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.ctln.html#module-dynadojo.systems.ctln">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.epidemic
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.html#module-dynadojo.systems.epidemic">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.epidemic.seis
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.seis.html#module-dynadojo.systems.epidemic.seis">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.epidemic.sir
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sir.html#module-dynadojo.systems.epidemic.sir">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.epidemic.sis
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sis.html#module-dynadojo.systems.epidemic.sis">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.fbsnn_pde
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.html#module-dynadojo.systems.fbsnn_pde">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.fbsnn_pde.bsb
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.html#module-dynadojo.systems.fbsnn_pde.bsb">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.fbsnn_pde.hjb
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.html#module-dynadojo.systems.fbsnn_pde.hjb">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.heat
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.heat.html#module-dynadojo.systems.heat">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.kuramoto
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.kuramoto.html#module-dynadojo.systems.kuramoto">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.lds
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.lds.html#module-dynadojo.systems.lds">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.lorenz
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.html#module-dynadojo.systems.lorenz">module</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    dynadojo.systems.lv
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.lv.html#module-dynadojo.systems.lv">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.lv.competitive
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.lv.competitive.html#module-dynadojo.systems.lv.competitive">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.lv.prey_predator
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.lv.prey_predator.html#module-dynadojo.systems.lv.prey_predator">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.opinion
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.opinion.html#module-dynadojo.systems.opinion">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.opinion.arwhk
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.opinion.arwhk.html#module-dynadojo.systems.opinion.arwhk">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.opinion.deffuant
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.opinion.deffuant.html#module-dynadojo.systems.opinion.deffuant">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.opinion.hk
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.opinion.hk.html#module-dynadojo.systems.opinion.hk">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.opinion.media_bias
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.opinion.media_bias.html#module-dynadojo.systems.opinion.media_bias">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.opinion.whk
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.opinion.whk.html#module-dynadojo.systems.opinion.whk">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.santi
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.santi.html#module-dynadojo.systems.santi">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.snn
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.snn.html#module-dynadojo.systems.snn">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.utils
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.utils.html#module-dynadojo.systems.utils">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.utils.epidemic
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.utils.epidemic.html#module-dynadojo.systems.utils.epidemic">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.utils.fbsnn
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.utils.fbsnn.html#module-dynadojo.systems.utils.fbsnn">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.utils.opinion
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.utils.opinion.html#module-dynadojo.systems.utils.opinion">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.systems.utils.simple
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.html#module-dynadojo.systems.utils.simple">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.utils
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.utils.html#module-dynadojo.utils">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.utils.ca
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.utils.ca.html#module-dynadojo.utils.ca">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.utils.fbsnn_pde
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.utils.fbsnn_pde.html#module-dynadojo.utils.fbsnn_pde">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.utils.heat
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.utils.heat.html#module-dynadojo.utils.heat">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.utils.kuramoto
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.utils.kuramoto.html#module-dynadojo.utils.kuramoto">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.utils.lds
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.utils.lds.html#module-dynadojo.utils.lds">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.utils.lv
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.utils.lv.html#module-dynadojo.utils.lv">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.utils.opinion
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.utils.opinion.html#module-dynadojo.utils.opinion">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.utils.plotting
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.utils.plotting.html#module-dynadojo.utils.plotting">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.utils.seeding
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.utils.seeding.html#module-dynadojo.utils.seeding">module</a>
+</li>
+        </ul></li>
+        <li>
+    dynadojo.wrappers
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.wrappers.html#module-dynadojo.wrappers">module</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="E" class="genindex-section">
+  <h2>E</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractAlgorithm.html#dynadojo.abstractions.AbstractAlgorithm.embed_dim">embed_dim (dynadojo.abstractions.AbstractAlgorithm property)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.abstractions.AbstractSystem.html#dynadojo.abstractions.AbstractSystem.embed_dim">(dynadojo.abstractions.AbstractSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.aug_ode.AugODE.html#dynadojo.baselines.aug_ode.AugODE.embed_dim">(dynadojo.baselines.aug_ode.AugODE property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.cnn.CNN.html#dynadojo.baselines.cnn.CNN.embed_dim">(dynadojo.baselines.cnn.CNN property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dmd.DMD.html#dynadojo.baselines.dmd.DMD.embed_dim">(dynadojo.baselines.dmd.DMD property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dnn.DNN.html#dynadojo.baselines.dnn.DNN.embed_dim">(dynadojo.baselines.dnn.DNN property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lpr.LowestPossibleRadius.html#dynadojo.baselines.lpr.LowestPossibleRadius.embed_dim">(dynadojo.baselines.lpr.LowestPossibleRadius property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lr.LinearRegression.html#dynadojo.baselines.lr.LinearRegression.embed_dim">(dynadojo.baselines.lr.LinearRegression property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.ode.ODE.html#dynadojo.baselines.ode.ODE.embed_dim">(dynadojo.baselines.ode.ODE property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.sindy.SINDy.html#dynadojo.baselines.sindy.SINDy.embed_dim">(dynadojo.baselines.sindy.SINDy property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ca.CASystem.html#dynadojo.systems.ca.CASystem.embed_dim">(dynadojo.systems.ca.CASystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ctln.CTLNSystem.html#dynadojo.systems.ctln.CTLNSystem.embed_dim">(dynadojo.systems.ctln.CTLNSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.seis.SEISSystem.html#dynadojo.systems.epidemic.seis.SEISSystem.embed_dim">(dynadojo.systems.epidemic.seis.SEISSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sir.SIRSystem.html#dynadojo.systems.epidemic.sir.SIRSystem.embed_dim">(dynadojo.systems.epidemic.sir.SIRSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sis.SISSystem.html#dynadojo.systems.epidemic.sis.SISSystem.embed_dim">(dynadojo.systems.epidemic.sis.SISSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.BSBSystem.html#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.embed_dim">(dynadojo.systems.fbsnn_pde.bsb.BSBSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.HJBSystem.html#dynadojo.systems.fbsnn_pde.hjb.HJBSystem.embed_dim">(dynadojo.systems.fbsnn_pde.hjb.HJBSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation.embed_dim">(dynadojo.systems.heat.HeatEquation property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.kuramoto.KuramotoSystem.html#dynadojo.systems.kuramoto.KuramotoSystem.embed_dim">(dynadojo.systems.kuramoto.KuramotoSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem.embed_dim">(dynadojo.systems.lds.LDSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem.embed_dim">(dynadojo.systems.lorenz.LorenzSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.competitive.CompetitiveLVSystem.html#dynadojo.systems.lv.competitive.CompetitiveLVSystem.embed_dim">(dynadojo.systems.lv.competitive.CompetitiveLVSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.prey_predator.PreyPredatorSystem.html#dynadojo.systems.lv.prey_predator.PreyPredatorSystem.embed_dim">(dynadojo.systems.lv.prey_predator.PreyPredatorSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.arwhk.ARWHKSystem.html#dynadojo.systems.opinion.arwhk.ARWHKSystem.embed_dim">(dynadojo.systems.opinion.arwhk.ARWHKSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.deffuant.DeffuantSystem.html#dynadojo.systems.opinion.deffuant.DeffuantSystem.embed_dim">(dynadojo.systems.opinion.deffuant.DeffuantSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.hk.HKSystem.html#dynadojo.systems.opinion.hk.HKSystem.embed_dim">(dynadojo.systems.opinion.hk.HKSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.media_bias.MediaBiasSystem.html#dynadojo.systems.opinion.media_bias.MediaBiasSystem.embed_dim">(dynadojo.systems.opinion.media_bias.MediaBiasSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.whk.WHKSystem.html#dynadojo.systems.opinion.whk.WHKSystem.embed_dim">(dynadojo.systems.opinion.whk.WHKSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem.embed_dim">(dynadojo.systems.santi.NBodySystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem.embed_dim">(dynadojo.systems.snn.SNNSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.epidemic.EpidemicSystem.html#dynadojo.systems.utils.epidemic.EpidemicSystem.embed_dim">(dynadojo.systems.utils.epidemic.EpidemicSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.fbsnn.FBSNNSystem.html#dynadojo.systems.utils.fbsnn.FBSNNSystem.embed_dim">(dynadojo.systems.utils.fbsnn.FBSNNSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.opinion.OpinionSystem.html#dynadojo.systems.utils.opinion.OpinionSystem.embed_dim">(dynadojo.systems.utils.opinion.OpinionSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem.embed_dim">(dynadojo.systems.utils.simple.SimpleSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.AlgorithmChecker.html#dynadojo.wrappers.AlgorithmChecker.embed_dim">(dynadojo.wrappers.AlgorithmChecker property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.SystemChecker.html#dynadojo.wrappers.SystemChecker.embed_dim">(dynadojo.wrappers.SystemChecker property)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation.embedder">embedder (dynadojo.systems.heat.HeatEquation property)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem.embedder">(dynadojo.systems.lds.LDSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem.embedder">(dynadojo.systems.lorenz.LorenzSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem.embedder">(dynadojo.systems.santi.NBodySystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem.embedder">(dynadojo.systems.snn.SNNSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem.embedder">(dynadojo.systems.utils.simple.SimpleSystem property)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/dynadojo.systems.utils.epidemic.EpidemicSystem.html#dynadojo.systems.utils.epidemic.EpidemicSystem">EpidemicSystem (class in dynadojo.systems.utils.epidemic)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.challenges.Challenge.html#dynadojo.challenges.Challenge.evaluate">evaluate() (dynadojo.challenges.Challenge method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.challenges.FixedComplexity.html#dynadojo.challenges.FixedComplexity.evaluate">(dynadojo.challenges.FixedComplexity method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.challenges.FixedError.html#dynadojo.challenges.FixedError.evaluate">(dynadojo.challenges.FixedError method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.challenges.FixedTrainSize.html#dynadojo.challenges.FixedTrainSize.evaluate">(dynadojo.challenges.FixedTrainSize method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="F" class="genindex-section">
+  <h2>F</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.utils.fbsnn.FBSNNSystem.html#dynadojo.systems.utils.fbsnn.FBSNNSystem">FBSNNSystem (class in dynadojo.systems.utils.fbsnn)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractAlgorithm.html#dynadojo.abstractions.AbstractAlgorithm.fit">fit() (dynadojo.abstractions.AbstractAlgorithm method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.aug_ode.AugODE.html#dynadojo.baselines.aug_ode.AugODE.fit">(dynadojo.baselines.aug_ode.AugODE method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.cnn.CNN.html#dynadojo.baselines.cnn.CNN.fit">(dynadojo.baselines.cnn.CNN method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dmd.DMD.html#dynadojo.baselines.dmd.DMD.fit">(dynadojo.baselines.dmd.DMD method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dnn.DNN.html#dynadojo.baselines.dnn.DNN.fit">(dynadojo.baselines.dnn.DNN method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lpr.LowestPossibleRadius.html#dynadojo.baselines.lpr.LowestPossibleRadius.fit">(dynadojo.baselines.lpr.LowestPossibleRadius method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lr.LinearRegression.html#dynadojo.baselines.lr.LinearRegression.fit">(dynadojo.baselines.lr.LinearRegression method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.ode.ODE.html#dynadojo.baselines.ode.ODE.fit">(dynadojo.baselines.ode.ODE method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.sindy.SINDy.html#dynadojo.baselines.sindy.SINDy.fit">(dynadojo.baselines.sindy.SINDy method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.AlgorithmChecker.html#dynadojo.wrappers.AlgorithmChecker.fit">(dynadojo.wrappers.AlgorithmChecker method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.challenges.FixedComplexity.html#dynadojo.challenges.FixedComplexity">FixedComplexity (class in dynadojo.challenges)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.challenges.FixedError.html#dynadojo.challenges.FixedError">FixedError (class in dynadojo.challenges)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.challenges.FixedTrainSize.html#dynadojo.challenges.FixedTrainSize">FixedTrainSize (class in dynadojo.challenges)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="H" class="genindex-section">
+  <h2>H</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation">HeatEquation (class in dynadojo.systems.heat)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.HJBSystem.html#dynadojo.systems.fbsnn_pde.hjb.HJBSystem">HJBSystem (class in dynadojo.systems.fbsnn_pde.hjb)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.systems.opinion.hk.HKSystem.html#dynadojo.systems.opinion.hk.HKSystem">HKSystem (class in dynadojo.systems.opinion.hk)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="K" class="genindex-section">
+  <h2>K</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.kuramoto.KuramotoSystem.html#dynadojo.systems.kuramoto.KuramotoSystem">KuramotoSystem (class in dynadojo.systems.kuramoto)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="L" class="genindex-section">
+  <h2>L</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractSystem.html#dynadojo.abstractions.AbstractSystem.latent_dim">latent_dim (dynadojo.abstractions.AbstractSystem property)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.ca.CASystem.html#dynadojo.systems.ca.CASystem.latent_dim">(dynadojo.systems.ca.CASystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ctln.CTLNSystem.html#dynadojo.systems.ctln.CTLNSystem.latent_dim">(dynadojo.systems.ctln.CTLNSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.seis.SEISSystem.html#dynadojo.systems.epidemic.seis.SEISSystem.latent_dim">(dynadojo.systems.epidemic.seis.SEISSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sir.SIRSystem.html#dynadojo.systems.epidemic.sir.SIRSystem.latent_dim">(dynadojo.systems.epidemic.sir.SIRSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sis.SISSystem.html#dynadojo.systems.epidemic.sis.SISSystem.latent_dim">(dynadojo.systems.epidemic.sis.SISSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.BSBSystem.html#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.latent_dim">(dynadojo.systems.fbsnn_pde.bsb.BSBSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.HJBSystem.html#dynadojo.systems.fbsnn_pde.hjb.HJBSystem.latent_dim">(dynadojo.systems.fbsnn_pde.hjb.HJBSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation.latent_dim">(dynadojo.systems.heat.HeatEquation property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.kuramoto.KuramotoSystem.html#dynadojo.systems.kuramoto.KuramotoSystem.latent_dim">(dynadojo.systems.kuramoto.KuramotoSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem.latent_dim">(dynadojo.systems.lds.LDSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem.latent_dim">(dynadojo.systems.lorenz.LorenzSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.competitive.CompetitiveLVSystem.html#dynadojo.systems.lv.competitive.CompetitiveLVSystem.latent_dim">(dynadojo.systems.lv.competitive.CompetitiveLVSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.prey_predator.PreyPredatorSystem.html#dynadojo.systems.lv.prey_predator.PreyPredatorSystem.latent_dim">(dynadojo.systems.lv.prey_predator.PreyPredatorSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.arwhk.ARWHKSystem.html#dynadojo.systems.opinion.arwhk.ARWHKSystem.latent_dim">(dynadojo.systems.opinion.arwhk.ARWHKSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.deffuant.DeffuantSystem.html#dynadojo.systems.opinion.deffuant.DeffuantSystem.latent_dim">(dynadojo.systems.opinion.deffuant.DeffuantSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.hk.HKSystem.html#dynadojo.systems.opinion.hk.HKSystem.latent_dim">(dynadojo.systems.opinion.hk.HKSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.media_bias.MediaBiasSystem.html#dynadojo.systems.opinion.media_bias.MediaBiasSystem.latent_dim">(dynadojo.systems.opinion.media_bias.MediaBiasSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.whk.WHKSystem.html#dynadojo.systems.opinion.whk.WHKSystem.latent_dim">(dynadojo.systems.opinion.whk.WHKSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem.latent_dim">(dynadojo.systems.santi.NBodySystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem.latent_dim">(dynadojo.systems.snn.SNNSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.epidemic.EpidemicSystem.html#dynadojo.systems.utils.epidemic.EpidemicSystem.latent_dim">(dynadojo.systems.utils.epidemic.EpidemicSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.fbsnn.FBSNNSystem.html#dynadojo.systems.utils.fbsnn.FBSNNSystem.latent_dim">(dynadojo.systems.utils.fbsnn.FBSNNSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.opinion.OpinionSystem.html#dynadojo.systems.utils.opinion.OpinionSystem.latent_dim">(dynadojo.systems.utils.opinion.OpinionSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem.latent_dim">(dynadojo.systems.utils.simple.SimpleSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.SystemChecker.html#dynadojo.wrappers.SystemChecker.latent_dim">(dynadojo.wrappers.SystemChecker property)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem">LDSystem (class in dynadojo.systems.lds)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.systems.snn.LinearDynamicalSystem.html#dynadojo.systems.snn.LinearDynamicalSystem">LinearDynamicalSystem (class in dynadojo.systems.snn)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.baselines.lr.LinearRegression.html#dynadojo.baselines.lr.LinearRegression">LinearRegression (class in dynadojo.baselines.lr)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem">LorenzSystem (class in dynadojo.systems.lorenz)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.baselines.lpr.LowestPossibleRadius.html#dynadojo.baselines.lpr.LowestPossibleRadius">LowestPossibleRadius (class in dynadojo.baselines.lpr)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="M" class="genindex-section">
+  <h2>M</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractSystem.html#dynadojo.abstractions.AbstractSystem.make_data">make_data() (dynadojo.abstractions.AbstractSystem method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.ca.CASystem.html#dynadojo.systems.ca.CASystem.make_data">(dynadojo.systems.ca.CASystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ctln.CTLNSystem.html#dynadojo.systems.ctln.CTLNSystem.make_data">(dynadojo.systems.ctln.CTLNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.seis.SEISSystem.html#dynadojo.systems.epidemic.seis.SEISSystem.make_data">(dynadojo.systems.epidemic.seis.SEISSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sir.SIRSystem.html#dynadojo.systems.epidemic.sir.SIRSystem.make_data">(dynadojo.systems.epidemic.sir.SIRSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sis.SISSystem.html#dynadojo.systems.epidemic.sis.SISSystem.make_data">(dynadojo.systems.epidemic.sis.SISSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.BSBSystem.html#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_data">(dynadojo.systems.fbsnn_pde.bsb.BSBSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.HJBSystem.html#dynadojo.systems.fbsnn_pde.hjb.HJBSystem.make_data">(dynadojo.systems.fbsnn_pde.hjb.HJBSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation.make_data">(dynadojo.systems.heat.HeatEquation method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.kuramoto.KuramotoSystem.html#dynadojo.systems.kuramoto.KuramotoSystem.make_data">(dynadojo.systems.kuramoto.KuramotoSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem.make_data">(dynadojo.systems.lds.LDSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem.make_data">(dynadojo.systems.lorenz.LorenzSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.competitive.CompetitiveLVSystem.html#dynadojo.systems.lv.competitive.CompetitiveLVSystem.make_data">(dynadojo.systems.lv.competitive.CompetitiveLVSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.prey_predator.PreyPredatorSystem.html#dynadojo.systems.lv.prey_predator.PreyPredatorSystem.make_data">(dynadojo.systems.lv.prey_predator.PreyPredatorSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.arwhk.ARWHKSystem.html#dynadojo.systems.opinion.arwhk.ARWHKSystem.make_data">(dynadojo.systems.opinion.arwhk.ARWHKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.deffuant.DeffuantSystem.html#dynadojo.systems.opinion.deffuant.DeffuantSystem.make_data">(dynadojo.systems.opinion.deffuant.DeffuantSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.hk.HKSystem.html#dynadojo.systems.opinion.hk.HKSystem.make_data">(dynadojo.systems.opinion.hk.HKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.media_bias.MediaBiasSystem.html#dynadojo.systems.opinion.media_bias.MediaBiasSystem.make_data">(dynadojo.systems.opinion.media_bias.MediaBiasSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.whk.WHKSystem.html#dynadojo.systems.opinion.whk.WHKSystem.make_data">(dynadojo.systems.opinion.whk.WHKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem.make_data">(dynadojo.systems.santi.NBodySystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem.make_data">(dynadojo.systems.snn.SNNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.epidemic.EpidemicSystem.html#dynadojo.systems.utils.epidemic.EpidemicSystem.make_data">(dynadojo.systems.utils.epidemic.EpidemicSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.fbsnn.FBSNNSystem.html#dynadojo.systems.utils.fbsnn.FBSNNSystem.make_data">(dynadojo.systems.utils.fbsnn.FBSNNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.opinion.OpinionSystem.html#dynadojo.systems.utils.opinion.OpinionSystem.make_data">(dynadojo.systems.utils.opinion.OpinionSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem.make_data">(dynadojo.systems.utils.simple.SimpleSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.SystemChecker.html#dynadojo.wrappers.SystemChecker.make_data">(dynadojo.wrappers.SystemChecker method)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractSystem.html#dynadojo.abstractions.AbstractSystem.make_init_conds">make_init_conds() (dynadojo.abstractions.AbstractSystem method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.systems.ca.CASystem.html#dynadojo.systems.ca.CASystem.make_init_conds">(dynadojo.systems.ca.CASystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ctln.CTLNSystem.html#dynadojo.systems.ctln.CTLNSystem.make_init_conds">(dynadojo.systems.ctln.CTLNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.seis.SEISSystem.html#dynadojo.systems.epidemic.seis.SEISSystem.make_init_conds">(dynadojo.systems.epidemic.seis.SEISSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sir.SIRSystem.html#dynadojo.systems.epidemic.sir.SIRSystem.make_init_conds">(dynadojo.systems.epidemic.sir.SIRSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sis.SISSystem.html#dynadojo.systems.epidemic.sis.SISSystem.make_init_conds">(dynadojo.systems.epidemic.sis.SISSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.BSBSystem.html#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.make_init_conds">(dynadojo.systems.fbsnn_pde.bsb.BSBSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.HJBSystem.html#dynadojo.systems.fbsnn_pde.hjb.HJBSystem.make_init_conds">(dynadojo.systems.fbsnn_pde.hjb.HJBSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation.make_init_conds">(dynadojo.systems.heat.HeatEquation method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.kuramoto.KuramotoSystem.html#dynadojo.systems.kuramoto.KuramotoSystem.make_init_conds">(dynadojo.systems.kuramoto.KuramotoSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem.make_init_conds">(dynadojo.systems.lds.LDSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem.make_init_conds">(dynadojo.systems.lorenz.LorenzSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.competitive.CompetitiveLVSystem.html#dynadojo.systems.lv.competitive.CompetitiveLVSystem.make_init_conds">(dynadojo.systems.lv.competitive.CompetitiveLVSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.prey_predator.PreyPredatorSystem.html#dynadojo.systems.lv.prey_predator.PreyPredatorSystem.make_init_conds">(dynadojo.systems.lv.prey_predator.PreyPredatorSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.arwhk.ARWHKSystem.html#dynadojo.systems.opinion.arwhk.ARWHKSystem.make_init_conds">(dynadojo.systems.opinion.arwhk.ARWHKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.deffuant.DeffuantSystem.html#dynadojo.systems.opinion.deffuant.DeffuantSystem.make_init_conds">(dynadojo.systems.opinion.deffuant.DeffuantSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.hk.HKSystem.html#dynadojo.systems.opinion.hk.HKSystem.make_init_conds">(dynadojo.systems.opinion.hk.HKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.media_bias.MediaBiasSystem.html#dynadojo.systems.opinion.media_bias.MediaBiasSystem.make_init_conds">(dynadojo.systems.opinion.media_bias.MediaBiasSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.whk.WHKSystem.html#dynadojo.systems.opinion.whk.WHKSystem.make_init_conds">(dynadojo.systems.opinion.whk.WHKSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem.make_init_conds">(dynadojo.systems.santi.NBodySystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem.make_init_conds">(dynadojo.systems.snn.SNNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.epidemic.EpidemicSystem.html#dynadojo.systems.utils.epidemic.EpidemicSystem.make_init_conds">(dynadojo.systems.utils.epidemic.EpidemicSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.fbsnn.FBSNNSystem.html#dynadojo.systems.utils.fbsnn.FBSNNSystem.make_init_conds">(dynadojo.systems.utils.fbsnn.FBSNNSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.opinion.OpinionSystem.html#dynadojo.systems.utils.opinion.OpinionSystem.make_init_conds">(dynadojo.systems.utils.opinion.OpinionSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem.make_init_conds">(dynadojo.systems.utils.simple.SimpleSystem method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.SystemChecker.html#dynadojo.wrappers.SystemChecker.make_init_conds">(dynadojo.wrappers.SystemChecker method)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/dynadojo.utils.lds.make_pca.html#dynadojo.utils.lds.make_pca">make_pca() (in module dynadojo.utils.lds)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.utils.lv.make_pca.html#dynadojo.utils.lv.make_pca">(in module dynadojo.utils.lv)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractAlgorithm.html#dynadojo.abstractions.AbstractAlgorithm.max_control_cost">max_control_cost (dynadojo.abstractions.AbstractAlgorithm property)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.aug_ode.AugODE.html#dynadojo.baselines.aug_ode.AugODE.max_control_cost">(dynadojo.baselines.aug_ode.AugODE property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.cnn.CNN.html#dynadojo.baselines.cnn.CNN.max_control_cost">(dynadojo.baselines.cnn.CNN property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dmd.DMD.html#dynadojo.baselines.dmd.DMD.max_control_cost">(dynadojo.baselines.dmd.DMD property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dnn.DNN.html#dynadojo.baselines.dnn.DNN.max_control_cost">(dynadojo.baselines.dnn.DNN property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lpr.LowestPossibleRadius.html#dynadojo.baselines.lpr.LowestPossibleRadius.max_control_cost">(dynadojo.baselines.lpr.LowestPossibleRadius property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lr.LinearRegression.html#dynadojo.baselines.lr.LinearRegression.max_control_cost">(dynadojo.baselines.lr.LinearRegression property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.ode.ODE.html#dynadojo.baselines.ode.ODE.max_control_cost">(dynadojo.baselines.ode.ODE property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.sindy.SINDy.html#dynadojo.baselines.sindy.SINDy.max_control_cost">(dynadojo.baselines.sindy.SINDy property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.AlgorithmChecker.html#dynadojo.wrappers.AlgorithmChecker.max_control_cost">(dynadojo.wrappers.AlgorithmChecker property)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.opinion.media_bias.MediaBiasSystem.html#dynadojo.systems.opinion.media_bias.MediaBiasSystem">MediaBiasSystem (class in dynadojo.systems.opinion.media_bias)</a>
+</li>
+        <li>
+    module
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.html#module-dynadojo">dynadojo</a>
+</li>
+          <li><a href="_autosummary/dynadojo.abstractions.html#module-dynadojo.abstractions">dynadojo.abstractions</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.html#module-dynadojo.baselines">dynadojo.baselines</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.aug_ode.html#module-dynadojo.baselines.aug_ode">dynadojo.baselines.aug_ode</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.cnn.html#module-dynadojo.baselines.cnn">dynadojo.baselines.cnn</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dmd.html#module-dynadojo.baselines.dmd">dynadojo.baselines.dmd</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dnn.html#module-dynadojo.baselines.dnn">dynadojo.baselines.dnn</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lpr.html#module-dynadojo.baselines.lpr">dynadojo.baselines.lpr</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lr.html#module-dynadojo.baselines.lr">dynadojo.baselines.lr</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.ode.html#module-dynadojo.baselines.ode">dynadojo.baselines.ode</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.sindy.html#module-dynadojo.baselines.sindy">dynadojo.baselines.sindy</a>
+</li>
+          <li><a href="_autosummary/dynadojo.challenges.html#module-dynadojo.challenges">dynadojo.challenges</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.html#module-dynadojo.systems">dynadojo.systems</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ca.html#module-dynadojo.systems.ca">dynadojo.systems.ca</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ctln.html#module-dynadojo.systems.ctln">dynadojo.systems.ctln</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.html#module-dynadojo.systems.epidemic">dynadojo.systems.epidemic</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.seis.html#module-dynadojo.systems.epidemic.seis">dynadojo.systems.epidemic.seis</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sir.html#module-dynadojo.systems.epidemic.sir">dynadojo.systems.epidemic.sir</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sis.html#module-dynadojo.systems.epidemic.sis">dynadojo.systems.epidemic.sis</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.html#module-dynadojo.systems.fbsnn_pde">dynadojo.systems.fbsnn_pde</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.html#module-dynadojo.systems.fbsnn_pde.bsb">dynadojo.systems.fbsnn_pde.bsb</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.html#module-dynadojo.systems.fbsnn_pde.hjb">dynadojo.systems.fbsnn_pde.hjb</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.heat.html#module-dynadojo.systems.heat">dynadojo.systems.heat</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.kuramoto.html#module-dynadojo.systems.kuramoto">dynadojo.systems.kuramoto</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lds.html#module-dynadojo.systems.lds">dynadojo.systems.lds</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.html#module-dynadojo.systems.lorenz">dynadojo.systems.lorenz</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.html#module-dynadojo.systems.lv">dynadojo.systems.lv</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.competitive.html#module-dynadojo.systems.lv.competitive">dynadojo.systems.lv.competitive</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.prey_predator.html#module-dynadojo.systems.lv.prey_predator">dynadojo.systems.lv.prey_predator</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.html#module-dynadojo.systems.opinion">dynadojo.systems.opinion</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.arwhk.html#module-dynadojo.systems.opinion.arwhk">dynadojo.systems.opinion.arwhk</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.deffuant.html#module-dynadojo.systems.opinion.deffuant">dynadojo.systems.opinion.deffuant</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.hk.html#module-dynadojo.systems.opinion.hk">dynadojo.systems.opinion.hk</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.media_bias.html#module-dynadojo.systems.opinion.media_bias">dynadojo.systems.opinion.media_bias</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.whk.html#module-dynadojo.systems.opinion.whk">dynadojo.systems.opinion.whk</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.html#module-dynadojo.systems.santi">dynadojo.systems.santi</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.html#module-dynadojo.systems.snn">dynadojo.systems.snn</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.html#module-dynadojo.systems.utils">dynadojo.systems.utils</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.epidemic.html#module-dynadojo.systems.utils.epidemic">dynadojo.systems.utils.epidemic</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.fbsnn.html#module-dynadojo.systems.utils.fbsnn">dynadojo.systems.utils.fbsnn</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.opinion.html#module-dynadojo.systems.utils.opinion">dynadojo.systems.utils.opinion</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.html#module-dynadojo.systems.utils.simple">dynadojo.systems.utils.simple</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.html#module-dynadojo.utils">dynadojo.utils</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.ca.html#module-dynadojo.utils.ca">dynadojo.utils.ca</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.fbsnn_pde.html#module-dynadojo.utils.fbsnn_pde">dynadojo.utils.fbsnn_pde</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.heat.html#module-dynadojo.utils.heat">dynadojo.utils.heat</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.kuramoto.html#module-dynadojo.utils.kuramoto">dynadojo.utils.kuramoto</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.lds.html#module-dynadojo.utils.lds">dynadojo.utils.lds</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.lv.html#module-dynadojo.utils.lv">dynadojo.utils.lv</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.opinion.html#module-dynadojo.utils.opinion">dynadojo.utils.opinion</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.plotting.html#module-dynadojo.utils.plotting">dynadojo.utils.plotting</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.seeding.html#module-dynadojo.utils.seeding">dynadojo.utils.seeding</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.html#module-dynadojo.wrappers">dynadojo.wrappers</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="N" class="genindex-section">
+  <h2>N</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem">NBodySystem (class in dynadojo.systems.santi)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="O" class="genindex-section">
+  <h2>O</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.baselines.ode.ODE.html#dynadojo.baselines.ode.ODE">ODE (class in dynadojo.baselines.ode)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.utils.opinion.OpinionSystem.html#dynadojo.systems.utils.opinion.OpinionSystem">OpinionSystem (class in dynadojo.systems.utils.opinion)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="P" class="genindex-section">
+  <h2>P</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.challenges.FixedComplexity.html#dynadojo.challenges.FixedComplexity.plot">plot() (dynadojo.challenges.FixedComplexity static method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.challenges.FixedTrainSize.html#dynadojo.challenges.FixedTrainSize.plot">(dynadojo.challenges.FixedTrainSize static method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.ca.plot.html#dynadojo.utils.ca.plot">(in module dynadojo.utils.ca)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.fbsnn_pde.plot.html#dynadojo.utils.fbsnn_pde.plot">(in module dynadojo.utils.fbsnn_pde)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.heat.plot.html#dynadojo.utils.heat.plot">(in module dynadojo.utils.heat)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.kuramoto.plot.html#dynadojo.utils.kuramoto.plot">(in module dynadojo.utils.kuramoto)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.lds.plot.html#dynadojo.utils.lds.plot">(in module dynadojo.utils.lds)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.lv.plot.html#dynadojo.utils.lv.plot">(in module dynadojo.utils.lv)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.utils.opinion.plot.html#dynadojo.utils.opinion.plot">(in module dynadojo.utils.opinion)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/dynadojo.utils.plotting.plot_metric.html#dynadojo.utils.plotting.plot_metric">plot_metric() (in module dynadojo.utils.plotting)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.utils.plotting.plot_target_error.html#dynadojo.utils.plotting.plot_target_error">plot_target_error() (in module dynadojo.utils.plotting)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractAlgorithm.html#dynadojo.abstractions.AbstractAlgorithm.predict">predict() (dynadojo.abstractions.AbstractAlgorithm method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.aug_ode.AugODE.html#dynadojo.baselines.aug_ode.AugODE.predict">(dynadojo.baselines.aug_ode.AugODE method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.cnn.CNN.html#dynadojo.baselines.cnn.CNN.predict">(dynadojo.baselines.cnn.CNN method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dmd.DMD.html#dynadojo.baselines.dmd.DMD.predict">(dynadojo.baselines.dmd.DMD method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dnn.DNN.html#dynadojo.baselines.dnn.DNN.predict">(dynadojo.baselines.dnn.DNN method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lpr.LowestPossibleRadius.html#dynadojo.baselines.lpr.LowestPossibleRadius.predict">(dynadojo.baselines.lpr.LowestPossibleRadius method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lr.LinearRegression.html#dynadojo.baselines.lr.LinearRegression.predict">(dynadojo.baselines.lr.LinearRegression method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.ode.ODE.html#dynadojo.baselines.ode.ODE.predict">(dynadojo.baselines.ode.ODE method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.sindy.SINDy.html#dynadojo.baselines.sindy.SINDy.predict">(dynadojo.baselines.sindy.SINDy method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.AlgorithmChecker.html#dynadojo.wrappers.AlgorithmChecker.predict">(dynadojo.wrappers.AlgorithmChecker method)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/dynadojo.systems.lv.prey_predator.PreyPredatorSystem.html#dynadojo.systems.lv.prey_predator.PreyPredatorSystem">PreyPredatorSystem (class in dynadojo.systems.lv.prey_predator)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="S" class="genindex-section">
+  <h2>S</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractAlgorithm.html#dynadojo.abstractions.AbstractAlgorithm.seed">seed (dynadojo.abstractions.AbstractAlgorithm property)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.abstractions.AbstractSystem.html#dynadojo.abstractions.AbstractSystem.seed">(dynadojo.abstractions.AbstractSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.aug_ode.AugODE.html#dynadojo.baselines.aug_ode.AugODE.seed">(dynadojo.baselines.aug_ode.AugODE property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.cnn.CNN.html#dynadojo.baselines.cnn.CNN.seed">(dynadojo.baselines.cnn.CNN property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dmd.DMD.html#dynadojo.baselines.dmd.DMD.seed">(dynadojo.baselines.dmd.DMD property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dnn.DNN.html#dynadojo.baselines.dnn.DNN.seed">(dynadojo.baselines.dnn.DNN property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lpr.LowestPossibleRadius.html#dynadojo.baselines.lpr.LowestPossibleRadius.seed">(dynadojo.baselines.lpr.LowestPossibleRadius property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lr.LinearRegression.html#dynadojo.baselines.lr.LinearRegression.seed">(dynadojo.baselines.lr.LinearRegression property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.ode.ODE.html#dynadojo.baselines.ode.ODE.seed">(dynadojo.baselines.ode.ODE property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.sindy.SINDy.html#dynadojo.baselines.sindy.SINDy.seed">(dynadojo.baselines.sindy.SINDy property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ca.CASystem.html#dynadojo.systems.ca.CASystem.seed">(dynadojo.systems.ca.CASystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.ctln.CTLNSystem.html#dynadojo.systems.ctln.CTLNSystem.seed">(dynadojo.systems.ctln.CTLNSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.seis.SEISSystem.html#dynadojo.systems.epidemic.seis.SEISSystem.seed">(dynadojo.systems.epidemic.seis.SEISSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sir.SIRSystem.html#dynadojo.systems.epidemic.sir.SIRSystem.seed">(dynadojo.systems.epidemic.sir.SIRSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.epidemic.sis.SISSystem.html#dynadojo.systems.epidemic.sis.SISSystem.seed">(dynadojo.systems.epidemic.sis.SISSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.bsb.BSBSystem.html#dynadojo.systems.fbsnn_pde.bsb.BSBSystem.seed">(dynadojo.systems.fbsnn_pde.bsb.BSBSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.fbsnn_pde.hjb.HJBSystem.html#dynadojo.systems.fbsnn_pde.hjb.HJBSystem.seed">(dynadojo.systems.fbsnn_pde.hjb.HJBSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.heat.HeatEquation.html#dynadojo.systems.heat.HeatEquation.seed">(dynadojo.systems.heat.HeatEquation property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.kuramoto.KuramotoSystem.html#dynadojo.systems.kuramoto.KuramotoSystem.seed">(dynadojo.systems.kuramoto.KuramotoSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lds.LDSystem.html#dynadojo.systems.lds.LDSystem.seed">(dynadojo.systems.lds.LDSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lorenz.LorenzSystem.html#dynadojo.systems.lorenz.LorenzSystem.seed">(dynadojo.systems.lorenz.LorenzSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.competitive.CompetitiveLVSystem.html#dynadojo.systems.lv.competitive.CompetitiveLVSystem.seed">(dynadojo.systems.lv.competitive.CompetitiveLVSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.lv.prey_predator.PreyPredatorSystem.html#dynadojo.systems.lv.prey_predator.PreyPredatorSystem.seed">(dynadojo.systems.lv.prey_predator.PreyPredatorSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.arwhk.ARWHKSystem.html#dynadojo.systems.opinion.arwhk.ARWHKSystem.seed">(dynadojo.systems.opinion.arwhk.ARWHKSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.deffuant.DeffuantSystem.html#dynadojo.systems.opinion.deffuant.DeffuantSystem.seed">(dynadojo.systems.opinion.deffuant.DeffuantSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.hk.HKSystem.html#dynadojo.systems.opinion.hk.HKSystem.seed">(dynadojo.systems.opinion.hk.HKSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.media_bias.MediaBiasSystem.html#dynadojo.systems.opinion.media_bias.MediaBiasSystem.seed">(dynadojo.systems.opinion.media_bias.MediaBiasSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.opinion.whk.WHKSystem.html#dynadojo.systems.opinion.whk.WHKSystem.seed">(dynadojo.systems.opinion.whk.WHKSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.santi.NBodySystem.html#dynadojo.systems.santi.NBodySystem.seed">(dynadojo.systems.santi.NBodySystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem.seed">(dynadojo.systems.snn.SNNSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.epidemic.EpidemicSystem.html#dynadojo.systems.utils.epidemic.EpidemicSystem.seed">(dynadojo.systems.utils.epidemic.EpidemicSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.fbsnn.FBSNNSystem.html#dynadojo.systems.utils.fbsnn.FBSNNSystem.seed">(dynadojo.systems.utils.fbsnn.FBSNNSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.opinion.OpinionSystem.html#dynadojo.systems.utils.opinion.OpinionSystem.seed">(dynadojo.systems.utils.opinion.OpinionSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem.seed">(dynadojo.systems.utils.simple.SimpleSystem property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.AlgorithmChecker.html#dynadojo.wrappers.AlgorithmChecker.seed">(dynadojo.wrappers.AlgorithmChecker property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.SystemChecker.html#dynadojo.wrappers.SystemChecker.seed">(dynadojo.wrappers.SystemChecker property)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.epidemic.seis.SEISSystem.html#dynadojo.systems.epidemic.seis.SEISSystem">SEISSystem (class in dynadojo.systems.epidemic.seis)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.systems.utils.simple.SimpleSystem.html#dynadojo.systems.utils.simple.SimpleSystem">SimpleSystem (class in dynadojo.systems.utils.simple)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.baselines.sindy.SINDy.html#dynadojo.baselines.sindy.SINDy">SINDy (class in dynadojo.baselines.sindy)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.systems.epidemic.sir.SIRSystem.html#dynadojo.systems.epidemic.sir.SIRSystem">SIRSystem (class in dynadojo.systems.epidemic.sir)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.systems.epidemic.sis.SISSystem.html#dynadojo.systems.epidemic.sis.SISSystem">SISSystem (class in dynadojo.systems.epidemic.sis)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.systems.snn.SNNSystem.html#dynadojo.systems.snn.SNNSystem">SNNSystem (class in dynadojo.systems.snn)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.systems.snn.SpikingNeuralNetwork.html#dynadojo.systems.snn.SpikingNeuralNetwork">SpikingNeuralNetwork (class in dynadojo.systems.snn)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.challenges.Challenge.html#dynadojo.challenges.Challenge.system_run">system_run() (dynadojo.challenges.Challenge method)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.challenges.FixedComplexity.html#dynadojo.challenges.FixedComplexity.system_run">(dynadojo.challenges.FixedComplexity method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.challenges.FixedError.html#dynadojo.challenges.FixedError.system_run">(dynadojo.challenges.FixedError method)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.challenges.FixedTrainSize.html#dynadojo.challenges.FixedTrainSize.system_run">(dynadojo.challenges.FixedTrainSize method)</a>
+</li>
+        </ul></li>
+        <li><a href="_autosummary/dynadojo.wrappers.SystemChecker.html#dynadojo.wrappers.SystemChecker">SystemChecker (class in dynadojo.wrappers)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="T" class="genindex-section">
+  <h2>T</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.utils.seeding.temp_numpy_seed.html#dynadojo.utils.seeding.temp_numpy_seed">temp_numpy_seed() (in module dynadojo.utils.seeding)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.utils.seeding.temp_random_seed.html#dynadojo.utils.seeding.temp_random_seed">temp_random_seed() (in module dynadojo.utils.seeding)</a>
+</li>
+        <li><a href="_autosummary/dynadojo.abstractions.AbstractAlgorithm.html#dynadojo.abstractions.AbstractAlgorithm.timesteps">timesteps (dynadojo.abstractions.AbstractAlgorithm property)</a>
+
+        <ul>
+          <li><a href="_autosummary/dynadojo.baselines.aug_ode.AugODE.html#dynadojo.baselines.aug_ode.AugODE.timesteps">(dynadojo.baselines.aug_ode.AugODE property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.cnn.CNN.html#dynadojo.baselines.cnn.CNN.timesteps">(dynadojo.baselines.cnn.CNN property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dmd.DMD.html#dynadojo.baselines.dmd.DMD.timesteps">(dynadojo.baselines.dmd.DMD property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.dnn.DNN.html#dynadojo.baselines.dnn.DNN.timesteps">(dynadojo.baselines.dnn.DNN property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lpr.LowestPossibleRadius.html#dynadojo.baselines.lpr.LowestPossibleRadius.timesteps">(dynadojo.baselines.lpr.LowestPossibleRadius property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.lr.LinearRegression.html#dynadojo.baselines.lr.LinearRegression.timesteps">(dynadojo.baselines.lr.LinearRegression property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.ode.ODE.html#dynadojo.baselines.ode.ODE.timesteps">(dynadojo.baselines.ode.ODE property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.baselines.sindy.SINDy.html#dynadojo.baselines.sindy.SINDy.timesteps">(dynadojo.baselines.sindy.SINDy property)</a>
+</li>
+          <li><a href="_autosummary/dynadojo.wrappers.AlgorithmChecker.html#dynadojo.wrappers.AlgorithmChecker.timesteps">(dynadojo.wrappers.AlgorithmChecker property)</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="W" class="genindex-section">
+  <h2>W</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="_autosummary/dynadojo.systems.opinion.whk.WHKSystem.html#dynadojo.systems.opinion.whk.WHKSystem">WHKSystem (class in dynadojo.systems.opinion.whk)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=fc7d8818"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    </body>
+</html>
