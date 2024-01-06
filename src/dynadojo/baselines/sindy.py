@@ -17,6 +17,10 @@ class SINDy(AbstractAlgorithm):
     -----------
     .. [1] https://pysindy.readthedocs.io/en/latest/
 
+    Note
+    -----
+    For an example of how to use SINDy with a challenge, see ``LorenzSystem``.
+
     Example
     --------
     .. include:: ../sindy_example.rst

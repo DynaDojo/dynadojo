@@ -31,10 +31,10 @@ class LDSystem(SimpleSystem):
 
     .. image:: ../_images/lds.png
 
-    >>> from dynadojo.baselines.dnn import DNN
+    >>> from dynadojo.baselines.dmd import DMD
     >>> from dynadojo.challenges import FixedTrainSize
-    >>> challenge = FixedTrainSize(L=[2, 3, 4, 5], E=None, t=10, n=10, reps=3, system_cls=LDSystem, test_examples=1, test_timesteps=10, max_control_cost_per_dim=0, control_horizons=0)
-    >>> data = challenge.evaluate(algo_cls=DNN)
+    >>> challenge = FixedTrainSize(L=[2, 3, 4, 5], E=None, t=50, n=10, reps=10, system_cls=LDSystem, test_examples=1, test_timesteps=50, max_control_cost_per_dim=0, control_horizons=0)
+    >>> data = challenge.evaluate(algo_cls=DMD)
     >>> challenge.plot(data)
 
     .. image:: ../_images/lds_fixed_train.png

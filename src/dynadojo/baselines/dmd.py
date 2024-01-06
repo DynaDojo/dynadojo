@@ -12,6 +12,10 @@ class DMD(AbstractAlgorithm):
     """
     Dynamic mode decomposition. Implementation uses the ``pydmd`` library [1]_.
 
+    Note
+    -----
+    For an example of ``DMD`` with a challenge, see ``LDSystem``.
+
     References
     ------------
     .. [1] https://pydmd.github.io/PyDMD/
