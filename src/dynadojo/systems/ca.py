@@ -28,6 +28,14 @@ class CASystem(AbstractSystem):
     >>> plot([x], labels=["X"])
 
     .. image:: ../_images/ca.png
+
+    >>> from dynadojo.challenges import FixedComplexity
+    >>> from dynadojo.baselines.cnn import CNN
+    >>> challenge = FixedComplexity(l=2, e=64, t=10, N=[10, 20, 30], reps=3, system_cls=CASystem, test_examples=1, test_timesteps=5)
+    >>> data = challenge.evaluate(algo_cls=CNN)
+    >>> challenge.plot(data)
+
+    .. image:: ../_images/ca_fixed_complexity.png
     """
     def __init__(self, latent_dim = 2, embed_dim = 64, in_dist_p=0.25, out_dist_p=0.75, mutation_p=0.00, seed=None):
         """
@@ -94,8 +102,7 @@ class CASystem(AbstractSystem):
         return data
 
     def calc_error(self, x, y):
-        # averaged across all samples and all predicted timesteps
-        return 1 - (np.count_nonzero(x == y) / self.embed_dim) / len(y) / len(y[1])
+        return np.count_nonzero(x != y) / np.prod(y.shape)
 
     def calc_control_cost(self, control: np.ndarray) -> float:
         return np.sum(control, axis=(1, 2))

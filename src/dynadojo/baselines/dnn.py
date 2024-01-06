@@ -63,5 +63,8 @@ class DNN(AbstractAlgorithm):
         preds = [x0]
         for _ in range(timesteps - 1):
             preds.append(self.model.predict(preds[-1], verbose=0))
-        preds = np.array(preds).squeeze().transpose(1, 0, 2)
+        preds = np.array(preds)
+        if np.ndim(preds) > 3:
+            preds = preds.squeeze()
+        preds = preds.transpose(1, 0, 2)
         return preds

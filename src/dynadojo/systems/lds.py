@@ -12,6 +12,32 @@ class LDSystem(SimpleSystem):
     """
     Linear dynamical system (LDS). Implements an LDS of the form :math:`\dot{x} = Ax + Bu` where :math:`Ax` is the drift term of :math:`\dot{x}`
     and :math:`Bu` is input term of :math:`\dot{x}`.
+
+    Example
+    --------
+    >>> from dynadojo.systems.lds import LDSystem
+    >>> from dynadojo.wrappers import SystemChecker
+    >>> from dynadojo.utils.lds import plot
+    >>> latent_dim = 9
+    >>> embed_dim = 14
+    >>> n = 500
+    >>> timesteps = 50
+    >>> system = SystemChecker(LDSystem(latent_dim, embed_dim, noise_scale=0, seed=0))
+    >>> x0 = system.make_init_conds(n)
+    >>> y0 = system.make_init_conds(30, in_dist=False)
+    >>> x = system.make_data(x0, timesteps=timesteps)
+    >>> y = system.make_data(y0, timesteps=timesteps, noisy=True)
+    >>> plot([x, y], target_dim=min(latent_dim, 3), labels=["in", "out"], max_lines=15)
+
+    .. image:: ../_images/lds.png
+
+    >>> from dynadojo.baselines.dnn import DNN
+    >>> from dynadojo.challenges import FixedTrainSize
+    >>> challenge = FixedTrainSize(L=[2, 3, 4, 5], E=None, t=10, n=10, reps=3, system_cls=LDSystem, test_examples=1, test_timesteps=10, max_control_cost_per_dim=0, control_horizons=0)
+    >>> data = challenge.evaluate(algo_cls=DNN)
+    >>> challenge.plot(data)
+
+    .. image:: ../_images/lds_fixed_train.png
     """
     def __init__(self,
                  latent_dim: int = 2,
@@ -21,24 +47,6 @@ class LDSystem(SimpleSystem):
                  **kwargs):
         """
         Initialize the class.
-
-        Example
-        --------
-        >>> from dynadojo.systems.lds import LDSystem
-        >>> from dynadojo.wrappers import SystemChecker
-        >>> from dynadojo.utils.lds import plot
-        >>> latent_dim = 9
-        >>> embed_dim = 14
-        >>> n = 500
-        >>> timesteps = 50
-        >>> system = SystemChecker(LDSystem(latent_dim, embed_dim, noise_scale=0, seed=0))
-        >>> x0 = system.make_init_conds(n)
-        >>> y0 = system.make_init_conds(30, in_dist=False)
-        >>> x = system.make_data(x0, timesteps=timesteps)
-        >>> y = system.make_data(y0, timesteps=timesteps, noisy=True)
-        >>> plot([x, y], target_dim=min(latent_dim, 3), labels=["in", "out"], max_lines=15)
-
-        .. image:: ../_images/lds.png
 
         Parameters
         ----------
