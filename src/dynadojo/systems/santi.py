@@ -18,9 +18,9 @@ class NBodySystem(SimpleSystem):
 
     Note
     -------
-    We implement a very simple version of the n-body problem. We assume a system with :math:`n` planetary bodies and :math:`1` sun.
+    We implement a very simple version of the n-body problem. We assume a system with :math:`n` planetary bodies and 1 sun.
     All planetary bodies have the same mass. The initial conditions are a matrix with 4 dimensions for every planetary body.
-    These dimensions give us the `(x, y, z, vy)` of the planetary body where the first three coordinates are the :math:`xyz` position
+    These dimensions give us the :math:`(x, y, z, vy)` of the planetary body where the first three coordinates are the :math:`xyz`-position
     and the last coordinate :math:`vy` is the :math:`y` velocity. For simplicity, this is the only component of velocity that you can specify.
     So if we wanted 5 planetary bodies, then our latent dimension would be :math:`5 \times 4 = 20`.
 
@@ -38,6 +38,14 @@ class NBodySystem(SimpleSystem):
     >>> x = system.make_data(x0, timesteps=timesteps)
 
     .. image:: ../_images/santi.png
+
+    >>> from dynadojo.challenges import FixedComplexity
+    >>> from dynadojo.baselines.dnn import DNN
+    >>> challenge = FixedComplexity(l=4, e=None, t=10, N=[3, 5, 10], reps=3, system_cls=NBodySystem, test_examples=1, test_timesteps=5)
+    >>> data = challenge.evaluate(algo_cls=DNN)
+    >>> challenge.plot(data)
+
+    .. image:: ../_images/nbody_fixed_complexity.png
     """
     def __init__(self, latent_dim=4, embed_dim=4, mass=10e-3, plot_data=False,
                  IND_range=(-1, 1), OOD_range=(-1, 1),
