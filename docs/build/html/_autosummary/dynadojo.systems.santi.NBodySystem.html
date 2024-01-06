@@ -428,9 +428,9 @@
 <p>N-Body system.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>We implement a very simple version of the n-body problem. We assume a system with <span class="math notranslate nohighlight">\(n\)</span> planetary bodies and <span class="math notranslate nohighlight">\(1\)</span> sun.
+<p>We implement a very simple version of the n-body problem. We assume a system with <span class="math notranslate nohighlight">\(n\)</span> planetary bodies and 1 sun.
 All planetary bodies have the same mass. The initial conditions are a matrix with 4 dimensions for every planetary body.
-These dimensions give us the <cite>(x, y, z, vy)</cite> of the planetary body where the first three coordinates are the <span class="math notranslate nohighlight">\(xyz\)</span> position
+These dimensions give us the <span class="math notranslate nohighlight">\((x, y, z, vy)\)</span> of the planetary body where the first three coordinates are the <span class="math notranslate nohighlight">\(xyz\)</span>-position
 and the last coordinate <span class="math notranslate nohighlight">\(vy\)</span> is the <span class="math notranslate nohighlight">\(y\)</span> velocity. For simplicity, this is the only component of velocity that you can specify.
 So if we wanted 5 planetary bodies, then our latent dimension would be <span class="math notranslate nohighlight">\(5 \times 4 = 20\)</span>.</p>
 </div>
@@ -447,6 +447,14 @@ So if we wanted 5 planetary bodies, then our latent dimension would be <span cla
 </pre></div>
 </div>
 <img alt="../_images/santi.png" src="../_images/santi.png" />
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dynadojo.challenges</span> <span class="kn">import</span> <span class="n">FixedComplexity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dynadojo.baselines.dnn</span> <span class="kn">import</span> <span class="n">DNN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">challenge</span> <span class="o">=</span> <span class="n">FixedComplexity</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">reps</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">system_cls</span><span class="o">=</span><span class="n">NBodySystem</span><span class="p">,</span> <span class="n">test_examples</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test_timesteps</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">challenge</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">algo_cls</span><span class="o">=</span><span class="n">DNN</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">challenge</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/nbody_fixed_complexity.png" src="../_images/nbody_fixed_complexity.png" />
 <p class="rubric">Methods</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
