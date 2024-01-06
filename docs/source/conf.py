@@ -87,7 +87,8 @@ html_css_files = [
 
 html_theme = 'furo'
 html_logo = '_static/logo.svg'
-html_favicon = '_static/favicon.ico'
+html_favicon = '_static/dino.svg'
+
 html_theme_options = {
     "light_css_variables": {
         "color-brand-primary": "#2c6213",

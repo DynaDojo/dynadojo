@@ -285,7 +285,7 @@ class Challenge:
             return
 
         # Seed in system_kwargs takes precedence over the seed passed to this function.
-        system = self._system_cls(latent_dim, embed_dim, **{"seed": system_seed, **self._system_kwargs})
+        system = SystemChecker(self._system_cls(latent_dim, embed_dim, **{"seed": system_seed, **self._system_kwargs}))
 
         # Create all data
         test_set = self._gen_testset(system, in_dist=True)
@@ -318,7 +318,7 @@ class Challenge:
             # TODO: fix logging? Should we use a logger?
             ood_error_str = f"{ood_error=:0.3}" if test_ood else "ood_error=NA"
             logging.debug(
-                f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error_str},algo_seed={algo._seed}, sys_seed={system._seed}")
+                f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error_str},algo_seed={algo.seed}, sys_seed={system.seed}")
             Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error,
                                      ood_error=ood_error, duration=duration)
 
@@ -400,7 +400,7 @@ class FixedComplexity(Challenge):
             stats.reset_index()
             stats = pd.merge(total, stats, how="outer")
             print(stats)
-        data = data.dropna(subset=['error', 'ood_error'])
+        # data = data.dropna(subset=['error', 'ood_error'])
         if not latent_dim:
             latent_dim = data["latent_dim"].unique()[0]
         if not data['ood_error'].isnull().any():
@@ -681,8 +681,7 @@ class FixedError(Challenge):
             return
 
         # Seed in system_kwargs takes precedence over the seed passed to this function.
-        system = self._system_cls(latent_dim, embed_dim, **{"seed": system_seed, **self._system_kwargs})
-        system = SystemChecker(system)
+        system = SystemChecker(self._system_cls(latent_dim, embed_dim, **{"seed": system_seed, **self._system_kwargs}))
 
         # generate test set and max control cost
         test_set = self._gen_testset(system, in_dist=True)
@@ -727,7 +726,7 @@ class FixedError(Challenge):
                 if n in memo:
                     return memo[n]
                 start = time.time()
-                model = algo_cls(embed_dim, self._t, max_control_cost, **{"seed": model_seed, **algo_kwargs})
+                model = AlgorithmChecker(algo_cls(embed_dim, self._t, max_control_cost, **{"seed": model_seed, **algo_kwargs}))
                 training_set = get_training_set(n)
                 total_cost = self._fit_model(system, model, training_set, self._t, max_control_cost, fit_kwargs,
                                              act_kwargs, noisy)
