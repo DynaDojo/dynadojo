@@ -35,6 +35,7 @@ release = dynadojo.__version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx_copybutton',  # adds a copy button to code blocks
     'sphinx.ext.mathjax',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',  # Create neat summary tables
