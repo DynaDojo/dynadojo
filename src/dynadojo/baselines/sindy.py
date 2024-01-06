@@ -19,7 +19,7 @@ class SINDy(AbstractAlgorithm):
 
     Note
     -----
-    For an example of how to use SINDy with a challenge, see ``LorenzSystem``.
+    For an example of how to use ``SINDy`` with a challenge, see ``LorenzSystem``.
 
     Example
     --------
