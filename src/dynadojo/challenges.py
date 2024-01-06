@@ -426,8 +426,8 @@ class FixedComplexity(Challenge):
 class FixedTrainSize(Challenge):
     """Challenge where the size of the training set is fixed, the complexity of the system is varied, and the error is measured."""
     def __init__(self, n: int, L: list[int], E: list[int] | int | None, t: int,
-                 max_control_cost_per_dim: int, control_horizons: int,
                  system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int,
+                 max_control_cost_per_dim: int = 0, control_horizons: int = 0,
                  system_kwargs: dict = None,
                  verbose: bool = True):
 

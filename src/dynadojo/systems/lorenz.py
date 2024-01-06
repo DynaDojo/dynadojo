@@ -32,6 +32,14 @@ class LorenzSystem(SimpleSystem):
     >>> plot([x, y], target_dim=min(latent_dim, 3), labels=["in", "out"], max_lines=15)
 
     .. image:: ../_images/lorenz.png
+
+    >>> from dynadojo.challenges import FixedTrainSize
+    >>> from dynadojo.baselines.sindy import SINDy
+    >>> challenge = FixedTrainSize(L=[3, 9, 13, 15], E=None, t=50, n=10, reps=3, system_cls=LorenzSystem, test_examples=1, test_timesteps=50)
+    >>> data = challenge.evaluate(algo_cls=SINDy)
+    >>> challenge.plot(data)
+
+    .. image:: ../_images/lorenz_fixed_train.png
     """
     def __init__(self,
                  latent_dim=3,
