@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath('../../src'))
 # -- Project information -----------------------------------------------------
 
 project = 'DynaDojo'
-copyright = '2023'
+copyright = '2024'
 author = 'Logan Mondal Bhamidipaty, Tommy Bruzzese, Caryn Tran, Rami Ratl Mrad, Max Kanwal '
 
 import dynadojo
