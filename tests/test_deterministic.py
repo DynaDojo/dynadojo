@@ -130,43 +130,43 @@ class TestReproducibilityModel(unittest.TestCase):
     @parameterized.expand(algorithms)
     def test_with_fc(self, algo):
         challenge = FixedComplexity(N=[4], l=4, t=10,
-                                    system_cls=LDSystem, reps=1,
-                                    test_examples=2, test_timesteps=2, verbose=False)
+                                    system_cls=LDSystem, trials=1,
+                                    test_examples=2, test_timesteps=2)
         df1 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 reps_filter=None,
+                                 trials_filter=None,
                                  L_filter=None,
                                  algo_kwargs=None)
         df2 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 reps_filter=None,
+                                 trials_filter=None,
                                  L_filter=None,
                                  algo_kwargs=None)
-        cols = ['rep', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
+        cols = ['trial', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
                 'system_seed', 'algo_seed']
         df1 = df1[cols]
         df2 = df2[cols]
         self.assertEqual(df1, df2)
 
     @parameterized.expand(algorithms)
-    def test_with_reps(self, algo):
+    def test_with_trials(self, algo):
         """
-        Test that running a single rep gives the same results as running multiple reps,
-        when using filters to select a single rep
+        Test that running a single trial gives the same results as running multiple trials,
+        when using filters to select a single trial
         """
         challenge = FixedComplexity(N=[2], l=2, t=3,
-                                    system_cls=LDSystem, reps=2,
-                                    test_examples=2, test_timesteps=2, verbose=False)
+                                    system_cls=LDSystem, trials=2,
+                                    test_examples=2, test_timesteps=2)
         df1 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 reps_filter=[1],
+                                 trials_filter=[1],
                                  L_filter=None,
                                  algo_kwargs=None)
         df2 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 reps_filter=None,
+                                 trials_filter=None,
                                  L_filter=None,
                                  algo_kwargs=None)
-        cols = ['rep', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
+        cols = ['trial', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
                 'system_seed', 'algo_seed']
         df1 = df1[cols]
-        df2 = df2[cols].loc[df2['rep'] == 1]
+        df2 = df2[cols].loc[df2['trial'] == 1]
         self.assertEqual(df1, df2)
 
     """
@@ -181,12 +181,12 @@ class TestReproducibilityModel(unittest.TestCase):
         error = 11.755511444519389
         ood_error = 40.871378000678895
 
-        challenge = FixedComplexity(N=[n], l=l, e=e, t=t, reps=1,
-            test_examples=50, test_timesteps=50, verbose=False, 
+        challenge = FixedComplexity(N=[n], l=l, e=e, t=t, trials=1,
+            test_examples=50, test_timesteps=50, 
             system_cls=LDSystem, system_kwargs={'seed':system_seed})
 
         df1 = challenge.evaluate(DNN, noisy=True, ood=ood,
-                        reps_filter=None, 
+                        trials_filter=None, 
                         L_filter = None,
                         model_kwargs={'seed':model_seed})
 
@@ -205,13 +205,13 @@ class TestReproducibilityModel(unittest.TestCase):
         error = 1.1618431384700412e-07
         ood_error = 1.1343960080211431e-07
 
-        challenge = FixedTrainSize(n=n, L=[l], E=None, t=t, reps=1,
-            test_examples=50, test_timesteps=50, verbose=True, 
+        challenge = FixedTrainSize(n=n, L=[l], E=None, t=t, trials=1,
+            test_examples=50, test_timesteps=50, 
             max_control_cost_per_dim=1, control_horizons=0,
             system_cls=LDSystem, system_kwargs={'seed':system_seed})
 
         df1 = challenge.evaluate(LinearRegression, noisy=True, ood=ood,
-                        reps_filter=None, 
+                        trials_filter=None, 
                         L_filter = None,
                         model_kwargs={'seed':model_seed})
 

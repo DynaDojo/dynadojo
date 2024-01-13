@@ -35,7 +35,7 @@ class LorenzSystem(SimpleSystem):
 
     >>> from dynadojo.challenges import FixedTrainSize
     >>> from dynadojo.baselines.sindy import SINDy
-    >>> challenge = FixedTrainSize(L=[3, 9, 13, 15], E=None, t=50, n=10, reps=3, system_cls=LorenzSystem, test_examples=1, test_timesteps=50)
+    >>> challenge = FixedTrainSize(L=[3, 9, 13, 15], E=None, t=50, n=10, trials=3, system_cls=LorenzSystem, test_examples=1, test_timesteps=50)
     >>> data = challenge.evaluate(algo_cls=SINDy)
     >>> challenge.plot(data)
 

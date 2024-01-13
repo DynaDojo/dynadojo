@@ -31,7 +31,7 @@ class CASystem(AbstractSystem):
 
     >>> from dynadojo.challenges import FixedComplexity
     >>> from dynadojo.baselines.cnn import CNN
-    >>> challenge = FixedComplexity(l=2, e=64, t=10, N=[10, 20, 30], reps=3, system_cls=CASystem, test_examples=1, test_timesteps=5)
+    >>> challenge = FixedComplexity(l=2, e=64, t=10, N=[10, 20, 30], trials=3, system_cls=CASystem, test_examples=1, test_timesteps=5)
     >>> data = challenge.evaluate(algo_cls=CNN)
     >>> challenge.plot(data)
 

@@ -62,8 +62,8 @@ def plot_target_error(data, xcol, ycol,
     filtered = data[data["n_target"] != -1]
     filtered = data[data["n_target"] != np.inf]
     filtered = data[data[error_col] <= target_error]
-    # for each rep in the x dim, get the lowest y that was successful
-    successes = filtered.loc[filtered.groupby(["id", "rep", xcol])[ycol].idxmin()].reset_index(drop=True)
+    # for each trial in the x dim, get the lowest y that was successful
+    successes = filtered.loc[filtered.groupby(["id", "trial", xcol])[ycol].idxmin()].reset_index(drop=True)
 
     assert (len(successes) > 0)
     return plot_metric(successes, xcol, ycol, None, xlabel, ylabel, hue, log, estimator, errorbar, **kwargs)
