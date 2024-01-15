@@ -25,12 +25,14 @@ class OpinionSystem(AbstractSystem):
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         x0 = []
         for _ in range(n):
+           
             if in_dist:
-                x0.append({node: np.random.uniform(
-                    self.IND_range[0], self.IND_range[1]) for node in range(self.latent_dim)})
+                x0.append((self._rng.uniform(self.IND_range[0], self.IND_range[1], (self.latent_dim))))
+
             else:
-                x0.append({node: np.random.uniform(
-                    self.OOD_range[0], self.OOD_range[1]) for node in range(self.latent_dim)})
+                x0.append((self._rng.uniform(self.OOD_range[0], self.OOD_range[1], (self.latent_dim))))
+        
+        x0 = np.array(x0)
         return x0
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
@@ -43,7 +45,12 @@ class OpinionSystem(AbstractSystem):
             noise = np.zeros((self.latent_dim))
 
         def dynamics(x0):
-            self.create_model(x0)
+            x0_dict = {}
+            for idx, x in enumerate(x0):
+                x0_dict[idx] = x
+           
+            self.create_model(x0_dict)
+
 
             iterations = self.model.iteration_bunch(timesteps)
             dX = []
@@ -67,7 +74,7 @@ class OpinionSystem(AbstractSystem):
                 sol = dynamics(x0)
                 data.append(sol)
 
-        data = np.transpose(data, axes=(0, 2, 1))
+        data = np.array(data)
         return data
 
     def calc_error(self, x, y) -> float:

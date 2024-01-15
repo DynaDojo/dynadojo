@@ -12,14 +12,13 @@ def plot(grid: list[np.ndarray], target_dim: int = 3, max_lines=MAX_LINES, datal
     for idx, dataset in enumerate(grid):
         ax = fig.add_subplot(1, len(grid), posidx)
 
-        for i in range(len(dataset[0])):
-            ydata = dataset[0][i]
-            if(datalabels):
-                ax.plot(ydata, label=datalabels[i])
-                ax.legend()
-            else:
-                ax.plot(ydata)
-            ax.set_title(gridlabels[idx])
+        ydata = dataset[0]
+        if(datalabels):
+            ax.plot(ydata, label=datalabels)
+            ax.legend()
+        else:
+            ax.plot(ydata)
+        ax.set_title(gridlabels[idx])
         posidx += 1
 
     plt.show()

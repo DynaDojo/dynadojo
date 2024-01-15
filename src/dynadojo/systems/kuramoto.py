@@ -4,6 +4,9 @@
 import numpy as np
 from scipy.integrate import ode
 
+import numpy as np
+import scipy as sp
+
 from ..abstractions import AbstractSystem
 
 """
@@ -26,7 +29,7 @@ self.dt, controls the step size between 0 - timesteps
 
 class KuramotoSystem(AbstractSystem):
 
-    def __init__(self, latent_dim=2, embed_dim=2,
+    def __init__(self, latent_dim, embed_dim,
                  noise_scale=0.25,
                  IND_range=(0, 10),
                  OOD_range=(10, 20),
@@ -76,8 +79,7 @@ class KuramotoSystem(AbstractSystem):
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         data = []
-        t0, t1, dt = 0, timesteps, self.dt
-        T = np.arange(t0, t1, dt)
+        T = np.arange(0, timesteps * self.dt, self.dt)
 
         def kuramoto_ODE(t, y, arg):
             w, k, noisy = arg
@@ -93,10 +95,6 @@ class KuramotoSystem(AbstractSystem):
             return phase
 
         def solve(t, x0, U):
-            dt = t[1]-t[0]
-            if self.dt != dt:
-                self.dt = dt
-
             kODE = ode(kuramoto_ODE)
             kODE.set_integrator("dopri5")
 
@@ -123,10 +121,11 @@ class KuramotoSystem(AbstractSystem):
 
         else:
             for x0 in init_conds:
-                U = np.zeros((int(timesteps/self.dt), self.latent_dim))
+                U = np.zeros((timesteps, self.latent_dim))
                 sol = solve(T, x0, U)
                 data.append(sol)
-
+        
+       
         data = np.transpose(np.array(data), axes=(0, 2, 1))
         return data
 

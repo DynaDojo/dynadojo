@@ -1,6 +1,7 @@
 import numpy as np
 
 from ...abstractions import AbstractSystem
+from collections import Counter
 
 
 class EpidemicSystem(AbstractSystem):
@@ -25,17 +26,50 @@ class EpidemicSystem(AbstractSystem):
 
     def create_model(self, x0):
         return
+    
 
+    def create_randomized_dict(self, counts):
+        # Create a list to hold (key, value) pairs
+        pairs = []
+        
+        # Populate the list with the correct number of (key, value) pairs for each value
+        for value, count in enumerate(counts):
+            for _ in range(count):
+                pairs.append((len(pairs), value))
+
+       
+        # Convert the list of pairs into a dictionary
+        randomized_dict = dict(pairs)
+
+        return randomized_dict
+
+    def count_vals(self, input_array):
+        # Count the occurrences of each value in the array
+        value_counts = Counter(input_array)
+        
+        # Convert the counts to a list
+        counts_list = [value_counts[value] for value in sorted(value_counts)]
+
+        return counts_list
+
+   
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
         x0 = []
+        grouped_x0 = []
         for _ in range(n):
             if in_dist:
-                x0.append({node: int(np.random.uniform(
-                    self.IND_range[0], self.IND_range[1])) for node in range(self.latent_dim)})
-            else:
-                x0.append({node: int(np.random.uniform(
-                    self.OOD_range[0], self.OOD_range[1])) for node in range(self.latent_dim)})
+                x0.append(np.floor(self._rng.uniform(self.IND_range[0], self.IND_range[1], (self.latent_dim))).astype(int))
 
+            else:
+                x0.append(np.floor(self._rng.uniform(self.OOD_range[0], self.OOD_range[1], (self.latent_dim))).astype(int))
+        
+        if self.group_status:
+            for i in range(n):
+                grouped_x0.append(self.count_vals(x0[i]))
+            grouped_x0 = np.array(grouped_x0)
+            return grouped_x0 
+  
+        x0 = np.array(x0)
         return x0 
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
@@ -48,7 +82,15 @@ class EpidemicSystem(AbstractSystem):
             noise = np.zeros((self.latent_dim))
 
         def dynamics(x0):
-            self.create_model(x0)
+            x0_dict = {}
+            if self.group_status:
+                x0_dict = self.create_randomized_dict(x0)
+
+            else:
+                for idx, x in enumerate(x0):
+                    x0_dict[idx] = x
+           
+            self.create_model(x0_dict)
 
             iterations = self.model.iteration_bunch(timesteps)
             dX = []
@@ -76,7 +118,7 @@ class EpidemicSystem(AbstractSystem):
                 sol = dynamics(x0)
                 data.append(sol)
 
-        data = np.transpose(data, axes=(0, 2, 1))
+        data = np.array(data)
         return data
 
     def calc_error(self, x, y) -> float:

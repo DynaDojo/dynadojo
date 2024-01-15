@@ -87,6 +87,7 @@ class CompetitiveLVSystem(AbstractSystem):
                 x0.append(number)
             all.append(x0)
 
+        all = np.array(all)
         return all
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
@@ -109,6 +110,7 @@ class CompetitiveLVSystem(AbstractSystem):
             for x0, u in zip(init_conds, control):
                 sol = solve_ivp(dynamics, t_span=[
                                 0, timesteps], y0=x0, t_eval=time, dense_output=True, args=(u,))
+                data.append(sol.y)
 
         else:
             for x0 in init_conds:
