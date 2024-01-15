@@ -27,7 +27,7 @@ fc_challenge_params_dict = {
     "default" : {   "l" : 10, 
                     "N" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
                     "t" : 50,
-                    "reps" : 100,
+                    "trials" : 100,
                     "test_examples" : 50,
                     "test_timesteps" : 50,
                     "e" : None,
@@ -86,7 +86,7 @@ fc_challenge_params_dict = {
             "l" : 10,  
             "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
             "t" : 50,
-            "reps" : 30
+            "trials" : 30
         },
         "lr" : {
             "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
@@ -116,7 +116,7 @@ fts_challenge_params_dict = {
     "default" : {   "L" : [5, 10, 20, 30, 50, 100], 
                     "n" : 100,
                     "t" : 20,
-                    "reps" : 100,
+                    "trials" : 100,
                     "test_examples" : 50,
                     "test_timesteps" : 50,
                     "E" : None,
@@ -148,24 +148,24 @@ fts_challenge_params_dict = {
                 },
                 "sindy" : {
                     "L" : [3, 5, 7, 9, 11],
-                    "reps" : 50,
+                    "trials" : 50,
                     "n" : 1000,
                 },      
                 "lr_small" : {
                     "L" : [3, 5, 7, 9, 11],
-                    "reps" : 50,
+                    "trials" : 50,
                     "n" : 1000,
                 }
     },
     "lorenz": {
             "sindy" : {
                     "L" : [3, 5, 7, 9, 11],
-                    "reps" : 50,
+                    "trials" : 50,
                     "n" : 1000,
                 },
             "lr" : {
                     "L" : [3, 5, 7, 9, 11],
-                    "reps" : 50,
+                    "trials" : 50,
                     "n" : 1000,
             }
     }
@@ -175,7 +175,7 @@ fe_challenge_params_dict = {
     "default" : {   "L" : [5, 10, 20, 30, 50, 100],
                     "n_starts" :  [1000]*6, #same length as L 
                     "t" : 50,
-                    "reps" : 100,
+                    "trials" : 100,
                     "target_error": 1e-5,
                     "E" : None, #same length as L
                     "test_examples" : 500,
@@ -245,7 +245,7 @@ fe_challenge_params_dict = {
                     "n_window_density": 0.6,
                     "n_min": 3,
                     "n_max" : 1e5,
-                    "reps": 100,
+                    "trials": 100,
                 },
                 "dnn_test" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
@@ -255,7 +255,7 @@ fe_challenge_params_dict = {
                     "n_precision": .2,
                     "n_window_density": 0.25,
                     "n_min": 3,
-                    "reps":3,
+                    "trials":3,
                 }
     }
 }
@@ -295,7 +295,7 @@ def _get_params(s, m, challenge_cls: type[Challenge]=FixedComplexity):
     challenge_params = { **default_params, **s_default_params, **s_m_base_params, **s_m_params }
     eval_params = { **default_eval_params, **s_default_eval_params, **s_m_base_eval_params,  **s_m_eval_params }
     challenge_params["evaluate"] = eval_params
-    assert ("L" in challenge_params or "l" in challenge_params) and "reps" in challenge_params, "must specify L (or l) and reps in challenge parameters"
+    assert ("L" in challenge_params or "l" in challenge_params) and "trials" in challenge_params, "must specify L (or l) and trials in challenge parameters"
 
     return challenge_params
 

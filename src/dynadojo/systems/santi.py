@@ -41,7 +41,7 @@ class NBodySystem(SimpleSystem):
 
     >>> from dynadojo.challenges import FixedComplexity
     >>> from dynadojo.baselines.dnn import DNN
-    >>> challenge = FixedComplexity(l=4, e=None, t=10, N=[3, 5, 10], reps=3, system_cls=NBodySystem, test_examples=1, test_timesteps=5)
+    >>> challenge = FixedComplexity(l=4, e=None, t=10, N=[3, 5, 10], trials=3, system_cls=NBodySystem, test_examples=1, test_timesteps=5)
     >>> data = challenge.evaluate(algo_cls=DNN)
     >>> challenge.plot(data)
 

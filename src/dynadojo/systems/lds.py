@@ -33,7 +33,7 @@ class LDSystem(SimpleSystem):
 
     >>> from dynadojo.baselines.dmd import DMD
     >>> from dynadojo.challenges import FixedTrainSize
-    >>> challenge = FixedTrainSize(L=[2, 3, 4, 5], E=None, t=50, n=10, reps=10, system_cls=LDSystem, test_examples=1, test_timesteps=50, max_control_cost_per_dim=0, control_horizons=0)
+    >>> challenge = FixedTrainSize(L=[2, 3, 4, 5], E=None, t=50, n=10, trials=10, system_cls=LDSystem, test_examples=1, test_timesteps=50, max_control_cost_per_dim=0, control_horizons=0)
     >>> data = challenge.evaluate(algo_cls=DMD)
     >>> challenge.plot(data)
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -J dynadojo # A single job name for the array
-#SBATCH -n 2 # Four Cores
+#SBATCH -n 2 # n Cores
 #SBATCH -N 1 # All cores on one machine
 #SBATCH -p normal # Partition name
 #SBATCH --mem 4000 # Memory (4Gb)
@@ -13,8 +13,9 @@
 CHALLENGE=$1
 SYSTEM=$2
 MODEL=$3
+SINGULARITY_IMAGE_LOCATION=$GROUP_HOME/$USER/simg
 
-# if test -f $GROUP_HOME/$USER/simg/dynadojo; then
+# if test -f $SINGULARITY_IMAGE_LOCATION/dynadojo.sif; then
 #   echo “docker image exists”
 # else
 #   singularity pull --tmpdir=/global/scratch/users/$USER/tmp sinergym.sif docker://doseokjang/sinergym:savio

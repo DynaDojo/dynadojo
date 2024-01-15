@@ -42,7 +42,7 @@ challenge = FixedComplexity(
     control_horizons=0,
     max_control_cost_per_dim=0,
     system_cls=LDSSystem,
-    reps=10,
+    trials=10,
     test_examples=50,
     test_timesteps=50,
 )

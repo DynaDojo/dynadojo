@@ -69,8 +69,8 @@ CMD ["python", "-m", "experiments"]
 # Build image with: 
 #       docker build --target=runtime --tag=dynadojo .
 # To build for multiple arch: 
-#       Create buildx driver image:         docker buildx create --use
-#       Build & Load to test locally:       docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=dynadojo --load .
+#       First, Switch to different driver:  docker buildx create --use
+#       Then, Build & Load to test locally: docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=dynadojo --load .
 #       Or Build & Push to dockerhub:       docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=[username]/dynadojo --push .
 
 

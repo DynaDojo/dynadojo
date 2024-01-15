@@ -1,5 +1,5 @@
 """
-Contains a `Challenge` class and several commonly used subclasses. The `Challenge` class is a stand-alone class that
+Contains a `ScalingChallenge` class and several commonly used subclasses. The `ScalingChallenge` class is a stand-alone class that
 can also be extended.
 """
 import itertools
@@ -10,13 +10,16 @@ import time
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
+import functools
 
-from .abstractions import AbstractSystem, AbstractAlgorithm
+from .abstractions import AbstractSystem, AbstractAlgorithm, AbstractChallenge
 from .wrappers import AlgorithmChecker, SystemChecker
 from .utils.plotting import plot_target_error, plot_metric
 
 
-class Challenge:
+
+class ScalingChallenge(AbstractChallenge):
+
     """Challenge class used to benchmark algorithms and systems."""
     def __init__(self,
                  N: list[int],
@@ -26,11 +29,10 @@ class Challenge:
                  max_control_cost_per_dim: int,
                  control_horizons: int,
                  system_cls: type[AbstractSystem],
-                 reps: int,
+                 trials: int,
                  test_examples: int,
                  test_timesteps: int,
-                 system_kwargs: dict | None = None,
-                 verbose: bool = True,
+                 system_kwargs: dict | None = None
                  ):
         """
         Initialize the class.
@@ -54,16 +56,14 @@ class Challenge:
             Number of times to generate training data with control.
         system_cls : type[AbstractSystem]
             Class constructor (NOT instance) for a concrete system.
-        reps : int
-            Number of times to repeat each experiment.
+        trials : int
+            Number of trials for each run.
         test_examples : int
             Test size.
         test_timesteps : int
             Test timesteps.
         system_kwargs : dict or None, optional
             Additional keyword arguments for the system constructor.
-        verbose : bool, optional
-            Whether to print verbose output. Defaults to True.
         """
         assert control_horizons >= 0
 
@@ -76,26 +76,43 @@ class Challenge:
         self._system_cls = system_cls
         self._system_kwargs = system_kwargs or {}
         self._control_horizons = control_horizons
-        self._reps = reps
+        self._trials = trials
         self._test_examples = test_examples
         self._test_timesteps = test_timesteps
-        self._verbose = verbose
+
+        # Sets embedded dim array when self._E is None, constant, or an array
+        if self._E is None:
+            E = self._L
+        elif isinstance(self._E, int):
+            assert self._E >= max(self._L), "E must be greater than or equal to max(L)."
+            E = [self._E] * len(self._L)
+        else:
+            assert isinstance(self._E, list), "E must of type List[int], int, or None."
+            assert len(self._E) != len(self._L), "E (type List[int]) and L must be of the same length."
+            E = self._E
+
+        super().__init__(
+            sweep_params = {
+                "latent_dim": L,
+                "embed_dim": E,
+            }
+        )
 
     def evaluate(self,
-                 algo_cls: type[AbstractAlgorithm],
-                 algo_kwargs: dict | None = None,
-                 fit_kwargs: dict | None = None,
-                 act_kwargs: dict | None = None,
-                 ood=False,
-                 noisy=False,
-                 id=None,
-                 num_parallel_cpu=-1,
-                 seed=None,
-                 # Filters which reps and L to evaluate. If None, no filtering is performed.
-                 # We recommend using these filters to parallelize evaluation across multiple machines, while retaining reproducibility.
-                 reps_filter: list[int] = None,
-                 L_filter: list[int] | None = None,
-                 rep_l_filter: list[tuple[int, int]] | None = None,
+                    algo_cls: type[AbstractAlgorithm],
+                    algo_kwargs: dict | None = None,
+                    fit_kwargs: dict | None = None,
+                    act_kwargs: dict | None = None,
+                    ood=False,
+                    noisy=False,
+                    id=None, 
+                    num_parallel_cpu=-1,
+                    seed=None,
+                    # Filters which trials and L to evaluate. If None, no filtering is performed.
+                    # We recommend using these filters to parallelize evaluation across multiple machines, while retaining reproducibility.
+                    trials_filter: list[int] = None,
+                    L_filter: list[int] | None = None,
+                    trial_l_filter: list[tuple[int, int]] | None = None,
                  ) -> pd.DataFrame:
         """
         Evaluates an algorithm class (NOT an instance) on a dynamical system over a set of experimental parameters.
@@ -123,13 +140,13 @@ class Challenge:
         seed : int or None, optional
             Seed to seed the random number generator for seeding systems and algorithms. Defaults to None.
             Is overridden by seeds in system_kwargs or algo_kwargs.
-        reps_filter : list of int or None, optional
-            If provided, will only evaluate system_runs with the given rep_ids. Defaults to None, which evaluates all repetitions.
+        trials_filter : list of int or None, optional
+            If provided, will only evaluate system_runs with the given trials. Defaults to None, which evaluates all trials.
         L_filter : list of int or None, optional
             If provided, will only evaluate system_runs with the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
-        rep_l_filter : list of tuple(int, int) or None, optional
-            If provided, will only evaluate system_runs with the given (rep_id, latent_dim) pairs.
-            Defaults to None, which evaluates all (rep_id, latent_dim) pairs.
+        trial_l_filter : list of tuple(int, int) or None, optional
+            If provided, will only evaluate system_runs with the given (trial, latent_dim) pairs.
+            Defaults to None, which evaluates all (trial, latent_dim) pairs.
 
         Returns
         -------
@@ -140,71 +157,33 @@ class Challenge:
         fit_kwargs = fit_kwargs or {}
         act_kwargs = act_kwargs or {}
 
-        # Sets embedded dim array when self._E is None, constant, or an array
-        if self._E is None:
-            E = self._L
-        elif isinstance(self._E, int):
-            assert self._E >= max(self._L), "E must be greater than or equal to max(L)."
-            E = [self._E] * len(self._L)
-        else:
-            assert isinstance(self._E, list), "E must of type List[int], int, or None."
-            assert len(self._E) != len(self._L), "E (type List[int]) and L must be of the same length."
-            E = self._E
-
-        # Handling which reps to evaluate.
-        # First, making seeds for all reps
-        if seed:
-            rng = np.random.default_rng(seed)
-        else:
-            rng = np.random.default_rng()
-        # We have to have the algo seeded so that it is the same for each iteration of training in system_run (which may vary/search through N)
-        system_seeds = rng.integers(0, 2 ** 32, size=self._reps * len(self._L))
-        algo_seeds = rng.integers(0, 2 ** 32, size=self._reps * len(self._L))
-
-        # Second creating all system_run arguments (rep_id, latent_dim, embed_dim, system_seed, algo_seed)
-        system_run_args = zip(itertools.product(range(self._reps), zip(self._L, E)), system_seeds, algo_seeds)
-        # flatten system_args to a list of tuples
-        system_run_args = [(r, l, e, system_seed, algo_seed) for (r, (l, e)), system_seed, algo_seed in
-                           system_run_args]
-        # Third, figuring out which reps to run based on specified subset of reps
-        if reps_filter is not None and len(reps_filter) > 0:
-            system_run_args = [args for args in system_run_args if args[0] in reps_filter]
-        # Fourth, figuring out which systems to run based on specified subset of L
+        converted_filter = []
+        # First, figuring out which trials to do based on specified subset of trials
+        if trials_filter is not None and len(trials_filter) > 0:
+            converted_filter += [{"trial": t} for t in trials_filter]
+        # Second, figuring out which systems to do based on specified subset of L
         if L_filter is not None and len(L_filter) > 0:
-            system_run_args = [args for args in system_run_args if args[1] in L_filter]
-        # Fifth, figuring out which systems to run based on specified subset of (rep_id, L)
-        if rep_l_filter is not None and len(rep_l_filter) > 0:
-            system_run_args = [args for args in system_run_args if (args[0], args[1]) in rep_l_filter]
+            converted_filter += [{"latent_dim": l} for l in L_filter]
+        # Third, figuring out which systems to do based on specified subset of (trial, L)
+        if trial_l_filter is not None and len(trial_l_filter) > 0:
+            converted_filter += [{"trial": t, "latent_dim": l} for t, l in trial_l_filter]
 
-        fixed_run_args = {
-            # **kwargs, #ToDo: consider adding extra kwargs to pass to system_run
-            "algo_cls": algo_cls,
-            "algo_kwargs": algo_kwargs,
-            "fit_kwargs": fit_kwargs,
-            "act_kwargs": act_kwargs,
-            "noisy": noisy,
-            "test_ood": ood
-        }
+        if not id:
+            id = algo_cls.__name__
 
-        if num_parallel_cpu == 0:
-            logging.info(f"Running systems sequentially. {num_parallel_cpu=}")
-            data = []
-            for rep_id, l, e, system_seed, algo_seed in system_run_args:
-                data.append(
-                    self.system_run(rep_id, l, e, **fixed_run_args, system_seed=system_seed, algo_seed=algo_seed))
-
-        else:
-            logging.warning(f"Running systems in parallel. {num_parallel_cpu=}")
-            # Run systems in parallel
-            data = Parallel(n_jobs=num_parallel_cpu, timeout=1e6)(
-                delayed(self.system_run)(rep_id, l, e, **fixed_run_args, system_seed=system_seed, algo_seed=algo_seed)
-                for rep_id, l, e, system_seed, algo_seed in system_run_args)
-
-        if data:
-            data = pd.concat(data)
-            data["id"] = id or next(self._id)
-            data["control_horizon"] = self._control_horizons
-        return data
+        return super().evaluate(
+            seed = seed,
+            trials = self._trials,
+            num_parallel_cpu = num_parallel_cpu,
+            jobs_filter = converted_filter,
+            algo_cls = algo_cls,        #to pass to execute_job
+            algo_kwargs = algo_kwargs,  #to pass to execute_job
+            fit_kwargs = fit_kwargs,    #to pass to execute_job
+            act_kwargs = act_kwargs,    #to pass to execute_job
+            noisy = noisy,              #to pass to execute_job
+            ood = ood,                  #to pass to execute_job
+            id = id                     #to pass to execute_job
+        )
 
     def _gen_trainset(self, system, n: int, timesteps: int, noisy=False):
         train_init_conds = system.make_init_conds(n)
@@ -231,9 +210,10 @@ class Challenge:
         return total_cost
 
     @staticmethod
-    def _append_result(result, rep_id, n, latent_dim, embed_dim, timesteps, total_cost, error, ood_error=None,
+    def _append_result(job_id, result, trial, n, latent_dim, embed_dim, timesteps, total_cost, error, ood_error=None,
                        duration=None):
-        result['rep'].append(rep_id)
+        result['job_id'].append(job_id)
+        result['trial'].append(trial)
         result['n'].append(n)
         result['latent_dim'].append(latent_dim)
         result['embed_dim'].append(embed_dim)
@@ -246,7 +226,8 @@ class Challenge:
     @staticmethod
     def _init_result_dict():
         result = {k: [] for k in [
-            "rep",
+            "job_id",
+            "trial", 
             "latent_dim",
             "embed_dim",
             "timesteps",
@@ -257,19 +238,22 @@ class Challenge:
             "duration"]}
         return result
 
-    def system_run(self,
-                   rep_id,
-                   latent_dim,
-                   embed_dim,
-                   algo_cls: type[AbstractAlgorithm],
-                   algo_kwargs: dict = None,
-                   fit_kwargs: dict = None,
-                   act_kwargs: dict = None,
-                   noisy: bool = False,
-                   test_ood: bool = False,
-                   system_seed=None,
-                   algo_seed=None,
-                   **kwargs
+    def execute_job(
+                    self,
+                    job_id : int,
+                    trial : int = None,
+                    system_seed : int = 0, 
+                    algo_seed : int = 0,
+                   latent_dim : int = None,      #from sweep_params
+                   embed_dim : int = None,       #from sweep_params
+                   algo_cls: type[AbstractAlgorithm] = None,    #from evaluate
+                   algo_kwargs: dict = None,                    #from evaluate
+                   fit_kwargs: dict = None,                     #from evaluate
+                   act_kwargs: dict = None,                     #from evaluate
+                   noisy: bool = False,                         #from evaluate
+                   ood: bool = False,                           #from evaluate
+                   id: str = None,                              #from evaluate
+                   **kwargs                      #extra params from evaluate
                    ):
         """
         For a given system latent dimension and embedding dimension, instantiates system and for a specific N,
@@ -279,9 +263,9 @@ class Challenge:
         -----
         The seed in algo_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
         """
-        result = Challenge._init_result_dict()
+        result = ScalingChallenge._init_result_dict()
 
-        if embed_dim < latent_dim:
+        if not embed_dim or not latent_dim or embed_dim < latent_dim:
             return
 
         # Seed in system_kwargs takes precedence over the seed passed to this function.
@@ -310,17 +294,16 @@ class Challenge:
             pred = algo.predict(test_set[:, 0], self._test_timesteps)
             error = system.calc_error(pred, test_set)
             ood_error = None
-            if test_ood:
+            if ood: 
                 ood_pred = algo.predict(ood_test_set[:, 0], self._test_timesteps)
                 ood_error = system.calc_error(ood_pred, ood_test_set)
             end = time.time()
             duration = end - start
-            # TODO: fix logging? Should we use a logger?
-            ood_error_str = f"{ood_error=:0.3}" if test_ood else "ood_error=NA"
+            ood_error_str = f"{ood_error=:0.3}" if ood else "ood_error=NA"
             logging.debug(
-                f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error_str},algo_seed={algo.seed}, sys_seed={system.seed}")
-            Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error,
-                                     ood_error=ood_error, duration=duration)
+                f"{job_id=} | {trial=}, {latent_dim=}, {embed_dim=}, {n=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {ood_error_str},algo_seed={algo.seed}, sys_seed={system.seed}")
+            ScalingChallenge._append_result(
+                job_id, result, trial, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error=ood_error, duration=duration)
 
         # On each subset of the training set, we retrain the algo from scratch (initialized with the same random seed).
         # If you don't, then # of training epochs will scale with N. This would confound the effect of training set size with training time.
@@ -330,24 +313,24 @@ class Challenge:
         data = pd.DataFrame(result)
         data['system_seed'] = system_seed
         data['algo_seed'] = algo_seed
+        data['id'] = id
         return data
 
 
-class FixedComplexity(Challenge):
+class FixedComplexity(ScalingChallenge):
     """Challenge where complexity is fixed, training set size is varied, and error is measured."""
     def __init__(self,
                  l: int,
                  t: int,
                  N: list[int],
                  system_cls: type[AbstractSystem],
-                 reps: int,
+                 trials: int,
                  test_examples: int,
                  test_timesteps: int,
                  e: int = None,
                  max_control_cost_per_dim: int = 1,
                  control_horizons: int = 0,
-                 system_kwargs: dict = None,
-                 verbose: bool = True):
+                 system_kwargs: dict = None):
         """
         Initialize the class.
 
@@ -361,8 +344,8 @@ class FixedComplexity(Challenge):
             List of training set sizes.
         system_cls : type[AbstractSystem]
             System class.
-        reps : int
-            Number of repetitions.
+        trials : int
+            Number of trials for each run/training set size.
         test_examples : int
             Number of test examples.
         test_timesteps : int
@@ -379,7 +362,7 @@ class FixedComplexity(Challenge):
         L = [l]
         E = e
         super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
-                         system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs, verbose=verbose)
+                         system_cls, trials, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     @staticmethod
     def plot(data, latent_dim: int = None, embedding_dim: int = None, show: bool = True, show_stats: bool = False):
@@ -389,14 +372,14 @@ class FixedComplexity(Challenge):
         matplotlib.axes.Axes
             A plot of the data.
         """
-        if show_stats:
+        if show_stats: #TODO add column names...
             # get the n_target for each latent_dim
-            stats = data[['rep', 'latent_dim', 'embed_dim', 'n', 'error', 'ood_error']]
+            stats = data[['trial', 'latent_dim', 'embed_dim', 'n', 'error', 'ood_error']]
             stats = stats.drop_duplicates()
-            total = stats.groupby(['latent_dim', 'embed_dim', 'n'])['rep'].count().reset_index(name="total")
+            total = stats.groupby(['latent_dim', 'embed_dim', 'n'])['trial'].count().reset_index(name="total")
             total.reset_index()
             stats = stats.dropna(subset=['error', 'ood_error'])
-            stats = stats.groupby(['latent_dim', 'embed_dim', 'n'])['rep'].count().reset_index(name="plotted")
+            stats = stats.groupby(['latent_dim', 'embed_dim', 'n'])['trial'].count().reset_index(name="plotted")
             stats.reset_index()
             stats = pd.merge(total, stats, how="outer")
             print(stats)
@@ -422,15 +405,40 @@ class FixedComplexity(Challenge):
             plt.show()
         return ax
 
-
-class FixedTrainSize(Challenge):
+class FixedTrainSize(ScalingChallenge):
     """Challenge where the size of the training set is fixed, the complexity of the system is varied, and the error is measured."""
     def __init__(self, n: int, L: list[int], E: list[int] | int | None, t: int,
-                 system_cls: type[AbstractSystem], reps: int, test_examples: int, test_timesteps: int,
+                 system_cls: type[AbstractSystem], trials: int, test_examples: int, test_timesteps: int,
                  max_control_cost_per_dim: int = 0, control_horizons: int = 0,
-                 system_kwargs: dict = None,
-                 verbose: bool = True):
+                 system_kwargs: dict = None):
 
+        """
+        Initialize the class.
+
+        Parameters
+        ----------
+        n : int
+            The size of the training set.
+        L : int
+            The complexities of the system.
+        E : int
+            The embedding dimensions of the system.
+        t : int
+            The number of timesteps to simulate.
+        max_control_cost_per_dim : int
+            The maximum control cost per dimension.
+        control_horizons : int
+            The number of control horizons to consider.
+        system_cls : type
+            The system class to use.
+        trials : int
+            Number of trials for each run/latent dimension.
+        test_examples : int
+            The number of test examples to use.
+        test_timesteps : int
+            The number of timesteps to simulate for the test examples.
+        system_kwargs : dict
+            The keyword arguments to pass to the system class.
         """
         Initialize the class.
 
@@ -461,8 +469,7 @@ class FixedTrainSize(Challenge):
         """
         N = [n]
         super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
-                 system_cls, reps, test_examples, test_timesteps, system_kwargs=system_kwargs,
-                 verbose=verbose)
+                 system_cls, trials, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     @staticmethod
     def plot(data: pd.DataFrame, n: int = None, show: bool = True, show_stats: bool = False, plot_ood=True, ax=None):
@@ -487,11 +494,11 @@ class FixedTrainSize(Challenge):
             title += f", n={n}"
         ax.set_title(title)
 
-        if show_stats:
+        if show_stats: #TODO add column names...
             # get the n_target for each latent_dim
-            stats = data[['rep', 'latent_dim', 'embed_dim']]
+            stats = data[['trial', 'latent_dim', 'embed_dim']]
             stats = stats.drop_duplicates()
-            stats = stats.groupby(['latent_dim', 'embed_dim'])['rep'].count().reset_index(name="total")
+            stats = stats.groupby(['latent_dim', 'embed_dim'])['trial'].count().reset_index(name="total")
             stats.reset_index()
             print(stats)
 
@@ -501,7 +508,8 @@ class FixedTrainSize(Challenge):
         return ax
 
 
-class FixedError(Challenge):
+
+class FixedError(ScalingChallenge):
     """
     Challenge where the target error is fixed and the latent dimensionality is varied and the number of training samples to achieve the error is measured.
     Performs a binary search over the number of training samples to find the minimum number of samples needed to achieve the target error rate.
@@ -512,7 +520,7 @@ class FixedError(Challenge):
                  max_control_cost_per_dim: int,
                  control_horizons: int,
                  system_cls: type[AbstractSystem],
-                 reps: int,
+                 trials: int,
                  test_examples: int,
                  test_timesteps: int,
                  target_error: float,
@@ -524,7 +532,6 @@ class FixedError(Challenge):
                  n_max=10000,
                  n_min=1,
                  n_window_density: float = 1.0,  # 1 = include all points
-                 verbose: bool = True
                  ):
         """
         Parameters
@@ -539,8 +546,8 @@ class FixedError(Challenge):
             Number of control horizons to test.
         system_cls : type
             System class to use.
-        reps : int
-            Number of repetitions to run for each latent dimension.
+        trials : int
+            Number of trials to repeat for each run/latent dimension.
         test_examples : int
             Number of test examples to use.
         test_timesteps : int
@@ -554,7 +561,7 @@ class FixedError(Challenge):
         n_precision : float
             Uncertainty interval around number of training samples to achieve target error. If 0, we find the exact minimum number of samples needed to achieve the target error rate.
         n_window : int
-            Number of n to smooth over on left and right when calculating the error rate during search. If 0, no averaging is done.
+            Number of n to smooth (median) over when calculating the error rate during search. If 0, no filtering is done. Rounds up to the nearest odd number. 
         n_starts : list, optional
             List of starting points for the binary search over the number of training samples for each latent dim in L. len must equal len(L). If None, defaults to 1.
         n_max : int
@@ -565,10 +572,10 @@ class FixedError(Challenge):
             Density of n to test during smoothing. 1 = test every n. 0.5 = test every other n. 0.25 = test every fourth n. etc.
         """
         assert (1 > n_precision >= 0), "Precision must be between [0 and 1)"
-        assert (0 <= n_window), "Window size must be non-negative"
         assert (0 < n_window_density <= 1), "Window density must be between (0 and 1]"
         assert (n_max > n_min), "n_max must be greater than n_min"
         assert (n_min > 0), "n_min must be greater than 0"
+        assert (0 <= n_window), "Window size must be non-negative"
         # ToDo: sort L and E if not sorted instead of throwing error.
 
         self.n_starts = {l: 1 for l in L}
@@ -577,7 +584,7 @@ class FixedError(Challenge):
             self.n_starts = {l: n for l, n in zip(L, n_starts)}
 
         self.n_precision = n_precision
-        self.n_window = n_window
+        self.n_half_window = n_window//2 #this rounds the window up to nearest odd number. 
         self.n_max = n_max
         self.n_min = n_min
         self._target_error = target_error
@@ -587,8 +594,8 @@ class FixedError(Challenge):
         self.result = None
         self.n_needed = {}
 
-        super().__init__([1], L, E, t, max_control_cost_per_dim, control_horizons, system_cls, reps, test_examples,
-                         test_timesteps, system_kwargs=system_kwargs, verbose=verbose)
+        super().__init__([1], L, E, t, max_control_cost_per_dim, control_horizons, system_cls, trials, test_examples,
+                         test_timesteps, system_kwargs=system_kwargs)
 
     def evaluate(self,
                  algo_cls: type[AbstractAlgorithm],
@@ -600,19 +607,19 @@ class FixedError(Challenge):
                  id=None,
                  num_parallel_cpu=-1,
                  seed=None,
-                 # Filters which reps and L to evaluate. If None, no filtering is performed.
+                 # Filters which trials and L to evaluate. If None, no filtering is performed.
                  # We recommend using these filters to parallelize evaluation across multiple machines, while retaining reproducibility.
-                 reps_filter: list[int] = None,
+                 trials_filter: list[int] = None,
                  L_filter: list[int] | None = None,
                  rep_l_filter: list[tuple[int, int]] | None = None,
                  ) -> pd.DataFrame:
         """
-        Evaluates a model class (NOT an instance) on a dynamical system over a set of experimental parameters.
+        Evaluates an algorithm class (NOT an instance) on a dynamical system over a set of experimental parameters.
 
         Parameters
         ----------
         algo_cls : type
-            Model class to be evaluated.
+            algo class to be evaluated.
         algo_kwargs : dict
             Keyword arguments to be passed to algo_cls.
         fit_kwargs : dict
@@ -625,12 +632,12 @@ class FixedError(Challenge):
         noisy : bool, optional
             If True, add noise to the train set. Defaults to False. If False, no noise is added.
         id : str
-            Model ID associated with evaluation results in the returned DataFrame.
+            algo ID associated with evaluation results in the returned DataFrame.
         num_parallel_cpu : int, optional
             Number of CPUs to use in parallel. Defaults to -1, which uses all available CPUs.
         seed : int, optional
             Seed to initialize the random number generator for seeding systems and models. Defaults to None. Is overridden by seeds in system_kwargs or model_kwargs.
-        reps_filter : list, optional
+        trials_filter : list, optional
             If provided, will only evaluate system_runs with the given rep_ids. Defaults to None, which evaluates all repetitions.
         L_filter : list, optional
             If provided, will only evaluate system_runs with the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
@@ -643,29 +650,32 @@ class FixedError(Challenge):
             A DataFrame where each row is a result from an algorithm trained and evaluated on a single system.
         """
         results = super().evaluate(algo_cls, algo_kwargs, fit_kwargs, act_kwargs, ood, noisy, id, num_parallel_cpu,
-                                   seed, reps_filter, L_filter, rep_l_filter)
-        targets = results[['latent_dim', 'embed_dim', 'rep', 'n_target', 'model_seed', 'system_seed']].drop_duplicates()
+                                   seed, trials_filter, L_filter, rep_l_filter)
+        targets = results[['job_id','latent_dim', 'embed_dim', 'trial', 'n_target', 'algo_seed', 'system_seed']].drop_duplicates()
 
-        # TODO: use logger instead of print
-        if self._verbose:
-            for _, row in targets.iterrows():
-                print(
-                    f"!!! rep_id={row['rep']}, latent_dim={row['latent_dim']}, n_target={row['n_target']}, embed_dim={row['embed_dim']}, seed={row['system_seed']},{row['model_seed']} ")
+        for _, row in targets.iterrows():
+            logging.debug(
+                f"ERROR TARGETED: job_id={row['job_id']} | n_target={row['n_target']}, latent={row['latent_dim']}, embed={row['embed_dim']}, trial={row['trial']}, seed={row['system_seed']},{row['algo_seed']}")
 
         return results
 
-    def system_run(self,
-                   rep_id,
-                   latent_dim,
-                   embed_dim,
-                   algo_cls: type[AbstractAlgorithm],
-                   algo_kwargs: dict = None,
-                   fit_kwargs: dict = None,
-                   act_kwargs: dict = None,
-                   noisy: bool = False,
-                   test_ood: bool = False,
-                   system_seed=None,
-                   model_seed=None
+    
+
+    def execute_job(self,
+                    job_id : int,
+                    trial : int = None,
+                    system_seed : int = 0, 
+                    algo_seed : int = 0,
+                   latent_dim : int = None,      #from sweep_params
+                   embed_dim : int = None,       #from sweep_params
+                   algo_cls: type[AbstractAlgorithm] = None,    #from evaluate
+                   algo_kwargs: dict = None,                    #from evaluate
+                   fit_kwargs: dict = None,                     #from evaluate
+                   act_kwargs: dict = None,                     #from evaluate
+                   noisy: bool = False,                         #from evaluate
+                   ood: bool = False,                           #from evaluate
+                   id: str = None,                              #from evaluate
+                   **kwargs                      #extra params from evaluate
                    ):
         """
         For a given system latent dimension and embedding dimension, instantiates system and evaluates a single trial of finding a
@@ -673,9 +683,9 @@ class FixedError(Challenge):
 
         Note
         -----
-        The model seed in model_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
+        The algo seed in model_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.
         """
-        result = Challenge._init_result_dict()
+        result = ScalingChallenge._init_result_dict()
 
         if embed_dim < latent_dim:
             return
@@ -689,201 +699,88 @@ class FixedError(Challenge):
         max_control_cost = self._max_control_cost_per_dim * latent_dim
 
         # generating master training set which is used to generate training sets of different sizes
-        master_training_set = None
-
-        def get_training_set(n):
+        existing_training_set = None
+        def get_training_set(required_size):
             """ 
-            Helper function to get training set of size n. 
+            Helper function to get training set of size required size. 
             If we have already generated enough trajectories, simply return a subset of the training set. 
             If not, generate more trajectories and add to training set.
             """
-            nonlocal master_training_set
-            if master_training_set is None:  # if we have not generated any trajectories yet
-                master_training_set = self._gen_trainset(system, n, self._t, noisy)
-            if n <= len(master_training_set):  # if we have already generated enough trajectories
-                return master_training_set[:n]  # train on subset of training set
-            else:  # add more trajectories to training set
-                to_add = self._gen_trainset(system, n - len(master_training_set), self._t, noisy)
-                master_training_set = np.concatenate((master_training_set, to_add), axis=0)
-                return master_training_set[:n]
+            nonlocal existing_training_set
+            current_size = len(existing_training_set) if existing_training_set is not None else 0
+            if current_size < required_size:
+                additional_data = self._gen_trainset(system, required_size - current_size, self._t, noisy)
+                existing_training_set = np.concatenate((existing_training_set, additional_data), axis=0) if existing_training_set is not None else additional_data
+            return existing_training_set[:required_size]
 
-        # memoized run function which stores results in result dictionary and memoizes whether we have already run the model for a given n
-        memo = {}
+        # Given training set size, instantiate algorithm, train, and test once. Records result.
+        @functools.cache   #memoized
+        def algorithm_test(n):
+            start = time.time()
+            algo = AlgorithmChecker(algo_cls(embed_dim, self._t, max_control_cost, **{"seed": algo_seed, **algo_kwargs}))
+            training_set = get_training_set(n)
+            total_cost = self._fit_model(system, algo, training_set, self._t, max_control_cost, fit_kwargs, act_kwargs, noisy)
+            pred = algo.predict(test_set[:, 0], self._test_timesteps)
+            error = system.calc_error(pred, test_set)
 
-        def model_run(n, window=0):
+            ood_error = None
+            if ood:
+                ood_pred = algo.predict(ood_test_set[:, 0], self._test_timesteps)
+                ood_error = system.calc_error(ood_pred, ood_test_set)
+            end = time.time()
+            duration = end - start
+
+            ScalingChallenge._append_result(job_id, result, trial, n, latent_dim, embed_dim, self._t, total_cost, error, ood_error=ood_error, duration=duration)
+
+            if ood:
+                return ood_error, total_cost
+            else:
+                return error, total_cost
+                        
+        # Given training set size (ts) and window, figure out how many ts to sample. Instantiate algorithm, train, and test once per ts in window. Return median result from window.
+        @functools.cache    #memoized
+        def windowed_algorithm_test(n, half_window=0):
             """
-            Helper function to instantiate and run a model once for a given n. If window > 0, then we take the moving average of the error over the last window runs. Results are stored in result dictionary and memoized.
+            Helper function to instantiate and test an algorithm once for a given n. If window > 0, then we take the moving average of the error over the last window runs.
 
             param n: number of trajectories to train on
-            param window: number of runs to the left of and right of the current run to take the moving average over; ToDo: make this the absolute window size...lazy
+            param half_window: number of train sizes to the left of and right of n to take the moving average over
             """
             n = int(n // 1)  # make sure n is an integer
-            window = int(window // 1)  # make sure window is an integer
+            half_window = int(half_window // 1)  # make sure window is an integer
 
-            def run_helper(n):  # for a given n, fit model and return error
-                # check memo
-                nonlocal memo
-                if n in memo:
-                    return memo[n]
-                start = time.time()
-                model = AlgorithmChecker(algo_cls(embed_dim, self._t, max_control_cost, **{"seed": model_seed, **algo_kwargs}))
-                training_set = get_training_set(n)
-                total_cost = self._fit_model(system, model, training_set, self._t, max_control_cost, fit_kwargs,
-                                             act_kwargs, noisy)
-                pred = model.predict(test_set[:, 0], self._test_timesteps)
-                error = system.calc_error(pred, test_set)
-                ood_error = None
-                if test_ood:
-                    ood_pred = model.predict(ood_test_set[:, 0], self._test_timesteps)
-                    ood_error = system.calc_error(ood_pred, ood_test_set)
-                end = time.time()
-                duration = end - start
-                # append/memoize result
-                Challenge._append_result(result, rep_id, n, latent_dim, embed_dim, self._t, total_cost, error,
-                                         ood_error=ood_error, duration=duration)
-                if test_ood:
-                    memo[n] = (ood_error, total_cost)
-                    return ood_error, total_cost
-                else:
-                    memo[n] = (error, total_cost)
-                    return error, total_cost
-
-            if window > 0:  # moving average/median
-                window_range = list(range(int(max(self.n_min, n - window)), int(min(n + window + 1, self.n_max))))
-                window_len = int((window * 2 + 1) * self.n_window_density)
+            if half_window > 0:  # moving average/median window
+                
+                #window_range = list(range(int(max(self.n_min, n - window)), int(min(n + window + 1, self.n_max)))) #clip if beyond bounds
+                
+                #half-sample symmetric / reflect: when the windowed range is beyond bounds, extend the range by reflecting about the edge.
+                #inspired by scipy.ndimage.median_filter 'reflect' mode
+                window_range = list(range(n - half_window, n + half_window+1))
+                while True:
+                    reflected_range = [ self.n_min + (self.n_min-nn) if nn < self.n_min  else nn for nn in window_range  ]
+                    reflected_range = [ self.n_max - (nn-self.n_max) if nn > self.n_max else nn for nn in window_range  ]
+                    if reflected_range == window_range:
+                        break
+                    else:
+                        window_range = reflected_range
+                window_size = (half_window * 2 + 1)
+                window_len = int(window_size * self.n_window_density)
                 if len(window_range) > window_len:
                     step = int(len(window_range) // window_len)
                     window_range = window_range[::step]
                     if n not in window_range:
                         window_range.append(n)
-                results_window = [run_helper(nn) for nn in window_range]
-                error = np.median([r[0] for r in results_window])  # TODO: allow for choosing density of median points
+                results_window += [algorithm_test(nn) for nn in window_range]
+                error = np.median([r[0] for r in results_window])
                 total_cost = np.median([r[1] for r in results_window])
             else:
-                error, total_cost = run_helper(n)
-
-            if self._verbose:
-                # TODO: fix logging? Should we use a logger?
-                print(
-                    f"{rep_id=}, {latent_dim=}, {embed_dim=}, {n=}, {window=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, {test_ood=}, model_seed={model_seed}, sys_seed={system._seed}")
+                error, total_cost = algorithm_test(n)
+            
+            logging.debug(
+                f"{job_id=} | {trial=}, {latent_dim=}, {embed_dim=}, {n=}, {window_size=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, incl {ood=}, algo_seed={algo_seed}, sys_seed={system._seed}")
             return error, total_cost
 
-        # run model for different values of the number of trajectories n, searching for n needed to achieve the target error            
         def search():
-            """
-            Helper function to search for the number of trajectories N needed to achieve the target error.
-            Returns -1 if target error is never reached within n_max trajectories, np.inf if target error is stuck in a local minimum, and the number of trajectories N needed to achieve the target error otherwise.
-            Assumption that the test error is a convex function of N. Does an exponential search to narrow down the range of N to search over, then does a binary search to find the number of trajectories N needed to achieve the target error.
-            In the exponential search, we start with n_curr = 1 or n_starts[latent_dim] if it exists. We then double n_curr until we have found a range of n where the target error is achieved. We handle the case where we have overshot the N needed to achieve the target error by backing up (either by two steps or by halving n_curr) and restarting the exponential search with a smaller increment. We do this until we have found a range of n where the target error is achieved.
-            """
-            # TODO: Replaced this with search_simple. Remove this function?
-            # Doing an exponential search.
-            # Narrow down the range of N to search over, giving a left and right bound where the target error is achieved. 
-            # If we have overshot the N needed to achieve the target error, back up and restart the exponential search with a smaller increment.
-            # If we exceed the maximum number of trajectories, return -1. If we converge to a local minimum, return np.inf.
-            # Assumption: the test error is a convex function of N.
-            n_curr = self.n_starts.get(latent_dim,
-                                       self.n_min)  # start with n_curr = 1 or n_starts[latent_dim] if it exists
-            current_path = []
-            error_prev = None
-            increment = 1
-            increment_max = self.n_max // 10  # TODO: what is a good value for this?
-            multiplicative_factor = 2
-            history = set()  # keep track of (n_curr, increment) pairs we have already tried to avoid infinite loops
-            best_answer = np.inf
-            while True:
-
-                # Above n_max, we have exceeded the maximum number of trajectories, so we return -1
-                if n_curr > self.n_max:
-                    return -1  # target error is never reached within n_max trajectories
-
-                # Below n_min, we do not have enough data to fit a model, so we return the best answer we have found so far
-                if n_curr < self.n_min:
-                    return best_answer
-
-                # Cycle detection
-                if (n_curr, increment) in history:  # cycle detected, return best answer
-                    if self._verbose:
-                        print(f"CYCLEEEEEEE {n_curr=}, {increment=}, {error_curr=}, {error_prev=}, {current_path=}")
-                    return best_answer
-
-                # Track paths we have already tried
-                history.add((n_curr, increment))
-
-                # Run model on n_curr, update our best answer if we have found a new best answer
-                error_curr, total_cost = model_run(n_curr, window=self.n_window)
-                if error_curr <= self._target_error and n_curr < best_answer:
-                    best_answer = n_curr
-
-                if len(current_path) > 0:  # If not start of a path
-                    if error_curr > error_prev:  # Error is increasing
-                        # Move backwards, because of convexity assumption
-                        if len(current_path) > 1:  # Can move back twice
-                            current_path.pop()
-                            n_prev_prev = current_path.pop()
-                            if n_curr - n_prev_prev <= max(self.n_precision * n_curr, 1):
-                                # target error is never reached, minimum error is above threshold under parabolic assumption
-                                # This ignores the possibility that the target error is reached within the precision (only possible if high curvature)
-                                return np.inf
-                            n_curr = n_prev_prev
-                        else:  # or halve n_prev
-                            n_curr = current_path.pop()
-                            n_curr = max(1, n_curr // multiplicative_factor)
-                        current_path = []
-                        increment = 1
-                        error_prev = None  # reset error_prev
-                        continue
-                    else:  # error is decreasing
-                        if error_curr < self._target_error:  # found n_curr below target
-                            break  # do binary search if n_curr is below target
-                        else:
-                            current_path.append(n_curr)
-                            error_prev = error_curr
-                            n_curr = n_curr + max(increment, n_curr * self.n_precision)
-                            # scale increment, but not below 1 nor above increment_max
-                            increment = min(max(1, math.ceil(increment * multiplicative_factor)), increment_max)
-                            continue
-                else:  # no n_prevs
-                    if error_curr > self._target_error:
-                        # move forward
-                        current_path.append(n_curr)
-                        error_prev = error_curr
-                        # Increment n_curr by at least n_precision * n_curr
-                        n_curr = n_curr + max(increment, n_curr * self.n_precision)
-                        # scale increment, but not below 1 nor above increment_max
-                        increment = min(max(1, math.ceil(increment * multiplicative_factor)), increment_max)
-                        continue
-                    else:  # error_curr < target
-                        # move backward
-                        n_curr = max(1, n_curr // multiplicative_factor)
-                        continue
-
-            # do binary search, assuming error is convex and that error(n_lower) > target and error(n_upper) < target. So we can always check the left side of the interval if target is between error_lower and error_curr, and the right side otherwise.
-            # n_prevs[-1] is the last n_curr that is above target
-            # n_curr is the first n_curr that is below target
-            # binary search between n_prevs[-1] and n_curr
-            n_lower = current_path[-1]
-            error_lower, _ = model_run(n_lower, window=self.n_window)
-            n_upper = n_curr
-            error_upper, _ = model_run(n_upper, window=self.n_window)
-            while True:
-                n_curr = (n_lower + n_upper) // 2
-                # stop if n_upper and n_lower are within precision
-                if n_upper - n_lower <= max(self.n_precision, 1):
-                    return math.ceil((n_lower + n_upper) / 2)
-
-                error_curr, _ = model_run(n_curr, window=self.n_window)
-                # find which side of the interval to keep
-                # if target is between error_lower and error_curr, keep left side
-                # if target is between error_curr and error_upper, keep right side
-                if error_lower > self._target_error > error_curr:
-                    n_upper = n_curr
-                    error_upper = error_curr
-                else:
-                    n_lower = n_curr
-                    error_lower = error_curr
-
-        def search_simple():
             # Search with exponential search until we find an n_left that is above target and an n_right that is below target
             # Then do binary search between n_left and n_right to find the left most n_curr that is below target
 
@@ -894,14 +791,14 @@ class FixedError(Challenge):
             n = self.n_starts.get(latent_dim, self.n_min)
 
             # Check if this is our n_left or n_right
-            error, _ = model_run(n, window=self.n_window)
+            error, _ = windowed_algorithm_test(n, window=self.n_half_window)
             n_left = n  # n_left is the largest n that is above target
             n_right = n  # n_right is the smallest n that is below target
             if error > self._target_error:
                 # double n until we find an n that is below target
                 while (n < self.n_max):
                     n = min(self.n_max, int(n * 2))
-                    error, _ = model_run(n, window=self.n_window)
+                    error, _ = windowed_algorithm_test(n, window=self.n_half_window)
                     if error > self._target_error:
                         # found a larger n that is below target
                         n_left = n
@@ -909,11 +806,10 @@ class FixedError(Challenge):
                         n_right = n
                         break  # do binary search
             else:
-                # Below target so look for left boundary!
-                # halve n until we find an n that is above target
+                # Below target so look for left boundary! halve n until we find an n that is above target
                 while (n > self.n_min):
                     n = max(self.n_min, int(n // 2))
-                    error, _ = model_run(n, window=self.n_window)
+                    error, _ = windowed_algorithm_test(n, window=self.n_half_window)
                     if error > self._target_error:
                         n_left = n
                         break  # do binary search if n_left is above target
@@ -937,28 +833,40 @@ class FixedError(Challenge):
                 if n_right - n_left <= self.n_precision * n:
                     return n
 
-                error, _ = model_run(n, window=self.n_window)
+                error, _ = windowed_algorithm_test(n, window=self.n_half_window)
                 if error > self._target_error:
                     n_left = n
                 else:
                     n_right = n
 
-        # Run search
-        n_target = search_simple()
+        # Do search
+        n_target = search()
 
+        #NOTE: result is appended to as a side effect of calling `algorithm_test()` inside of `windowed_algorithm_test()`inside of `search()` ;  
         data = pd.DataFrame(result)
         data['n_target'] = n_target
         data['target_error'] = self._target_error
         data['n_start'] = self.n_starts.get(latent_dim, 1)
-        data['n_window'] = self.n_window
+        data['n_window'] = self.n_half_window * 2 + 1
         data['n_precision'] = self.n_precision
         data['n_max'] = self.n_max
         data['system_seed'] = system_seed
-        data['model_seed'] = model_seed
+        data['algo_seed'] = algo_seed
 
-        # note: result is appended to as a side effect of calling run() inside of search(); 
-        # TODO: refactor to avoid side effects, make pure functions. 
         return data
+
+    def _generate_training_set(self, system, n, noisy, existing_set=None):
+        if existing_set is None or n > len(existing_set):
+            additional_set = self._gen_trainset(system, n - len(existing_set), self._t, noisy)
+            return np.concatenate((existing_set, additional_set), axis=0) if existing_set is not None else additional_set
+        return existing_set[:n]
+
+    def _update_or_create_training_set(self, system, required_size, existing_set=None, noisy=False):
+        current_size = len(existing_set) if existing_set is not None else 0
+        if current_size < required_size:
+            additional_data = self._gen_trainset(system, required_size - current_size, self._t, noisy)
+            existing_set = np.concatenate((existing_set, additional_data), axis=0) if existing_set is not None else additional_data
+        return existing_set
 
     @staticmethod
     def plot(data, target_error: float = None, show: bool = True, show_stats: bool = False):
@@ -974,9 +882,9 @@ class FixedError(Challenge):
         if target_error:
             title += f", target error={target_error}"
 
-        if show_stats:
+        if show_stats: #TODO add column names...
             # get the n_target for each latent_dim
-            stats = data[['rep', 'latent_dim', 'embed_dim', 'n_target']]
+            stats = data[['trial', 'latent_dim', 'embed_dim', 'n_target']]
             stats = stats.drop_duplicates()
             total = stats.groupby(['latent_dim', 'embed_dim'])['n_target'].count().reset_index(name="total")
             total.reset_index()

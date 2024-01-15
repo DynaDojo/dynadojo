@@ -9,8 +9,7 @@ from dynadojo.baselines.sindy import SINDy
 
 from dynadojo.systems.lds import LDSystem
 from dynadojo.systems.lorenz import LorenzSystem
-from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
-from dynadojo.abstractions import Challenge 
+from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize, ScalingChallenge
 
 system_dict = {
     "lds" : LDSystem,
@@ -27,7 +26,7 @@ fc_challenge_params_dict = {
     "default" : {   "l" : 10, 
                     "N" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
                     "t" : 50,
-                    "reps" : 100,
+                    "trials" : 100,
                     "test_examples" : 50,
                     "test_timesteps" : 50,
                     "e" : None,
@@ -88,7 +87,7 @@ fc_challenge_params_dict = {
         },
         "lr" : { #FAIL
             "N" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
-            "reps":5
+            "trials":5
         },
         "sindy" : { #FAIL
             "t": 50,
@@ -117,7 +116,7 @@ fts_challenge_params_dict = {
     "default" : {   "L" : [5, 10, 20, 30, 50, 100], 
                     "n" : 100,
                     "t" : 20,
-                    "reps" : 100,
+                    "trials" : 100,
                     "test_examples" : 50,
                     "test_timesteps" : 50,
                     "E" : None,
@@ -160,7 +159,7 @@ fe_challenge_params_dict = {
     "default" : {   "L" : [5, 10, 20, 30, 50, 100],
                     "n_starts" :  [1000]*6, #same length as L 
                     "t" : 50,
-                    "reps" : 100,
+                    "trials" : 100,
                     "target_error": 1e-5,
                     "E" : None, #same length as L
                     "test_examples" : 500,
@@ -230,7 +229,7 @@ fe_challenge_params_dict = {
                     "n_window_density": 0.5,
                     "n_min": 3,
                     "n_max" : 1e5,
-                    "reps": 100,
+                    "trials": 100,
                 },
                 "dnn_simple_q" : { #PROMISING BUT NMAX TOO LOW #Search Simple #TODO: rename to dnn_simple
                     "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
@@ -241,7 +240,7 @@ fe_challenge_params_dict = {
                     "n_window_density": 0.6,
                     "n_min": 3,
                     "n_max" : 1e4,
-                    "reps": 100,
+                    "trials": 100,
                 },
                 "dnn_simple_q2" : { #??? Running 4949151 #Search Simple #TODO: rename to dnn_simple
                     "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
@@ -252,7 +251,7 @@ fe_challenge_params_dict = {
                     "n_window_density": 0.6,
                     "n_min": 3,
                     "n_max" : 1e5,
-                    "reps": 100,
+                    "trials": 100,
                 },
                 "dnn_test" : {
                     "L" : [int(n) for n in np.logspace(1, 1.7, num=10, endpoint=True)],
@@ -262,18 +261,18 @@ fe_challenge_params_dict = {
                     "n_precision": .2,
                     "n_window_density": 0.25,
                     "n_min": 3,
-                    "reps":3,
+                    "trials":3,
                 }
     }
 }
 
-def _get_params(s, a, challenge_cls: type[Challenge]=FixedComplexity):
+def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
     """
     Get challenge parameters for a given system, algo, and challenge class, overriding defaults with system and algo specific parameters.
 
     :param s: system short name, defined in system_dict
     :param m: algo short name, defined in algo_dict
-    :param challenge_cls: challenge class, one of Challenge.__subclasses__()
+    :param challenge_cls: challenge class, one of ScalingChallenge.__subclasses__()
     """
     assert s in system_dict, f"s must be one of {system_dict.keys()}"
     assert a.split("_")[0] in algo_dict, f"m must be one of {algo_dict.keys()}"
@@ -284,7 +283,7 @@ def _get_params(s, a, challenge_cls: type[Challenge]=FixedComplexity):
     elif challenge_cls == FixedError:
         challenge_params_dict = fe_challenge_params_dict
     else:
-        raise ValueError(f"challenge_cls must be one of {Challenge.__subclasses__()}")\
+        raise ValueError(f"challenge_cls must be one of {ScalingChallenge.__subclasses__()}")\
     
     # Get challenge parameters, starting with defaults and then overriding with s and m specific params
     default_params = challenge_params_dict["default"]
@@ -302,7 +301,7 @@ def _get_params(s, a, challenge_cls: type[Challenge]=FixedComplexity):
     challenge_params = { **default_params, **s_default_params, **s_a_base_params, **s_a_params }
     eval_params = { **default_eval_params, **s_default_eval_params, **s_a_base_eval_params,  **s_a_eval_params }
     challenge_params["evaluate"] = eval_params
-    assert ("L" in challenge_params or "l" in challenge_params) and "reps" in challenge_params, "must specify L (or l) and reps in challenge parameters"
+    assert ("L" in challenge_params or "l" in challenge_params) and "trials" in challenge_params, "must specify L (or l) and trials in challenge parameters"
 
     return challenge_params
 

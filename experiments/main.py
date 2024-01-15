@@ -6,25 +6,24 @@ import itertools
 import os
 import pandas as pd
 import numpy as np
-from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
-from dynadojo.abstractions import Challenge 
+from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize, ScalingChallenge
 from .params import _get_system, _get_algo, _get_params, _serialize_params, _deserialize_params
 import json
 
 
-def get_max_splits(s="lds", m="lr", challenge_cls:type[Challenge] = FixedComplexity,):
+def get_max_splits(s="lds", m="lr", challenge_cls:type[ScalingChallenge] = FixedComplexity,):
     params = _get_params(s, m, challenge_cls=challenge_cls)
-    reps = params["reps"]
+    trials = params["trials"]
     L = params.get("L", [params.get("l", 0)])
 
-    return reps * len(L)
+    return trials * len(L)
 
 def run_challenge(
         s ="lds",
         a = "lr",
         output_dir="experiments/outputs", 
         split=(1,1),
-        challenge_cls:type[Challenge] = FixedComplexity,
+        challenge_cls:type[ScalingChallenge] = FixedComplexity,
         num_cpu_parallel=None
         ):
     """
@@ -32,7 +31,7 @@ def run_challenge(
     :param s: system short name, defined in params.py system_dict
     :param m: algo short name, defined in params.py algo_dict
     :param output_dir: directory to save results
-    :param split: tuple (split_num, total_splits) to run a subset of the total number of system runs, as specified by L and reps the challenge parameters
+    :param split: tuple (split_num, total_splits) to run a subset of the total number of system runs, as specified by L and trials the challenge parameters
     """
     print(f"Running {_get_base_filename(s, a, challenge_cls)} {split=}")
 
@@ -54,16 +53,16 @@ def run_challenge(
     if num_cpu_parallel:
         evaluate_params['num_parallel_cpu'] = num_cpu_parallel
 
-    # Get L and reps
+    # Get L and trials
     L = challenge_params.get("L", [challenge_params.get("l", 0)])
-    reps = challenge_params['reps']
+    trials = challenge_params['trials']
     
-    # Split reps into total_splits and run split_num
+    # Split trials into total_splits and run split_num
     if split:
         assert isinstance(split, tuple), "split must be a tuple, (split_num, total_splits)"
         split_num, total_splits = split
-        runs = _get_runs(L, reps, split_num, total_splits) # list[tuples(rep, l)]
-        print(f"Running split {split_num} of {total_splits} with runs {runs} --- list[tuples(rep, l)]")
+        runs = _get_runs(L, trials, split_num, total_splits) # list[tuples(trial, l)]
+        print(f"Running split {split_num} of {total_splits} with runs {runs} --- list[tuples(trial, l)]")
     else:
         runs = None
 
@@ -98,7 +97,7 @@ def run_challenge(
         data = challenge.evaluate(
             **evaluate_params, 
             id=_get_base_filename(s, a, challenge_cls), 
-            # Which reps and l pairings to evaluate. If None, evaluate all reps on all L. 
+            # Which trials and l pairings to evaluate. If None, evaluate all trials on all L. 
             # This is calculated by the split argument!
             rep_l_filter = [run]
         )
@@ -112,7 +111,7 @@ def make_plots(
         s ="lds",
         a = "lr",
         output_dir="experiments/outputs",
-        challenge_cls:type[Challenge] = FixedComplexity,
+        challenge_cls:type[ScalingChallenge] = FixedComplexity,
         save=True
     ):
     if challenge_cls == FixedComplexity:
@@ -164,7 +163,7 @@ def make_plots(
 
 ### Helper functions
 
-def _get_base_filename(sys:str, algo:str, challenge_cls:type[Challenge]):
+def _get_base_filename(sys:str, algo:str, challenge_cls:type[ScalingChallenge]):
     if challenge_cls == FixedComplexity:
         params = _get_params(sys, algo, challenge_cls=challenge_cls)
         l = params["l"]
@@ -204,21 +203,21 @@ def _find_matching_files(path, filename, extended=False):
     matching = [f"{path}/{f}" for f in files if file_base in f and file_ext in f]
     return matching
 
-def _get_runs(L, reps, split_num, total_splits):
+def _get_runs(L, trials, split_num, total_splits):
     """
     Get the runs for a given split_num and total_splits. 
-    Each run is a tuple (rep, l), where rep is the rep number and l is the L value for the system.
+    Each run is a tuple (trial, l), where trial is the trial number and l is the L value for the system.
     This is used to split the challenge into parallelizable chunks of runs.
 
     :param L: list of L values
-    :param reps: number of reps
+    :param trials: number of trials
     :param split_num: which split to run
     :param total_splits: total number of splits
-    :return: list of tuples (rep, l) to run; to be passed to FixedComplexity.evaluate as eval_rep_l argument
+    :return: list of tuples (trial, l) to run; to be passed to FixedComplexity.evaluate as eval_rep_l argument
     """
-    assert 1 <= total_splits <= reps * len(L), "cannot split into more reps x L than there are"
+    assert 1 <= total_splits <= trials * len(L), "cannot split into more trials x L than there are"
     assert 1 <= split_num <= total_splits, "split_num must be less than total_splits and greater than 0"
-    runs = list(itertools.product(range(reps), L))
+    runs = list(itertools.product(range(trials), L))
     k, mod = divmod(len(runs), total_splits)
     splits = list(runs[i*k+min(i, mod):(i+1)*k+min(i+1, mod)] for i in range(total_splits))
     return splits[split_num-1]
