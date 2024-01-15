@@ -1,4 +1,5 @@
 """
+
 This module contains abstract base classes for systems, algorithms, and challenges.
 """
 from abc import ABC, abstractmethod
@@ -6,10 +7,12 @@ from functools import cache, cached_property
 from typing import Any
 
 import numpy as np
+
 import pandas as pd
 from joblib import Parallel, delayed
 import logging
 import itertools
+
 
 class AbstractAlgorithm(ABC):
     """Base class for all algorithms. Your algorithms should subclass this class."""
@@ -114,6 +117,7 @@ class AbstractAlgorithm(ABC):
             timesteps per predicted trajectory
         **kwargs
             Additional keyword arguments.
+
 
         Returns
         ----------
@@ -238,6 +242,7 @@ class AbstractSystem(ABC):
         """
         Calculates the error between two tensors of trajectories.
 
+
         Parameters
         ----------
         x : numpy.ndarray
@@ -269,7 +274,6 @@ class AbstractSystem(ABC):
             (n,) Control costs vector.
         """
         raise NotImplementedError
-
 
 class AbstractChallenge(ABC):
     """
@@ -522,6 +526,3 @@ class AbstractChallenge(ABC):
         if data:
             data = pd.concat(data)
         return data
-
-
-

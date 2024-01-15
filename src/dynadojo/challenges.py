@@ -17,7 +17,9 @@ from .wrappers import AlgorithmChecker, SystemChecker
 from .utils.plotting import plot_target_error, plot_metric
 
 
+
 class ScalingChallenge(AbstractChallenge):
+
     """Challenge class used to benchmark algorithms and systems."""
     def __init__(self,
                  N: list[int],
@@ -403,7 +405,6 @@ class FixedComplexity(ScalingChallenge):
             plt.show()
         return ax
 
-
 class FixedTrainSize(ScalingChallenge):
     """Challenge where the size of the training set is fixed, the complexity of the system is varied, and the error is measured."""
     def __init__(self, n: int, L: list[int], E: list[int] | int | None, t: int,
@@ -432,6 +433,33 @@ class FixedTrainSize(ScalingChallenge):
             The system class to use.
         trials : int
             Number of trials for each run/latent dimension.
+        test_examples : int
+            The number of test examples to use.
+        test_timesteps : int
+            The number of timesteps to simulate for the test examples.
+        system_kwargs : dict
+            The keyword arguments to pass to the system class.
+        """
+        Initialize the class.
+
+        Parameters
+        ----------
+        n : int
+            The size of the training set.
+        L : int
+            The complexities of the system.
+        E : int
+            The embedding dimensions of the system.
+        t : int
+            The number of timesteps to simulate.
+        max_control_cost_per_dim : int
+            The maximum control cost per dimension.
+        control_horizons : int
+            The number of control horizons to consider.
+        system_cls : type
+            The system class to use.
+        reps : int
+            The number of repetitions to run.
         test_examples : int
             The number of test examples to use.
         test_timesteps : int
@@ -478,6 +506,7 @@ class FixedTrainSize(ScalingChallenge):
             import matplotlib.pyplot as plt
             plt.show()
         return ax
+
 
 
 class FixedError(ScalingChallenge):
@@ -838,7 +867,6 @@ class FixedError(ScalingChallenge):
             additional_data = self._gen_trainset(system, required_size - current_size, self._t, noisy)
             existing_set = np.concatenate((existing_set, additional_data), axis=0) if existing_set is not None else additional_data
         return existing_set
-
 
     @staticmethod
     def plot(data, target_error: float = None, show: bool = True, show_stats: bool = False):
