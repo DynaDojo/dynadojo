@@ -174,9 +174,9 @@ class ScalingChallenge(AbstractChallenge):
         train_init_conds = system.make_init_conds(n)
         return system.make_data(train_init_conds, timesteps=timesteps, noisy=noisy)
 
-    def _gen_testset(self, system, in_dist=True):
+    def _gen_testset(self, system, in_dist=True, noisy=False):
         test_init_conds = system.make_init_conds(self._test_examples, in_dist)
-        return system.make_data(test_init_conds, timesteps=self._test_timesteps)
+        return system.make_data(test_init_conds, timesteps=self._test_timesteps, noisy=noisy)
 
     def _fit_algo(self, system, algo, x: np.ndarray, timesteps: int, max_control_cost: int, fit_kwargs: dict = None,
                   act_kwargs: dict = None, noisy=False) -> int:
@@ -257,8 +257,8 @@ class ScalingChallenge(AbstractChallenge):
         system = SystemChecker(self._system_cls(latent_dim, embed_dim, **{"seed": system_seed, **self._system_kwargs}))
 
         # Create all data
-        test_set = self._gen_testset(system, in_dist=True)
-        ood_test_set = self._gen_testset(system, in_dist=False)
+        test_set = self._gen_testset(system, in_dist=True, noisy=noisy)
+        ood_test_set = self._gen_testset(system, in_dist=False, noisy=noisy)
         largest_N = max(self._N)
         training_set = self._gen_trainset(system, largest_N, self._t, noisy)
 
@@ -647,8 +647,8 @@ class FixedError(ScalingChallenge):
         system = SystemChecker(self._system_cls(latent_dim, embed_dim, **{"seed": system_seed, **self._system_kwargs}))
 
         # generate test set and max control cost
-        test_set = self._gen_testset(system, in_dist=True)
-        ood_test_set = self._gen_testset(system, in_dist=False)
+        test_set = self._gen_testset(system, in_dist=True, noisy=noisy)
+        ood_test_set = self._gen_testset(system, in_dist=False, noisy=noisy)
         max_control_cost = self._max_control_cost_per_dim * latent_dim
 
         # generating master training set which is used to generate training sets of different sizes
