@@ -14,7 +14,7 @@ import pandas as pd
 from joblib import Parallel, delayed
 import logging
 import itertools
-
+from .utils.utils import save_to_csv
 
 class AbstractAlgorithm(ABC):
     """Base class for all algorithms. Your algorithms should subclass this class."""
@@ -495,7 +495,7 @@ class AbstractChallenge(ABC):
         logging.info(f"Created {len(jobs)} jobs")
         filtered_jobs = [job for job in jobs if job["job_id"] in jobs_filter] if jobs_filter else jobs
 
-        if num_parallel_cpu == 0:
+        if not num_parallel_cpu or num_parallel_cpu == 0 or num_parallel_cpu == 1:
             logging.info(f"Running systems sequentially. {num_parallel_cpu=}")
             data = []
             for job in filtered_jobs:
@@ -505,14 +505,7 @@ class AbstractChallenge(ABC):
                     data_job.to_csv(csv_output_path, mode='a', index=False, header=not os.path.exists(csv_output_path))
         else:
             logging.warning(f"Running systems in parallel. {num_parallel_cpu=}")
-            
             if csv_output_path: # save to csv in parallel
-                def save_to_csv(q):
-                    while True:
-                        data_job = q.get()
-                        if data_job is None:
-                            break
-                        data_job.to_csv(csv_output_path, index=False, header=not os.path.exists(csv_output_path))
                 
                 def process(**kwargs):
                     data_job = self.execute_job(**kwargs)
@@ -521,7 +514,7 @@ class AbstractChallenge(ABC):
                 
                 m = Manager()
                 q = m.Queue()
-                p = Process(target=save_to_csv, args=(q, ))
+                p = Process(target=save_to_csv, args=(q, csv_output_path))
                 p.start()
                 data = Parallel(n_jobs=num_parallel_cpu, timeout=1e6)(
                     delayed(process)(**kwargs, **job) for job in filtered_jobs)
