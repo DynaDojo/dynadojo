@@ -440,33 +440,6 @@ class FixedTrainSize(ScalingChallenge):
         system_kwargs : dict
             The keyword arguments to pass to the system class.
         """
-        Initialize the class.
-
-        Parameters
-        ----------
-        n : int
-            The size of the training set.
-        L : int
-            The complexities of the system.
-        E : int
-            The embedding dimensions of the system.
-        t : int
-            The number of timesteps to simulate.
-        max_control_cost_per_dim : int
-            The maximum control cost per dimension.
-        control_horizons : int
-            The number of control horizons to consider.
-        system_cls : type
-            The system class to use.
-        reps : int
-            The number of repetitions to run.
-        test_examples : int
-            The number of test examples to use.
-        test_timesteps : int
-            The number of timesteps to simulate for the test examples.
-        system_kwargs : dict
-            The keyword arguments to pass to the system class.
-        """
         N = [n]
         super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
                  system_cls, trials, test_examples, test_timesteps, system_kwargs=system_kwargs)
