@@ -4,6 +4,8 @@ This module contains abstract base classes for systems, algorithms, and challeng
 """
 from abc import ABC, abstractmethod
 from functools import cache, cached_property
+from multiprocessing import Manager, Process
+import os
 from typing import Any
 
 import numpy as np
@@ -277,30 +279,63 @@ class AbstractSystem(ABC):
 
 class AbstractChallenge(ABC):
     """
-    Abstract base class for challenges. A run is a setting of parameters defining a system and algorithm. Each trial of the run (specified by system and algorithm seeds) is a separate job. A job is a specific trial of any run, specified by system and algorithm seeds. 
+    An abstract base class designed to facilitate the reproducible execution of embarrassingly parallel workloads (particularly when used in conjuction with our Experiment CLI). 
+    
+    This class serves as a foundation for defining 'challenges', where a challenge is a specific task or set of tasks that can be executed in parallel. Challenges typically involve repeating a task for multiple trials or across a range of parameters (sweep parameters). This class is very abstractly defined in order to support a variety of challenges to be added. If you are interested in creating a challenge, please open an issue and tag @carynbear or @mkanwal for help.
+    
+    To use this class, subclass it and define the specific behavior in the `execute_job` method. The `evaluate` method orchestrates the execution of the challenge by running each job, which is a single trial of a task for a specific set of parameters.
 
+    Methods
+    -------
+    __init__(self, sweep_params):
+        Initializes the challenge with the given sweep parameters.
 
-    Parameters
-    ----------
-    sweep_params : dict[str, List[Any]]
-        Lists of parameters to sweep over to create specific runs.
+    base_configs(self):
+        Computes a base set of configurations for jobs by combining elements of sweep parameters. Each configuration represents a unique combination of parameter values. This method is fundamental in generating jobs for each trial.
+
+    get_num_jobs(self, trials):
+        
+
+    create_job_configs(self, trials, seed):
+        Generates configurations for each job by creating unique seeds for each trial of each base configuration. This method prepares the jobs that will be executed in the challenge.
+
+    execute_job(self, job_id, trial, system_seed, algo_seed, **kwargs):
+        Abstract method to be implemented in subclasses. Defines how to execute a single trial for a given job configuration. It should be deterministic and self-contained to facilitate parallel execution.
+
+    evaluate(self, seed, trials, num_parallel_cpu, jobs_filter, csv_output_path, **kwargs):
+        Orchestrates the overall evaluation process for the challenge. It manages the creation and execution of jobs and can handle both sequential and parallel processing. Optionally, results can be saved to a CSV file.
+
+    Examples
+    --------
+    Subclasses of `AbstractChallenge` should implement `execute_job` to define the specific task to be performed. For instance, in a machine learning context, `execute_job` might involve training and evaluating a model with specific hyperparameters and data. The `evaluate` method can then be used to run the challenge across different hyperparameter configurations and trials.
+
+    See the examples in `./challenges/` for guidance on how to implement and use subclasses of `AbstractChallenge`.
     """
 
     def __init__(self,
         sweep_params: dict[str, list[Any]],        
     ):
+        """
+        Initializes the challenge with the given sweep parameters.
+
+        Parameters
+        ----------
+        sweep_params : dict[str, list[Any]]
+            A dictionary where each key is a parameter name and each value is a list of values to sweep over. This dictionary defines the parameter space over which the challenge will be executed. All parameter lists in `self.sweep_params` must be the same length.
+
+        """
+        param_list_lengths = set(map(len, sweep_params.values()))
+        assert len(param_list_lengths)==1, "All sweep param lists must be the same length"
         self.sweep_params = sweep_params
  
 
     @cached_property
-    def run_configs(self):
+    def base_configs(self):
         """
-        Generates a list of configurations for runs by slicing aligned elements of sweep parameters.
+        Computes a base set of configurations for jobs by iterating over elements of sweep parameters. Each configuration represents a single value for each of the sweep parameters. Later we generate jobs by adding seeds to base_configs for each trial.
 
-        This function creates a list of dictionaries, where each dictionary represents a configuration
-        for a run. It pairs the nth elements of each parameter list in `self.sweep_params` to form 
-        each configuration. It assumes that all parameter lists in `self.sweep_params` are of the same 
-        length.
+        This function creates a list of dictionaries. It matches up the nth elements of each parameter list in `self.sweep_params` to form 
+        each configuration. 
         
         Returns
         -------
@@ -314,15 +349,14 @@ class AbstractChallenge(ABC):
             'a': [1, 2, 3],
             'b': [8, 9, 10]
         }
-        `run_configs` will contain configurations for 3 runs:
+        `base_configs` will contain configurations for 3 runs:
         [
-            {'a': 1, 'b': 8}, #run 1
-            {'a': 2, 'b': 9}, #run 2
-            {'a': 3, 'b': 10} #run 3
+            {'a': 1, 'b': 8},
+            {'a': 2, 'b': 9},
+            {'a': 3, 'b': 10} 
         ]
         """
         param_list_lengths = set(map(len, self.sweep_params.values()))
-        assert len(param_list_lengths)==1, "All sweep param lists must be the same length"
         param_list_length = param_list_lengths.pop()
         configs = [ dict([(k, v[i]) for k,v in self.sweep_params.items()]) for i in range(param_list_length)]
         return configs
@@ -331,19 +365,19 @@ class AbstractChallenge(ABC):
     @cache
     def get_num_jobs(self, trials):
         """
-        Calculate the total number of runs based on the number of trials and run configurations.
+        Calculates the total number of jobs based on the number of trials and the base configurations generated from sweep parameters.
 
         Parameters
         ----------
         trials : int
-            Number of trials for each run configuration.
+            Number of trials for each base configuration.
 
         Returns
         -------
         int
-            Total number of runs.
+            Total number of jobs.
         """
-        return len(self.run_configs) * trials
+        return len(self.base_configs) * trials
 
     def create_job_configs(
         self,
@@ -351,7 +385,7 @@ class AbstractChallenge(ABC):
         seed: int|None = None
         ):
         """
-        Generates a job configurations by generating seeds for each trial of each run. 
+        Generates a job configurations by generating seeds for each trial of each base config. 
 
         Parameters
         ----------
@@ -363,7 +397,7 @@ class AbstractChallenge(ABC):
         Returns
         -------
         List[Dict[str, Any]]
-            A list of dictionaries, each containing parameters for a run.
+            A list of dictionaries, each containing parameters for a job.
         """
         if seed:
             rng = np.random.default_rng(seed)
@@ -374,7 +408,7 @@ class AbstractChallenge(ABC):
         algo_seeds = rng.integers(0, 2 ** 32, size = self.get_num_jobs(trials))
 
         # Creating all job configs
-        job_configs = zip(itertools.product(range(1, trials+1), self.run_configs), system_seeds, algo_seeds)
+        job_configs = zip(itertools.product(range(1, trials+1), self.base_configs), system_seeds, algo_seeds)
         # Flattening job configs
         job_configs = [{ 
                         "system_seed": system_seed,
@@ -388,60 +422,6 @@ class AbstractChallenge(ABC):
                         **job_config
                     } for (id, job_config) in enumerate(job_configs)]
         return job_configs
-        
-
-    def _filter_jobs(self,
-        jobs: list[dict[str, Any]],
-        filters: list[dict[str, Any]] | None = None
-    ):
-        """
-        Filters the generated job configurations based on matching any partial job (or run) configuration included in filters.
-
-        Parameters
-        ----------
-        runs : List[Dict[str, Any]]
-            A list of dictionaries, each representing parameters for a specific job.
-        filters : List[Dict[str, Any]], optional
-            A list of partial job (or run) configurations. Each filter is a dictionary representing a subset of job configuration parameters. A job is included in the final list if its configuration matches any of these partial configurations. The matching is performed such that a job configuration is considered a match if it includes all key-value pairs present in any filter configuration.
-
-
-        Returns
-        -------
-        List[Dict[str, Any]]
-            A list of job configurations that match at least one filter.
-        """
-        if not filters:
-            return jobs
-
-        def deep_dict_subset_match(d1, d2):
-            """Check if d2 is a deep subset of d1 with matching values for shared keys."""
-            # Base case: If d2 is empty, it matches d1
-            if not d2:
-                return True
-
-            # If both d1 and d2 are not dictionaries, compare them directly
-            if not isinstance(d1, dict) or not isinstance(d2, dict):
-                return d1 == d2
-
-            # Recursive case: check each key in d2
-            for key in d2:
-                # If key is not in d1 or the values don't match, return False
-                if key not in d1 or not deep_dict_subset_match(d1[key], d2[key]):
-                    return False
-
-            # If all checks pass, return True
-            return True
-    
-
-        def filter(job):
-            for filter in filters:
-                if deep_dict_subset_match(job, filter):
-                    return job
-            return None
-                    
-        filtered_jobs = Parallel(n_jobs=-1, timeout=1e6)(delayed(filter)(job) for job in jobs)
-        filtered_jobs = [job for job in filtered_jobs if job is not None]
-        return filtered_jobs
 
     
 
@@ -455,9 +435,14 @@ class AbstractChallenge(ABC):
                     ):
 
         """
-        Executes a single, independent trial of a run. (A run is a setting of parameters defining a system and algorithm.)
+        Abstract method to be implemented in subclasses. Defines how to execute a single trial for a given job configuration. It should be self-contained to facilitate parallel execution and determinister so that results are reproducible.
 
-        This method should be implemented by subclasses to define the specific actions of a single trial of a challenge run. Each execution should be self-contained and should not depend on mutable shared state to allow for parallelization across different CPUs or nodes. For a set of given seeds, this method should be deterministic so that results are reproducible. 
+        This method should return a pandas DataFrame where each row is the result of an algorithm trained and evaluated on a single system for a given training set size.
+
+        Note
+        ----
+        A job is very abstractly defined, open an issue and tag @carynbear or @mkanwal for help. You can think of it as a trial for a single unit of computation that you wish to distribute. Sometimes we can do a single trial of multiple runs (see FixedComplexity) in special cases where the system is the same for different training set sizes.
+        
 
         Parameters
         ----------
@@ -476,10 +461,7 @@ class AbstractChallenge(ABC):
         -------
         pandas.DataFrame
             A DataFrame where each row is the result of an algorithm trained and evaluated on a single system for a given training set size.
-
-        Note
-        ----
-        If the cost of generating data from a system is high, you may not wish to parallelize over training set sizes. See FixedComplexity for an example. In general, you should take caution when sweeping over training set size. 
+        
         """
         raise NotImplementedError
         
@@ -488,7 +470,8 @@ class AbstractChallenge(ABC):
         seed: int|None = None,
         trials: int = 1,
         num_parallel_cpu=-1,
-        jobs_filter: list[dict[str, Any]] | None = None,
+        jobs_filter: list[int] | None = None,
+        csv_output_path: str | None = None,
         **kwargs
         ):
         """
@@ -500,28 +483,54 @@ class AbstractChallenge(ABC):
             Seed to initialize random number generation for seeding systems and algorithms.
         trials : int, optional
             Number of trials to run.
-        jobs_filter : list[dict[str, Any]] | None, optional
-            Specifies which job to evaluate. Defaults to None, which evaluates all jobs.
+        jobs_filter : list[int] | None, optional
+            Specifies which job ids to evaluate. Defaults to None, which evaluates all jobs.
+        csv_output_path : str | None, optional
+            Path to save results. Will add to file if exists. Defaults to None, which does not save results.
         **kwargs : dict
             Additional keyword arguments get passed down to self.execute_job
         """
         
         jobs = self.create_job_configs(trials, seed)
-        filtered_jobs = self._filter_jobs(jobs, jobs_filter)
+        logging.info(f"Created {len(jobs)} jobs")
+        filtered_jobs = [job for job in jobs if job["job_id"] in jobs_filter] if jobs_filter else jobs
 
         if num_parallel_cpu == 0:
             logging.info(f"Running systems sequentially. {num_parallel_cpu=}")
             data = []
             for job in filtered_jobs:
-                data.append(
-                    self.execute_job(**kwargs, **job)
-                )
-
+                data_job = self.execute_job(**kwargs, **job)
+                data.append(data_job)
+                if csv_output_path:
+                    data_job.to_csv(csv_output_path, mode='a', index=False, header=not os.path.exists(csv_output_path))
         else:
             logging.warning(f"Running systems in parallel. {num_parallel_cpu=}")
-            # Run systems in parallel
-            data = Parallel(n_jobs=num_parallel_cpu, timeout=1e6)(
-                delayed(self.execute_job)(**kwargs, **job) for job in filtered_jobs)
+            
+            if csv_output_path: # save to csv in parallel
+                def save_to_csv(q):
+                    while True:
+                        data_job = q.get()
+                        if data_job is None:
+                            break
+                        data_job.to_csv(csv_output_path, index=False, header=not os.path.exists(csv_output_path))
+                
+                def process(**kwargs):
+                    data_job = self.execute_job(**kwargs)
+                    q.put(data_job)
+                    return data_job
+                
+                m = Manager()
+                q = m.Queue()
+                p = Process(target=save_to_csv, args=(q, ))
+                p.start()
+                data = Parallel(n_jobs=num_parallel_cpu, timeout=1e6)(
+                    delayed(process)(**kwargs, **job) for job in filtered_jobs)
+                q.put(None)
+                p.join()
+            
+            else:
+                data = Parallel(n_jobs=num_parallel_cpu, timeout=1e6)(
+                    delayed(self.execute_job)(**kwargs, **job) for job in filtered_jobs)
 
         if data:
             data = pd.concat(data)

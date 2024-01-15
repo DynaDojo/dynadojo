@@ -108,11 +108,9 @@ class ScalingChallenge(AbstractChallenge):
                     id=None, 
                     num_parallel_cpu=-1,
                     seed=None,
-                    # Filters which trials and L to evaluate. If None, no filtering is performed.
-                    # We recommend using these filters to parallelize evaluation across multiple machines, while retaining reproducibility.
-                    trials_filter: list[int] = None,
-                    L_filter: list[int] | None = None,
-                    trial_l_filter: list[tuple[int, int]] | None = None,
+                    jobs_filter: list[int] | None = None,
+                    csv_output_path: str | None = None,
+                    
                  ) -> pd.DataFrame:
         """
         Evaluates an algorithm class (NOT an instance) on a dynamical system over a set of experimental parameters.
@@ -140,13 +138,10 @@ class ScalingChallenge(AbstractChallenge):
         seed : int or None, optional
             Seed to seed the random number generator for seeding systems and algorithms. Defaults to None.
             Is overridden by seeds in system_kwargs or algo_kwargs.
-        trials_filter : list of int or None, optional
-            If provided, will only evaluate system_runs with the given trials. Defaults to None, which evaluates all trials.
-        L_filter : list of int or None, optional
-            If provided, will only evaluate system_runs with the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
-        trial_l_filter : list of tuple(int, int) or None, optional
-            If provided, will only evaluate system_runs with the given (trial, latent_dim) pairs.
-            Defaults to None, which evaluates all (trial, latent_dim) pairs.
+        jobs_filter : list[int] | None, optional
+            Specifies which jobs to evaluate as specified by job_id. Defaults to None, which evaluates all jobs.
+        csv_output_path : str | None, optional
+            Path to save results. Will add to file if exists. Defaults to None, which does not save results.
 
         Returns
         -------
@@ -157,17 +152,6 @@ class ScalingChallenge(AbstractChallenge):
         fit_kwargs = fit_kwargs or {}
         act_kwargs = act_kwargs or {}
 
-        converted_filter = []
-        # First, figuring out which trials to do based on specified subset of trials
-        if trials_filter is not None and len(trials_filter) > 0:
-            converted_filter += [{"trial": t} for t in trials_filter]
-        # Second, figuring out which systems to do based on specified subset of L
-        if L_filter is not None and len(L_filter) > 0:
-            converted_filter += [{"latent_dim": l} for l in L_filter]
-        # Third, figuring out which systems to do based on specified subset of (trial, L)
-        if trial_l_filter is not None and len(trial_l_filter) > 0:
-            converted_filter += [{"trial": t, "latent_dim": l} for t, l in trial_l_filter]
-
         if not id:
             id = algo_cls.__name__
 
@@ -175,7 +159,8 @@ class ScalingChallenge(AbstractChallenge):
             seed = seed,
             trials = self._trials,
             num_parallel_cpu = num_parallel_cpu,
-            jobs_filter = converted_filter,
+            jobs_filter = jobs_filter,
+            csv_output_path = csv_output_path,
             algo_cls = algo_cls,        #to pass to execute_job
             algo_kwargs = algo_kwargs,  #to pass to execute_job
             fit_kwargs = fit_kwargs,    #to pass to execute_job
@@ -440,33 +425,6 @@ class FixedTrainSize(ScalingChallenge):
         system_kwargs : dict
             The keyword arguments to pass to the system class.
         """
-        Initialize the class.
-
-        Parameters
-        ----------
-        n : int
-            The size of the training set.
-        L : int
-            The complexities of the system.
-        E : int
-            The embedding dimensions of the system.
-        t : int
-            The number of timesteps to simulate.
-        max_control_cost_per_dim : int
-            The maximum control cost per dimension.
-        control_horizons : int
-            The number of control horizons to consider.
-        system_cls : type
-            The system class to use.
-        reps : int
-            The number of repetitions to run.
-        test_examples : int
-            The number of test examples to use.
-        test_timesteps : int
-            The number of timesteps to simulate for the test examples.
-        system_kwargs : dict
-            The keyword arguments to pass to the system class.
-        """
         N = [n]
         super().__init__(N, L, E, t, max_control_cost_per_dim, control_horizons,
                  system_cls, trials, test_examples, test_timesteps, system_kwargs=system_kwargs)
@@ -607,11 +565,8 @@ class FixedError(ScalingChallenge):
                  id=None,
                  num_parallel_cpu=-1,
                  seed=None,
-                 # Filters which trials and L to evaluate. If None, no filtering is performed.
-                 # We recommend using these filters to parallelize evaluation across multiple machines, while retaining reproducibility.
-                 trials_filter: list[int] = None,
-                 L_filter: list[int] | None = None,
-                 rep_l_filter: list[tuple[int, int]] | None = None,
+                 jobs_filter: list[int] | None = None,
+                 csv_output_path: str | None = None,
                  ) -> pd.DataFrame:
         """
         Evaluates an algorithm class (NOT an instance) on a dynamical system over a set of experimental parameters.
@@ -637,24 +592,22 @@ class FixedError(ScalingChallenge):
             Number of CPUs to use in parallel. Defaults to -1, which uses all available CPUs.
         seed : int, optional
             Seed to initialize the random number generator for seeding systems and models. Defaults to None. Is overridden by seeds in system_kwargs or model_kwargs.
-        trials_filter : list, optional
-            If provided, will only evaluate system_runs with the given rep_ids. Defaults to None, which evaluates all repetitions.
-        L_filter : list, optional
-            If provided, will only evaluate system_runs with the given latent dimensions. Defaults to None, which evaluates all latent dimensions.
-        rep_l_filter : list, optional
-            If provided, will only evaluate system_runs with the given (rep_id, latent_dim) pairs. Defaults to None, which evaluates all (rep_id, latent_dim) pairs.
-
+        jobs_filter : list[int] | None, optional
+            Specifies which job ids to evaluate. Defaults to None, which evaluates all jobs.
+        csv_output_path : str | None, optional
+            Path to save results. Will add to file if exists. Defaults to None, which does not save results.
+            
         Returns
         -------
         pandas.DataFrame
             A DataFrame where each row is a result from an algorithm trained and evaluated on a single system.
         """
         results = super().evaluate(algo_cls, algo_kwargs, fit_kwargs, act_kwargs, ood, noisy, id, num_parallel_cpu,
-                                   seed, trials_filter, L_filter, rep_l_filter)
+                                   seed, jobs_filter, csv_output_path)
         targets = results[['job_id','latent_dim', 'embed_dim', 'trial', 'n_target', 'algo_seed', 'system_seed']].drop_duplicates()
 
         for _, row in targets.iterrows():
-            logging.debug(
+            logging.info(
                 f"ERROR TARGETED: job_id={row['job_id']} | n_target={row['n_target']}, latent={row['latent_dim']}, embed={row['embed_dim']}, trial={row['trial']}, seed={row['system_seed']},{row['algo_seed']}")
 
         return results
@@ -719,7 +672,7 @@ class FixedError(ScalingChallenge):
             start = time.time()
             algo = AlgorithmChecker(algo_cls(embed_dim, self._t, max_control_cost, **{"seed": algo_seed, **algo_kwargs}))
             training_set = get_training_set(n)
-            total_cost = self._fit_model(system, algo, training_set, self._t, max_control_cost, fit_kwargs, act_kwargs, noisy)
+            total_cost = self._fit_algo(system, algo, training_set, self._t, max_control_cost, fit_kwargs, act_kwargs, noisy)
             pred = algo.predict(test_set[:, 0], self._test_timesteps)
             error = system.calc_error(pred, test_set)
 
@@ -748,9 +701,9 @@ class FixedError(ScalingChallenge):
             """
             n = int(n // 1)  # make sure n is an integer
             half_window = int(half_window // 1)  # make sure window is an integer
-
+            window_size = (half_window * 2 + 1)
+            
             if half_window > 0:  # moving average/median window
-                
                 #window_range = list(range(int(max(self.n_min, n - window)), int(min(n + window + 1, self.n_max)))) #clip if beyond bounds
                 
                 #half-sample symmetric / reflect: when the windowed range is beyond bounds, extend the range by reflecting about the edge.
@@ -763,7 +716,7 @@ class FixedError(ScalingChallenge):
                         break
                     else:
                         window_range = reflected_range
-                window_size = (half_window * 2 + 1)
+                
                 window_len = int(window_size * self.n_window_density)
                 if len(window_range) > window_len:
                     step = int(len(window_range) // window_len)
@@ -777,7 +730,7 @@ class FixedError(ScalingChallenge):
                 error, total_cost = algorithm_test(n)
             
             logging.debug(
-                f"{job_id=} | {trial=}, {latent_dim=}, {embed_dim=}, {n=}, {window_size=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, incl {ood=}, algo_seed={algo_seed}, sys_seed={system._seed}")
+                f"{job_id=} | {trial=}, {latent_dim=}, {embed_dim=}, {n=}, {window_size=}, t={self._t}, control_h={self._control_horizons}, {total_cost=}, {error=:0.3}, incl {ood=}, algo_seed={algo_seed}, sys_seed={system_seed}")
             return error, total_cost
 
         def search():
@@ -791,14 +744,14 @@ class FixedError(ScalingChallenge):
             n = self.n_starts.get(latent_dim, self.n_min)
 
             # Check if this is our n_left or n_right
-            error, _ = windowed_algorithm_test(n, window=self.n_half_window)
+            error, _ = windowed_algorithm_test(n, half_window=self.n_half_window)
             n_left = n  # n_left is the largest n that is above target
             n_right = n  # n_right is the smallest n that is below target
             if error > self._target_error:
                 # double n until we find an n that is below target
                 while (n < self.n_max):
                     n = min(self.n_max, int(n * 2))
-                    error, _ = windowed_algorithm_test(n, window=self.n_half_window)
+                    error, _ = windowed_algorithm_test(n, half_window=self.n_half_window)
                     if error > self._target_error:
                         # found a larger n that is below target
                         n_left = n
@@ -809,7 +762,7 @@ class FixedError(ScalingChallenge):
                 # Below target so look for left boundary! halve n until we find an n that is above target
                 while (n > self.n_min):
                     n = max(self.n_min, int(n // 2))
-                    error, _ = windowed_algorithm_test(n, window=self.n_half_window)
+                    error, _ = windowed_algorithm_test(n, half_window=self.n_half_window)
                     if error > self._target_error:
                         n_left = n
                         break  # do binary search if n_left is above target
@@ -826,14 +779,14 @@ class FixedError(ScalingChallenge):
 
             # Binary Search Time!
             while True:
-                n = math.ceil((n_left + n_right) // 2)
+                n = math.ceil((n_left + n_right) / 2)
                 # stop if n_upper and n_lower are within precision
                 # n_precision is a percentage of n_curr so if 
                 # n_precision is 0, we must converge to a specific n.
-                if n_right - n_left <= self.n_precision * n:
+                if n_right - n_left <= max(self.n_precision * n, 1):
                     return n
-
-                error, _ = windowed_algorithm_test(n, window=self.n_half_window)
+                
+                error, _ = windowed_algorithm_test(n, half_window=self.n_half_window)
                 if error > self._target_error:
                     n_left = n
                 else:
@@ -852,6 +805,7 @@ class FixedError(ScalingChallenge):
         data['n_max'] = self.n_max
         data['system_seed'] = system_seed
         data['algo_seed'] = algo_seed
+        data['id'] = id
 
         return data
 
