@@ -170,10 +170,10 @@ embed_dim = 10
 n = 5000
 timesteps = 50
 system = dd.systems.LDSSystem(latent_dim, embed_dim)
-x0 = system._make_init_conds(n)
-y0 = system._make_init_conds(30, in_dist=False)
-x = system._make_data(x0, control=np.zeros((n, timesteps, embed_dim)), timesteps=timesteps)
-y = system._make_data(y0, control=np.zeros((n, timesteps, embed_dim)), timesteps=timesteps)
+x0 = system.make_init_conds(n)
+y0 = system.make_init_conds(30, in_dist=False)
+x = system.make_data(x0, control=np.zeros((n, timesteps, embed_dim)), timesteps=timesteps)
+y = system.make_data(y0, control=np.zeros((n, timesteps, embed_dim)), timesteps=timesteps)
 dd.utils.lds.plot([x, y], target_dim=min(latent_dim, 3), labels=["in", "out"], max_lines=15)
 ```
 
@@ -187,12 +187,12 @@ Next, let's create our nonlinear model using DynaDojo's baseline `DNN` class.
 
 ```python
 nonlinear_model = dd.baselines.DNN(embed_dim, timesteps, activation="tanh", max_control_cost=0)
-nonlinear_model._fit(x)
-x_pred = nonlinear_model._predict(x[:, 0], 50)
-y_pred = nonlinear_model._predict(y[:, 0], 50)
+nonlinear_model.fit(x)
+x_pred = nonlinear_model.predict(x[:, 0], 50)
+y_pred = nonlinear_model.predict(y[:, 0], 50)
 dd.utils.lds.plot([x_pred, y_pred], target_dim=min(3, latent_dim), labels=["in pred", "out pred"], max_lines=15)
-x_err = system._calc_error(x, x_pred)
-y_err = system._calc_error(y, y_pred)
+x_err = system.calc_error(x, x_pred)
+y_err = system.calc_error(y, y_pred)
 print(f"{x_err=}")
 print(f"{y_err=}")
 ```
@@ -213,12 +213,12 @@ Next, let's try `DNN` with a linear activation.
 
 ```python
 linear_model = dd.baselines.DNN(embed_dim, timesteps, activation=None, max_control_cost=0)
-linear_model._fit(x)
-x_pred = linear_model._predict(x[:, 0], 50)
-y_pred = linear_model._predict(y[:, 0], 50)
+linear_model.fit(x)
+x_pred = linear_model.predict(x[:, 0], 50)
+y_pred = linear_model.predict(y[:, 0], 50)
 dd.utils.lds.plot([x_pred, y_pred], target_dim=min(3, latent_dim), labels=["in pred", "out pred"], max_lines=15)
-x_err = system._calc_error(x, x_pred)
-y_err = system._calc_error(y, y_pred)
+x_err = system.calc_error(x, x_pred)
+y_err = system.calc_error(y, y_pred)
 print(f"{x_err=}")
 print(f"{y_err=}")
 ```

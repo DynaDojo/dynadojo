@@ -16,7 +16,7 @@ class LinearRegression(AbstractAlgorithm):
         self.model = None
         self._rng = np.random.default_rng(seed=self._seed)
 
-    def _fit(self, x: np.ndarray, **kwargs):
+    def fit(self, x: np.ndarray, **kwargs):
         N, T, D = x.shape
         X_train = x[:, :-1, :].reshape(N * (T - 1), D)
         y_train = x[:, 1:, :].reshape(N * (T - 1), D)
@@ -30,13 +30,13 @@ class LinearRegression(AbstractAlgorithm):
         self.model.fit(X_train, y_train)
         self.A_hat = self.model.coef_
 
-    def _act(self, x, **kwargs):
-        self.U = self._rng.uniform(-1, 1, [len(x[0]), self._timesteps, self._embed_dim])
+    def act(self, x, **kwargs):
+        self.U = self._rng.uniform(-1, 1, [len(x[0]), self._timesteps, self.embed_dim])
         self.U = np.array(self.U)
         self.U = (self.U / np.linalg.norm(self.U, axis=-1)[:, :, np.newaxis]) * self._max_control_cost
         return self.U
 
-    def _predict(self, x0, timesteps, **kwargs):
+    def predict(self, x0, timesteps, **kwargs):
         preds = []
         traj = [x0.T]
         for _ in range(timesteps - 1):

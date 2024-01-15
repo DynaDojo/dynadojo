@@ -1,6 +1,6 @@
 """
-Generalized Lorenz system formulation based on
-paper from Shen: https://www.worldscientific.com/doi/epdf/10.1142/S0218127419500378
+Generalized Lorenz System
+==========================
 """
 import numpy as np
 
@@ -8,10 +8,59 @@ from .utils.simple import SimpleSystem
 
 
 class LorenzSystem(SimpleSystem):
+    """
+    Generalized Lorenz system. More details and formulation based on [1]_
+
+    References
+    -----------
+    .. [1] https://www.worldscientific.com/doi/epdf/10.1142/S0218127419500378
+
+
+    Example
+    --------
+    >>> from dynadojo.wrappers import SystemChecker
+    >>> from dynadojo.utils.lds import plot
+    >>> latent_dim = 3
+    >>> embed_dim = 3
+    >>> n = 10
+    >>> timesteps = 50
+    >>> system = SystemChecker(LorenzSystem(latent_dim, embed_dim, noise_scale=0, seed=1912))
+    >>> x0 = system.make_init_conds(n)
+    >>> y0 = system.make_init_conds(n, in_dist=False)
+    >>> x = system.make_data(x0, timesteps=timesteps)
+    >>> y = system.make_data(y0, timesteps=timesteps, noisy=True)
+    >>> plot([x, y], target_dim=min(latent_dim, 3), labels=["in", "out"], max_lines=15)
+
+    .. image:: ../_images/lorenz.png
+
+    >>> from dynadojo.challenges import FixedTrainSize
+    >>> from dynadojo.baselines.sindy import SINDy
+    >>> challenge = FixedTrainSize(L=[3, 9, 13, 15], E=None, t=50, n=10, reps=3, system_cls=LorenzSystem, test_examples=1, test_timesteps=50)
+    >>> data = challenge.evaluate(algo_cls=SINDy)
+    >>> challenge.plot(data)
+
+    .. image:: ../_images/lorenz_fixed_train.png
+    """
     def __init__(self,
                  latent_dim=3,
                  embed_dim=3,
                  sigma=10, r=28, a_squared=1 / 2, b=8 / 3, **kwargs):
+        """
+        Initialize the class.
+
+        Parameters
+        -----------
+        latent_dim : int
+            Must be an odd number at least 3.
+        sigma : int
+            the Prandtl number
+        r : int
+            normalized Rayleigh number (or heating parameter)
+        a_squared : float
+            :math:`a^2 = 1 / 2` Used default value from [1]_
+        b_squared : float
+            :math:`b^2 = 8 / 3` Used default value from [1]_
+        """
         assert latent_dim % 2 == 1 and latent_dim >= 3, "Latent dimension must be odd number at least 3."
         self._sigma = sigma
         self._r = r

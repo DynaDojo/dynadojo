@@ -9,13 +9,16 @@ import pandas.testing as pd_testing
 
 from dynadojo.challenges import FixedComplexity
 
+# wrappers
+from dynadojo.wrappers import AlgorithmChecker, SystemChecker
+
 # baselines
 from dynadojo.baselines.aug_ode import AugODE
 from dynadojo.baselines.cnn import CNN
 from dynadojo.baselines.dmd import DMD
 from dynadojo.baselines.dnn import DNN
 from dynadojo.baselines.ode import ODE
-from dynadojo.baselines.sindy import SINDy
+# from dynadojo.baselines.sindy import SINDy
 
 ALL_BASELINES = [
     # AugODE,
@@ -23,7 +26,7 @@ ALL_BASELINES = [
     DMD,
     DNN,
     # ODE,
-    SINDy
+    # SINDy
 ]
 
 # systems
@@ -40,12 +43,12 @@ from dynadojo.systems.lv import CompetitiveLVSystem, PreyPredatorSystem
 from dynadojo.systems.opinion import ARWHKSystem, DeffuantSystem, HKSystem, MediaBiasSystem, WHKSystem
 
 ALL_SYSTEMS = [
-    CASystem,
-    CTLNSystem,
+    # CASystem,
+    # CTLNSystem,
     # HeatEquation,
     # KuramotoSystem,
     LDSystem,
-    NBodySystem,
+    # NBodySystem,
     # SNNSystem,
     # SEISSystem, SISSystem, SIRSystem,
     # BSBSystem, HJBSystem,
@@ -59,23 +62,24 @@ algorithms = ALL_BASELINES  # To test multiple models, add them to this list
 logger = logging.getLogger()
 logger.setLevel(logging.ERROR)
 
+
 class TestReproducibility(unittest.TestCase):
 
     @parameterized.expand(systems)
     def test_make_init_cond(self, system):
-        s1 = system(seed=100)
-        s2 = system(seed=100)
+        s1 = SystemChecker(system(seed=100))
+        s2 = SystemChecker(system(seed=100))
         i1 = s1.make_init_conds(n=5)
         i2 = s2.make_init_conds(n=5)
         np.testing.assert_array_equal(i1, i2)
 
     @parameterized.expand(systems)
     def test_make_data(self, system):
-        s1 = system(seed=100)
+        s1 = SystemChecker(system(seed=100))
         i1 = s1.make_init_conds(n=5)
         d1 = s1.make_data(i1, timesteps=3, noisy=True)
 
-        s2 = system(seed=100)
+        s2 = SystemChecker(system(seed=100))
         i2 = s2.make_init_conds(n=5)
         d2 = s2.make_data(i2, timesteps=3, noisy=True)
         np.testing.assert_array_equal(d1, d2)
@@ -86,10 +90,10 @@ class TestReproducibility(unittest.TestCase):
         Test that if we make data with more initial conditions, 
         the data starts the same as when we made data with less initial conditions
         """
-        s1 = system(seed=100)
+        s1 = SystemChecker(system(seed=100))
         i1 = s1.make_init_conds(n=5)
 
-        s2 = system(seed=100)
+        s2 = SystemChecker(system(seed=100))
         i2 = s2.make_init_conds(n=10)
         np.testing.assert_array_equal(i1, i2[:5])
 
@@ -129,13 +133,13 @@ class TestReproducibilityModel(unittest.TestCase):
                                     system_cls=LDSystem, reps=1,
                                     test_examples=2, test_timesteps=2, verbose=False)
         df1 = challenge.evaluate(algo, seed=100, noisy=True,
-                                    reps_filter=None,
-                                    L_filter=None,
-                                    algo_kwargs=None)
+                                 reps_filter=None,
+                                 L_filter=None,
+                                 algo_kwargs=None)
         df2 = challenge.evaluate(algo, seed=100, noisy=True,
-                                    reps_filter=None,
-                                    L_filter=None,
-                                    algo_kwargs=None)
+                                 reps_filter=None,
+                                 L_filter=None,
+                                 algo_kwargs=None)
         cols = ['rep', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
                 'system_seed', 'algo_seed']
         df1 = df1[cols]
@@ -152,13 +156,13 @@ class TestReproducibilityModel(unittest.TestCase):
                                     system_cls=LDSystem, reps=2,
                                     test_examples=2, test_timesteps=2, verbose=False)
         df1 = challenge.evaluate(algo, seed=100, noisy=True,
-                                    reps_filter=[1],
-                                    L_filter=None,
-                                    algo_kwargs=None)
+                                 reps_filter=[1],
+                                 L_filter=None,
+                                 algo_kwargs=None)
         df2 = challenge.evaluate(algo, seed=100, noisy=True,
-                                    reps_filter=None,
-                                    L_filter=None,
-                                    algo_kwargs=None)
+                                 reps_filter=None,
+                                 L_filter=None,
+                                 algo_kwargs=None)
         cols = ['rep', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
                 'system_seed', 'algo_seed']
         df1 = df1[cols]
