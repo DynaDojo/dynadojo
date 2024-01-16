@@ -52,7 +52,7 @@ python -m experiments make --challenge fe --algo lr --system lds --output_dir="e
 
 import argparse
 import os
-from .params import algo_dict, load_from_json, system_dict, challenge_dicts
+from .param_utils import algo_dict, load_from_json, system_dict, challenge_dicts
 from .main import load_data, run_challenge, make_plots, get_max_splits, save_params, prGreen, prPink
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 

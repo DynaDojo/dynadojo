@@ -8,7 +8,7 @@ import os
 import pandas as pd
 import numpy as np
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize, ScalingChallenge
-from .params import _get_system, _get_algo, _get_params, save_to_json, load_from_json
+from .param_utils import _get_system, _get_algo, _get_params, save_to_json, load_from_json
 import json
 
 
