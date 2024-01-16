@@ -30,12 +30,12 @@ self.dt, controls the step size between 0 - timesteps
 class KuramotoSystem(AbstractSystem):
 
     def __init__(self, latent_dim, embed_dim,
-                 noise_scale=0.25,
+                 noise_scale=0.6,
                  IND_range=(0, 10),
-                 OOD_range=(10, 20),
+                 OOD_range=(10, 30),
                  FREQ_range=(0, 50),
                  COUPLE_range=(-20, 20),
-                 dt=0.05,
+                 dt=0.02,
                  seed=None):
 
         super().__init__(latent_dim, embed_dim, seed)
@@ -87,8 +87,9 @@ class KuramotoSystem(AbstractSystem):
             dy = y-yt
             phase = w.astype(self.dtype)
             if noisy:
-                phase += self._rng.normal(
+                noise = self._rng.normal(
                     0, self.noise_scale, (self.latent_dim))
+                phase += noise
             for m, _k in enumerate(k):
                 phase += np.sum(_k*np.sin((m+1)*dy), axis=1)
 

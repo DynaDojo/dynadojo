@@ -4,7 +4,7 @@ import pylab as plt
 MAX_LINES = 30
 
 
-def plot(grid: list[np.ndarray], timesteps, max_lines=MAX_LINES, dt=0.05, gridlabels: list[str] = None):
+def plot(grid: list[np.ndarray], timesteps, max_lines=MAX_LINES, dt=0.02, gridlabels: list[str] = None):
     grid = np.array([x[:max_lines] for x in grid])
     
     for idx, dataset in enumerate(grid):
