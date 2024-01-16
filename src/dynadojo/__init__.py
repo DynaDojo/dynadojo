@@ -5,7 +5,7 @@ An extensible platform for benchmarking sample efficiency in dynamical system id
 # from . import abstractions
 # from . import baselines
 # from . import challenges
-# from . import systems
+from . import systems
 # from . import testing
 # from . import utils
 

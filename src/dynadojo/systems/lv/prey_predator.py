@@ -147,6 +147,7 @@ class PreyPredatorSystem(AbstractSystem):
                 x0.append(number)
             all.append(x0)
 
+        all = np.array(all)
         return all
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
