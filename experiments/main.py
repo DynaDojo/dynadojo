@@ -89,7 +89,7 @@ def run_challenge(
         save_to_json(experiment_params, f"{folder_path}/params.json")
     
     # Get csv file path, specifying split if necessary
-    filename = os.path.basename(folder_path)
+    filename = experiment_params["experiment_name"]
     if split is not None:
         filename += f"_{split_num}-of-{total_splits}"
     filename += ".csv"
@@ -138,14 +138,15 @@ def load_data(data_path):
     files = _find_all_csv(data_path) 
     if len(files) <= 0:
         # print(f"No plot created: No files matching {csv_filename} found in {data_path}")
-        prGreen(f"No plot created: No CSV files found in {data_path}")
-        return 
+        prGreen(f"No CSV files found in {data_path}")
+        return [], None
 
     data = pd.DataFrame()
     # Handling split challenge runs
     # Concatenate all files into one dataframe and drop duplicates
     for file in files:
         try:
+            print(file)
             df = pd.read_csv(file)
             prCyan(f"Loaded {len(df)} rows from {file}")
         except:
@@ -207,6 +208,8 @@ def _get_jobs(all_jobs:list[int], split_num:int, total_splits:int):
     splits = [all_jobs[i*k+min(i, mod):(i+1)*k+min(i+1, mod)] for i in range(total_splits)]
     return splits[split_num-1]
 
-def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
+def prGreen(skk): print("\033[92m{}\033[00m" .format(skk))
 
-def prCyan(skk): print("\033[96m {}\033[00m" .format(skk))
+def prCyan(skk): print("\033[96m{}\033[00m" .format(skk))
+
+def prPink(skk): print("\033[95m{}\033[00m" .format(skk))

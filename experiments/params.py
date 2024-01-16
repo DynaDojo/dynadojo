@@ -2,6 +2,7 @@
 This file contains parameters for experiments, including system and algo parameters, and challenge parameters.
 Also contains functions for getting system, algo, and challenge parameters.
 """
+import copy
 import importlib
 import inspect
 import json
@@ -271,6 +272,12 @@ fe_challenge_params_dict = {
     }
 }
 
+challenge_dicts = {
+    "fc" : (FixedComplexity, fc_challenge_params_dict),
+    "fts" : (FixedTrainSize, fts_challenge_params_dict),
+    "fe" : (FixedError, fe_challenge_params_dict),
+}
+
 def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
     """
     Get challenge parameters for a given system, algo, and challenge class, overriding defaults with system and algo specific parameters.
@@ -296,22 +303,22 @@ def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
     
     # Get challenge parameters, starting with defaults and then overriding with s and m specific params
     # Get default params
-    default_params = challenge_params_dict["default"]
+    default_params = challenge_params_dict["default"].copy()
     default_eval_params = default_params["evaluate"]
     default_params.pop("evaluate", None)
 
     # Get system default params
-    s_default_params = challenge_params_dict.get(s, {}).get("default", {})
+    s_default_params = challenge_params_dict.get(s, {}).get("default", {}).copy()
     s_default_eval_params = s_default_params.get("evaluate", {})
     s_default_params.pop("evaluate", None)
 
     # Get system and algo default params
-    s_a_base_params = challenge_params_dict.get(s, {}).get(a.split("_")[0], {})
+    s_a_base_params = challenge_params_dict.get(s, {}).get(a.split("_")[0], {}).copy()
     s_a_base_eval_params =  s_a_base_params.get("evaluate", {})
     s_a_base_params.pop("evaluate", None)
 
     # Get system and algo_with_suffix specific params
-    s_a_params = challenge_params_dict.get(s, {}).get(a, {})
+    s_a_params = challenge_params_dict.get(s, {}).get(a, {}).copy()
     s_a_eval_params = s_a_params.get("evaluate", {})
     s_a_params.pop("evaluate", None)
 
@@ -338,12 +345,13 @@ def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
         folder_path = f"fts/{s}/{folder_name}"
     elif challenge_cls == FixedError:
         e = challenge_params["target_error"]
-        ood = challenge_params["evaluate"]["ood"]
+        ood = eval_params.get("ood", False)
         folder_name = f"fe_{s}_{a}_{e=}"
         if ood:
             folder_name = f"fe{s}_{a}_ood-{e=}"
         folder_path = f"fe/{s}/{folder_name}"
 
+    experiment_params["experiment_name"] = folder_name
     experiment_params["folder_path"] = folder_path
     experiment_params["total_jobs"] = challenge_cls(**challenge_params).get_num_jobs(trials = challenge_params["trials"])
 

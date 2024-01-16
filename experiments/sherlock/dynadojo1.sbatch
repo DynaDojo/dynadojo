@@ -24,7 +24,7 @@ SINGULARITY_IMAGE_LOCATION=$GROUP_HOME/$USER/simg
 singularity run --bind $HOME/dynadojo/experiments:/dynadojo/experiments \
                 --bind $HOME/dynadojo/src/dynadojo:/dynadojo/pkgs/dynadojo \
                 --pwd /dynadojo \
-                $GROUP_HOME/$USER/simg/dynadojo \
+                $SINGULARITY_IMAGE_LOCATION/dynadojo \
                 python -m experiments \
                     --output_dir=$SCRATCH/ \
                     --system=$SYSTEM \
