@@ -20,7 +20,7 @@ class FBSNNSystem(AbstractSystem):
 
         super().__init__(latent_dim, embed_dim, seed)
 
-        assert embed_dim == 1
+        #assert embed_dim == 1
         
         tf.compat.v1.disable_v2_behavior()
         tf.compat.v1.disable_eager_execution()
@@ -29,13 +29,10 @@ class FBSNNSystem(AbstractSystem):
         self.latent_dim = latent_dim  # number of dimensions
         
         
-        # layers
         if layers:
             self.layers = layers
         else:
             self.layers = [self.latent_dim+1] + 4*[256] + [1]  # (latent_dim+1) --> 1
-        
-       
         
         self.IND_range = IND_range
         self.OOD_range = OOD_range
@@ -100,9 +97,9 @@ class FBSNNSystem(AbstractSystem):
         else:
             noise = 0
         
-        for n in range(0,self.timesteps):
-            t1 = t[:,n+1,:]
-            W1 = W[:,n+1,:]
+        for n in range(0,self.timesteps-1):
+            t1 = t[:,n,:]
+            W1 = W[:,n,:]
             X1 = X0 + self._mu_tf(t0,X0,Y0,Z0)*(t1-t0) + tf.squeeze(tf.matmul(self._sigma_tf(t0,X0,Y0),tf.expand_dims(W1-W0,-1)), axis=[-1])
             Y1_tilde = Y0 + self._phi_tf(t0,X0,Y0,Z0)*(t1-t0) + tf.reduce_sum(Z0*tf.squeeze(tf.matmul(self._sigma_tf(t0,X0,Y0),tf.expand_dims(W1-W0,-1))), axis=1, keepdims = True)
             Y1, Z1 = self._net_u(t1,X1)
@@ -123,20 +120,20 @@ class FBSNNSystem(AbstractSystem):
 
         X = tf.stack(X_list,axis=1)
         Y = tf.stack(Y_list,axis=1)
-        
+
         return loss, X, Y, Y[0,0,0]
 
     def _fetch_minibatch(self):
         T = self.T
         
-        Dt = np.zeros((self.N,self.timesteps+1,1)) # N x (timesteps) x 1
-        DW = np.zeros((self.N,self.timesteps+1,self.latent_dim)) # N x (timesteps) x latent_dim
+        Dt = np.zeros((self.N,self.timesteps,1)) # N x (timesteps) x 1
+        DW = np.zeros((self.N,self.timesteps,self.latent_dim)) # N x (timesteps) x latent_dim
         
         dt = T/self.timesteps
         
         Dt[:,1:,:] = dt
         np.random.seed(self.DW_seed)
-        DW[:,1:,:] = np.sqrt(dt)*np.random.normal(size=(self.N,self.timesteps,self.latent_dim))
+        DW[:,1:,:] = np.sqrt(dt)*np.random.normal(size=(self.N,self.timesteps-1,self.latent_dim))
         
         t = np.cumsum(Dt,axis=1) # N x timesteps x 1
         W = np.cumsum(DW,axis=1) # N x timesteps x latent_dim
@@ -147,29 +144,37 @@ class FBSNNSystem(AbstractSystem):
     def _predict(self, Xi_star, t_star, W_star):
         
         tf_dict = {self.Xi_tf: Xi_star, self.t_tf: t_star, self.W_tf: W_star}
-        
         X_star = self.sess.run(self.X_pred, tf_dict)
         Y_star = self.sess.run(self.Y_pred, tf_dict)
         
         return X_star, Y_star
         
+    # Expands initial conditions of X_old: (n, self.embed_dim) —– where self.embed_dim is always 1 —– 
+    # to X_new: (n, self.latent_dim) where each new initial condition if solved exactly corresponds back to X_old
+    def _expand_init_conds(self, x0):
+        expanded = []
+        for x in x0:
+            expanded.append(self._unsolve_target(x, self.T, self.latent_dim))
+        return expanded
+
 
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
-        # initialize NN
         self.weights, self.biases = self._initialize_NN(self.layers)
         self.DW_seed = np.random.randint(0,100)
 
         X0 = []
         if in_dist:
-            X0 = self._rng.uniform(self.IND_range[0], self.IND_range[1], (n, self.latent_dim))
+            X0 = self._rng.uniform(self.IND_range[0], self.IND_range[1], (n, self.embed_dim))
         else:
-            X0 = self._rng.uniform(self.OOD_range[0], self.OOD_range[1], (n, self.latent_dim))
+            X0 = self._rng.uniform(self.OOD_range[0], self.OOD_range[1], (n, self.embed_dim))
+        X0 = np.array(X0)
         return X0
         
 
     def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         self.N = len(init_conds) 
         self.timesteps = timesteps
+        init_conds = self._expand_init_conds(init_conds)
 
         # tf session
         self.sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(allow_soft_placement=True,
@@ -177,8 +182,8 @@ class FBSNNSystem(AbstractSystem):
 
         # tf placeholders and graph (training)
         self.learning_rate = tf.compat.v1.placeholder(tf.float32, shape=[])
-        self.t_tf = tf.compat.v1.placeholder(tf.float32, shape=[self.N, self.timesteps+1, 1]) # N x (timesteps) x 1
-        self.W_tf = tf.compat.v1.placeholder(tf.float32, shape=[self.N, self.timesteps+1, self.latent_dim]) # N x (timesteps) x latent_dim
+        self.t_tf = tf.compat.v1.placeholder(tf.float32, shape=[self.N, self.timesteps, 1]) # N x (timesteps) x 1
+        self.W_tf = tf.compat.v1.placeholder(tf.float32, shape=[self.N, self.timesteps, self.latent_dim]) # N x (timesteps) x latent_dim
         self.Xi_tf = tf.compat.v1.placeholder(tf.float32, shape=[self.N, self.latent_dim]) # 1 x latent_dim
 
         self.loss, self.X_pred, self.Y_pred, self.Y0_pred = self._loss_function(self.t_tf, self.W_tf, self.Xi_tf, noisy)
@@ -193,10 +198,12 @@ class FBSNNSystem(AbstractSystem):
 
         if control is not None:
             control = control.reshape(-1,control.shape[2])
-            sol = np.reshape(self._solve(np.reshape(t_test[0:self.N,:,:],[-1,1]), np.reshape(X_pred[0:self.N,:,:],[-1,self.latent_dim]), self.T, control), [self.N,-1,1])
+            sol = self._solve(np.reshape(t_test[0:self.N,:,:],[-1,1]), np.reshape(X_pred[0:self.N,:,:],[-1,self.latent_dim]), self.T, control)
+            sol = np.reshape(sol, [self.N,-1,1])
         else:
-            U = np.zeros([self.N*(self.timesteps+1), 1])
-            sol = np.reshape(self._solve(np.reshape(t_test[0:self.N,:,:],[-1,1]), np.reshape(X_pred[0:self.N,:,:],[-1,self.latent_dim]), self.T, U), [self.N,-1,1])
+            U = np.zeros([self.N*(self.timesteps), 1])
+            sol = self._solve(np.reshape(t_test[0:self.N,:,:],[-1,1]), np.reshape(X_pred[0:self.N,:,:],[-1,self.latent_dim]), self.T, U)
+            sol = np.reshape(sol, [self.N,-1,1])
         
         return sol
 
@@ -208,8 +215,12 @@ class FBSNNSystem(AbstractSystem):
         return np.linalg.norm(control, axis=(1, 2), ord=2)
 
     @abstractmethod
-    def _solve(t, X, T, U): # (N+1) x 1, (N+1) x latent_dim
+    def _solve(t, X, T, U): # (N) x 1, (N) x latent_dim
         pass
+
+    @abstractmethod
+    def _unsolve_target(self, target, T, new_dim):
+         pass
 
     @abstractmethod
     def _phi_tf(self, t, X, Y, Z): # N x 1, N x latent_dim, N x 1, N x latent_dim
