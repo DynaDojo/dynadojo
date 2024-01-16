@@ -52,8 +52,8 @@ python -m experiments make --challenge fe --algo lr --system lds --output_dir="e
 
 import argparse
 import os
-from .param_utils import algo_dict, load_from_json, system_dict, challenge_dicts
-from .main import load_data, run_challenge, make_plots, get_max_splits, save_params, prGreen, prPink
+from .utils import algo_dict, load_from_json, system_dict, challenge_dicts
+from .main import load_data, run_challenge, make_plots, save_params, prGreen, prPink
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 
 
@@ -64,7 +64,7 @@ run_parser = subparsers.add_parser('run', help='Run an experiment param file')
 plot_parser = subparsers.add_parser('plot', help='Plot an experiment results')
 check_parser = subparsers.add_parser('check', help='Check for missing jobs')
 
-# # Accept command line arguments
+# Accept command line arguments
 make_parser.add_argument('--algo', type=str, default='lr', help='Specify which algo to run')
 make_parser.add_argument('--system', type=str, default='lds', choices=system_dict.keys(), help='Specify which system to run')
 make_parser.add_argument('--challenge', type=str, default="fc", choices=["fc", "fts", "fe"], help='Specify which challenge to run')
@@ -86,18 +86,18 @@ plot_parser.add_argument('--output_dir', type=str, default="experiments/outputs"
 
 check_parser.add_argument('--data_dir', type=str, help='where to load results from')
 
-args = program.parse_args()
+args, rest = program.parse_known_args()
 
 if args.command == 'make':
     if args.all:
         for c, chall_dict in challenge_dicts.values():
             for s in chall_dict.keys():
-                if s is not "default":
+                if s != "default":
                     for a in chall_dict[s].keys():
-                        if a is not "default":
+                        if a != "default":
                             print(f"Making {c.__name__} {s} {a}")
-                            params_file = save_params(s, a, challenge_cls=c, output_dir=args.output_dir)
-                            prPink(params_file)
+                            params_file, total_jobs = save_params(s, a, challenge_cls=c, output_dir=args.output_dir)
+                            prPink(f"{params_file} with {total_jobs} jobs")
     else:
         assert args.algo.split("_")[0] in algo_dict.keys(), f"algo {args.algo} must be in algo_dict"
         if args.challenge == "fc":
@@ -106,10 +106,16 @@ if args.command == 'make':
             challenge_cls = FixedTrainSize
         else:
             challenge_cls = FixedError
-        params_file = save_params(args.system, args.algo, challenge_cls, output_dir=args.output_dir)
-        prPink(params_file)
+        params_file, total_jobs = save_params(args.system, args.algo, challenge_cls, output_dir=args.output_dir)
+        prPink(f"{params_file} with {total_jobs} jobs")
+        if rest: #maybe parse more args
+            args = program.parse_args(rest) 
+            if args.command == 'run':
+                args.params_file = params_file
+            else:
+                exit(0)
 
-elif args.command == 'run':
+if args.command == 'run':
     assert args.params_file is not None, "must specify params file"
     
     if args.if_missing:

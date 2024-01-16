@@ -2,14 +2,11 @@
 Functions for running experiments for the paper. See __main__.py for usage.
 Parameters are specified in experiments/params.py
 """
-import itertools
 import logging
 import os
 import pandas as pd
-import numpy as np
-from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize, ScalingChallenge
-from .param_utils import _get_system, _get_algo, _get_params, save_to_json, load_from_json
-import json
+from dynadojo.challenges import  FixedComplexity, ScalingChallenge
+from .utils import _get_params, save_to_json, load_from_json
 
 
 def save_params(
@@ -21,7 +18,7 @@ def save_params(
     experiment_params = _get_params(s, a, challenge_cls=challenge_cls)
     folder_path = experiment_params["folder_path"]
     save_to_json(experiment_params, os.path.join(output_dir, folder_path, "params.json"))
-    return os.path.join(output_dir, folder_path, "params.json")
+    return os.path.join(output_dir, folder_path, "params.json"), experiment_params['total_jobs']
 
 def get_max_splits(s="lds", m="lr", challenge_cls:type[ScalingChallenge] = FixedComplexity,):
     params = _get_params(s, m, challenge_cls=challenge_cls)

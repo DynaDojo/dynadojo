@@ -29,7 +29,6 @@ algo_dict = {
     "dnn" : DNN,
     "sindy": SINDy
 }
-
 challenge_dicts = {
     "fc" : (FixedComplexity, fc_challenge_params_dict),
     "fts" : (FixedTrainSize, fts_challenge_params_dict),
@@ -47,8 +46,8 @@ def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
     assert s in system_dict, f"s must be one of {system_dict.keys()}"
     assert a.split("_")[0] in algo_dict, f"m must be one of {algo_dict.keys()}"
 
-    system = system_dict[s]
-    algo = algo_dict[a.split("_")[0]]
+    system = _get_system(s)
+    algo = _get_algo(a)
 
     if challenge_cls == FixedComplexity:
         challenge_params_dict = fc_challenge_params_dict
