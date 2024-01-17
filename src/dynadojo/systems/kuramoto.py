@@ -1,5 +1,6 @@
-# Adapted from D. Laszuk, "Python implementation of Kuramoto systems," 2017-,
-#   [Online] Available: http://www.laszukdawid.com/codes
+"""
+Kuramoto Oscillators
+"""
 
 import numpy as np
 from scipy.integrate import ode
@@ -10,8 +11,6 @@ import scipy as sp
 from ..abstractions import AbstractSystem
 
 """
-Kuramoto, generalized to n-oscillators
-
 Adapted from D. Laszuk, "Python implementation of Kuramoto systems," 2017-, [Online] Available: http://www.laszukdawid.com/codes
 Research Source: Kuramoto, Y. (1984). Chemical Oscillations, Waves, and Turbulence (Vol. 19). doi: doi.org/10.1007/978-3-642-69689-3
 

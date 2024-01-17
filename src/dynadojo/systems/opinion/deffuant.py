@@ -1,10 +1,15 @@
+"""
+Deffuant (Algorithmic Bias)
+"""
 import ndlib.models.ModelConfig as mc
 import ndlib.models.opinions as op
 import networkx as nx
 
 from ..utils.opinion import OpinionSystem
 
-
+'''
+With no bias, this is a classic Deffuant system. Bias can be added to simulate the effect of algorithms on shaping opinions.
+'''
 class DeffuantSystem(OpinionSystem):
     def __init__(self, latent_dim=31, embed_dim=31,
                  noise_scale=0.01,

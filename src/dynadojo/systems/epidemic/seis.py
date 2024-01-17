@@ -1,3 +1,6 @@
+"""
+Susceptible-Exposed-Infected-Susceptible
+"""
 import ndlib.models.ModelConfig as mc
 import ndlib.models.epidemics as ep
 import networkx as nx

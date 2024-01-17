@@ -1,3 +1,6 @@
+"""
+Hegselmann-Krause
+"""
 import ndlib.models.ModelConfig as mc
 import ndlib.models.opinions as op
 import networkx as nx

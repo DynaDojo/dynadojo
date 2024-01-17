@@ -1,3 +1,6 @@
+"""
+Algorithmic Bias with Media
+"""
 import ndlib.models.ModelConfig as mc
 import ndlib.models.opinions as op
 import networkx as nx

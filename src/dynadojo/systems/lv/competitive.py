@@ -1,11 +1,12 @@
+"""
+Competitive Lotka Volterra
+"""
 import numpy as np
 from scipy.integrate import solve_ivp
 
 from ...abstractions import AbstractSystem
 
 """
-Competitive Lotka Volterra, generalized to n-species
-
 Complexity
 -------
 self.latent_dim, controls number of species and rank(A) of interaction matrix

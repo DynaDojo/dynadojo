@@ -1,17 +1,19 @@
+"""
+Hamilton-Jacobi-Bellman PDE
+"""
 import numpy as np
 import tensorflow as tf
 from scipy.optimize import minimize
 
 from ..utils.fbsnn import FBSNNSystem
 
-'''
-Hamilton-Jacobi-Bellman PDE adapted from Maziar Raissi, https://github.com/maziarraissi/FBSNNs
+"""
+Adapted from Maziar Raissi, https://github.com/maziarraissi/FBSNNs
 
 Complexity
 -------
 self.latent_dim, controls dimension of the systems
-
-'''
+"""
 
 
 class HJBSystem(FBSNNSystem):

@@ -1,17 +1,20 @@
+"""
+Black-Scholes-Barenblatt PDE
+"""
 import numpy as np
 import tensorflow as tf
 from scipy.optimize import minimize
 
 from ..utils.fbsnn import FBSNNSystem
 
-'''
-Black-Scholes-Barenblatt PDE adapted from Maziar Raissi, https://github.com/maziarraissi/FBSNNs
+"""
+Adapted from Maziar Raissi, https://github.com/maziarraissi/FBSNNs
 
 Complexity
 -------
 self.latent_dim, controls dimension of the systems
+"""
 
-'''
 class BSBSystem(FBSNNSystem):
     def __init__(self, latent_dim=1, embed_dim=1,
                  noise_scale=0.001,
