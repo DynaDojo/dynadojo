@@ -17,8 +17,13 @@ def save_params(
     ):
     experiment_params = _get_params(s, a, challenge_cls=challenge_cls)
     folder_path = experiment_params["folder_path"]
-    save_to_json(experiment_params, os.path.join(output_dir, folder_path, "params.json"))
-    return os.path.join(output_dir, folder_path, "params.json"), experiment_params['total_jobs']
+    # don't overwrite existing params
+    params_file_path = os.path.join(output_dir, folder_path, "params.json")
+    if os.path.exists(params_file_path):
+        prGreen(f"Params already exist for {folder_path}...skipping")
+    else:
+        save_to_json(experiment_params, os.path.join(output_dir, folder_path, "params.json"))
+    return params_file_path, experiment_params['total_jobs']
 
 def get_max_splits(s="lds", m="lr", challenge_cls:type[ScalingChallenge] = FixedComplexity,):
     params = _get_params(s, m, challenge_cls=challenge_cls)
