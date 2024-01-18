@@ -8,6 +8,8 @@ source ${__dir}/srun_setup.sh
 # Warn user that the directory must be relative to the singularity container
 echo "Warning: The data directory must be relative to the singularity container."
 
+#TODO: Ask for challenge and system, read folders from $DD_SCRATCH_FOLDER and $DD_OUTPUT_FOLDER
+
 #ask for challenge, system, and algorithm
 read -p "Directory where data lives? " data_dir
 

@@ -372,8 +372,8 @@ class FixedComplexity(ScalingChallenge):
         if not latent_dim:
             latent_dim = data["latent_dim"].unique()[0]
         if not data['ood_error'].isnull().any():
-            assert not np.isnan(data[['error','ood_error']]).any(), "data[['error','ood_error']] contains np.nan"
-            assert not np.isinf(data[['error','ood_error']]).any(), "data[['error','ood_error']] contains np.inf"
+            assert not np.isnan(data[['error','ood_error']]).values.any(), "data[['error','ood_error']] contains np.nan"
+            assert not np.isinf(data[['error','ood_error']]).values.any(), "data[['error','ood_error']] contains np.inf"
             ax = plot_metric(data, "n", ["error", "ood_error"], xlabel=r'$n$', ylabel=r'$\mathcal{E}$',
                              errorbar=("pi", 50))
             if showLegend:
@@ -450,8 +450,8 @@ class FixedTrainSize(ScalingChallenge):
         if not n:
             n = data["n"].unique()[0]
         if plot_ood and not data['ood_error'].isnull().any():
-            assert not np.isnan(data[['error','ood_error']]).any(), "data[['error','ood_error']] contains np.nan"
-            assert not np.isinf(data[['error','ood_error']]).any(), "data[['error','ood_error']] contains np.inf"
+            assert not np.isnan(data[['error','ood_error']]).values.any(), "data[['error','ood_error']] contains np.nan"
+            assert not np.isinf(data[['error','ood_error']]).values.any(), "data[['error','ood_error']] contains np.inf"
             ax = plot_metric(data, "latent_dim", ["error", "ood_error"], xlabel=r'$L$', log=True,
                              ylabel=r'$\mathcal{E}$', errorbar=("pi", 50))
             if not showLegend:
