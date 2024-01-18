@@ -11,7 +11,7 @@
 ### CHANGE THESE VALUES TO YOUR OWN
 SINGULARITY_IMAGE_LOCATION=$GROUP_HOME/$USER/simg    #where you want to store the singularity image
 REPO_DIR=$HOME                            #parent directory of where you cloned dynadojo
-SCRATCH_DIR=$HOME                         #your scratch directory  
+SCRATCH_DIR=$SCRATCH                         #your scratch directory  
 OUTPUT_DIR=sherput                       #name of folder in scratch to put output
 ### CHANGE THESE VALUES TO YOUR OWN
 
@@ -30,4 +30,4 @@ singularity run --bind $REPO_DIR/dynadojo/experiments:/dynadojo/experiments \
                         --system=$SYSTEM \
                         --algo=$ALGO
 
-# To run: sbatch make.sbatch fc lds lr
+# To run: srun --export=all  -c 1 dynadojo/experiments/sherlock/jobscripts/make.sh fc lds lr

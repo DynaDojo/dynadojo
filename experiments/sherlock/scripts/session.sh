@@ -1,3 +1,3 @@
 #!/bin/bash
 
-srun -c 4 --pty bash
+srun -c 1 --pty bash

@@ -9,25 +9,19 @@ import json
 import os
 import sys
 import numpy as np
-from dynadojo.baselines.lr import LinearRegression
-from dynadojo.baselines.dnn import DNN
-from dynadojo.baselines.sindy import SINDy
-
-from dynadojo.systems.lds import LDSystem
-from dynadojo.systems.lorenz import LorenzSystem
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize, ScalingChallenge
 
 from .params import fc_challenge_params_dict, fts_challenge_params_dict, fe_challenge_params_dict
 
 system_dict = {
-    "lds" : LDSystem,
-    "lorenz": LorenzSystem,
+    "lds" : ("dynadojo.systems.lds", "LDSystem"),
+    "lorenz": ("dynadojo.systems.lorenz", "LorenzSystem"),
     
 }
 algo_dict = {
-    "lr" : LinearRegression,
-    "dnn" : DNN,
-    "sindy": SINDy
+    "lr" : ("dynadojo.baselines.lr", "LinearRegression"),
+    "dnn" : ("dynadojo.baselines.dnn", "DNN"),
+    "sindy": ("dynadojo.baselines.sindy", "SINDy"),
 }
 challenge_dicts = {
     "fc" : (FixedComplexity, fc_challenge_params_dict),
@@ -116,11 +110,21 @@ def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
 
 def _get_system(s:str):
     assert s in system_dict, f"s must be one of {system_dict.keys()}"
-    return system_dict[s]
+    serialized_system = {
+        "type": "serialized_class",
+        "module_name": system_dict[s][0],
+        "class_name": system_dict[s][1]
+    }
+    return serialized_system
 
 def _get_algo(a:str):
     assert a.split("_")[0] in algo_dict, f"m must be one of {algo_dict.keys()}"
-    return algo_dict.get(a, algo_dict[a.split("_")[0]])
+    serialized_algo = {
+        "type": "serialized_class",
+        "module_name": algo_dict[a.split("_")[0]][0],
+        "class_name": algo_dict[a.split("_")[0]][1]
+    }
+    return serialized_algo
 
 def _deserialize_class(serialized_class):   
     my_module = serialized_class["module_name"]
