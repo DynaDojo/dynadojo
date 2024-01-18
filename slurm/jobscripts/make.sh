@@ -27,4 +27,4 @@ singularity run --bind $DD_REPO_DIR/dynadojo/experiments:/dynadojo/experiments \
                         --system=$SYSTEM \
                         --algo=$ALGO
 
-# To run: srun --export=all  -c 1 dynadojo/experiments/sherlock/jobscripts/make.sh fc lds lr
+# To run: use slurm/scripts/srun_make.sh

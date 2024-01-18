@@ -6,8 +6,9 @@ if [[ $DD_CLUSTER == "quest" ]]; then
 fi
 
 if test -f $DD_SINGULARITY_IMAGE_LOCATION/dynadojo_sherlock.sif; then
-  echo “docker image exists”
+    echo “docker image exists”
 else
+    echo "Pulling docker image to $DD_SINGULARITY_IMAGE_LOCATION"
     mkdir -p $DD_SINGULARITY_IMAGE_LOCATION
     singularity pull $DD_SINGULARITY_IMAGE_LOCATION/dynadojo_sherlock.sif $DD_IMAGE_REPO
 fi
