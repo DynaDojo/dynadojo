@@ -350,7 +350,7 @@ class FixedComplexity(ScalingChallenge):
                          system_cls, trials, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     @staticmethod
-    def plot(data, latent_dim: int = None, embedding_dim: int = None, show: bool = True, show_stats: bool = False):
+    def plot(data, latent_dim: int = None, embedding_dim: int = None, show: bool = True, show_stats: bool = False, showLegend=True):
         """
         Returns
         --------
@@ -372,12 +372,22 @@ class FixedComplexity(ScalingChallenge):
         if not latent_dim:
             latent_dim = data["latent_dim"].unique()[0]
         if not data['ood_error'].isnull().any():
+            assert not np.isnan(data[['error','ood_error']]).any(), "data[['error','ood_error']] contains np.nan"
+            assert not np.isinf(data[['error','ood_error']]).any(), "data[['error','ood_error']] contains np.inf"
             ax = plot_metric(data, "n", ["error", "ood_error"], xlabel=r'$n$', ylabel=r'$\mathcal{E}$',
                              errorbar=("pi", 50))
-            ax.legend(title='Distribution')
+            if showLegend:
+                ax.legend(title='Distribution')
+            else:
+                ax.get_legend().remove()
         else:
+            assert not np.isnan(data['error']).any(), "data['error'] contains np.nan"
+            assert not np.isinf(data['error']).any(), "data['error'] contains np.inf"
             ax = plot_metric(data, "n", "error", xlabel=r'$n$', ylabel=r'$\mathcal{E}$', errorbar=("pi", 50))
-            ax.get_legend().remove()
+            if showLegend:
+                ax.legend()
+            else:
+                ax.get_legend().remove()
         title = "Fixed Complexity"
         if latent_dim:
             title += f", latent={latent_dim}"
@@ -430,7 +440,7 @@ class FixedTrainSize(ScalingChallenge):
                  system_cls, trials, test_examples, test_timesteps, system_kwargs=system_kwargs)
 
     @staticmethod
-    def plot(data: pd.DataFrame, n: int = None, show: bool = True, show_stats: bool = False, plot_ood=True, ax=None):
+    def plot(data: pd.DataFrame, n: int = None, show: bool = True, show_stats: bool = False, plot_ood=True, ax=None, showLegend=True):
         """
         Returns
         --------
@@ -440,13 +450,23 @@ class FixedTrainSize(ScalingChallenge):
         if not n:
             n = data["n"].unique()[0]
         if plot_ood and not data['ood_error'].isnull().any():
+            assert not np.isnan(data[['error','ood_error']]).any(), "data[['error','ood_error']] contains np.nan"
+            assert not np.isinf(data[['error','ood_error']]).any(), "data[['error','ood_error']] contains np.inf"
             ax = plot_metric(data, "latent_dim", ["error", "ood_error"], xlabel=r'$L$', log=True,
                              ylabel=r'$\mathcal{E}$', errorbar=("pi", 50))
-            ax.legend(title='Distribution')
+            if not showLegend:
+                ax.get_legend().remove()
+            else:
+                ax.legend(title='Distribution')
         else:
+            assert not np.isnan(data['error']).any(), "data['error'] contains np.nan"
+            assert not np.isinf(data['error']).any(), "data['error'] contains np.inf"
             ax = plot_metric(data, "latent_dim", "error", xlabel=r'$L$', log=True, ylabel=r'$\mathcal{E}$',
                              errorbar=("pi", 50))
-            ax.get_legend().remove()
+            if showLegend:
+                ax.legend()
+            else:
+                ax.get_legend().remove()
         title = "Fixed Train Size"
         if n:
             title += f", n={n}"
