@@ -1,0 +1,18 @@
+# Notes
+
+1. Connect to the cluster, preferably using VSCode remote connection
+2. Figure out [MaxJobs](https://stackoverflow.com/a/61587377) & remember it
+
+Start an interactive node session: see dynadojo/experiments/quest/scripts/session.sh
+Start an interactive singularity: 
+
+# Helpful Commands
+
+This [website](https://slurm.schedmd.com/job_array.html) is helpful
+
+```bash
+squeue -u ctb3982
+scancel <job_id>
+sbatch <sbatch_file> --array=1-100 -J <job-name>
+scancel -n <job-name>
+```
