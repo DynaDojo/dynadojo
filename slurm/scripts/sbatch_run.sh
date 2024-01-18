@@ -36,8 +36,7 @@ do
     break
 done
 
-params_file = ${params_files[$opt]}
-echo "Selected params file: $params_file"
+params_file=$opt
 
 # Ask if they want to supply a list of jobs to run
 echo ""
