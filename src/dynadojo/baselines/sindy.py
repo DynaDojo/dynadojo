@@ -30,6 +30,7 @@ class SINDy(AbstractAlgorithm):
                  timesteps: int,
                  max_control_cost: float = 0,
                  differentiation_method=None,
+                 integrator="solve_ivp",
                  **kwargs):
         """
         Initialize the class.
@@ -44,6 +45,8 @@ class SINDy(AbstractAlgorithm):
             The differentiation used in SINDy. See PySINDy documentation for more details.
         max_control_cost : float, optional
             Ignores control, so defaults to 0.
+        integrator : str, optional
+            The integrator used in SINDy. See PySINDy documentation for more details. Only `odeint` and `solve_ivp` is supported.
         """
         assert timesteps > 2, "timesteps must be greater than 2. "
         if differentiation_method == 'smoothed_fd':
@@ -52,11 +55,16 @@ class SINDy(AbstractAlgorithm):
                     'window_length': np.log2(timesteps).astype(int),
                     'polyorder': np.log10(timesteps).astype(int)
                 })
+        if differentiation_method == "fd":
+            differentiation_method = ps.FiniteDifference()
 
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
         np.random.seed(self._seed)
-        optimizer = ps.STLSQ(threshold=0.1)
+        THRESHOLD = 0.025
+        MAX_ITERATIONS = 10
+        optimizer = ps.STLSQ(threshold=THRESHOLD, max_iter=MAX_ITERATIONS)
         poly_order = max(2, int(np.log2(embed_dim) // 1))
+        self.integrator = integrator
         self._model = ps.SINDy(
             differentiation_method=differentiation_method,
             optimizer=optimizer,
@@ -66,9 +74,9 @@ class SINDy(AbstractAlgorithm):
     def fit(self, x: np.ndarray, **kwargs) -> None:
         X = [*x]
         t = [np.linspace(0, 1, self._timesteps) for _ in range(len(x))]
-        self._model.fit(X, t=t, multiple_trajectories=True, quiet=True, ensemble=True, n_models=5)
+        self._model.fit(X, t=t, multiple_trajectories=True, quiet=True, ensemble=True, n_models=5, unbias=True)
 
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
-        results = [self._model.simulate(point, np.linspace(0, 1, timesteps), integrator="odeint") for point in x0]
+        results = [self._model.simulate(point, np.linspace(0, 1, timesteps), integrator=self.integrator) for point in x0]
         results = np.array(results)
         return results
