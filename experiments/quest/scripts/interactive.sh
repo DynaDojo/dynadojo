@@ -21,8 +21,8 @@ else
 fi
 
 singularity shell \
-                --bind $SCRATCH_DIR/$OUTPUT_DIR:/$OUTPUT_DIR \
                 --bind $REPO_DIR/dynadojo/experiments:/dynadojo/experiments \
+                --bind $SCRATCH_DIR/$OUTPUT_DIR:/dynadojo/experiments/outputs \
                 --bind $REPO_DIR/dynadojo/src/dynadojo:/dynadojo/pkgs/dynadojo \
                 --pwd /dynadojo \
                 $SINGULARITY_IMAGE_LOCATION/dynadojo_sherlock.sif
