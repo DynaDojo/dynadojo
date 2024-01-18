@@ -24,5 +24,5 @@ if [ ! -f "$ENV_SCRIPT" ]; then
   return 0 2> /dev/null || exit 0
 else
     chmod +x $ENV_SCRIPT #make the script executable
-    bash $ENV_SCRIPT
+    source $ENV_SCRIPT
 fi

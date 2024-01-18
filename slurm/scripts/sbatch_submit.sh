@@ -2,7 +2,7 @@
 
 #Run the setup script to check the directory and set the environment variables
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-bash ${__dir}/srun_setup.sh
+source ${__dir}/srun_setup.sh
 
 SUBMIT_SCRIPT="slurm/$DD_CLUSTER/submit.sh"
 #check if the submit script exists
