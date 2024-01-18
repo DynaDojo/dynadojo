@@ -2,8 +2,8 @@
 
 # SHERLOCK CLUSTER SETTINGS
 PARTITION='-p normal'
-OUTPUT='-o /logs/out/%A_%a.out'
-ERROR='/logs/err/%A_%a.err'
+OUTPUT='-o $SCRATCH/logs/out/%A_%a.out'
+ERROR='-e $SCRATCH/logs/err/%A_%a.err'
 sbatch $PARTITION $OUTPUT $ERROR --export=all "$@"
 
 

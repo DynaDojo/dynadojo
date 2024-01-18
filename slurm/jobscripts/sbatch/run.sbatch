@@ -7,13 +7,20 @@
 #SBATCH --array=1-500%100   # maps to SLURM_ARRAY_TASK_ID below
 
 PARAMS_FILE=$1
-JOBS="${2:-None}" #default to None if not provided
+JOBS=$2 #default to None if not provided
 
 # if quest cluster, load singularity module
 if [[ $DD_CLUSTER == "quest" ]]; then
     module load singularity
 fi
 
+if [[ $SLURM_ARRAY_TASK_ID == "" ]]; then
+    SLURM_ARRAY_TASK_ID=0
+fi
+
+if [[ $SLURM_ARRAY_TASK_MAX == "" ]]; then
+    SLURM_ARRAY_TASK_MAX=0
+fi
 
 singularity run --bind $DD_REPO_DIR/dynadojo/experiments:/dynadojo/experiments \
                 --bind $DD_SCRATCH_DIR/$DD_OUTPUT_DIR:/dynadojo/experiments/outputs \
@@ -23,7 +30,6 @@ singularity run --bind $DD_REPO_DIR/dynadojo/experiments:/dynadojo/experiments \
                 python -u -m experiments \
                     run \
                         --params_file=$PARAMS_FILE \
-                        --output_dir=/$DD_OUTPUT_DIR \
                         --node=$SLURM_ARRAY_TASK_ID \
                         --total_nodes=$SLURM_ARRAY_TASK_MAX \
                         --num_cpu_parallel=$SLURM_CPUS_PER_TASK \

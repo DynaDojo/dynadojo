@@ -1,6 +1,18 @@
 
 #!/bin/bash
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+
+g() {
+  echo -e -n '\033[0;32m'
+};
+n() {
+  echo -e -n '\033[0m'  # No Color
+}
+
 #Run the setup script to check the directory and set the environment variables
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source ${__dir}/srun_setup.sh
@@ -13,10 +25,10 @@ read -p "Algorithm: " algo
 
 #ask for confirmation
 g; echo "Run $challenge $system $algo?"; n;
-select yn in "yes" "no"; do
+select yn in "Y" "N"; do
     case $yn in
-      Yes ) break;;
-      No ) 
+      Y ) break;;
+      N )  
            read -p "Challenge "fc","fts","fe"]: " challenge
            read -p "System: " system
            read -p "Algorithm: " algo
