@@ -36,6 +36,13 @@ Example of running a params file. The supplied path must be relative to inside t
 Unless you change how dynadojo/slurm/jobscripts/make.sh works or the CLI, usually the path the params will be the same as if you ran the CLI on your local computer with default output_dir. 
 
 ## Batch Jobs
+
+### **Use the helper script!**
+```
+./slurm/scripts/sbatch_run.sh
+```
+
+### Do manually
 ```
 ./slurm/scripts/sbatch_submit.sh -J dynadojo_run --array=1-100 \
     slurm/jobscripts/sbatch/run.sbatch \
