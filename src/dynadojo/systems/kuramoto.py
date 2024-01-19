@@ -28,15 +28,63 @@ self.dt, controls the step size between 0 - timesteps
 
 class KuramotoSystem(AbstractSystem):
 
+    """
+    Kuramoto, generalized to n oscillators
+
+    Adapted from D. Laszuk, "Python implementation of Kuramoto systems," 2017-, [Online] Available: http://www.laszukdawid.com/codes
+    Research Source: Kuramoto, Y. (1984). Chemical Oscillations, Waves, and Turbulence (Vol. 19). doi: doi.org/10.1007/978-3-642-69689-3
+
+    Example
+    ---------
+    >>> from dynadojo.systems.kuramoto import KuramotoSystem
+    >>> from dynadojo.wrappers import SystemChecker
+    >>> from dynadojo.utils.kuramoto import plot
+    >>> latent_dim = 4
+    >>> embed_dim = 4
+    >>> timesteps = 300
+    >>> n = 1
+    >>> system = SystemChecker(KuramotoSystem(dim, embed_dim))
+    >>> x0 = system.make_init_conds(n=n)
+    >>> x = system.make_data(x0, timesteps=timesteps)
+    >>> plot([x], timesteps=timesteps, max_lines=100)
+
+    .. image:: ../_images/kuramoto.png
+
+    """
     def __init__(self, latent_dim, embed_dim,
-                 noise_scale=0.6,
                  IND_range=(0, 10),
                  OOD_range=(10, 30),
                  FREQ_range=(0, 50),
                  COUPLE_range=(-20, 20),
                  dt=0.02,
+                 noise_scale=0.6,
                  seed=None):
 
+        """
+        Initializes a KuramotoSystem instance.
+
+        Parameters
+        -------------
+        latent_dim : int
+            Number of oscillators
+        embed_dim : int
+            Must be the same as latent_dim
+        IND_range : tuple
+            In-distribution range of starting trajectory values.
+        OOD_range : tuple
+            Out-of-distribution range of starting trajectory values.
+        FREQ_range : tuple
+            Controls range of W of frequencies for each oscillators
+        COUPLE_range : tuple
+            Controls range of K of frequencies for each oscillators
+        dt : float
+            The timeinterval between timesteps, or the granularity of the simulation
+        noise_scale : float
+            Normal noise is added per timestep to a solution. Standard deviation (spread or “width”) of the distribution.
+            Must be non-negative.
+        seed : int or None
+            Seed for random number generation.
+        """
         super().__init__(latent_dim, embed_dim, seed)
 
         assert embed_dim == latent_dim

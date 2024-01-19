@@ -24,14 +24,14 @@ class CompetitiveLVSystem(AbstractSystem):
     >>> from dynadojo.systems.lv import CompetitiveLVSystem
     >>> from dynadojo.wrappers import SystemChecker
     >>> from dynadojo.utils.lv import plot
-    >>> latent_dim = [5]
+    >>> latent_dim = 5
     >>> embed_dim = 5
     >>> timesteps = 100
     >>> n = 10
     >>> system = SystemChecker(CompetitiveLVSystem(dim, embed_dim))
     >>> x0 = system.make_init_conds(n=n)
     >>> x = system.make_data(x0, timesteps=timesteps)
-    >>> plot([x], target_dim=2, specieslabels=["black bear", "salmon", "eagle", "lion", "dolphin", "tiger"], gridlabels=["IND", "IND-noisy", "OOD"], max_lines=100)
+    >>> plot([x], target_dim=2, specieslabels=["black bear", "salmon", "eagle", "lion", "dolphin", "tiger"], max_lines=100)
 
     .. image:: ../_images/competitive.png
 

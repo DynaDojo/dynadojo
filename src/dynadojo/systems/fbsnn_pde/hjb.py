@@ -17,14 +17,63 @@ self.latent_dim, controls dimension of the systems
 
 
 class HJBSystem(FBSNNSystem):
+    """
+    Hamilton-Jacobi-Bellman PDE
+    
+    Adapted from Maziar Raissi, https://github.com/maziarraissi/FBSNNs
+
+    Example
+    ---------
+    >>> from dynadojo.systems.fbsnn import HJBSystem
+    >>> from dynadojo.wrappers import SystemChecker
+    >>> from dynadojo.utils.lv import plot
+    >>> latent_dim = 20
+    >>> embed_dim = 1
+    >>> timesteps = 15
+    >>> n = 10
+    >>> system = SystemChecker(HJBSystem(dim, embed_dim))
+    >>> x0 = system.make_init_conds(n=n)
+    >>> x = system.make_data(x0, timesteps=timesteps)
+    >>> plot([x], timesteps=timesteps, target_dim=1, max_lines=100)
+
+    .. image:: ../_images/hjb.png
+
+    """
     def __init__(self, latent_dim=1, embed_dim=1,
-                 noise_scale=0.05,
                  IND_range=(3.0, 4.0),
                  OOD_range=(4.0, 5.0),
                  layers=None,
                  T=1.0,
                  MC=10**5,
+                 noise_scale=0.05,
                  seed=None):
+        
+        """
+        Initializes a HJBSystem instance.
+
+        Parameters
+        -------------
+        latent_dim : int
+            Dimension of the system
+        embed_dim : int
+            Must be 1
+        IND_range : tuple
+            In-distribution range of starting trajectory values.
+        OOD_range : tuple
+            Out-of-distribution range of starting trajectory values.
+        layers : [int]
+            Neural network configuration architecture
+        T : float
+            Time to maturity, or the final times to simulate until
+        MC : int
+            Number of Monte-Carlo simulations to run
+        noise_scale : float
+            Normal noise is added per timestep to a solution. Standard deviation (spread or “width”) of the distribution.
+            Must be non-negative.
+        seed : int or None
+            Seed for random number generation.
+        """
+
         super().__init__(latent_dim, embed_dim, noise_scale, IND_range, OOD_range, layers, T, seed)
         self.MC = MC
 

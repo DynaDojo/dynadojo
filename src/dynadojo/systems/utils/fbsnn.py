@@ -1,3 +1,6 @@
+"""
+The base class for Forward-Backward Stochastic Neural Network systems
+"""
 from abc import abstractmethod
 
 import numpy as np
@@ -5,9 +8,6 @@ import tensorflow as tf
 
 from ...abstractions import AbstractSystem
 
-'''
-Forward-Backward Neural Network Systems, adapted from Maziar Raissi https://github.com/maziarraissi/FBSNNs
-'''
 class FBSNNSystem(AbstractSystem):
     
     def __init__(self, latent_dim, embed_dim,
