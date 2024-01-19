@@ -18,7 +18,7 @@ class SIRSystem(EpidemicSystem):
     ---------
     >>> from dynadojo.systems.epidemic import SIRSystem
     >>> from dynadojo.wrappers import SystemChecker
->>> from dynadojo.utils.opinion import plot
+    >>> from dynadojo.utils.opinion import plot
     >>> latent_dim = 40
     >>> embed_dim = 40
     >>> timesteps = 50
