@@ -1,3 +1,6 @@
+"""
+Lowest Possible Radius (LPR)
+"""
 import math
 
 import numpy as np
@@ -7,7 +10,27 @@ from ..utils.seeding import temp_random_seed
 
 
 class LowestPossibleRadius(AbstractAlgorithm):
+    """
+    Lowest Possible Radius (LPR). Built for Cellular Automata. 
+    
+    Iteratively increases a guess of what the CA neighborhood radius is, until it finds one where there are no contradictions in the radius keys to their value
+
+    Logs radius keys to predict correct values at inference time
+    """
     def __init__(self, embed_dim, timesteps, max_control_cost, seed):
+        """
+        Initialize the LowestPossibleRadius class.
+
+        Parameters
+        -------------
+        embed_dim : int
+            The embedded dimension of the system
+        timesteps : int
+            The timesteps of the training trajectories. Must be greater than 2.
+        max_control_cost : float, optional
+            Ignores control, so defaults to 0.
+        """
+
         super().__init__(embed_dim, timesteps, max_control_cost, seed)
         self.currRadius = 1
         self.radiiTables = {self.currRadius: self.generateRadiusTable(self.currRadius)}
