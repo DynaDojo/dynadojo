@@ -1,4 +1,4 @@
-dynadojo.systems.epidemic.sir.SIRSystem
+﻿dynadojo.systems.epidemic.sir.SIRSystem
 =======================================
 
 .. currentmodule:: dynadojo.systems.epidemic.sir
@@ -18,7 +18,10 @@ dynadojo.systems.epidemic.sir.SIRSystem
       ~SIRSystem.__init__
       ~SIRSystem.calc_control_cost
       ~SIRSystem.calc_error
+      ~SIRSystem.count_vals
       ~SIRSystem.create_model
+      ~SIRSystem.create_randomized_dict
+      ~SIRSystem.edit_initial_infected
       ~SIRSystem.make_data
       ~SIRSystem.make_init_conds
    

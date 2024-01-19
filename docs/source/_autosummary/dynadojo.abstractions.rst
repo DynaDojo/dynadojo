@@ -1,4 +1,4 @@
-dynadojo.abstractions
+﻿dynadojo.abstractions
 =====================
 
 .. automodule:: dynadojo.abstractions
@@ -20,6 +20,7 @@ dynadojo.abstractions
       :template: custom-class-template.rst
    
       AbstractAlgorithm
+      AbstractChallenge
       AbstractSystem
    
    
