@@ -16,7 +16,7 @@ class SISSystem(EpidemicSystem):
     ---------
     >>> from dynadojo.systems.epidemic import SISSystem
     >>> from dynadojo.wrappers import SystemChecker
-    >>> from dynadojo.utils.epidemic import plot
+    >>> from dynadojo.utils.opinion import plot
     >>> latent_dim = 40
     >>> embed_dim = 40
     >>> timesteps = 20
@@ -48,7 +48,7 @@ class SISSystem(EpidemicSystem):
         latent_dim : int
             Number of agents interacting
         embed_dim : int
-            Must be the same as latent_dim
+            If group_status is False, must be the same as latent_dim; if group_status is True, must be equal to number of statuses for the system (SIS: 2)
         IND_range : tuple
             In-distribution range of initial possible values, {0: Susceptible, 1: Infected}.
             We add +1 to the max range value to use np.floor to ensure all values are equally sampled from.
@@ -77,6 +77,7 @@ class SISSystem(EpidemicSystem):
         self.config = mc.Configuration()
         self.config.add_model_parameter('beta', p_infection)
         self.config.add_model_parameter('lambda', p_recovery)
+        self.config.add_model_parameter('fraction_infected', 1.0) # done custom in EpidemicSystem 
 
     def create_model(self, x0):
         self.model = ep.SISModel(self.g)

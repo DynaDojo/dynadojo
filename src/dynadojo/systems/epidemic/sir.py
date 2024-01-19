@@ -18,7 +18,7 @@ class SIRSystem(EpidemicSystem):
     ---------
     >>> from dynadojo.systems.epidemic import SIRSystem
     >>> from dynadojo.wrappers import SystemChecker
-    >>> from dynadojo.utils.epidemic import plot
+>>> from dynadojo.utils.opinion import plot
     >>> latent_dim = 40
     >>> embed_dim = 40
     >>> timesteps = 50
@@ -50,7 +50,7 @@ class SIRSystem(EpidemicSystem):
         latent_dim : int
             Number of agents interacting
         embed_dim : int
-            Must be the same as latent_dim
+            If group_status is False, must be the same as latent_dim; if group_status is True, must be equal to number of statuses for the system (SIR: 3)
         IND_range : tuple
             In-distribution range of initial possible values, {0: Susceptible, 1: Infected, 2: Recovered/Removed}.
             We add +1 to the max range value to use np.floor to ensure all values are equally sampled from.
@@ -81,6 +81,7 @@ class SIRSystem(EpidemicSystem):
         self.config = mc.Configuration()
         self.config.add_model_parameter('beta', p_infection)
         self.config.add_model_parameter('gamma', p_removal)
+        self.config.add_model_parameter('fraction_infected', 1.0) # done custom in EpidemicSystem 
 
     def create_model(self, x0):
         self.model = ep.SIRModel(self.g)
