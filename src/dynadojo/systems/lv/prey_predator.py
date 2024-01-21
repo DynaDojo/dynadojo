@@ -1,45 +1,94 @@
+"""
+Prey-Predator Lotka Volterra
+"""
 import numpy as np
 from scipy.integrate import solve_ivp
 
 from ...abstractions import AbstractSystem
 
-"""
-PreyPredator Lotka Volterra, generalized to n-species
-
-Complexity
--------
-self.latent_dim, controls number of species and rank(A) of interaction matrix
-
-Prey Predator interaction dynamics
--------
-There are nPrey, settable by parameter or randomly assigned.
-Prey:
-- positive growth rate (grow without predator)
-- slight negative intraspecies interaction (prevents infinite growth)
-- have 0 interaction with other prey
-- have a negative interaction with predators (-1 * predator's positive interaction)
-
-Predator:
-- negative growth rate (starve without prey)
-- negative intraspecies interaction (they compete heavily over preys)
-- can interact with other predators (multiple trophic levels)
-- have a positive interaction with preys (-1 * prey's negative interaction)
-
-"""
 
 class PreyPredatorSystem(AbstractSystem):
+    """
+    Prey-Predator Lotka Volterra, generalized to n-species
+
+    Prey:
+    - positive growth rate (grow without predator)
+    - negative intraspecies interaction (prevents infinite growth)
+    - have 0 interaction with other prey
+    - have a negative interaction with predators (-1 * predator's positive interaction)
+
+    Predator:
+    - negative growth rate (starve without prey)
+    - negative intraspecies interaction (they compete heavily over preys)
+    - can interact with other predators (multiple trophic levels)
+    - have a positive interaction with preys (-1 * prey's negative interaction)
+
+    Example
+    ---------
+    >>> from dynadojo.systems.lv import PreyPredatorSystem
+    >>> from dynadojo.wrappers import SystemChecker
+    >>> from dynadojo.utils.lv import plot
+    >>> latent_dim = 5
+    >>> embed_dim = 5
+    >>> timesteps = 100
+    >>> n = 10
+    >>> system = SystemChecker(PreyPredatorSystem(dim, embed_dim))
+    >>> x0 = system.make_init_conds(n=n)
+    >>> x = system.make_data(x0, timesteps=timesteps)
+    >>> plot([x], target_dim=2, specieslabels=["black bear", "salmon", "eagle", "lion", "dolphin", "tiger"], max_lines=100)
+
+    .. image:: ../_images/prey_predator.png
+    """
+
     def __init__(self, latent_dim=2, embed_dim=2,
+                 nPrey=None,
                  minK=1,
                  maxK=10,
-                 noise_scale=0.05,
-                 IND_range=(0.1, 0.5),  # prevent spawning extinct species
+                 IND_range=(0.1, 0.5),
                  OOD_range=(0.5, 0.9),
-                 R_range=(0.0, 0.5),
-                 prey_intra_range=(0.0,0.1),
-                 predator_intra_range=(0.0,0.1),
+                 R_dist=(0.0, 0.5),
+                 prey_intra_dist=(0.0,0.1),
+                 predator_intra_dist=(0.0,0.1),
                  pZeroInteraction=0.1,
-                 nPrey=None,
+                 noise_scale=0.05,
                  seed=None):
+        """
+        Initializes a PreyPredatorSystem instance.
+
+        Parameters
+        -------------
+        latent_dim : int
+            The number of species, the rank(A) of interaction matrix
+        embed_dim : int
+            Must be the same as latent_dim
+        nPrey : int,
+            Number of prey species. Must be less than or equal to latent_dim. If not assigned, nPrey will be randomly chosen.
+        minK : int
+            Minimum carrying capacity for all species
+        maxK : int
+            Minimum carrying capacity for all species
+        IND_range : tuple
+            In-distribution range of starting population numbers. The range is multipled by maxK and randomly sampled from.
+            The numbers should be greater than 0 to prevent spawing extinct species.
+        OOD_range : tuple
+            Out-of-distribution range of starting population numbers. The range is multipled by maxK and randomly sampled from.
+            The numbers should be greater than 0 to prevent spawing extinct species.
+        R_dist : tuple
+            Growth rates. Mu and standard deviation (spread or “width”) for normal distribution. 
+        prey_intra_dist : tuple
+            Prey intraspecies interaction. Mu and standard deviation (spread or “width”) for normal distribution. 
+            Intraspecies interactions are fixed to be negative to prevent infinite growth.
+        predator_intra_dist : tuple
+            Predator intraspecies interaction. Mu and standard deviation (spread or “width”) for normal distribution. 
+            Intraspecies interactions are fixed to be negative to prevent infinite growth.
+        pZeroInteraction : float
+            Probability any given species pair will have no interaction. Creates more interesting food chains. 
+        noise_scale : float
+            Normal noise is added per timestep to a solution. Standard deviation (spread or “width”) of the distribution.
+            Must be non-negative.
+        seed : int or None
+            Seed for random number generation.
+        """
         super().__init__(latent_dim, embed_dim, seed)
 
         assert embed_dim == latent_dim
@@ -50,10 +99,10 @@ class PreyPredatorSystem(AbstractSystem):
         self.minK = minK
         self.maxK = maxK
 
-        self.R_range = R_range
+        self.R_dist = R_dist
         self.pZeroInteraction = pZeroInteraction
-        self.prey_intra_range = prey_intra_range
-        self.predator_intra_range = predator_intra_range
+        self.prey_intra_dist = prey_intra_dist
+        self.predator_intra_dist = predator_intra_dist
 
         self._rng = np.random.default_rng(seed)
 
@@ -74,7 +123,7 @@ class PreyPredatorSystem(AbstractSystem):
     def _make_R(self):
         R = []
         for i in range(self._latent_dim):
-            r = self._rng.normal(self.R_range[0], self.R_range[1])
+            r = self._rng.normal(self.R_dist[0], self.R_dist[1])
             if i < self.nPrey:
                 # R[i] must be positive for prey
                 r = np.abs(r)
@@ -101,9 +150,9 @@ class PreyPredatorSystem(AbstractSystem):
                 if i == j:
                     if i < self.nPrey:
                         # intraspecies prey is not harsh, but needed negative to prevent infinite growth
-                        A[i][j] = -1 * np.abs(self._rng.normal(self.prey_intra_range[0], self.prey_intra_range[1]))
+                        A[i][j] = -1 * np.abs(self._rng.normal(self.prey_intra_dist[0], self.prey_intra_dist[1]))
                     else:
-                        A[i][j] = -1 * np.abs(self._rng.normal(self.predator_intra_range[0], self.predator_intra_range[1]))
+                        A[i][j] = -1 * np.abs(self._rng.normal(self.predator_intra_dist[0], self.predator_intra_dist[1]))
                 elif i < self.nPrey:
                     # two preys do not interact
                     if j < self.nPrey:
