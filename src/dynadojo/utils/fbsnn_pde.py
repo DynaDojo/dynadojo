@@ -9,7 +9,7 @@ MAX_LINES = 30
 def plot(grid: list[np.ndarray], timesteps, T=1.0, target_dim: int = 3, max_lines=MAX_LINES, labels: list[str] = None):
     grid = np.array([x[:max_lines] for x in grid])
 
-    time = np.linspace(0,T,timesteps+1)
+    time = np.linspace(0,T,timesteps)
     _, ax = plt.subplots()
 
     for idx, dataset in enumerate(grid):
