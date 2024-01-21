@@ -8,10 +8,9 @@ At the moment, our slurm utilities are written specifically for Stanford's Sherl
 
 # Setup
 1. You *must* clone dynadojo from github into a location that is shared to all nodes, usually $HOME. The singularity container does NOT contain a copy of the code, only the dependencies. The git repo gets mounted onto the container by specifying the $DD_REPO_DIR env var (see `dynadojo/slurm/<cluster>/env.sh`). We do this so you can live-edit your params in `dynadojo/experiments/params.py`.
-2. Edit the environment variables in `dynadojo/slurm/<cluster>/env.sh`
+2. Edit the submission flags and environment variables in `dynadojo/slurm/<cluster>/env.sh`
     1. Note that `$DD_SCRATCH_DIR/$DD_OUTPUT_DIR` gets mounted at experiments/outputs which is the default output path!
-3. Edit the sbatch submission flags in `dynadojo/slurm/<cluster>/submit.sh`
-4. Create whatever folders you need to create for logs, output, etc...
+3. Create whatever folders you need to create for logs, output, etc...
 
 
 # Make params file 

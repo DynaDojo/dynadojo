@@ -23,6 +23,7 @@ if [ ! -f "$ENV_SCRIPT" ]; then
   echo -e "${RED} Environment configuration script $ENV_SCRIPT does not exist ${NC}";
   return 0 2> /dev/null || exit 0
 else
+    echo "Running $ENV_SCRIPT"
     chmod +x $ENV_SCRIPT #make the script executable
     source $ENV_SCRIPT
 fi

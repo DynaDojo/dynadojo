@@ -2,6 +2,7 @@
 
 #Run the setup script to check the directory and set the environment variables
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source ${__dir}/srun_setup.sh
+source ${__dir}/_setup.sh
 
-srun --export=all  -c 1 "$@"
+if 
+srun $DD_SLURM_ARGS --export=all  -c 1 "$@"
