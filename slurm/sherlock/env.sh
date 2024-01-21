@@ -12,6 +12,7 @@ export DD_SCRATCH_DIR=$SCRATCH                                  #your scratch di
 export DD_OUTPUT_DIR=sherput                                    #name of folder in scratch to put output
 export DD_IMAGE_REPO=docker://carynbear/dynadojo:sherlock       #docker image to pull
 export DD_CLUSTER=sherlock                                      #cluster name
-export DD_SLURM_ARGS="$PARTITION $OUTPUT $ERROR"
+export DD_SLURM_ARGS="$PARTITION"
+export DD_SLURM_SAVE="$OUTPUT $ERROR"
 
 echo "Setting up environment for $DD_CLUSTER"

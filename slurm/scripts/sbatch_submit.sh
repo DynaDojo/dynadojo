@@ -5,4 +5,4 @@ __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source ${__dir}/_setup.sh
 
 
-sbatch $DD_SLURM_ARGS --export=all "$@"
+sbatch $DD_SLURM_ARGS $DD_SLURM_SAVE --export=all "$@"

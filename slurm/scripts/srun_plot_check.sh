@@ -39,6 +39,11 @@ done
 
 data_dir=$opt
 
+read -p "Which command? [plot,check]: " cmd
+while [[ $cmd != "plot" && $cmd != "check" ]]; do
+    read -p "Which command? [plot,check]: " cmd
+done
 
-chmod +x slurm/jobscripts/check.sh #make the script executable
-srun $DD_SLURM_ARGS --export=all -c 1 slurm/jobscripts/check.sh $data_dir
+
+chmod +x slurm/jobscripts/$cmd.sh #make the script executable
+srun $DD_SLURM_ARGS --export=all -c 1 slurm/jobscripts/$cmd.sh $data_dir

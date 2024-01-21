@@ -16,7 +16,8 @@ from .params import fc_challenge_params_dict, fts_challenge_params_dict, fe_chal
 system_dict = {
     "lds" : ("dynadojo.systems.lds", "LDSystem"),
     "lorenz": ("dynadojo.systems.lorenz", "LorenzSystem"),
-    
+    "lv_p": ("dynadojo.systems.lv", "PreyPredatorSystem"),
+    "lv_c": ("dynadojo.systems.lv", "CompetitiveLVSystem"),
 }
 algo_dict = {
     "lr" : ("dynadojo.baselines.lr", "LinearRegression"),

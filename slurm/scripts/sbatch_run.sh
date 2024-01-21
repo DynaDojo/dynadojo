@@ -42,5 +42,10 @@ params_file=$opt
 echo ""
 read -p "List of jobs to run (comma separated, no spaces): " jobs
 
+echo ""
+read -p "Split over how many tasks? " n_tasks
 
-sbatch $DD_SLURM_ARGS --export=all ${__dir}/../jobscripts/sbatch/run.sbatch $params_file $jobs
+echo ""
+read -p "How many tasks to run at the same time? " concurrent_tasks
+
+sbatch $DD_SLURM_ARGS $DD_SLURM_SAVE --export=all --array=1-$n_tasks%$concurrent_tasks ${__dir}/../jobscripts/sbatch/run.sbatch $params_file $jobs

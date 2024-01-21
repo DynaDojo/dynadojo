@@ -24,7 +24,7 @@ read -p "System: " system
 read -p "Algorithm: " algo
 
 #ask for confirmation
-g; echo "Run $challenge $system $algo?"; n;
+g; echo "Make $challenge $system $algo?"; n;
 select yn in "Y" "N"; do
     case $yn in
       Y ) break;;
