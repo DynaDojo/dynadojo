@@ -5,6 +5,7 @@ Parameters are specified in experiments/params.py
 import logging
 import os
 import pandas as pd
+import numpy as np
 from dynadojo.challenges import  FixedComplexity, ScalingChallenge
 from .utils import _get_params, save_to_json, load_from_json
 
@@ -126,12 +127,15 @@ def make_plots(
     files, data = load_data(data_path)
     kwargs = {}
     kwargs["show_stats"] = True
-    g = challenge_cls.plot(data, show=False, **kwargs)
+    # filter out np.infs
+    filtered_data = data[np.isfinite(data[['error', 'ood_error']]).all(1)]
+
+    g = challenge_cls.plot(filtered_data, show=False, **kwargs)
     # linear axes instead of log
     # g.set(xscale="linear", yscale="linear")
     if save:
         g.figure.savefig(f"{output_dir}/{figure_filename}", bbox_inches='tight')
-    prGreen(f"Plot created with {len(files)} files in {data_path} and {len(data)} rows: {output_dir}/{figure_filename} ")
+    prGreen(f"Plot created with {len(files)} files in {data_path} and {len(filtered_data)}/{len(data)} rows: {output_dir}/{figure_filename} ")
     # for file in files:
     #     print(f"\t- {file}")
     return g, data

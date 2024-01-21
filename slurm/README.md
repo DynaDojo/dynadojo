@@ -5,7 +5,7 @@ At the moment, our slurm utilities are written specifically for Stanford's Sherl
 - If you want to skip the prompt for which cluster, set the env var $DD_CLUSTER to "sherlock" or "quest" (in bashrc or however)
 - If you encounter any `Permission denied` messages, make the file executable. `chmod +x <file>`
 - [Profile](https://services.northwestern.edu/TDClient/30/Portal/KB/ArticleDet?ID=1964#section-required-memory) your jobs to test how long/how much memory it takes to run a single job.
-- To monitor status, you can also use the watch command. I watch the output directory `watch -n 60 ls -v -C` for a little bit just to check everything is running.
+- To monitor status, you can also use the watch command. I watch the output directory `watch -n 60 ls -v -C` for a little bit just to check everything is running. or (`watch -n 20 "ls -v . | tail -10"`)
 
 # Setup
 1. You *must* clone dynadojo from github into a location that is shared to all nodes, usually $HOME. The singularity container does NOT contain a copy of the code, only the dependencies. The git repo gets mounted onto the container by specifying the $DD_REPO_DIR env var (see `dynadojo/slurm/<cluster>/env.sh`). We do this so you can live-edit your params in `dynadojo/experiments/params.py`.
