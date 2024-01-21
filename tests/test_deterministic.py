@@ -133,12 +133,8 @@ class TestReproducibilityModel(unittest.TestCase):
                                     system_cls=LDSystem, trials=1,
                                     test_examples=2, test_timesteps=2)
         df1 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 trials_filter=None,
-                                 L_filter=None,
                                  algo_kwargs=None)
         df2 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 trials_filter=None,
-                                 L_filter=None,
                                  algo_kwargs=None)
         cols = ['trial', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
                 'system_seed', 'algo_seed']
@@ -156,12 +152,8 @@ class TestReproducibilityModel(unittest.TestCase):
                                     system_cls=LDSystem, trials=2,
                                     test_examples=2, test_timesteps=2)
         df1 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 trials_filter=[1],
-                                 L_filter=None,
                                  algo_kwargs=None)
         df2 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 trials_filter=None,
-                                 L_filter=None,
                                  algo_kwargs=None)
         cols = ['trial', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
                 'system_seed', 'algo_seed']
