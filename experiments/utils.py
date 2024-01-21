@@ -18,6 +18,9 @@ system_dict = {
     "lorenz": ("dynadojo.systems.lorenz", "LorenzSystem"),
     "lv_p": ("dynadojo.systems.lv", "PreyPredatorSystem"),
     "lv_c": ("dynadojo.systems.lv", "CompetitiveLVSystem"),
+    "epi_1": ("dynadojo.systems.epidemic", "SIRSystem"),
+    "epi_2": ("dynadojo.systems.epidemic", "SISSystem"),
+    "epi_3": ("dynadojo.systems.epidemic", "SEISSystem"),
 }
 algo_dict = {
     "lr" : ("dynadojo.baselines.lr", "LinearRegression"),
