@@ -47,7 +47,7 @@ singularity run --bind $DD_REPO_DIR/dynadojo/experiments:/dynadojo/experiments \
                 --bind $DD_SCRATCH_DIR/$DD_OUTPUT_DIR:/dynadojo/experiments/outputs \
                 --bind $DD_REPO_DIR/dynadojo/src/dynadojo:/dynadojo/pkgs/dynadojo \
                 --pwd /dynadojo \
-                $DD_SINGULARITY_IMAGE_LOCATION/dynadojo_sherlock.sif \
+                $DD_SINGULARITY_IMAGE_LOCATION/dynadojo_cluster.sif \
                 python -u -m experiments \
                     run \
                         --params_file=$PARAMS_FILE \

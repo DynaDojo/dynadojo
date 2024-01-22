@@ -27,3 +27,16 @@ else
     chmod +x $ENV_SCRIPT #make the script executable
     source $ENV_SCRIPT
 fi
+
+# Get singularity image
+# if quest cluster, load singularity module
+
+if test -f $DD_SINGULARITY_IMAGE_LOCATION/dynadojo_cluster.sif; then
+  echo “docker image exists”
+else
+  if [[ $DD_CLUSTER == "quest" ]]; then
+    module load singularity
+  fi
+    mkdir -p $DD_SINGULARITY_IMAGE_LOCATION
+    singularity pull $DD_SINGULARITY_IMAGE_LOCATION/dynadojo_cluster.sif $DD_IMAGE_REPO
+fi

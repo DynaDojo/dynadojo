@@ -13,10 +13,8 @@ read -p "Algorithm: " algo
 # Find potentially matching params files
 base_dir=$DD_SCRATCH_DIR/$DD_OUTPUT_DIR
 parent_dir=$base_dir/$challenge/$system
-# List all subdirectories of parent dir
-subdirs=$(find $parent_dir -maxdepth 1 -type d)
-# Filter only folders that match the algo $challenge_$system_$algo*
-subdirs=$(echo $subdirs | grep $challenge_$system_$algo)
+# List all subdirectories of parent dir, that match the algo $challenge_$system_$algo*
+subdirs=$(find $parent_dir -maxdepth 1 -type d | grep $challenge_$system_$algo)
 # Find all params.json files in subdirs
 params_files=$(find $subdirs -name "params.json")
 # Replace base_dir from params_files with "experiments/outputs"

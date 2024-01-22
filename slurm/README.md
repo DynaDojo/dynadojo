@@ -2,7 +2,7 @@ At the moment, our slurm utilities are written specifically for Stanford's Sherl
 
 # Tips
 - Always run from dynadojo folder!
-- If you want to skip the prompt for which cluster, set the env var $DD_CLUSTER to "sherlock" or "quest" (in bashrc or however)
+- If you want to skip the prompt for which cluster, set the env var $DD_CLUSTER to "sherlock" or "quest" (in bashrc or however). Or run `source slurm/scripts/_setup.sh`. 
 - If you encounter any `Permission denied` messages, make the file executable. `chmod +x <file>`
 - [Profile](https://services.northwestern.edu/TDClient/30/Portal/KB/ArticleDet?ID=1964#section-required-memory) your jobs to test how long/how much memory it takes to run a single job.
 - To monitor status, you can also use the watch command. I watch the output directory `watch -n 60 ls -v -C` for a little bit just to check everything is running. or (`watch -n 20 "ls -v . | tail -10"`)
