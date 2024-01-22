@@ -114,7 +114,7 @@ python -u -m experiments plot --data_dir=experiments/outputs/fc/lds/fc_lds_lr_l\
 Use Globus, or rsync. From your local computer:
 ```
 export sunetid=<yourid>
-rsync -avP ${sunetid}@login.sherlock.stanford.edu:/scratch/users/${sunetid}/sherput sherput/
+rsync -avP ${sunetid}@login.sherlock.stanford.edu:/scratch/users/${sunetid}/sherput experiments/outputs/sherput
 ```
 
 # Helpful Commands
