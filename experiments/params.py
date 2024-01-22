@@ -170,7 +170,36 @@ fts_challenge_params_dict = {
                 "trials" : 100,
                 "n" : 1000,
         }
-    }
+    },
+    "nbody": {
+        "lr_test" : {
+                "L" : [4, 8, 16, 32, 64],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+        "lr_cross" : {
+                "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
+                "trials" : 100,
+                "n" : 1000,
+        }
+    },
+    "kura": {
+        "lr_test" : {
+                "L" : [4, 8, 16, 32, 64],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+        "lr_cross" : {
+                "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
+                "trials" : 100,
+                "n" : 1000,
+        }
+    },
+
 }
 
 fe_challenge_params_dict = {

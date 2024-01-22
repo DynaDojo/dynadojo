@@ -43,7 +43,7 @@ FROM python:3.10-slim as sherlock
 
 # make the symlinked directories
 RUN  mkdir -p /home/users \
-    && mkdir -p /scratch 
+    && mkdir -p /scratch
 # && mkdir -p /share/software/modules && mkdir -p /share/software/user && mkdir -p /oak && mkdir -p /home/groups && mkdir -p /etc/localtime && mkdir -p /etc/hosts
 
 # retrieve dependencies packages from build stage
@@ -52,6 +52,8 @@ COPY --from=builder /dynadojo/__pypackages__/3.10/lib /dynadojo/pkgs
 
 # symlink experiments and src to repo in the home directory
 RUN ln -s /home/users/$USER/dynadojo/experiments /dynadojo/experiments && ln -s /home/users/$USER/dynadojo/src/dynadojo /dynadojo/pkgs/dynadojo
+
+RUN mkdir -p /dynadojo/experiments/results
 
 WORKDIR /dynadojo
 
@@ -82,6 +84,7 @@ ENV PYTHONPATH=/dynadojo/pkgs
 COPY --from=builder /dynadojo/__pypackages__/3.10/lib /dynadojo/pkgs
 
 COPY experiments/ /dynadojo/experiments
+RUN mkdir -p /dynadojo/experiments/results
 
 #isolate dynadojo from dependencies
 COPY src/dynadojo /dynadojo/pkgs/dynadojo

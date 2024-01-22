@@ -21,6 +21,8 @@ system_dict = {
     "epi_1": ("dynadojo.systems.epidemic", "SIRSystem"),
     "epi_2": ("dynadojo.systems.epidemic", "SISSystem"),
     "epi_3": ("dynadojo.systems.epidemic", "SEISSystem"),
+    "nbody": ("dynadojo.systems.santi", "NBodySystem"),
+    "kura": ("dynadojo.systems.kuramoto", "KuramotoSystem"),
 }
 algo_dict = {
     "lr" : ("dynadojo.baselines.lr", "LinearRegression"),
