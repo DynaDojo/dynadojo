@@ -14,6 +14,63 @@ At the moment, our slurm utilities are written specifically for Stanford's Sherl
     1. Note that `$DD_SCRATCH_DIR/$DD_OUTPUT_DIR` gets mounted at experiments/outputs which is the default output path!
 3. Create whatever folders you need to create for logs, output, etc...
 
+# Recommended Usage
+0. Run setup script
+```
+source slurm/scripts/_setup.sh
+```
+1. Make params
+The keys you can use for system and algorithm will be defined in `experiments/params.py` and `experiments/utils.py`
+```
+> ./slurm/scripts/srun_make.sh 
+> Challenge [fc,fts,fe]: fts
+> System: kura
+> Algorithm: lr
+    Make fts kura lr?
+    1) Y
+    2) N
+> #? 1
+    ...
+    ...
+    experiments/outputs/fts/kura/fts_kura_lr_n=1000/params.json with 400 jobs
+```
+This will print how many jobs there are! Important for decided how many tasks you want to distribute those tasks over. 
+
+2. Run experiment. *Leave the list of jobs blank unless you have a list of job_ids to run from checking the experiment in step 3.*
+
+```
+> ./slurm/scripts/sbatch_run.sh 
+> Challenge [fc,fts,fe]: fts
+> System: kura
+> Algorithm: lr
+    Found the following params files:
+    1) experiments/outputs/fts/kura/fts_kura_lr_n=1000/params.json
+    2) experiments/outputs/fts/kura/fts_kura_lr_test_n=1000/params.json
+> #? 1
+    Selected params file: experiments/outputs/fts/kura/fts_kura_lr_n=1000/params.json
+> List of jobs to run (comma separated, no spaces): 
+> Split over how many tasks? 400
+> How many tasks to run at the same time? 100
+    Submitted batch job 123456
+```
+
+Monitor the batch job using `squeue -j [SLURM_JOB_ID]` or `sacct -j [SLURM_JOB_ID] -n -X`, which in the above example is `123456`
+
+
+3. Check or plot experiment
+```
+> ./slurm/scripts/srun_plot_check.sh
+> Challenge [fc,fts,fe]: fts
+> System: kura
+> Algorithm: lr
+    Found the following results directories:
+    1) experiments/outputs/fts/kura/fts_kura_lr_n=1000
+    2) experiments/outputs/fts/kura/fts_kura_lr_test_n=1000
+> #? 1
+    Selected results directory: experiments/outputs/fts/kura/fts_kura_lr_n=1000
+> Which command? [plot,check]: plot
+```
+And then look inside the `$DD_SCRATCH_DIR/$DD_OUTPUT_DIR` folder for your pdf generated plot!
 
 # Make params file 
 ```
