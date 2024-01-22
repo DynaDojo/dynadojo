@@ -157,8 +157,8 @@ fts_challenge_params_dict = {
                 "n" : 1000,
         }
     },
-    "epi_1": { 
-        "lr_test" : { #done
+    "epi_1": { #done, error going down down down with complexity. weird after merging tommy's edits because 0 error for L = 2, 4?
+        "lr_test" : { 
                 "L" : [2, 4, 8, 16, 32],
                 "trials" : 20,
                 "t" : 20,
@@ -167,7 +167,7 @@ fts_challenge_params_dict = {
         },
     },
     "nbody": {
-        "lr_test" : {
+        "lr_test" : { #sloowwwwww 
                 "L" : [4, 8, 16, 32, 64],
                 "trials" : 20,
                 "t" : 20,
@@ -176,7 +176,7 @@ fts_challenge_params_dict = {
         },
         
     },
-    "heat": {
+    "heat": { #waiting for fix https://github.com/DynaDojo/dynadojo/issues/23
         "lr_test" : {
                 "L" : [4, 9, 16, 25],
                 "trials" : 20,
@@ -186,7 +186,17 @@ fts_challenge_params_dict = {
         },
         
     },
-    "fbsnn_1": {
+    "fbsnn_1": { #waiting for fix.  https://github.com/DynaDojo/dynadojo/issues/22
+        "lr_test" : { 
+                "L" : [4, 8, 16, 32, 64],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+        
+    },
+    "fbsnn_2": {  #waiting for fix.  https://github.com/DynaDojo/dynadojo/issues/22
         "lr_test" : {
                 "L" : [4, 8, 16, 32, 64],
                 "trials" : 20,
@@ -197,7 +207,7 @@ fts_challenge_params_dict = {
         
     },
      "ctln": {
-        "lr_test" : {
+        "lr_test" : { #waiting for fix. seeding error. https://github.com/DynaDojo/dynadojo/issues/21 
                 "L" : [4, 8, 16, 32, 64],
                 "trials" : 20,
                 "t" : 20,
@@ -207,14 +217,14 @@ fts_challenge_params_dict = {
         
     },
     "kura": {
-        "lr_test" : {
+        "lr_test" : { #Times out at L=64 because >2.5 hours
                 "L" : [4, 8, 16, 32, 64],
                 "trials" : 20,
                 "t" : 20,
                 "test_timesteps" : 20,
                 "n" : 1000,
         },
-        "lr" : {
+        "lr" : { #Running
                 "L" : [4, 8, 16, 32],
                 "trials" : 100,
                 "t" : 20,

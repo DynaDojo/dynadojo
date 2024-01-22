@@ -26,7 +26,7 @@ system_dict = {
     "fbsnn_1": ("dynadojo.systems.fbsnn_pde", "BSBSystem"),
     "fbsnn_2": ("dynadojo.systems.fbsnn_pde", "HJBSystem"),
     "ctln": ("dynadojo.systems.ctln", "CTLNSystem"),
-    "heat": ("dynadojo.systems.ctln", "HeatEquation"),
+    "heat": ("dynadojo.systems.heat", "HeatEquation"),
 
 }
 algo_dict = {
