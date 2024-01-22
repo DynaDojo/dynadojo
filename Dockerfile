@@ -19,7 +19,7 @@ COPY pyproject.toml /dynadojo/
 WORKDIR /dynadojo
 
 #isolate dynadojo from dependencies & install from lockfile
-RUN pdm config python.use_venv false && pdm install --prod -G tensorflow --no-lock --no-editable  --no-self
+RUN pdm config python.use_venv false && pdm install --prod -G tensorflow -G rebound --no-lock --no-editable  --no-self
 
 
 # ------------------------------------------------------------------------------------#

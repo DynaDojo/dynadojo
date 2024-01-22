@@ -138,7 +138,8 @@ def _deserialize_class(serialized_class):
     try:
         cls = getattr(importlib.import_module(my_module), my_class) 
     except Exception as e:
-        ImportError(f"Could not find {my_class} in {my_module}")
+        raise ImportError(f"Error importing {my_class} in {my_module}", e)
+
     return cls
 
 def _serialize_class(my_class):
