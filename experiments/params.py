@@ -140,36 +140,31 @@ fts_challenge_params_dict = {
                     "n" : 1000,
             }
     },
-    "lv_p": {
-        "sindy" : {
+    "lv_p": { 
+        "sindy" : { #done
                 "L" : [2, 4, 8, 16, 32],
                 "trials" : 50,
                 "n" : 1000,
             },
-        "lr" : {
+        "lr" : { #done
                 "L" : [2, 4, 8, 16, 32],
                 "trials" : 50,
                 "n" : 1000,
         },
-        "lr_cross" : {
+        "lr_cross" : { #done
                 "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
                 "trials" : 100,
                 "n" : 1000,
         }
     },
-    "epi_1": {
-        "lr_test" : {
+    "epi_1": { 
+        "lr_test" : { #done
                 "L" : [2, 4, 8, 16, 32],
                 "trials" : 20,
                 "t" : 20,
                 "test_timesteps" : 20,
                 "n" : 1000,
         },
-        "lr_cross" : {
-                "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
-                "trials" : 100,
-                "n" : 1000,
-        }
     },
     "nbody": {
         "lr_test" : {
@@ -179,11 +174,37 @@ fts_challenge_params_dict = {
                 "test_timesteps" : 20,
                 "n" : 1000,
         },
-        "lr_cross" : {
-                "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
-                "trials" : 100,
+        
+    },
+    "heat": {
+        "lr_test" : {
+                "L" : [4, 9, 16, 25],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
                 "n" : 1000,
-        }
+        },
+        
+    },
+    "fbsnn_1": {
+        "lr_test" : {
+                "L" : [4, 8, 16, 32, 64],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+        
+    },
+     "ctln": {
+        "lr_test" : {
+                "L" : [4, 8, 16, 32, 64],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+        
     },
     "kura": {
         "lr_test" : {
@@ -193,11 +214,13 @@ fts_challenge_params_dict = {
                 "test_timesteps" : 20,
                 "n" : 1000,
         },
-        "lr_cross" : {
-                "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
+        "lr" : {
+                "L" : [4, 8, 16, 32],
                 "trials" : 100,
+                "t" : 20,
+                "test_timesteps" : 20,
                 "n" : 1000,
-        }
+        },
     },
 
 }

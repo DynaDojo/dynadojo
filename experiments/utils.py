@@ -23,6 +23,11 @@ system_dict = {
     "epi_3": ("dynadojo.systems.epidemic", "SEISSystem"),
     "nbody": ("dynadojo.systems.santi", "NBodySystem"),
     "kura": ("dynadojo.systems.kuramoto", "KuramotoSystem"),
+    "fbsnn_1": ("dynadojo.systems.fbsnn_pde", "BSBSystem"),
+    "fbsnn_2": ("dynadojo.systems.fbsnn_pde", "HJBSystem"),
+    "ctln": ("dynadojo.systems.ctln", "CTLNSystem"),
+    "heat": ("dynadojo.systems.ctln", "HeatEquation"),
+
 }
 algo_dict = {
     "lr" : ("dynadojo.baselines.lr", "LinearRegression"),
