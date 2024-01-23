@@ -1,6 +1,6 @@
-This repo is set up to work on Stanford Sherlock clusters using Singularity.
+These are instructions for running the code on Stanford's Slurm cluster using Singularity. 
 
-# Run Interactively on Sherlock
+# Building Image
 
 ## 1. Locally build docker image (using BuildKit), from the project root, where the `Dockerfile` is.
 ```
@@ -27,7 +27,9 @@ docker buildx build --platform linux/amd64,linux/arm64 --push -t carynbear/dynad
 
 To test, you would need to pull the image from the hub since this creates a BuildX container to build the image. Alternatively, if you want to load the generated image into your docker you can use the flag `--load` instead of `--push`. 
 
-## 3. Login to Sherlock and Run your container [help](https://www.sherlock.stanford.edu/docs/software/using/singularity/#singularity-on-sherlock) [help](https://vsoch.github.io/lessons/singularity-quickstart/)
+
+# Run Interactively on Sherlock
+## 1. Login to Sherlock and Run your container [help](https://www.sherlock.stanford.edu/docs/software/using/singularity/#singularity-on-sherlock) [help](https://vsoch.github.io/lessons/singularity-quickstart/)
 
 Request an interactive node
 ```
@@ -49,7 +51,7 @@ mkdir /tmp/dynadojo
 singularity shell --pwd /tmp/dynadojo dynadojo.simg
 ```
 
-## 4. OR Build and run a writable singularity container to test [help](https://wiki.ncsa.illinois.edu/display/ISL20/Containers)
+## 2. OR Build and run a writable singularity container to test [help](https://wiki.ncsa.illinois.edu/display/ISL20/Containers)
 ```
 cd $GROUP_HOME/$USER/simg
 singularity build --sandbox -F dynadojo docker://carynbear/dynadojo:buildx
@@ -58,7 +60,6 @@ singularity shell --writable dynadojo
 singularity run --pwd /dynadojo  dynadojo
 ```
 # Resources
-
 ## Writing Multi-Stage Dockerfiles to improve your builds
 - [Use PDM in a multi-stage Dockerfile](https://pdm.fming.dev/latest/usage/advanced/#use-pdm-in-a-multi-stage-dockerfile)
 - [Blazing fast Python Docker builds with Poetry](https://medium.com/@albertazzir/blazing-fast-python-docker-builds-with-poetry-a78a66f5aed0)

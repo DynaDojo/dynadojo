@@ -1,26 +1,6 @@
-"""
-This file contains parameters for experiments, including system and algo parameters, and challenge parameters.
-Also contains functions for getting system, algo, and challenge parameters.
-"""
+
 import numpy as np
-from dynadojo.baselines.lr import LinearRegression
-from dynadojo.baselines.dnn import DNN
-from dynadojo.baselines.sindy import SINDy
 
-from dynadojo.systems.lds import LDSystem
-from dynadojo.systems.lorenz import LorenzSystem
-from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize, ScalingChallenge
-
-system_dict = {
-    "lds" : LDSystem,
-    "lorenz": LorenzSystem,
-    
-}
-algo_dict = {
-    "lr" : LinearRegression,
-    "dnn" : DNN,
-    "sindy": SINDy
-}
 
 fc_challenge_params_dict = {
     "default" : {   "l" : 10, 
@@ -148,11 +128,111 @@ fts_challenge_params_dict = {
                     "n": 10000,
                 },
     },
-    "lorenz" : {
-            "default" : {
-                "n": 1000,
+    "lorenz": {
+            "sindy" : {
+                    "L" : [3, 5, 7, 9, 11],
+                    "trials" : 50,
+                    "n" : 1000,
+                },
+            "lr" : {
+                    "L" : [3, 5, 7, 9, 11],
+                    "reps" : 50,
+                    "n" : 1000,
             }
-    }
+    },
+    "lv_p": { 
+        "sindy" : { #done
+                "L" : [2, 4, 8, 16, 32],
+                "trials" : 50,
+                "n" : 1000,
+            },
+        "lr" : { #done
+                "L" : [2, 4, 8, 16, 32],
+                "trials" : 50,
+                "n" : 1000,
+        },
+        "lr_cross" : { #done
+                "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
+                "trials" : 100,
+                "n" : 1000,
+        }
+    },
+    "epi_1": { #done, error going down down down with complexity. weird after merging tommy's edits because 0 error for L = 2, 4?
+        "lr_test" : { 
+                "L" : [2, 4, 8, 16, 32],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+    },
+    "nbody": {
+        "lr_test" : { #sloowwwwww 
+                "L" : [4, 8, 16, 32, 64],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+        
+    },
+    "heat": { #waiting for fix https://github.com/DynaDojo/dynadojo/issues/23
+        "lr_test" : {
+                "L" : [4, 9, 16, 25],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+        
+    },
+    "fbsnn_1": { #waiting for fix.  https://github.com/DynaDojo/dynadojo/issues/22
+        "lr_test" : { 
+                "L" : [4, 8, 16, 32, 64],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+        
+    },
+    "fbsnn_2": {  #waiting for fix.  https://github.com/DynaDojo/dynadojo/issues/22
+        "lr_test" : {
+                "L" : [4, 8, 16, 32, 64],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+        
+    },
+     "ctln": {
+        "lr_test" : { #waiting for fix. seeding error. https://github.com/DynaDojo/dynadojo/issues/21 
+                "L" : [4, 8, 16, 32, 64],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+        
+    },
+    "kura": {
+        "lr_test" : { #Times out at L=64 because >2.5 hours
+                "L" : [4, 8, 16, 32, 64],
+                "trials" : 20,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+        "lr" : { #Running
+                "L" : [4, 8, 16, 32],
+                "trials" : 100,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+        },
+    },
+
 }
 
 fe_challenge_params_dict = {
@@ -265,75 +345,3 @@ fe_challenge_params_dict = {
                 }
     }
 }
-
-def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
-    """
-    Get challenge parameters for a given system, algo, and challenge class, overriding defaults with system and algo specific parameters.
-
-    :param s: system short name, defined in system_dict
-    :param m: algo short name, defined in algo_dict
-    :param challenge_cls: challenge class, one of ScalingChallenge.__subclasses__()
-    """
-    assert s in system_dict, f"s must be one of {system_dict.keys()}"
-    assert a.split("_")[0] in algo_dict, f"m must be one of {algo_dict.keys()}"
-    if challenge_cls == FixedComplexity:
-        challenge_params_dict = fc_challenge_params_dict
-    elif challenge_cls == FixedTrainSize:
-        challenge_params_dict = fts_challenge_params_dict
-    elif challenge_cls == FixedError:
-        challenge_params_dict = fe_challenge_params_dict
-    else:
-        raise ValueError(f"challenge_cls must be one of {ScalingChallenge.__subclasses__()}")\
-    
-    # Get challenge parameters, starting with defaults and then overriding with s and m specific params
-    default_params = challenge_params_dict["default"]
-    default_eval_params = default_params["evaluate"]
-
-    s_a_base_params = challenge_params_dict.get(s, {}).get(a.split("_")[0], {})
-    s_a_base_eval_params =  s_a_base_params.get("evaluate", {})
-
-    s_a_params = challenge_params_dict.get(s, {}).get(a, {})
-    s_a_eval_params = s_a_params.get("evaluate", {})
-
-    s_default_params = challenge_params_dict.get(s, {}).get("default", {})
-    s_default_eval_params = s_default_params.get("evaluate", {})
-
-    challenge_params = { **default_params, **s_default_params, **s_a_base_params, **s_a_params }
-    eval_params = { **default_eval_params, **s_default_eval_params, **s_a_base_eval_params,  **s_a_eval_params }
-    challenge_params["evaluate"] = eval_params
-    assert ("L" in challenge_params or "l" in challenge_params) and "trials" in challenge_params, "must specify L (or l) and trials in challenge parameters"
-
-    return challenge_params
-
-def _get_system(s:str):
-    assert s in system_dict, f"s must be one of {system_dict.keys()}"
-    return system_dict[s]
-
-def _get_algo(a:str):
-    assert a.split("_")[0] in algo_dict, f"m must be one of {algo_dict.keys()}"
-    return algo_dict.get(a, algo_dict[a.split("_")[0]])
-
-
-def _serialize_params(challenge_params, evaluate_params):
-    """
-    Serialize params to a string. 
-    This is used to generate a unique ID for each experiment.
-    """
-    serialized = challenge_params.copy()
-    serialized_eval = evaluate_params.copy()
-    serialized['system_cls'] = challenge_params['system_cls'].__name__
-    serialized_eval['algo_cls'] = evaluate_params['algo_cls'].__name__
-    serialized['evaluate'] = serialized_eval
-    return serialized
-
-def _deserialize_params(params):
-    ""
-    name2cls = {
-        "LDSystem": LDSystem,
-        "LinearRegression": LinearRegression,
-        "DNN": DNN
-    }
-    challenge_params, evaluate_params = params
-    challenge_params['system_cls'] = name2cls[challenge_params['system_cls']]
-    evaluate_params['algo_cls'] = name2cls[evaluate_params['algo_cls']]
-    return challenge_params, evaluate_params

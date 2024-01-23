@@ -19,7 +19,7 @@ COPY pyproject.toml /dynadojo/
 WORKDIR /dynadojo
 
 #isolate dynadojo from dependencies & install from lockfile
-RUN pdm config python.use_venv false && pdm install --prod -G tensorflow --no-lock --no-editable  --no-self
+RUN pdm config python.use_venv false && pdm install --prod -G tensorflow -G rebound --no-lock --no-editable  --no-self
 
 
 # ------------------------------------------------------------------------------------#
@@ -39,11 +39,11 @@ RUN pdm config python.use_venv false && pdm install --prod -G tensorflow --no-lo
 #
 #       singularity shell --writable dynadojo  # to enter sandbox instead of running a command
 
-FROM python:3.10-slim as sherlock
+FROM python:3.10-slim as slurm
 
-# make the symlinked directories
-RUN  mkdir -p /home/users \
-    && mkdir -p /scratch 
+# make the symlinked sherlock directories
+# RUN  mkdir -p /home/users \
+#     && mkdir -p /scratch
 # && mkdir -p /share/software/modules && mkdir -p /share/software/user && mkdir -p /oak && mkdir -p /home/groups && mkdir -p /etc/localtime && mkdir -p /etc/hosts
 
 # retrieve dependencies packages from build stage
@@ -51,11 +51,15 @@ ENV PYTHONPATH=/dynadojo/pkgs
 COPY --from=builder /dynadojo/__pypackages__/3.10/lib /dynadojo/pkgs
 
 # symlink experiments and src to repo in the home directory
-RUN ln -s /home/users/$USER/dynadojo/experiments /dynadojo/experiments && ln -s /home/users/$USER/dynadojo/src/dynadojo /dynadojo/pkgs/dynadojo
+# RUN ln -s /home/users/$USER/dynadojo/experiments /dynadojo/experiments && ln -s /home/users/$USER/dynadojo/src/dynadojo /dynadojo/pkgs/dynadojo
+
+# make the experiments and output directories (so that they are symlinkable)
+RUN mkdir -p /dynadojo/experiments \
+    && mkdir -p /dynadojo/experiments/outputs
 
 WORKDIR /dynadojo
 
-#disable GPU
+#disable GPU    
 ENV CUDA_VISIBLE_DEVICES=-1
 
 # set command/entrypoint, adapt to fit your needs
@@ -82,6 +86,7 @@ ENV PYTHONPATH=/dynadojo/pkgs
 COPY --from=builder /dynadojo/__pypackages__/3.10/lib /dynadojo/pkgs
 
 COPY experiments/ /dynadojo/experiments
+RUN mkdir -p /dynadojo/experiments/results
 
 #isolate dynadojo from dependencies
 COPY src/dynadojo /dynadojo/pkgs/dynadojo
