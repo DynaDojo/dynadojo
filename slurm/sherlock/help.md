@@ -5,6 +5,7 @@
 - The singularity/docker container only contains the python dependencies that are in the 'main' branch of the repo. We mount the dynadojo code to whereever you clone the repo so that any local changes to code are updated in the container. If you need to add any dependencies, you must create a new docker image and pull the new image. See experiments/README.md for how you can build a new image. 
 - You can use ondemand to submit jobs via templates, once you are set up! (ToDo: make a video showing this)
 
+<!--
 ## Steps to running on Sherlock
 1. Clone dynadojo repo. The singularity container mounts to the repo so that code changes get propogated.
 ```
@@ -40,3 +41,4 @@ Repeat step 3 with `<optional-job-id-list>` outputted in step 4.
 6. Optionally, transfer output files to local computer 
 
 7. Create plot
+-->
