@@ -72,7 +72,8 @@ Monitor the batch job using `squeue -j [SLURM_JOB_ID]` or `sacct -j [SLURM_JOB_I
 ```
 And then look inside the `$DD_SCRATCH_DIR/$DD_OUTPUT_DIR` folder for your pdf generated plot!
 
-# Make params file 
+# Available Scripts
+## To make params file 
 ```
 ./slurm/scripts/srun_make.sh
 ```
@@ -80,8 +81,8 @@ And then look inside the `$DD_SCRATCH_DIR/$DD_OUTPUT_DIR` folder for your pdf ge
 - Calls srun on dynadojo/slurm/jobscripts/make.sh
 - Prints out the location of params.json (inside singularity container)
 
-# Run params file
-## Testing
+## Run params file
+### Testing a run
 Example of running a params file. The supplied path must be relative to inside the singularity container. 
 ```
 ./slurm/scripts/srun_submit.sh \
@@ -93,14 +94,14 @@ Example of running a params file. The supplied path must be relative to inside t
 - Run jobs 0 and 1 for fc/lds/fc_lds_lr_l=10/params.json
 Unless you change how dynadojo/slurm/jobscripts/make.sh works or the CLI, usually the path the params will be the same as if you ran the CLI on your local computer with default output_dir. 
 
-## Batch Jobs
+### Running Batch Jobs
 
-### **Use the helper script!**
+#### **Use the helper script!**
 ```
 ./slurm/scripts/sbatch_run.sh
 ```
 
-### Do manually
+#### Do manually
 ```
 ./slurm/scripts/sbatch_submit.sh -J dynadojo_run --array=1-100 \
     slurm/jobscripts/sbatch/run.sbatch \
@@ -112,9 +113,11 @@ Calls sbatch with --array=1-100 with job name dynadojo_run. To monitor,
 squeue -u <user>
 ```
 
+<!--
+## Make and Run (Together)
+Not recommended. 
 
-# Make and Run (Together)
-## Testing
+### Testing make & run
 Example of make and run in one command:
 ```
 ./slurm/scripts/srun_submit.sh slurm/jobscripts/sbatch/make_n_run.sbatch fc lds lr 0,1
@@ -123,7 +126,7 @@ Example of make and run in one command:
 - Make params for fc lds lr
 - Run jobs 0 and 1
 
-## Batch Jobs
+### Running Batch Jobs
 ```
 ./slurm/scripts/sbatch_submit.sh -J dynadojo_mk_run --array=1-100 slurm/jobscripts/sbatch/make_n_run.sbatch fc lds lr <optional-job-ids>
 ```
@@ -131,16 +134,17 @@ Calls sbatch with --array=1-100 with job name dynadojo_mk_run. To monitor,
 ```
 squeue -u <user>
 ```
+-->
 
-# Check Jobs
+## Check Jobs or Plot
 ```
-./slurm/scripts/srun_check.sh 
+./slurm/scripts/srun_plot_check.sh 
 ```
-- Will ask you the path to the data
-- Path must be relative to the singularity container!
-- For example, if the data is in `$DD_SCRATCH_DIR/$DD_OUTPUT_DIR\fc/lds/fc_lds_lr_5_l=5` then you should say `experiments/outputs/fc/lds/fc_lds_lr_5_l=5` because that is where it is mounted in the container
+- Will ask you the path to the data, and whether to plot or check.
+- Path must be relative to the singularity container! Will make an attempt to find matching folders in `$DD_SCRATCH_DIR/$DD_OUTPUT_DIR`
+- For example, if the data is in `$DD_SCRATCH_DIR/$DD_OUTPUT_DIR/fc/lds/fc_lds_lr_5_l=5` then you should say `experiments/outputs/fc/lds/fc_lds_lr_5_l=5` because that is where it is mounted in the container
 
-## Rerunning Missing Jobs
+### Rerunning Missing Jobs
 The list printed by check jobs can be supplied as an optional argument to run or makeNrun scripts. 
 
 ### Example Result of Running Check:
@@ -152,13 +156,25 @@ Missing jobs:
 ```
 
 ### Example of Rerunning Missing Jobs:
+You can use the `./slurm/scripts/sbatch_run.sh` utiltity! 
 ```
-./slurm/scripts/sbatch_submit.sh -J dynadojo_run --array=1-100 slurm/jobscripts/sbatch/run.sbatch experiments/outputs/fc/lds/fc_lds_lr_5_l=5/params.json 25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99
+> ./slurm/scripts/sbatch_run.sh 
+> Challenge [fc,fts,fe]: fts
+> System: kura
+> Algorithm: lr
+    Found the following params files:
+    1) experiments/outputs/fts/kura/fts_kura_lr_n=1000/params.json
+    2) experiments/outputs/fts/kura/fts_kura_lr_test_n=1000/params.json
+> #? 1
+    Selected params file: experiments/outputs/fts/kura/fts_kura_lr_n=1000/params.json
+> List of jobs to run (comma separated, no spaces): 25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99
+> Split over how many tasks? 400
+> How many tasks to run at the same time? 100
+    Submitted batch job 123456
 ```
 
-# Running the Experiments CLI interactively inside singularity container
-
-## Example to plot
+## Running the Experiments CLI interactively inside singularity container
+### Example to plot
 First, start an interactive singularity container:
 ```
 ./slurm/scripts/srun_interactive.sh

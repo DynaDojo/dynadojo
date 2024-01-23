@@ -12,28 +12,8 @@ import numpy as np
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize, ScalingChallenge
 
 from .params import fc_challenge_params_dict, fts_challenge_params_dict, fe_challenge_params_dict
+from .keys import system_dict, algo_dict
 
-system_dict = {
-    "lds" : ("dynadojo.systems.lds", "LDSystem"),
-    "lorenz": ("dynadojo.systems.lorenz", "LorenzSystem"),
-    "lv_p": ("dynadojo.systems.lv", "PreyPredatorSystem"),
-    "lv_c": ("dynadojo.systems.lv", "CompetitiveLVSystem"),
-    "epi_1": ("dynadojo.systems.epidemic", "SIRSystem"),
-    "epi_2": ("dynadojo.systems.epidemic", "SISSystem"),
-    "epi_3": ("dynadojo.systems.epidemic", "SEISSystem"),
-    "nbody": ("dynadojo.systems.santi", "NBodySystem"),
-    "kura": ("dynadojo.systems.kuramoto", "KuramotoSystem"),
-    "fbsnn_1": ("dynadojo.systems.fbsnn_pde", "BSBSystem"),
-    "fbsnn_2": ("dynadojo.systems.fbsnn_pde", "HJBSystem"),
-    "ctln": ("dynadojo.systems.ctln", "CTLNSystem"),
-    "heat": ("dynadojo.systems.heat", "HeatEquation"),
-
-}
-algo_dict = {
-    "lr" : ("dynadojo.baselines.lr", "LinearRegression"),
-    "dnn" : ("dynadojo.baselines.dnn", "DNN"),
-    "sindy": ("dynadojo.baselines.sindy", "SINDy"),
-}
 challenge_dicts = {
     "fc" : (FixedComplexity, fc_challenge_params_dict),
     "fts" : (FixedTrainSize, fts_challenge_params_dict),

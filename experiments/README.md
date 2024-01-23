@@ -1,90 +1,98 @@
-These are instructions for running the code on Stanford's Slurm cluster using Singularity. 
+# Experiments CLI
 
-# Building Image
-
-## 1. Locally build docker image (using BuildKit), from the project root, where the `Dockerfile` is.
-```
-DOCKER_BUILDKIT=1 docker build --target=runtime -t <username>/dynadojo .
-```
-
-Test it locally.
-```
-docker run -it <username>/dynadojo bash
-```
-
-To push the image onto docker hub:
-```
-docker push <username>/dynadojo:latest
-```
-
-## 2. Or use BuildX to build and push for multi-architecture
-Alternatively, for a multi-architecture docker images, you need to use the newer build tool. [help](https://blog.jaimyn.dev/how-to-build-multi-architecture-docker-images-on-an-m1-mac/). [help2](https://nielscautaerts.xyz/making-dockerfiles-architecture-independent.html#:~:text=The%20Dockerfile%20and%20docker%20buildx)
+Command line interface for running experiments.
 
 ```
-docker buildx create --use
-docker buildx build --platform linux/amd64,linux/arm64 --push -t carynbear/dynadojo:buildx --progress=plain --target=runtime .
+python -m experiments --help
 ```
 
-To test, you would need to pull the image from the hub since this creates a BuildX container to build the image. Alternatively, if you want to load the generated image into your docker you can use the flag `--load` instead of `--push`. 
+# Setup
+- Please edit params.py with the appropriate params for your experiments.
+- System and algorithm keys should be specified in keys.py
 
+# Commands
 
-# Run Interactively on Sherlock
-## 1. Login to Sherlock and Run your container [help](https://www.sherlock.stanford.edu/docs/software/using/singularity/#singularity-on-sherlock) [help](https://vsoch.github.io/lessons/singularity-quickstart/)
+## `make`
+To create params file for experiment.
 
-Request an interactive node
+Arguments for make:
 ```
-srun -c 4 --pty bash
-```
-Pull the image.
-```
-mkdir -p $GROUP_HOME/$USER/simg
-cd $GROUP_HOME/$USER/simg
-singularity pull docker://<username>/dynadojo
-```
-Run from entrypoint.
-```
-singularity run --pwd /dynadojo dynadojo_latest.sif 
-```
-Or run a shell interactively in the container.
-```
-mkdir /tmp/dynadojo
-singularity shell --pwd /tmp/dynadojo dynadojo.simg
+    --algo: which algo, short name, see params.py algo_dict
+    --system: which system, short name, see params.py system_dict
+    --challenge: which challenge, one of ["fc", "fts", "fe"]
+    --output_dir: where to save params, default "experiments/outputs"
+    --all: if True, make all params, default False
 ```
 
-## 2. OR Build and run a writable singularity container to test [help](https://wiki.ncsa.illinois.edu/display/ISL20/Containers)
+Usage:
+    ```
+    python -m experiments make --challenge <challenge_key> --system <system_key> --algo <algo_key> --output_dir <output_dir>
+    python -m experiments make --challenge fc --system lds --algo lr_5
+    ```
+
+## `run`
+To run experiment, given params file. Can split jobs over multiple compute nodes.
+
+Arguments for run:
 ```
-cd $GROUP_HOME/$USER/simg
-singularity build --sandbox -F dynadojo docker://carynbear/dynadojo:buildx
-singularity shell --writable dynadojo
-
-singularity run --pwd /dynadojo  dynadojo
+    --params_file: which params file to run
+    --total_nodes: how many machines to run on (default 1, for running locally)
+    --node: which node is being run, [1, total_nodes], default None which runs the whole challenge
+    --output_dir: where to save results, default "experiments/outputs"
+    --num_cpu_parallel: number of cpus to use for parallelization, default None which runs without parallelization
+    --jobs: which jobs to run, comma separated list of integers, default None which runs all jobs
+    --if_missing: if True, only run missing jobs, default False
 ```
-# Resources
-## Writing Multi-Stage Dockerfiles to improve your builds
-- [Use PDM in a multi-stage Dockerfile](https://pdm.fming.dev/latest/usage/advanced/#use-pdm-in-a-multi-stage-dockerfile)
-- [Blazing fast Python Docker builds with Poetry](https://medium.com/@albertazzir/blazing-fast-python-docker-builds-with-poetry-a78a66f5aed0)
+Usage:
+```
+    python -m experiments \
+        run \
+        --params_file experiments/outputs/fc/lds/fc_lds_lr_l=10/params.json \
+        --node 2 --total_nodes 10 \
+        --num_cpu_parallel -2 \
+        --if_missing
 
-## Notes
-- Using `pdm sync` instead of `install` because for some reason tensorflow dependencies will not install properly for the amd build. Hopefully installing from the lockfile will fix this. 
-- Not installing the `dynadojo` project (`--no-self`) with the dependencies so that it's a separate layer that doesn't have to be updated all the time. According to [this](https://github.com/pdm-project/pdm/issues/444) it should prevent reinstalling with every update. If this doesn't work, use the mounted folders to manage the dynadojo code. 
-- Issues with `torch` version [details](https://stackoverflow.com/questions/76327419/valueerror-libcublas-so-0-9-not-found-in-the-system-path)
-- Issues with `tensorflow-io-gcs-filesystem` version 
-- Maybe you want tensorflow to be faster [link](https://gist.github.com/grantstephens/74468679558950dc66714ff3d672a782)
+    python -m experiments run --num_cpu_parallel -2 --params_file experiments/outputs/fc/lds/fc_lds_lr_5_l=5/params.json 
+```
 
-## Singularity Mounts
-WARNING: passwd file doesn't exist in container, not updating
-WARNING: group file doesn't exist in container, not updating
-WARNING: Skipping mount /lscratch [hostfs]: /lscratch doesn't exist in container
-WARNING: Skipping mount /share/software/modules [hostfs]: /share/software/modules doesn't exist in container
-WARNING: Skipping mount /share/software/user [hostfs]: /share/software/user doesn't exist in container
-WARNING: Skipping mount /scratch [hostfs]: /scratch doesn't exist in container
-WARNING: Skipping mount /home/users [hostfs]: /home/users doesn't exist in container
-WARNING: Skipping mount /oak [hostfs]: /oak doesn't exist in container
-WARNING: Skipping mount /home/groups [hostfs]: /home/groups doesn't exist in container
-WARNING: Skipping mount /etc/localtime [binds]: /etc/localtime doesn't exist in container
-WARNING: Skipping mount /etc/hosts [binds]: /etc/hosts doesn't exist in container
-WARNING: Skipping mount /var/apptainer/mnt/session/etc/resolv.conf [files]: /etc/resolv.conf doesn't exist in container
+## Chaining `make` and `run`
+You can specifically chain `make` and `run` commands to make a params.json file and immediately run said file.
 
-# Issues
-1. Torch and Tensorflow are locked to specific version, need to isolate from dynadojo
-2. Separate suites of systems and models from benchmarking system
+```
+python -m experiments \
+        make \
+            <make args>
+        run \
+            <run args except --params_file>
+```
+
+## `plot`
+To aggregate and plot results
+
+Arguments for plot:
+```
+    --data_dir: where to load results from
+    --output_dir: where to save plots, default "experiments/outputs"
+```
+
+Usage:
+```
+    python -m experiments plot --data_dir experiments/outputs/fc/lds/fc_lds_lr_l=10 --output_dir experiments/outputs
+```
+
+## `check`
+To check which jobs were completed and which are missing. Prints a list which can be passed to `--jobs` argument of `run` command.
+
+Arguments for check:
+```
+    --data_dir: where to load results from
+```
+
+Usage:
+    ```
+    python -m experiments check --data_dir experiments/outputs/fc/lds/fc_lds_lr_l=10
+    ```
+
+# Using the CLI with cluster compute
+
+See code in the `dynadojo/slurm` directory. In particular, `dynadojo/slurm/scripts` which call on `dynadojo/slurm/jobscripts` which use the CLI within a Singularity container.
