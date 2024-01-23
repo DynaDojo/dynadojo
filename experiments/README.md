@@ -8,6 +8,10 @@ python -m experiments --help
 
 # Setup
 - Please edit params.py with the appropriate params for your experiments.
+    - She's a bit hacky. >_<
+    - Algorithm keys can include suffixes separated by an underscore. So `lr_test` is a valid key for `lr`.
+    - And suffixed algorithms inherit and override params from the algorithm dict. So `lr_test` gets all of `lr` params.
+    - Try using the `make` CLI command and examining the params file if you want to check what's going on. 
 - System and algorithm keys should be specified in keys.py
 
 # Commands
