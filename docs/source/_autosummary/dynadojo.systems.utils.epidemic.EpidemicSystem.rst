@@ -1,4 +1,4 @@
-dynadojo.systems.utils.epidemic.EpidemicSystem
+﻿dynadojo.systems.utils.epidemic.EpidemicSystem
 ==============================================
 
 .. currentmodule:: dynadojo.systems.utils.epidemic
@@ -18,7 +18,10 @@ dynadojo.systems.utils.epidemic.EpidemicSystem
       ~EpidemicSystem.__init__
       ~EpidemicSystem.calc_control_cost
       ~EpidemicSystem.calc_error
+      ~EpidemicSystem.count_vals
       ~EpidemicSystem.create_model
+      ~EpidemicSystem.create_randomized_dict
+      ~EpidemicSystem.edit_initial_infected
       ~EpidemicSystem.make_data
       ~EpidemicSystem.make_init_conds
    

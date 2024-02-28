@@ -16,12 +16,20 @@ dynadojo.challenges.FixedError
    .. autosummary::
    
       ~FixedError.__init__
+      ~FixedError.create_job_configs
       ~FixedError.evaluate
+      ~FixedError.execute_job
+      ~FixedError.get_num_jobs
       ~FixedError.plot
-      ~FixedError.system_run
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FixedError.base_configs
    
    

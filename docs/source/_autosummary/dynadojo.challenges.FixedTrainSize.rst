@@ -16,12 +16,20 @@ dynadojo.challenges.FixedTrainSize
    .. autosummary::
    
       ~FixedTrainSize.__init__
+      ~FixedTrainSize.create_job_configs
       ~FixedTrainSize.evaluate
+      ~FixedTrainSize.execute_job
+      ~FixedTrainSize.get_num_jobs
       ~FixedTrainSize.plot
-      ~FixedTrainSize.system_run
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FixedTrainSize.base_configs
    
    

@@ -2,8 +2,8 @@
 <html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="dynadojo.systems" href="dynadojo.systems.html" /><link rel="prev" title="dynadojo.challenges.FixedError" href="dynadojo.challenges.FixedError.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="dynadojo.challenges.ScalingChallenge" href="dynadojo.challenges.ScalingChallenge.html" /><link rel="prev" title="dynadojo.challenges.FixedError" href="dynadojo.challenges.FixedError.html" />
 
     <link rel="shortcut icon" href="../_static/dino.svg"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
         <title>dynadojo.challenges.FixedTrainSize - DynaDojo 0.2.6 documentation</title>
@@ -172,6 +172,7 @@
 <li class="toctree-l2 current has-children"><a class="reference internal" href="dynadojo.html">dynadojo</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of dynadojo</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="dynadojo.abstractions.html">dynadojo.abstractions</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of dynadojo.abstractions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.abstractions.AbstractAlgorithm.html">dynadojo.abstractions.AbstractAlgorithm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dynadojo.abstractions.AbstractChallenge.html">dynadojo.abstractions.AbstractChallenge</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.abstractions.AbstractSystem.html">dynadojo.abstractions.AbstractSystem</a></li>
 </ul>
 </li>
@@ -211,10 +212,10 @@
 </ul>
 </li>
 <li class="toctree-l3 current has-children"><a class="reference internal" href="dynadojo.challenges.html">dynadojo.challenges</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of dynadojo.challenges</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.Challenge.html">dynadojo.challenges.Challenge</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedComplexity.html">dynadojo.challenges.FixedComplexity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedError.html">dynadojo.challenges.FixedError</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">dynadojo.challenges.FixedTrainSize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.ScalingChallenge.html">dynadojo.challenges.ScalingChallenge</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="dynadojo.systems.html">dynadojo.systems</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of dynadojo.systems</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -424,19 +425,28 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="dynadojo.challenges.FixedTrainSize">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dynadojo.challenges.</span></span><span class="sig-name descname"><span class="pre">FixedTrainSize</span></span><a class="headerlink" href="#dynadojo.challenges.FixedTrainSize" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="dynadojo.challenges.Challenge.html#dynadojo.challenges.Challenge" title="dynadojo.challenges.Challenge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Challenge</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="dynadojo.challenges.ScalingChallenge.html#dynadojo.challenges.ScalingChallenge" title="dynadojo.challenges.ScalingChallenge"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalingChallenge</span></code></a></p>
 <p>Challenge where the size of the training set is fixed, the complexity of the system is varied, and the error is measured.</p>
 <p class="rubric">Methods</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.__init__" title="dynadojo.challenges.FixedTrainSize.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(n, L, E, t, system_cls, reps, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.__init__" title="dynadojo.challenges.FixedTrainSize.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(n, L, E, t, system_cls, trials, ...)</p></td>
 <td><p>Initialize the class.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.evaluate" title="dynadojo.challenges.FixedTrainSize.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(algo_cls[, algo_kwargs, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.create_job_configs" title="dynadojo.challenges.FixedTrainSize.create_job_configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_job_configs</span></code></a>([trials, seed])</p></td>
+<td><p>Generates a job configurations by generating seeds for each trial of each base config.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.evaluate" title="dynadojo.challenges.FixedTrainSize.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(algo_cls[, algo_kwargs, ...])</p></td>
 <td><p>Evaluates an algorithm class (NOT an instance) on a dynamical system over a set of experimental parameters.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.plot" title="dynadojo.challenges.FixedTrainSize.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>(data[, n, show, show_stats, plot_ood, ax])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.execute_job" title="dynadojo.challenges.FixedTrainSize.execute_job"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute_job</span></code></a>(job_id[, trial, system_seed, ...])</p></td>
+<td><p>For a given system latent dimension and embedding dimension, instantiates system and for a specific N, evaluates the algorithm on the system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.get_num_jobs" title="dynadojo.challenges.FixedTrainSize.get_num_jobs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_num_jobs</span></code></a>(trials)</p></td>
+<td><p>Calculates the total number of jobs based on the number of trials and the base configurations generated from sweep parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.plot" title="dynadojo.challenges.FixedTrainSize.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code></a>(data[, n, show, show_stats, plot_ood, ax])</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A plot of the data.</p>
@@ -444,15 +454,22 @@
 </dl>
 </p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.system_run" title="dynadojo.challenges.FixedTrainSize.system_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">system_run</span></code></a>(rep_id, latent_dim, embed_dim, ...)</p></td>
-<td><p>For a given system latent dimension and embedding dimension, instantiates system and for a specific N, evaluates the algorithm on the system.</p></td>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.base_configs" title="dynadojo.challenges.FixedTrainSize.base_configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">base_configs</span></code></a></p></td>
+<td><p>Computes a base set of configurations for jobs by iterating over elements of sweep parameters.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="dynadojo.challenges.FixedTrainSize.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_examples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_timesteps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_control_cost_per_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_horizons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.challenges.FixedTrainSize.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trials</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_examples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_timesteps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_control_cost_per_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_horizons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.challenges.FixedTrainSize.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize the class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -464,19 +481,70 @@
 <li><p><strong>max_control_cost_per_dim</strong> (<em>int</em>) – The maximum control cost per dimension.</p></li>
 <li><p><strong>control_horizons</strong> (<em>int</em>) – The number of control horizons to consider.</p></li>
 <li><p><strong>system_cls</strong> (<em>type</em>) – The system class to use.</p></li>
-<li><p><strong>reps</strong> (<em>int</em>) – The number of repetitions to run.</p></li>
+<li><p><strong>trials</strong> (<em>int</em>) – Number of trials for each run/latent dimension.</p></li>
 <li><p><strong>test_examples</strong> (<em>int</em>) – The number of test examples to use.</p></li>
 <li><p><strong>test_timesteps</strong> (<em>int</em>) – The number of timesteps to simulate for the test examples.</p></li>
 <li><p><strong>system_kwargs</strong> (<em>dict</em>) – The keyword arguments to pass to the system class.</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em>) – </p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dynadojo.challenges.FixedTrainSize.base_configs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">base_configs</span></span><a class="headerlink" href="#dynadojo.challenges.FixedTrainSize.base_configs" title="Link to this definition">#</a></dt>
+<dd><p>Computes a base set of configurations for jobs by iterating over elements of sweep parameters. Each configuration represents a single value for each of the sweep parameters. Later we generate jobs by adding seeds to base_configs for each trial.</p>
+<p>This function creates a list of dictionaries. It matches up the nth elements of each parameter list in <cite>self.sweep_params</cite> to form
+each configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of configurations for runs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[Dict[str, Any]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>If <cite>self.sweep_params</cite> is set to
+{</p>
+<blockquote>
+<div><p>‘a’: [1, 2, 3],
+‘b’: [8, 9, 10]</p>
+</div></blockquote>
+<p>}
+<cite>base_configs</cite> will contain configurations for 3 runs:
+[</p>
+<blockquote>
+<div><p>{‘a’: 1, ‘b’: 8},
+{‘a’: 2, ‘b’: 9},
+{‘a’: 3, ‘b’: 10}</p>
+</div></blockquote>
+<p>]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.challenges.FixedTrainSize.create_job_configs">
+<span class="sig-name descname"><span class="pre">create_job_configs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.challenges.FixedTrainSize.create_job_configs" title="Link to this definition">#</a></dt>
+<dd><p>Generates a job configurations by generating seeds for each trial of each base config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trials</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of trials for each parameter configuration.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Seed for random number generation, if applicable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of dictionaries, each containing parameters for a job.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Dict[str, Any]]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dynadojo.challenges.FixedTrainSize.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algo_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">act_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ood</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_parallel_cpu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reps_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rep_l_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.challenges.FixedTrainSize.evaluate" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algo_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">act_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ood</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_parallel_cpu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jobs_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.challenges.FixedTrainSize.evaluate" title="Link to this definition">#</a></dt>
 <dd><p>Evaluates an algorithm class (NOT an instance) on a dynamical system over a set of experimental parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -493,10 +561,8 @@ If False, generate out-of-distribution initial conditions for the test set.</p><
 <li><p><strong>num_parallel_cpu</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of CPUs to use in parallel. Defaults to -1, which uses all available CPUs.</p></li>
 <li><p><strong>seed</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Seed to seed the random number generator for seeding systems and algorithms. Defaults to None.
 Is overridden by seeds in system_kwargs or algo_kwargs.</p></li>
-<li><p><strong>reps_filter</strong> (<em>list</em><em> of </em><em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – If provided, will only evaluate system_runs with the given rep_ids. Defaults to None, which evaluates all repetitions.</p></li>
-<li><p><strong>L_filter</strong> (<em>list</em><em> of </em><em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – If provided, will only evaluate system_runs with the given latent dimensions. Defaults to None, which evaluates all latent dimensions.</p></li>
-<li><p><strong>rep_l_filter</strong> (<em>list</em><em> of </em><em>tuple</em><em>(</em><em>int</em><em>, </em><em>int</em><em>) or </em><em>None</em><em>, </em><em>optional</em>) – If provided, will only evaluate system_runs with the given (rep_id, latent_dim) pairs.
-Defaults to None, which evaluates all (rep_id, latent_dim) pairs.</p></li>
+<li><p><strong>jobs_filter</strong> (<em>list</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Specifies which jobs to evaluate as specified by job_id. Defaults to None, which evaluates all jobs.</p></li>
+<li><p><strong>csv_output_path</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Path to save results. Will add to file if exists. Defaults to None, which does not save results.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -504,6 +570,53 @@ Defaults to None, which evaluates all (rep_id, latent_dim) pairs.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.challenges.FixedTrainSize.execute_job">
+<span class="sig-name descname"><span class="pre">execute_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo_cls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">act_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ood</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.challenges.FixedTrainSize.execute_job" title="Link to this definition">#</a></dt>
+<dd><p>For a given system latent dimension and embedding dimension, instantiates system and for a specific N,
+evaluates the algorithm on the system. Across runs, the algorithm is re-initialized with the same seed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The seed in algo_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>job_id</strong> (<em>int</em>) – </p></li>
+<li><p><strong>trial</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>system_seed</strong> (<em>int</em>) – </p></li>
+<li><p><strong>algo_seed</strong> (<em>int</em>) – </p></li>
+<li><p><strong>latent_dim</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>embed_dim</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>algo_cls</strong> (<em>type</em><em>[</em><a class="reference internal" href="dynadojo.abstractions.AbstractAlgorithm.html#dynadojo.abstractions.AbstractAlgorithm" title="dynadojo.abstractions.AbstractAlgorithm"><em>AbstractAlgorithm</em></a><em>] </em><em>| </em><em>None</em>) – </p></li>
+<li><p><strong>algo_kwargs</strong> (<em>dict</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>fit_kwargs</strong> (<em>dict</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>act_kwargs</strong> (<em>dict</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>noisy</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>ood</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>id</strong> (<em>str</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dynadojo.challenges.FixedTrainSize.get_num_jobs">
+<span class="sig-name descname"><span class="pre">get_num_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trials</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.challenges.FixedTrainSize.get_num_jobs" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the total number of jobs based on the number of trials and the base configurations generated from sweep parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>trials</strong> (<em>int</em>) – Number of trials for each base configuration.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Total number of jobs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -529,29 +642,6 @@ Defaults to None, which evaluates all (rep_id, latent_dim) pairs.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="dynadojo.challenges.FixedTrainSize.system_run">
-<span class="sig-name descname"><span class="pre">system_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">act_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noisy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_ood</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.challenges.FixedTrainSize.system_run" title="Link to this definition">#</a></dt>
-<dd><p>For a given system latent dimension and embedding dimension, instantiates system and for a specific N,
-evaluates the algorithm on the system. Across runs, the algorithm is re-initialized with the same seed.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The seed in algo_kwargs and system_seed in system_kwargs takes precedence over the seed passed to this function.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>algo_cls</strong> (<em>type</em><em>[</em><a class="reference internal" href="dynadojo.abstractions.AbstractAlgorithm.html#dynadojo.abstractions.AbstractAlgorithm" title="dynadojo.abstractions.AbstractAlgorithm"><em>AbstractAlgorithm</em></a><em>]</em>) – </p></li>
-<li><p><strong>algo_kwargs</strong> (<em>dict</em><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>fit_kwargs</strong> (<em>dict</em><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>act_kwargs</strong> (<em>dict</em><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>noisy</strong> (<em>bool</em>) – </p></li>
-<li><p><strong>test_ood</strong> (<em>bool</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -561,12 +651,12 @@ evaluates the algorithm on the system. Across runs, the algorithm is re-initiali
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="dynadojo.systems.html">
+          <a class="next-page" href="dynadojo.challenges.ScalingChallenge.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">dynadojo.systems</div>
+                <div class="title">dynadojo.challenges.ScalingChallenge</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -614,9 +704,12 @@ evaluates the algorithm on the system. Across runs, the algorithm is re-initiali
 <li><a class="reference internal" href="#">dynadojo.challenges.FixedTrainSize</a><ul>
 <li><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize"><code class="docutils literal notranslate"><span class="pre">FixedTrainSize</span></code></a><ul>
 <li><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.__init__"><code class="docutils literal notranslate"><span class="pre">FixedTrainSize.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.base_configs"><code class="docutils literal notranslate"><span class="pre">FixedTrainSize.base_configs</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.create_job_configs"><code class="docutils literal notranslate"><span class="pre">FixedTrainSize.create_job_configs()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.evaluate"><code class="docutils literal notranslate"><span class="pre">FixedTrainSize.evaluate()</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.execute_job"><code class="docutils literal notranslate"><span class="pre">FixedTrainSize.execute_job()</span></code></a></li>
+<li><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.get_num_jobs"><code class="docutils literal notranslate"><span class="pre">FixedTrainSize.get_num_jobs()</span></code></a></li>
 <li><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.plot"><code class="docutils literal notranslate"><span class="pre">FixedTrainSize.plot()</span></code></a></li>
-<li><a class="reference internal" href="#dynadojo.challenges.FixedTrainSize.system_run"><code class="docutils literal notranslate"><span class="pre">FixedTrainSize.system_run()</span></code></a></li>
 </ul>
 </li>
 </ul>
