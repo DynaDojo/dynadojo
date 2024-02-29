@@ -19,9 +19,10 @@ At the moment, our slurm utilities are written specifically for Stanford's Sherl
 ```
 source slurm/scripts/_setup.sh
 ```
-1. Make experiment
-The keys you can use for system and algorithm will be defined in `experiments/params.py` and `experiments/keys.py`.
-You can edit those files to add or change parameters for the experiment. The `experiments/params.py` is a parameter template file to help you generate the experiment params. There is some interesting inheritance that goes on there so suffixes can be added to algorithm keys. 
+## 1. Make experiment
+The keys you can use for system and algorithm will be defined in `experiments/params.py` and `experiments/keys.py`. You can edit those files to add or change parameters for the experiment.
+
+The `experiments/params.py` is a parameter template file to help you generate experiment params (in the output folder). There is some interesting inheritance that goes on there so suffixes can be added to algorithm keys. 
 
 **IMPORTANT NOTE:** Specifically for making experiments, you want to indicate the full algorithm key that is defined in `experiments/params.py` when calling this helper. So for example, 'lr_5' or 'lr_test' if that is the experiment you are trying to make. In the other helpers, you can simply indicate the base algorithm key since it will try to find all matching experiments. 
 ```
@@ -39,7 +40,9 @@ You can edit those files to add or change parameters for the experiment. The `ex
 ```
 This will print how many jobs there are! Important for decided how many tasks you want to distribute those tasks over. 
 
-2. Run experiment. *Leave the list of jobs blank unless you have a list of job_ids to run from checking the experiment in step 3.*
+## 2. Run experiment. 
+
+*Leave the list of jobs blank unless you have a list of job_ids to run from checking the experiment in step 3.*
 
 ```
 > ./slurm/scripts/sbatch_run.sh 
@@ -60,7 +63,7 @@ This will print how many jobs there are! Important for decided how many tasks yo
 Monitor the batch job using `squeue -j [SLURM_JOB_ID]` or `sacct -j [SLURM_JOB_ID] -n -X`, which in the above example is `123456`
 
 
-3. Check or plot experiment
+## 3. Check or plot experiment
 ```
 > ./slurm/scripts/srun_plot_check.sh
 > Challenge [fc,fts,fe]: fts
