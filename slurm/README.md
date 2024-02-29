@@ -19,8 +19,11 @@ At the moment, our slurm utilities are written specifically for Stanford's Sherl
 ```
 source slurm/scripts/_setup.sh
 ```
-1. Make params
-The keys you can use for system and algorithm will be defined in `experiments/params.py` and `experiments/utils.py`
+1. Make experiment
+The keys you can use for system and algorithm will be defined in `experiments/params.py` and `experiments/keys.py`.
+You can edit those files to add or change parameters for the experiment. The `experiments/params.py` is a parameter template file to help you generate the experiment params. There is some interesting inheritance that goes on there so suffixes can be added to algorithm keys. 
+
+**IMPORTANT NOTE:** Specifically for making experiments, you want to indicate the full algorithm key that is defined in `experiments/params.py` when calling this helper. So for example, 'lr_5' or 'lr_test' if that is the experiment you are trying to make. In the other helpers, you can simply indicate the base algorithm key since it will try to find all matching experiments. 
 ```
 > ./slurm/scripts/srun_make.sh 
 > Challenge [fc,fts,fe]: fts
