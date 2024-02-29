@@ -1,6 +1,7 @@
 At the moment, our slurm utilities are written specifically for Stanford's Sherlock and Northwestern's Quest clusters. We hope to eventually write code that can more easily be used by other clusters. For now, please use this code as a reference for porting the code to work for your system. 
 
 # Tips
+- Please read the [Experiment CLI readme] (https://github.com/DynaDojo/dynadojo/tree/main/experiments)! All the scripts in this folder do is call the CLI with some SLURM magic and a little bit of extra support via bash scripts. 
 - Always run from dynadojo folder!
 - If you want to skip the prompt for which cluster, set the env var $DD_CLUSTER to "sherlock" or "quest" (in bashrc or however). Or run `source slurm/scripts/_setup.sh`. 
 - If you encounter any `Permission denied` messages, make the file executable. `chmod +x <file>`
