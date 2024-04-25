@@ -6,10 +6,10 @@
 MY_USER='<YOUR STUDENT ID>'           #edit this
 MY_ACCOUNT='<YOUR ACCOUNT>'           #edit this, to check which account(s) is(are) associated with your user, e.g. with sacctmgr list user $USER.
 
-ACCOUNT='-A ${MY_ACCOUNT}'
+eval "ACCOUNT='-A ${MY_ACCOUNT}'"
 PARTITION='--partition short'
-OUTPUT='-o /home/${MY_USER}/logs/out/%A_%a.out'
-ERROR='-e /home/${MY_USER}/logs/err/%A_%a.err'
+eval "OUTPUT='-o /home/${MY_USER}/logs/out/%A_%a.out'"
+eval "ERROR='-e /home/${MY_USER}/logs/err/%A_%a.err'"
 TIME='-t 0-2:30' # Maximum execution time (D-HH:MM)
 
 # ENVIRONMENT VARS
