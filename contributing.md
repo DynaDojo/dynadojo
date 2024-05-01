@@ -33,7 +33,7 @@ pyenv local 3.10 #set the current directory default version
 ### Package Installation
 Optional packages are `tensorflow` or `tensorflow-m1`,  and `rebound`.
 ```
-pdm install -d -G tensorflow[-metal] -G rebound
+pdm install -d -G tensorflow[-m1] -G rebound
 ```
 
 Apple Silicon can install `tensorflow-m1`,  see system requirements in https://developer.apple.com/metal/tensorflow-plugin/
