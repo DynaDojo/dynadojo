@@ -3,16 +3,23 @@
 When contributing to this repository, please first discuss the change you wish to make via issue,
 email, or any other method with the owners of this repository before making a change. 
 
+# System Requirements
+For installing [Tensorflow 2](https://www.tensorflow.org/install) as of 4/26/2024,
+
+- Ubuntu 16.04 or later
+- Windows 7 or later (with C++ redistributable)
+- macOS 10.12.6 (Sierra) or later (no GPU support)
+- WSL2 via Windows 10 19044 or higher including GPUs (Experimental)
+
 
 # Setting up your environment
-
 ## Recommended Tools
-1. pyenv for managing python versions
-2. pdm for managing virtual environments and packages
+1. **for Macs**: xcode-select --install
+2. **for Macs/Linux**: homebrew (for installing pyenv and pdm)
+3. pyenv for managing python versions
+4. pdm (version 2.15.1) for managing virtual environments and packages
 
-If you don't have these installed, you can install them with `homebrew` on MacOS. 
-
-## Installing locally
+## Installing Dependencies locally
 ### Python Version
 Make sure you are working with a python version specified in pyproject.toml (3.10, 3.11)
 
@@ -24,16 +31,21 @@ pyenv local 3.10 #set the current directory default version
 ```
 
 ### Package Installation
-Optional packages are `tensorflow` and `rebound`.
+Optional packages are `tensorflow` or `tensorflow-m1`,  and `rebound`.
 ```
-pdm install -G tensorflow -G rebound
+pdm install -d -G tensorflow[-m1] -G rebound
 ```
+
+Apple Silicon can install `tensorflow-m1`,  see system requirements in https://developer.apple.com/metal/tensorflow-plugin/
+
 Reload your terminal to activate the venv.
 
 # Running Tests
 ```
 pdm run python -m unittest
 ```
+
+<!-- DOCKER INSTRUCTIONS (OUT OF DATE)
 
 # Using Docker Image
 ## Get the image
@@ -72,13 +84,21 @@ docker push ghcr.io/dynadojo/dynadojo:[version]
 ## Advanced: Building/Pushing multiple OS/arch packages
 1. First, Switch to different driver:  `docker buildx create --use`
 2. Then, Build & Load to test locally: `docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=dynadojo:test --load .`
-3. Or Build & Push to dockerhub:       `docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=[repository]/dynadojo:[version] --push .`
+3. Or Build & Push to dockerhub:       `docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=[repository]/dynadojo:[version] --push .` 
+
+-->
+
+
+
+
+
+
+
 
 <!--
-These are instructions for running the code on Stanford's Slurm cluster using Singularity. 
+!!!! OLD INSTRUCTIONS FOR Stanford's Slurm cluster using Singularity. 
 
 # Building Image
-
 ## 1. Locally build docker image (using BuildKit), from the project root, where the `Dockerfile` is.
 ```
 DOCKER_BUILDKIT=1 docker build --target=runtime -t <username>/dynadojo .

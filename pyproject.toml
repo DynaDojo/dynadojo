@@ -52,13 +52,19 @@ dev = [
 ]
 
 [project.optional-dependencies]
-tensorflow = [
-    "tensorflow",
+tensorflow-old = [
     "tensorflow-macos; sys_platform=='darwin' and platform_machine=='arm64'",
     "tensorflow-intel; sys_platform=='win32'",
     "tensorflow-cpu; (sys_platform=='linux' or sys_platform=='darwin') and (platform_machine!='arm64' and platform_machine!='aarch64')",
     "tensorflow-cpu-aws; sys_platform=='linux' and (platform_machine=='arm64' or platform_machine=='aarch64')",
     "tensorflow-io-gcs-filesystem; sys_platform!='darwin' or platform_machine!='arm64' or  sys_platform=='win32'"
+]
+tensorflow-m1 = [
+    "tensorflow>=2.13.0",
+    "tensorflow-metal"
+]
+tensorflow = [
+    "tensorflow",
 ]
 rebound = [
     "rebound>=4.0.1",
