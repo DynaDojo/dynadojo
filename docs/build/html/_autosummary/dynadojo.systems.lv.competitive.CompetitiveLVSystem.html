@@ -2,7 +2,7 @@
 <html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="dynadojo.systems.lv.prey_predator" href="dynadojo.systems.lv.prey_predator.html" /><link rel="prev" title="dynadojo.systems.lv.competitive" href="dynadojo.systems.lv.competitive.html" />
 
     <link rel="shortcut icon" href="../_static/dino.svg"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
@@ -172,6 +172,7 @@
 <li class="toctree-l2 current has-children"><a class="reference internal" href="dynadojo.html">dynadojo</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of dynadojo</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="dynadojo.abstractions.html">dynadojo.abstractions</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of dynadojo.abstractions</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.abstractions.AbstractAlgorithm.html">dynadojo.abstractions.AbstractAlgorithm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dynadojo.abstractions.AbstractChallenge.html">dynadojo.abstractions.AbstractChallenge</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.abstractions.AbstractSystem.html">dynadojo.abstractions.AbstractSystem</a></li>
 </ul>
 </li>
@@ -211,10 +212,10 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="dynadojo.challenges.html">dynadojo.challenges</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of dynadojo.challenges</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.Challenge.html">dynadojo.challenges.Challenge</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedComplexity.html">dynadojo.challenges.FixedComplexity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedError.html">dynadojo.challenges.FixedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedTrainSize.html">dynadojo.challenges.FixedTrainSize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.ScalingChallenge.html">dynadojo.challenges.ScalingChallenge</a></li>
 </ul>
 </li>
 <li class="toctree-l3 current has-children"><a class="reference internal" href="dynadojo.systems.html">dynadojo.systems</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle navigation of dynadojo.systems</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -425,12 +426,34 @@
 <dt class="sig sig-object py" id="dynadojo.systems.lv.competitive.CompetitiveLVSystem">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dynadojo.systems.lv.competitive.</span></span><span class="sig-name descname"><span class="pre">CompetitiveLVSystem</span></span><a class="headerlink" href="#dynadojo.systems.lv.competitive.CompetitiveLVSystem" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="dynadojo.abstractions.AbstractSystem.html#dynadojo.abstractions.AbstractSystem" title="dynadojo.abstractions.AbstractSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSystem</span></code></a></p>
+<p>Competitive Lotka Volterra, generalized to n-species</p>
+<p>Interspecies interaction have only positive weighted interactions, a[i][j] ≥ 0 for all i, j
+Intraspecies interaction set to 1, a[i][i] = 1 for all i
+Growth rate for each species is positive, r[i] &gt; 0 for all i
+Each derviate divided by species carrying capacity, K[i]</p>
+<p>With n ≥ 5 species, asymptotic behavior occurs, including a fixed point, a limit cycle, an n-torus, or attractors [Smale]</p>
+<p>More info: <a class="reference external" href="https://en.wikipedia.org/wiki/Competitive_Lotka%E2%80%93Volterra_equations">https://en.wikipedia.org/wiki/Competitive_Lotka%E2%80%93Volterra_equations</a></p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dynadojo.systems.lv</span> <span class="kn">import</span> <span class="n">CompetitiveLVSystem</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dynadojo.wrappers</span> <span class="kn">import</span> <span class="n">SystemChecker</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dynadojo.utils.lv</span> <span class="kn">import</span> <span class="n">plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">latent_dim</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">embed_dim</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">timesteps</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span> <span class="o">=</span> <span class="n">SystemChecker</span><span class="p">(</span><span class="n">CompetitiveLVSystem</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x0</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">make_init_conds</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">make_data</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">timesteps</span><span class="o">=</span><span class="n">timesteps</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="p">],</span> <span class="n">target_dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">specieslabels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;black bear&quot;</span><span class="p">,</span> <span class="s2">&quot;salmon&quot;</span><span class="p">,</span> <span class="s2">&quot;eagle&quot;</span><span class="p">,</span> <span class="s2">&quot;lion&quot;</span><span class="p">,</span> <span class="s2">&quot;dolphin&quot;</span><span class="p">,</span> <span class="s2">&quot;tiger&quot;</span><span class="p">],</span> <span class="n">max_lines</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/competitive.png" src="../_images/competitive.png" />
 <p class="rubric">Methods</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#dynadojo.systems.lv.competitive.CompetitiveLVSystem.__init__" title="dynadojo.systems.lv.competitive.CompetitiveLVSystem.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([latent_dim, embed_dim, minK, ...])</p></td>
-<td><p>Initialize the class.</p></td>
+<td><p>Initializes a CompetitiveLVSystem instance.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#dynadojo.systems.lv.competitive.CompetitiveLVSystem.calc_control_cost" title="dynadojo.systems.lv.competitive.CompetitiveLVSystem.calc_control_cost"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_control_cost</span></code></a>(control)</p></td>
 <td><p>Calculate the control cost for each control trajectory (i.e., calculates the costs for every control matrix, not for the whole tensor).</p></td>
@@ -465,15 +488,25 @@
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="dynadojo.systems.lv.competitive.CompetitiveLVSystem.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minK</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxK</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IND_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.1,</span> <span class="pre">0.5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OOD_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.5,</span> <span class="pre">0.9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">0.5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interspecies_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.lv.competitive.CompetitiveLVSystem.__init__" title="Link to this definition">#</a></dt>
-<dd><p>Initialize the class.</p>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minK</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxK</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IND_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.1,</span> <span class="pre">0.5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OOD_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.5,</span> <span class="pre">0.9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">0.5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inter_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dynadojo.systems.lv.competitive.CompetitiveLVSystem.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initializes a CompetitiveLVSystem instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>latent_dim</strong> (<em>int</em>) – Dimension of the latent space.</p></li>
-<li><p><strong>embed_dim</strong> (<em>int</em>) – Embedded dimension of the system.</p></li>
-<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Seed for random number generation.</p></li>
-<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+<li><p><strong>latent_dim</strong> (<em>int</em>) – The number of species, the rank(A) of interaction matrix</p></li>
+<li><p><strong>embed_dim</strong> (<em>int</em>) – Must be the same as latent_dim</p></li>
+<li><p><strong>minK</strong> (<em>int</em>) – Minimum carrying capacity for all species</p></li>
+<li><p><strong>maxK</strong> (<em>int</em>) – Minimum carrying capacity for all species</p></li>
+<li><p><strong>IND_range</strong> (<em>tuple</em>) – In-distribution range of starting population numbers. The range is multipled by maxK and randomly sampled from.
+The numbers should be greater than 0 to prevent spawing extinct species.</p></li>
+<li><p><strong>OOD_range</strong> (<em>tuple</em>) – Out-of-distribution range of starting population numbers. The range is multipled by maxK and randomly sampled from.
+The numbers should be greater than 0 to prevent spawing extinct species.</p></li>
+<li><p><strong>R_dist</strong> (<em>tuple</em>) – Growth rates. Mu and standard deviation (spread or “width”) for normal distribution.</p></li>
+<li><p><strong>inter_dist</strong> (<em>tuple</em>) – Interspecies interaction distribution. Mu and standard deviation (spread or “width”) for normal distribution.
+Fixed to be all positive.</p></li>
+<li><p><strong>noise_scale</strong> (<em>float</em>) – Normal noise is added per timestep to a solution. Standard deviation (spread or “width”) of the distribution.
+Must be non-negative.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>None</em>) – Seed for random number generation.</p></li>
 </ul>
 </dd>
 </dl>
