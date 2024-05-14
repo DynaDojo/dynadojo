@@ -69,6 +69,9 @@ tensorflow = [
 rebound = [
     "rebound>=4.0.1",
 ]
+jaxpi = [
+    "jaxpi @ git+https://github.com/PredictiveIntelligenceLab/jaxpi.git@9fa9214d3d141894e3f745cc9f09f1b882e336b1",
+]
 
 [project.urls]
 Home = "https://github.com/FlyingWorkshop/dynadojo/"
