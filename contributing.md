@@ -30,15 +30,25 @@ pyenv install 3.10
 pyenv local 3.10 #set the current directory default version
 ```
 
-### Package Installation
-Optional packages are `tensorflow` or `tensorflow-m1`,  and `rebound`.
+### Package Installation 
+
+If you are using a Macbook, please try installing the packages that are in the lock file with 
+```
+pdm sync
+```
+
+If not already included in the lockfile, you can add optional packages such as `tensorflow` or `tensorflow-m1`,  and `rebound`. (Apple Silicon can install `tensorflow-m1`,  see system requirements in https://developer.apple.com/metal/tensorflow-plugin/)
+
+```
+pdm add -G [optional package]
+```
+
+If you are on a different system, to install and relock with any mismatches, run
 ```
 pdm install -d -G tensorflow[-m1] -G rebound
 ```
 
-Apple Silicon can install `tensorflow-m1`,  see system requirements in https://developer.apple.com/metal/tensorflow-plugin/
-
-Reload your terminal to activate the venv.
+Reload your terminal to activate the pdm venv.
 
 # Running Tests
 ```
