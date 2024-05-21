@@ -62,7 +62,8 @@ class GRU_RNN(AbstractAlgorithm):
                     print(f"Epoch {epoch}, Loss {loss.item()}, Validation Loss {val_loss.item()}")
                 else:
                     print(f"Epoch {epoch}, Loss {loss.item()}")
-            if early_stopping and early_stopper.early_stop(val_loss.item()):
+            min_epochs = kwargs.get('min_epochs', 2000)
+            if early_stopping and early_stopper.early_stop(val_loss.item()) and epoch >= min_epochs:
                 break
 
         return losses

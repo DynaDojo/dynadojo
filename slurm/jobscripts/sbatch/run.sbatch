@@ -3,7 +3,7 @@
 #SBATCH -n 1 # Cores (--ntasks=<number>) 
 #SBATCH -N 1 # All cores on one machine (--nodes=)
 #SBATCH -c 1 # Num of CPUs per task
-#SBATCH --mem 4G # Memory (4Gb)
+#SBATCH --mem-per-cpu 1G # Memory (4Gb)
 #SBATCH -t 0-2:30 # Maximum execution time (D-HH:MM)
 #SBATCH --array=1-500%100   # maps to SLURM_ARRAY_TASK_ID below
 
