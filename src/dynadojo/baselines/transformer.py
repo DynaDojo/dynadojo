@@ -52,31 +52,33 @@ class DecoderTransformer(AbstractAlgorithm, nn.Module):
                  model_dim=512, num_heads=16, dim_feedforward=2048, dropout=0.1, activation='gelu', 
                  # Decoder Transformer hyperparameters
                  num_layers=6, norm=None, 
-                 # Adam hyperparameters
-                 learning_rate=0.001, 
                  **kwargs):
         AbstractAlgorithm.__init__(self, embed_dim, timesteps, max_control_cost, seed=seed, **kwargs)
         nn.Module.__init__(self)
 
         self.model_dim = model_dim
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         if seed:
             torch.manual_seed(seed)
-        
+            
+
         # Create decoder only transformer model from scratch
         self.embedding = nn.Linear(embed_dim, model_dim)
         self.max_timesteps = 5000
-        self.positional_encoder = PositionalEncoding(model_dim, max_len=self.max_timesteps)         
+        self.positional_encoder = PositionalEncoding(model_dim, max_len=self.max_timesteps)      
         decoder_layer = nn.TransformerDecoderLayer(d_model=model_dim, nhead=num_heads, dim_feedforward=dim_feedforward, dropout=dropout, 
                                                    activation=activation, norm_first = False, batch_first=True)
         self.decoder = nn.TransformerDecoder(decoder_layer, num_layers=num_layers)
         self.fc_out = nn.Linear(model_dim, embed_dim)
 
         self.criterion = nn.MSELoss()
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=learning_rate)
+        self.optimizer = None
+        self.dummy_param = nn.Parameter(torch.empty(0))
 
-
+    @property
+    def device(self):
+        return self.dummy_param.device
+    
     # nn.Module forward method
     def forward(self, x: torch.Tensor):
         """Forward pass of the transformer model.
@@ -114,6 +116,7 @@ class DecoderTransformer(AbstractAlgorithm, nn.Module):
             x: np.ndarray, 
             epochs=5000, 
             batch_size=32, 
+            lr=0.001,
             patience=10, 
             min_delta=0.001,
             validation_split=0.2,
@@ -141,33 +144,27 @@ class DecoderTransformer(AbstractAlgorithm, nn.Module):
         verbose : int, optional
             verbosity level, by default 0 
         """
-        
+        optimizer = torch.optim.Adam(self.parameters(), lr=lr)
+
         validation_size = int(x.shape[0] * validation_split)
         train_size = len(x) - validation_size
-        x, val = random_split(x, [len(x)-validation_size, validation_size])
+        train, val = random_split(x, [len(x)-validation_size, validation_size])
         # the inputs to the transformer will be the offset sequence
         # X should be the same as the val but truncated by 1 timestep
-        X_val = torch.tensor(val, dtype=torch.float32) 
-        X_val = X_val[:, :-1, :]
+        x_val = torch.tensor(np.array(val[:][:-1, :]), dtype=torch.float32).to(self.device) 
         # the outputs will be the original sequence offset by 1 timestep
-        y_val = torch.tensor(val, dtype=torch.float32) 
-        y_val = y_val[:, 1:, :]
+        y_val = torch.tensor(np.array(val[:][1:, :]), dtype=torch.float32).to(self.device) 
 
         
        
         if batch_size > train_size:
             batch_size = train_size
-        X_train = torch.tensor(x, dtype=torch.float32)
-        X_train = X_train[:, :-1, :]
-        y_train = torch.tensor(x, dtype=torch.float32)
-        y_train = y_train[:, 1:, :]
+        x_train = torch.tensor(np.array(train[:][:-1, :]), dtype=torch.float32)
 
-        dataset = TensorDataset(X_train, y_train)
+        y_train = torch.tensor(np.array(train[:][1:, :]), dtype=torch.float32)
+
+        dataset = TensorDataset(x_train, y_train)
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
-
-        # move model to device
-        self.to(self.device)
-
 
         best_loss = float('inf')
         best_model_weights = None
@@ -177,23 +174,24 @@ class DecoderTransformer(AbstractAlgorithm, nn.Module):
             self.train()
             epoch_loss = 0
             for input_seq, target_seq in dataloader:
-                input_seq = input_seq.to(self.device)
-                target_seq = target_seq.to(self.device)
+                input_seq, target_seq = input_seq.to(self.device), target_seq.to(self.device)
 
-                self.optimizer.zero_grad()
+                optimizer.zero_grad()
                 output = self.forward(input_seq)
                 
                 loss = self.criterion(output, target_seq)
                 loss.backward()
-                self.optimizer.step()
+                optimizer.step()
                 
                 epoch_loss += loss.item()
+
+                del input_seq, target_seq, output, loss
 
 
             self.eval()  # Set model to evaluation mode
             with torch.no_grad():  # Disable gradient calculation for validation
                 # Make predictions on validation set 
-                val_outputs = self(X_val)
+                val_outputs = self(x_val).detach()
                 val_loss = self.criterion(val_outputs, y_val).item()
             
             if verbose > 0:
@@ -210,6 +208,11 @@ class DecoderTransformer(AbstractAlgorithm, nn.Module):
                     if verbose > 0:
                         print(f'Early stopping at epoch {epoch+1}')
                     break
+            
+            if self.device == 'mps':
+                torch.mps.empty_cache()
+            elif self.device == 'cuda':
+                torch.cuda.empty_cache()
     
         # Load the best model weights
         self.load_state_dict(best_model_weights)
@@ -232,24 +235,21 @@ class DecoderTransformer(AbstractAlgorithm, nn.Module):
             (n, timesteps, embed_dim) trajectories tensor, including the initial conditions.
         """
         self.eval()
-        initial_conditions = torch.tensor(x0, dtype=torch.float32).to(self.device) 
-        
-        batch_size, input_dim = initial_conditions.shape
-        sequence_length = 1  # Since initial_conditions is just the initial timestep
+        with torch.no_grad():
+            initial_conditions = torch.tensor(x0, dtype=torch.float32).to(self.device) 
+            next_input = initial_conditions.unsqueeze(1)  # Shape: (batch_size, 1, input_dim)
+            trajectory = next_input  
+            # Iteratively predict future values
+            for _ in range(timesteps - 1):
 
-        # Initialize the input sequence with the initial conditions
-        input_seq = initial_conditions.unsqueeze(1)  # Shape: (batch_size, 1, input_dim)
-        
-        # Iteratively predict future values
-        for _ in range(timesteps - 1):
+                with torch.no_grad():
+                    output = self.forward(next_input)
+                print(output.shape)
 
-            with torch.no_grad():
-                output = self.forward(input_seq)
+                next_input = output[:, -1:, :]  # Shape: (batch_size, 1, input_dim)
+                trajectory = torch.cat([trajectory, next_input], dim=1)
 
-            next_input = output[:, -1:, :]  # Shape: (batch_size, 1, input_dim)
-            input_seq = torch.cat([input_seq, next_input], dim=1)
-
-        return input_seq.cpu().numpy()
+        return trajectory.cpu().numpy()
 
 
 class PositionalEncoding(nn.Module):
@@ -275,3 +275,28 @@ class PositionalEncoding(nn.Module):
         """
         x = x + self.pe[:x.size(1)]
         return self.dropout(x)
+
+class EarlyStopper:
+    def __init__(self, patience=1, min_delta=0, start_from_epoch=0):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.counter = 0
+        self.min_validation_loss = float('inf')
+        self.best_weights = None
+        self.start_from_epoch = start_from_epoch
+
+    def early_stop(self, epoch, validation_loss, weights):
+        if epoch < self.start_from_epoch:
+            return False
+        
+        if weights is None:
+            self.best_weights = weights
+        if validation_loss < self.min_validation_loss:
+            self.min_validation_loss = validation_loss
+            self.best_weights = weights
+            self.counter = 0
+        elif validation_loss > (self.min_validation_loss + self.min_delta):
+            self.counter += 1
+            if self.counter >= self.patience:
+                return True
+        return False
