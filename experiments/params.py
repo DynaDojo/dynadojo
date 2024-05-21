@@ -108,6 +108,11 @@ fc_challenge_params_dict = {
         }
     },
     "lv_p": {
+        "default" : {
+            "l" : 5, 
+            "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
+            "t" : 50,
+        },
         "gru_long_l5": {
             "l": 5,
             "trials": 50,
@@ -121,7 +126,8 @@ fc_challenge_params_dict = {
                             "epochs": 20000,
                             "early_stopping": True,
                             "patience": 10,
-                            "min_delta": 10
+                            "min_delta": 10,
+                            "min_epochs": 4000
                         }
                 }
         }
