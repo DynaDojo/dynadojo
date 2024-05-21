@@ -9,6 +9,7 @@ import numpy as np
 import scipy as sp
 
 from ..abstractions import AbstractSystem
+from ..utils.kuramoto import plot
 
 """
 Adapted from D. Laszuk, "Python implementation of Kuramoto systems," 2017-, [Online] Available: http://www.laszukdawid.com/codes
@@ -85,9 +86,8 @@ class KuramotoSystem(AbstractSystem):
         seed : int or None
             Seed for random number generation.
         """
+        assert embed_dim == latent_dim, "Embed dim must be equal to latent dim"
         super().__init__(latent_dim, embed_dim, seed)
-
-        assert embed_dim == latent_dim
 
         self.noise_scale = noise_scale
         self.IND_range = IND_range
@@ -144,7 +144,7 @@ class KuramotoSystem(AbstractSystem):
 
         def solve(t, x0, U):
             kODE = ode(kuramoto_ODE)
-            kODE.set_integrator("dopri5")
+            kODE.set_integrator("dopri5", nsteps=1000)
 
             # Set parameters into model
             kODE.set_initial_value(x0, t[0])
@@ -183,3 +183,29 @@ class KuramotoSystem(AbstractSystem):
 
     def calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)
+
+    def save_plotted_trajectories( self, 
+            y_true:np.ndarray, 
+            y_pred: np.ndarray,
+            filepath: str,
+            tag: str = "", 
+        ):
+        """
+        Plots the trajectories of the system and the predicted trajectories.
+
+        Parameters
+        ----------
+        y : np.ndarray
+            True trajectories.
+        y_pred : np.ndarray
+            Predicted trajectories.
+        """
+        timesteps = y_true.shape[1]
+        fig, ax = plot(
+                       [y_true, y_pred], 
+                       labels=["true", "pred"], 
+                       max_oscillators=3,
+                       max_lines=1,
+                       title=f"Kuramoto l={self.latent_dim}, e={self._embed_dim} - {tag}")
+        fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
+        return fig, ax

@@ -5,6 +5,7 @@ can also be extended.
 import itertools
 import logging
 import math
+import os
 import time
 
 import numpy as np
@@ -278,6 +279,16 @@ class ScalingChallenge(AbstractChallenge):
                                         act_kwargs, noisy)
             pred = algo.predict(test_set[:, 0], self._test_timesteps)
             error = system.calc_error(pred, test_set)
+
+            # check if system has save_plotted_trajectories method 
+            #TODO HACKY INTERMEDIATE PLOTTING should fix
+            if hasattr(system._system, 'save_plotted_trajectories') and kwargs.get('intermediate_plots_dir', False):
+                system._system.save_plotted_trajectories(
+                    test_set, 
+                    pred, 
+                    os.path.join(kwargs['intermediate_plots_dir'], f"n={n}_l={latent_dim}_trial={trial}_e={error:.3f}.pdf"),
+                    tag = f"n={n}_trial={trial}_e={error:.3f}")
+
             ood_error = None
             if ood: 
                 ood_pred = algo.predict(ood_test_set[:, 0], self._test_timesteps)
