@@ -7,9 +7,10 @@ from sklearn.decomposition import PCA
 MAX_LINES = 30
 
 
-def _plot2d(trajs_grid, gridlabels: list = None):
-    fig = plt.figure()
-    ax = fig.add_subplot()
+def _plot2d(trajs_grid, gridlabels: list = None, ax : plt.Axes = None):
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.add_subplot()
     for i, trajs in enumerate(trajs_grid):
         if gridlabels is None:
             line_collection = LineCollection(trajs, color=f"C{i}")
@@ -27,8 +28,17 @@ def _plot2d(trajs_grid, gridlabels: list = None):
     return fig, ax
 
 
-def _plot3d(grid, fig, gridlabels: list = None):
-    ax = fig.add_subplot(projection='3d')
+def _plot3d(grid, gridlabels: list = None, ax : plt.Axes = None):
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(projection='3d')
+    else:
+        fig = ax.get_figure()
+        if ax.name != "3d":
+            #replace the ax with a 3d projection in the same position
+            position = ax.get_position()
+            fig.delaxes(ax)
+            ax = fig.add_subplot(position, projection='3d')
     for i, trajs in enumerate(grid):
         if gridlabels is None:
             line_collection = Line3DCollection(trajs, color=f"C{i}")
@@ -45,18 +55,16 @@ def _plot3d(grid, fig, gridlabels: list = None):
     ax.set_zlim(minima[2], maxima[2])
     if gridlabels is not None:
         ax.legend()
-    plt.show()
-
     return fig, ax
 
 
-def _plot4d(trajs_grid, pca: PCA, gridlabels: list = None):
+def _plot4d(trajs_grid, pca: PCA, gridlabels: list = None, ax: plt.Axes = None):
     assert pca.n_components == 2 or pca.n_components == 3
     trajs_grid = _apply_pca_to_grid(trajs_grid, pca)
     if pca.n_components == 2:
-        return _plot2d(trajs_grid, gridlabels)
+        return _plot2d(trajs_grid, gridlabels=gridlabels, ax=ax)
     else:
-        return _plot3d(trajs_grid, gridlabels)
+        return _plot3d(trajs_grid, gridlabels=gridlabels, ax=ax)
 
 
 def make_pca(trajs: np.ndarray, n_components=3):
@@ -77,30 +85,41 @@ def _apply_pca_to_grid(trajs_grid, pca) -> np.ndarray:
     return result
 
 
-def plot(grid: list[np.ndarray], target_dim: int = 3, max_lines=MAX_LINES, specieslabels: list[str] = None, gridlabels: list[str] = None):
-    grid = np.array([x[:max_lines] for x in grid])
-    dim = grid.shape[-1]
+def plot(
+        datasets: list[np.ndarray], 
+        target_dim: int = 3, 
+        max_lines=MAX_LINES, 
+        specieslabels: list[str] = None, 
+        labels: list[str] = None,
+        title: str = None
+    ):
+    datasets = np.array([x[:max_lines] for x in datasets])
+    dim = datasets.shape[-1]
     fig = plt.figure(figsize=(16, 4))
     posidx = 1
-    for idx, dataset in enumerate(grid):
-        ax = fig.add_subplot(1, len(grid), posidx)
+    for idx, dataset in enumerate(datasets):
+        ax = fig.add_subplot(1, len(datasets)+1, posidx)
 
         for i in range(len(dataset[0][0])):
             ydata = dataset[0][:, i]
             if specieslabels:
-                ax.plot(ydata, label=specieslabels[i])
-                ax.set_title(gridlabels[idx])
-                ax.legend()
+                ax.plot(ydata, label=specieslabels[i], alpha=0.8)
             else:
-                ax.plot(ydata)
+                ax.plot(ydata, label=f"Species {i}", alpha=0.8)
+            ax.set_title(labels[idx])
+            ax.legend()
         posidx += 1
 
     assert target_dim <= dim
     assert target_dim <= 3
+    ax =  fig.add_subplot(1, len(datasets)+1, posidx)
     if dim == 2:
-        return _plot2d(grid, gridlabels)
+        fig, ax = _plot2d(datasets, gridlabels=labels, ax=ax)
     elif dim == 3 and target_dim == 3:
-        return _plot3d(grid, gridlabels)
+        fig, ax = _plot3d(datasets, gridlabels=labels, ax=ax)
     else:
-        pca = make_pca(grid, n_components=target_dim)
-        return _plot4d(grid,  pca, gridlabels)
+        pca = make_pca(datasets, n_components=target_dim)
+        fig, ax =  _plot4d(datasets,  pca, gridlabels=labels, ax=ax)
+    if title:
+        fig.suptitle(title)
+    return fig, ax
