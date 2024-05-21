@@ -88,6 +88,42 @@ fc_challenge_params_dict = {
         }
         , "sindy_5" : { #FAIL
             "l" : 5,
+        },
+        "gru_long_l19": {
+            "l": 19,
+            "trials": 50,
+            "evaluate": {
+                        "algo_kwargs": {
+                            "num_layers": 5,
+                            "hidden_size": 128,
+                            "lr": 5e-3
+                        },
+                        "fit_kwargs": {
+                            "epochs": 20000,
+                            "early_stopping": True,
+                            "patience": 10,
+                            "min_delta": 10
+                        }
+                }
+        }
+    },
+    "lv_p": {
+        "gru_long_l5": {
+            "l": 5,
+            "trials": 50,
+            "evaluate": {
+                        "algo_kwargs": {
+                            "num_layers": 5,
+                            "hidden_size": 128,
+                            "lr": 5e-3
+                        },
+                        "fit_kwargs": {
+                            "epochs": 20000,
+                            "early_stopping": True,
+                            "patience": 10,
+                            "min_delta": 10
+                        }
+                }
         }
     }
 }
@@ -136,13 +172,26 @@ fts_challenge_params_dict = {
                 },
             "lr" : {
                     "L" : [3, 5, 7, 9, 11],
-                    "reps" : 50,
+                    "trials" : 50,
                     "n" : 1000,
             },
-            "gru_rnn" : {
+            "gru_long2" : {
                     "L" : [3, 5, 7, 9, 11],
-                    "reps" : 50,
+                    "trials" : 50,
                     "n" : 1000,
+                    "evaluate": {
+                        "algo_kwargs": {
+                            "num_layers": 5,
+                            "hidden_size": 128,
+                            "lr": 5e-3
+                        },
+                        "fit_kwargs": {
+                            "epochs": 20000,
+                            "early_stopping": True,
+                            "patience": 10,
+                            "min_delta": 10
+                        }
+                    }
             }
     },
     "lv_p": { 
@@ -160,7 +209,25 @@ fts_challenge_params_dict = {
                 "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
                 "trials" : 100,
                 "n" : 1000,
-        }
+        },
+        "gru_long" : {
+                "L" : [2, 4, 8, 16, 32],
+                "trials" : 50,
+                "n" : 1000,
+                "evaluate": {
+                        "algo_kwargs": {
+                            "num_layers": 5,
+                            "hidden_size": 128,
+                            "lr": 5e-3
+                        },
+                        "fit_kwargs": {
+                            "epochs": 20000,
+                            "early_stopping": True,
+                            "patience": 10,
+                            "min_delta": 10
+                        }
+                }
+            }
     },
     "epi_1": { #done, error going down down down with complexity. weird after merging tommy's edits because 0 error for L = 2, 4?
         "lr_test" : { 
@@ -235,6 +302,26 @@ fts_challenge_params_dict = {
                 "t" : 20,
                 "test_timesteps" : 20,
                 "n" : 1000,
+        },
+        "gru_long" : { 
+                "L" : [4, 8, 16, 32],
+                "trials" : 50,
+                "t" : 20,
+                "test_timesteps" : 20,
+                "n" : 1000,
+                "evaluate": {
+                        "algo_kwargs": {
+                            "num_layers": 5,
+                            "hidden_size": 128,
+                            "lr": 5e-3
+                        },
+                        "fit_kwargs": {
+                            "epochs": 20000,
+                            "early_stopping": True,
+                            "patience": 10,
+                            "min_delta": 10
+                        }
+                }
         },
     },
 
