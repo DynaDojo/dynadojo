@@ -29,7 +29,7 @@ def plot(
         max_oscillators:int = MAX_OSCILLATORS, 
         max_lines:int = MAX_LINES,
         dt:float = 0.02, 
-        legend_labels: list[str] = None, 
+        labels: list[str] = None, 
         title: str = None, 
         phase_dynamics:bool =True
     ):
@@ -54,8 +54,8 @@ def plot(
     # check that all datasets have the same dimensions
     assert all([dataset.shape == datasets[0].shape for dataset in datasets]), "All datasets must have the same dimensions"
 
-    if legend_labels:
-        assert len(datasets) == len(legend_labels), "legend_labels must be the same length as the length of datasets"
+    if labels:
+        assert len(datasets) == len(labels), "labels must be the same length as the length of datasets"
 
     datasets = np.array(datasets) #convert datasets to a numpy array 
 
@@ -90,9 +90,9 @@ def plot(
                 else:
                     ax.plot(dataset[:, :, osc].T, linestyle=linestyle_tuple[d][1], alpha=0.8)
         ax.set_ylabel(osc+1) #label the y-axis with the oscillator number
-    if legend_labels:
+    if labels:
         # plt.legend(legend_labels)
-        fig.legend(legend_labels, bbox_to_anchor=(1, 1), loc="upper right", ncols=len(legend_labels))
+        fig.legend(labels, bbox_to_anchor=(1, 1), loc="upper right", ncols=len(labels))
     if title:
         fig.suptitle(title)
     fig.tight_layout()
