@@ -144,6 +144,7 @@ class KuramotoSystem(AbstractSystem):
 
         def solve(t, x0, U):
             kODE = ode(kuramoto_ODE)
+
             kODE.set_integrator("dopri5", nsteps=10000)
 
             # Set parameters into model
