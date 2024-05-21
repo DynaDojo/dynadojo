@@ -490,6 +490,12 @@ class AbstractChallenge(ABC):
         **kwargs : dict
             Additional keyword arguments get passed down to self.execute_job
         """
+        # Add a plots subdirectory to the output directory and to kwargs 
+        #TODO HACKY INTERMEDIATE PLOTTING should fix
+        if csv_output_path:
+            plots_dir = os.path.join(os.path.dirname(csv_output_path), "plots")
+            os.makedirs(plots_dir, exist_ok=True)
+            kwargs["intermediate_plots_dir"] = plots_dir
         
         jobs = self.create_job_configs(trials, seed)
         logging.info(f"Created {len(jobs)} jobs")

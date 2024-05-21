@@ -5,6 +5,7 @@ Generalized Lorenz System
 import numpy as np
 
 from .utils.simple import SimpleSystem
+from ..utils.lds import plot
 
 
 class LorenzSystem(SimpleSystem):
@@ -92,3 +93,27 @@ class LorenzSystem(SimpleSystem):
 
         dx = np.concatenate(([dX, dY, dZ], dYj[1:], dZj[1:-1]))
         return dx
+    
+    def save_plotted_trajectories( self, 
+            y_true:np.ndarray, 
+            y_pred: np.ndarray,
+            filepath: str,
+            tag: str = "", 
+        ):
+        """
+        Plots the trajectories of the system and the predicted trajectories.
+
+        Parameters
+        ----------
+        y : np.ndarray
+            True trajectories.
+        y_pred : np.ndarray
+            Predicted trajectories.
+        """
+        fig, ax = plot([y_true, y_pred], 
+                       target_dim=min(self._embed_dim, 3), 
+                       labels=["true", "pred"], 
+                       max_lines=10,
+                       title=f"Lorenz l={self.latent_dim}, e={self._embed_dim} - {tag}")
+        fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
+        return fig, ax

@@ -6,6 +6,7 @@ import numpy as np
 import scipy as sp
 
 from .utils.simple import SimpleSystem
+from ..utils.lds import plot
 
 
 class LDSystem(SimpleSystem):
@@ -118,3 +119,27 @@ class LDSystem(SimpleSystem):
         self._latent_dim = value
         self._update_embedder_and_controller()
         self.A = self._make_A(value)
+
+    def save_plotted_trajectories( self, 
+            y_true:np.ndarray, 
+            y_pred: np.ndarray,
+            filepath: str,
+            tag: str = "", 
+        ):
+        """
+        Plots the trajectories of the system and the predicted trajectories.
+
+        Parameters
+        ----------
+        y : np.ndarray
+            True trajectories.
+        y_pred : np.ndarray
+            Predicted trajectories.
+        """
+        fig, ax = plot([y_true, y_pred], 
+                       target_dim=min(self._embed_dim, 3), 
+                       labels=["true", "pred"], 
+                       max_lines=10,
+                       title=f"LDS l={self.latent_dim}, e={self.embed_dim} - {tag}")
+        fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
+        return fig, ax

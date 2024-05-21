@@ -1,4 +1,4 @@
-dynadojo.challenges
+﻿dynadojo.challenges
 ===================
 
 .. automodule:: dynadojo.challenges
@@ -19,10 +19,10 @@ dynadojo.challenges
       :toctree:
       :template: custom-class-template.rst
    
-      Challenge
       FixedComplexity
       FixedError
       FixedTrainSize
+      ScalingChallenge
    
    
 

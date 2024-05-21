@@ -16,12 +16,20 @@ dynadojo.challenges.FixedComplexity
    .. autosummary::
    
       ~FixedComplexity.__init__
+      ~FixedComplexity.create_job_configs
       ~FixedComplexity.evaluate
+      ~FixedComplexity.execute_job
+      ~FixedComplexity.get_num_jobs
       ~FixedComplexity.plot
-      ~FixedComplexity.system_run
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FixedComplexity.base_configs
    
    

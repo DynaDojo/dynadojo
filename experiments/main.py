@@ -107,7 +107,7 @@ def run_challenge(
     if split:
         prGreen(f"COMPLETED SPLIT -- {split_num=} / {total_splits=}")
     else:
-        prGreen(f"COMPLETED ALL JOBS")
+        prGreen(f"COMPLETED ALL JOBS -- see {folder_path}")
     
 
 def make_plots(
