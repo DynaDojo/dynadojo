@@ -5,6 +5,7 @@ import numpy as np
 from scipy.integrate import solve_ivp
 
 from ...abstractions import AbstractSystem
+from ...utils.lv import plot
 
 
 class PreyPredatorSystem(AbstractSystem):
@@ -122,7 +123,7 @@ class PreyPredatorSystem(AbstractSystem):
 
     def _make_R(self):
         R = []
-        for i in range(self._latent_dim):
+        for i in range(self.latent_dim):
             r = self._rng.normal(self.R_dist[0], self.R_dist[1])
             if i < self.nPrey:
                 # R[i] must be positive for prey
@@ -135,7 +136,7 @@ class PreyPredatorSystem(AbstractSystem):
 
     def _make_K(self, minK, maxK):
         K = []
-        for i in range(self._latent_dim):
+        for i in range(self.latent_dim):
             if i < self.nPrey:
                 k = self._rng.uniform(minK, maxK*2)
             else:
@@ -144,9 +145,9 @@ class PreyPredatorSystem(AbstractSystem):
         return K
 
     def _make_A(self):
-        A = self._rng.normal(0, 1, (self._latent_dim, self._latent_dim))
-        for i in range(self._latent_dim):
-            for j in range(self._latent_dim):
+        A = self._rng.normal(0, 1, (self.latent_dim, self.latent_dim))
+        for i in range(self.latent_dim):
+            for j in range(self.latent_dim):
                 if i == j:
                     if i < self.nPrey:
                         # intraspecies prey is not harsh, but needed negative to prevent infinite growth
@@ -185,7 +186,7 @@ class PreyPredatorSystem(AbstractSystem):
         all = []
         for _ in range(n):
             x0 = []
-            for _ in range(self._latent_dim):
+            for _ in range(self.latent_dim):
                 if in_dist:
                     number = int(self._rng.uniform(
                         self.IND_range[0] * self.maxK, self.IND_range[1] * self.maxK))
@@ -240,3 +241,27 @@ class PreyPredatorSystem(AbstractSystem):
 
     def calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)
+
+    def save_plotted_trajectories( self, 
+            y_true:np.ndarray, 
+            y_pred: np.ndarray,
+            filepath: str,
+            tag: str = "", 
+        ):
+        """
+        Plots the trajectories of the system and the predicted trajectories.
+
+        Parameters
+        ----------
+        y : np.ndarray
+            True trajectories.
+        y_pred : np.ndarray
+            Predicted trajectories.
+        """
+        fig, ax = plot([y_true, y_pred], 
+                       target_dim=min(self._embed_dim, 3), 
+                       labels=["true", "pred"], 
+                       max_lines=10,
+                       title=f"LV (C) l={self.latent_dim}, e={self._embed_dim} - {tag}")
+        fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
+        return fig, ax

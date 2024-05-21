@@ -5,6 +5,7 @@ import numpy as np
 from scipy.integrate import solve_ivp
 
 from ...abstractions import AbstractSystem
+from ...utils.lv import plot
 
 class CompetitiveLVSystem(AbstractSystem):
     """
@@ -99,17 +100,17 @@ class CompetitiveLVSystem(AbstractSystem):
 
     def _make_R(self):
         # r[i] must be positive
-        return np.abs(self._rng.normal(self.R_dist[0], self.R_dist[1], (self._latent_dim)))
+        return np.abs(self._rng.normal(self.R_dist[0], self.R_dist[1], (self.latent_dim)))
 
     def _make_K(self, minK, maxK):
-        return self._rng.uniform(minK, maxK, (self._latent_dim))
+        return self._rng.uniform(minK, maxK, (self.latent_dim))
 
     def _make_A(self):
         # inter-species is all positive in competitive
         A = np.abs(self._rng.normal(
-            self.inter_dist[0], self.inter_dist[1], (self._latent_dim, self._latent_dim)))
-        for i in range(self._latent_dim):
-            for j in range(self._latent_dim):
+            self.inter_dist[0], self.inter_dist[1], (self.latent_dim, self.latent_dim)))
+        for i in range(self.latent_dim):
+            for j in range(self.latent_dim):
                 if i == j:
                     A[i][j] = 1  # intra-species is all 1 in competitive
 
@@ -119,7 +120,7 @@ class CompetitiveLVSystem(AbstractSystem):
         all = []
         for _ in range(n):
             x0 = []
-            for s in range(self._latent_dim):
+            for s in range(self.latent_dim):
                 if in_dist:
                     number = int(self._rng.uniform(
                         self.IND_range[0] * self.K[s], self.IND_range[1] * self.K[s]))
@@ -171,3 +172,27 @@ class CompetitiveLVSystem(AbstractSystem):
 
     def calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)
+
+    def save_plotted_trajectories( self, 
+            y_true:np.ndarray, 
+            y_pred: np.ndarray,
+            filepath: str,
+            tag: str = "", 
+        ):
+        """
+        Plots the trajectories of the system and the predicted trajectories.
+
+        Parameters
+        ----------
+        y : np.ndarray
+            True trajectories.
+        y_pred : np.ndarray
+            Predicted trajectories.
+        """
+        fig, ax = plot([y_true, y_pred], 
+                       target_dim=min(self._embed_dim, 3), 
+                       labels=["true", "pred"], 
+                       max_lines=10,
+                       title=f"LV (C) l={self.latent_dim}, e={self._embed_dim} - {tag}")
+        fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
+        return fig, ax
