@@ -150,7 +150,7 @@ class KuramotoSystem(AbstractSystem):
             kODE.set_initial_value(x0, t[0])
             kODE.set_f_params((self.W, self.K, noisy))
 
-            phase = np.empty((self.latent_dim, len(t)))
+            phase = np.empty((self.latent_dim, len(t))) # n_osc x timesteps
 
             # Run ODE integrator
             for idx, _t in enumerate(t[1:]):
