@@ -18,5 +18,5 @@ algo_dict = {
     "lr" : ("dynadojo.baselines.lr", "LinearRegression"),
     "dnn" : ("dynadojo.baselines.dnn", "DNN"),
     "sindy": ("dynadojo.baselines.sindy", "SINDy"),
-    "gru_rnn": ("dynadojo.baselines.gru_rnn", "GRU_RNN"),
+    "gru": ("dynadojo.baselines.gru_rnn", "GRU_RNN"),
 }
