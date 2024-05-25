@@ -286,7 +286,7 @@ class ScalingChallenge(AbstractChallenge):
                 system._system.save_plotted_trajectories(
                     test_set, 
                     pred, 
-                    os.path.join(kwargs['intermediate_plots_dir'], f"n={n}_l={latent_dim}_trial={trial}_e={error:.3f}.pdf"),
+                    os.path.join(kwargs['intermediate_plots_dir'], f"n={n}_l={latent_dim}_trial={trial}_e={error:.3e}.pdf"),
                     tag = f"n={n}_trial={trial}_e={error:.3f}")
 
             ood_error = None

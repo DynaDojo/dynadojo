@@ -63,6 +63,7 @@ make_parser = subparsers.add_parser('make', help='Generate an experiement param 
 run_parser = subparsers.add_parser('run', help='Run an experiment param file')
 plot_parser = subparsers.add_parser('plot', help='Plot an experiment results')
 check_parser = subparsers.add_parser('check', help='Check for missing jobs')
+scale_parser = subparsers.add_parser('scale', help='Temporary utility which rescales losses by dimensionality')
 
 # Accept command line arguments
 make_parser.add_argument('--algo', type=str, default='lr', help='Specify which algo to run')
@@ -85,6 +86,8 @@ plot_parser.add_argument('--data_dir', type=str, help='where to load results fro
 plot_parser.add_argument('--output_dir', type=str, default="experiments/outputs", help='where to save plots')
 
 check_parser.add_argument('--data_dir', type=str, help='where to load results from')
+
+scale_parser.add_argument('--data_dir', type=str, help='where to load results from')
 
 args, rest = program.parse_known_args()
 
@@ -181,5 +184,26 @@ elif args.command == 'check':
     print(f"Missing jobs: \n{','.join(map(str, missing_jobs))}")
 
     
+elif args.command == 'scale': 
+    assert args.data_dir is not None, "must specify data directory"
+    files, data = load_data(args.data_dir)
+    # make a new subfolder for old data inside data_dir
+    data_dir_unscaled = args.data_dir + "/original_data"
+    try:
+        os.makedirs(data_dir_unscaled, exist_ok=False)
+    except FileExistsError:
+        prPink(f"Exiting...Already scaled data. {data_dir_unscaled} already exists. ")
+        exit(0)
 
+    # move all csv files in data_dir to data_dir_unscaled
+    for filepath in files:
+        os.rename(filepath, data_dir_unscaled + "/" + os.path.basename(filepath))
+    prGreen(f"Original data moved to {data_dir_unscaled}")
+    
+    # rescale all losses by dimensionality
+    data['error'] = data['error'] * data['latent_dim']
+    data['ood_error'] = data['ood_error'] * data['latent_dim']
 
+    # save the new data as csv file in data_dir
+    data.to_csv(args.data_dir + "/data.csv", index=False)
+    prGreen(f"Rescaled data saved to {args.data_dir}/data.csv")
