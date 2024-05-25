@@ -1,0 +1,51 @@
+{
+    "challenge": {
+        "L": [
+            2,
+            4,
+            8,
+            16,
+            32
+        ],
+        "n": 1000,
+        "t": 20,
+        "trials": 50,
+        "test_examples": 50,
+        "test_timesteps": 50,
+        "E": null,
+        "max_control_cost_per_dim": 1,
+        "control_horizons": 0,
+        "system_kwargs": null,
+        "system_cls": {
+            "type": "serialized_class",
+            "module_name": "dynadojo.systems.lv",
+            "class_name": "PreyPredatorSystem"
+        }
+    },
+    "evaluate": {
+        "seed": 1027,
+        "algo_kwargs": null,
+        "fit_kwargs": {
+            "lr": 0.01,
+            "epochs": 10000,
+            "min_epochs": 1000
+        },
+        "act_kwargs": null,
+        "num_parallel_cpu": 0,
+        "noisy": true,
+        "ood": true,
+        "algo_cls": {
+            "type": "serialized_class",
+            "module_name": "dynadojo.baselines.dnn",
+            "class_name": "DNN"
+        }
+    },
+    "challenge_cls": {
+        "type": "serialized_class",
+        "module_name": "dynadojo.challenges",
+        "class_name": "FixedTrainSize"
+    },
+    "experiment_name": "fts_lv_p_dnn_n=1000",
+    "folder_path": "fts/lv_p/fts_lv_p_dnn_n=1000",
+    "total_jobs": 250
+}

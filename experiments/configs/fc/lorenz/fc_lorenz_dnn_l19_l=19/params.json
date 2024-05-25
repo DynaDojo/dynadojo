@@ -1,0 +1,56 @@
+{
+    "challenge": {
+        "l": 19,
+        "N": [
+            10,
+            16,
+            27,
+            46,
+            77,
+            129,
+            215,
+            359,
+            599,
+            1000
+        ],
+        "t": 50,
+        "trials": 50,
+        "test_examples": 50,
+        "test_timesteps": 50,
+        "e": null,
+        "max_control_cost_per_dim": 1,
+        "control_horizons": 0,
+        "system_kwargs": null,
+        "system_cls": {
+            "type": "serialized_class",
+            "module_name": "dynadojo.systems.lorenz",
+            "class_name": "LorenzSystem"
+        }
+    },
+    "evaluate": {
+        "seed": 100,
+        "algo_kwargs": null,
+        "fit_kwargs": {
+            "lr": 0.01,
+            "epochs": 10000,
+            "min_epochs": 1000
+        },
+        "act_kwargs": null,
+        "num_parallel_cpu": 0,
+        "noisy": true,
+        "ood": true,
+        "algo_cls": {
+            "type": "serialized_class",
+            "module_name": "dynadojo.baselines.dnn",
+            "class_name": "DNN"
+        }
+    },
+    "challenge_cls": {
+        "type": "serialized_class",
+        "module_name": "dynadojo.challenges",
+        "class_name": "FixedComplexity"
+    },
+    "experiment_name": "fc_lorenz_dnn_l19_l=19",
+    "folder_path": "fc/lorenz/fc_lorenz_dnn_l19_l=19",
+    "total_jobs": 50
+}
