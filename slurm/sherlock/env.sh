@@ -4,6 +4,8 @@
 PARTITION='-p normal'
 OUTPUT='-o ${SCRATCH}/logs/out/%A_%a.out'
 ERROR='-e ${SCRATCH}/logs/err/%A_%a.err'
+TIME='-t 0-5:00' # Maximum execution time (D-HH:MM)
+MEM='--mem-per-cpu 8G'
 
 # SHERLOCK CLUSTER SETTINGS
 export DD_SINGULARITY_IMAGE_LOCATION=$GROUP_HOME/$USER/simg     #where you want to store the singularity image
@@ -12,7 +14,7 @@ export DD_SCRATCH_DIR=$SCRATCH                                  #your scratch di
 export DD_OUTPUT_DIR=sherput                                    #name of folder in scratch to put output
 export DD_IMAGE_REPO=docker://carynbear/dynadojo:slurm       #docker image to pull
 export DD_CLUSTER=sherlock                                      #cluster name
-export DD_SLURM_ARGS="$PARTITION"
+export DD_SLURM_ARGS="$PARTITION $TIME $MEM"
 export DD_SLURM_SAVE="$OUTPUT $ERROR"
 
 echo "Setting up environment for $DD_CLUSTER"
