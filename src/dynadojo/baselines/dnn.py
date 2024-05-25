@@ -77,7 +77,7 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
             x_val = torch.tensor(np.array(val[:, :-1, :]), dtype=torch.float32).to(self.device) 
             y_val = torch.tensor(np.array(val[:, 1:, :]), dtype=torch.float32).to(self.device) 
 
-            early_stopper = EarlyStopper(patience=patience, min_delta=min_delta, start_from_epoch=start_early_stop_from_epoch)
+            early_stopper = EarlyStopper(patience=patience, min_delta=min_delta, start_from_epoch=min_epochs)
 
         if batch_size > train_size:
             batch_size = train_size
@@ -90,7 +90,6 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
         losses = []
         self.train() 
         training_start_time = time.time()
-        print(f'Dataloader length: {len(dataloader)}')
         for epoch in range(epochs):
             self.train()
             epoch_loss = 0
@@ -170,8 +169,9 @@ class DNN(TorchBaseClass):
     def __init__(self, 
             embed_dim,
             timesteps,
+            max_control_cost,
             **kwargs):
-        super().__init__(embed_dim, timesteps, **kwargs)
+        super().__init__(embed_dim, timesteps, max_control_cost=max_control_cost, **kwargs)
         self.model = torch.nn.Sequential(
             torch.nn.Linear(self.embed_dim, embed_dim*10),
             torch.nn.ReLU(),
