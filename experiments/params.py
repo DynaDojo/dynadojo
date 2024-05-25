@@ -23,71 +23,11 @@ fc_challenge_params_dict = {
                         "ood": True,
                     }
                 },
-    "lds" : {   
-                "default" : {
-                    "l" : 10,  
-                    "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
-                    "t" : 50,
-                },
-                "lr" : {
-                    "t" : 50,
-                    "N" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
-                },
-                "lr_5" : { "l" : 5 }, #DONE
-                "lr_10" : { "l" : 10 }, 
-                "lr_20" : { "l" : 20 },
-                "lr_30" : { "l" : 30 },
-                "lr_50" : { "l" : 50 },
-                "lr_100" : { "l" : 100 },
-                # DNN
-                "dnn" : {
-                    "N" : [int(n) for n in np.logspace(1, 4, num=20, endpoint=True)]
-                },
-                "dnn_5" : { "l" : 5 },
-                "dnn_10" : { "l" : 10 },
-                "dnn_20" : { "l" : 20 },
-                "dnn_30" : { "l" : 30 },
-                "dnn_50" : { "l" : 50 },
-                "dnn_100" : { "l" : 100 },
-                # SINDY
-                "sindy_3" : { "l" : 3 },
-                "sindy_5" : { "l" : 5 },
-                "sindy_10" : { "l" : 10 },
-                "sindy_20" : { "l" : 20 },
-                "sindy_30" : { "l" : 30 },
-                "sindy_50" : { "l" : 50 },
-                "sindy_100" : { "l" : 100 },
-            }
-    ,
     "lorenz" : {
         "default" : {
             "l" : 9,  #MUST BE ODD > 3
             "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
             "t" : 50,
-        },
-        "lr" : { #FAIL
-            "N" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
-            "trials":5
-        },
-        "sindy" : { #FAIL
-            "t": 50,
-            "test_timesteps" : 50,
-            "N" : [int(n) for n in np.logspace(1, 3, num=15, endpoint=True)],
-        },
-        "lr_3" : { #SUCCESS
-            "t": 50,
-            "test_timesteps" : 50,
-            "l" : 3,
-            "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
-        },
-        "sindy_3" : { #SUCCESS
-            "l" : 3,
-            "t": 50,
-            "test_timesteps" : 50,
-            "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
-        }
-        , "sindy_5" : { #FAIL
-            "l" : 5,
         },
         "gru_long_l19": {
             "l": 19,
@@ -105,7 +45,21 @@ fc_challenge_params_dict = {
                             "min_delta": 10
                         }
                 }
-        }
+        },
+        "dnn": {
+            "trials": 50,
+            "evaluate": {
+                        "fit_kwargs": {
+                            "lr": 1e-2,
+                            "epochs": 10000,
+                            "min_epochs": 1000,
+                        }
+                }
+        },
+        "dnn_l5": { "l": 5 },
+        "dnn_l9": { "l": 9 },
+        "dnn_l19": { "l": 19 },
+    
     },
     "lv_p": {
         "default" : {
@@ -113,24 +67,19 @@ fc_challenge_params_dict = {
             "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
             "t" : 50,
         },
-        "gru_long_l9": {
-            "l": 9,
+        "dnn": {
             "trials": 50,
             "evaluate": {
-                        "algo_kwargs": {
-                            "num_layers": 5,
-                            "hidden_size": 128,
-                            "lr": 5e-3
-                        },
                         "fit_kwargs": {
-                            "epochs": 20000,
-                            "early_stopping": True,
-                            "patience": 10,
-                            "min_delta": 10,
-                            "min_epochs": 4000
+                            "lr": 1e-2,
+                            "epochs": 10000,
+                            "min_epochs": 1000,
                         }
                 }
-        }
+        },
+        "dnn_l5": { "l": 5 },
+        "dnn_l9": { "l": 9 },
+        "dnn_l19": { "l": 19 },
     },
     "kura": {
         "default" : {
@@ -142,24 +91,19 @@ fc_challenge_params_dict = {
                 "COUPLE_range": (0, 1)
             }
         },
-        "gru_long_l16": {
-            "l": 16,
+        "dnn": {
             "trials": 50,
             "evaluate": {
-                        "algo_kwargs": {
-                            "num_layers": 5,
-                            "hidden_size": 128,
-                            "lr": 5e-3
-                        },
                         "fit_kwargs": {
-                            "epochs": 20000,
-                            "early_stopping": True,
-                            "patience": 10,
-                            "min_delta": 10,
-                            "min_epochs": 4000
+                            "lr": 1e-2,
+                            "epochs": 10000,
+                            "min_epochs": 1000,
                         }
                 }
-        }
+        },
+        "dnn_l5": { "l": 5 },
+        "dnn_l9": { "l": 9 },
+        "dnn_l19": { "l": 19 },
     }
 }
 
@@ -184,177 +128,51 @@ fts_challenge_params_dict = {
                         "ood": True,
                     }
                 },
-    "lds" : { #DONE
-                "default" : {
-                    "L" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
-                    "t" : 50,
-                    "n" : 1000,
-                },
-                "lr" : {
-                    "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
-                    "n" : 100,
-                },
-                "dnn": {
-                    "L" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
-                    "n": 10000,
-                },
-    },
     "lorenz": {
-            "sindy" : {
+            "default" : {
                     "L" : [3, 5, 7, 9, 11],
                     "trials" : 50,
                     "n" : 1000,
                 },
-            "lr" : {
-                    "L" : [3, 5, 7, 9, 11],
-                    "trials" : 50,
-                    "n" : 1000,
-            },
-            "gru_long2" : {
+            "dnn" : {
                     "L" : [3, 5, 7, 9, 11],
                     "trials" : 50,
                     "n" : 1000,
                     "evaluate": {
-                        "algo_kwargs": {
-                            "num_layers": 5,
-                            "hidden_size": 128,
-                            "lr": 5e-3
-                        },
-                        "fit_kwargs": {
-                            "epochs": 20000,
-                            "early_stopping": True,
-                            "patience": 10,
-                            "min_delta": 10
+                         "fit_kwargs": {
+                            "lr": 1e-2,
+                            "epochs": 10000,
+                            "min_epochs": 1000,
                         }
                     }
             }
     },
     "lv_p": { 
-        "sindy" : { #done
-                "L" : [2, 4, 8, 16, 32],
-                "trials" : 50,
-                "n" : 1000,
-            },
-        "lr" : { #done
-                "L" : [2, 4, 8, 16, 32],
-                "trials" : 50,
-                "n" : 1000,
-        },
-        "lr_cross" : { #done
-                "L" : [int(n) for n in np.logspace(1, 3, num=20, endpoint=True)],
-                "trials" : 100,
-                "n" : 1000,
-        },
-        "gru_long" : {
+        "dnn" : {
                 "L" : [2, 4, 8, 16, 32],
                 "trials" : 50,
                 "n" : 1000,
                 "evaluate": {
-                        "algo_kwargs": {
-                            "num_layers": 5,
-                            "hidden_size": 128,
-                            "lr": 5e-3
-                        },
                         "fit_kwargs": {
-                            "epochs": 20000,
-                            "early_stopping": True,
-                            "patience": 10,
-                            "min_delta": 10
+                            "lr": 1e-2,
+                            "epochs": 10000,
+                            "min_epochs": 1000,
                         }
                 }
             }
     },
-    "epi_1": { #done, error going down down down with complexity. weird after merging tommy's edits because 0 error for L = 2, 4?
-        "lr_test" : { 
-                "L" : [2, 4, 8, 16, 32],
-                "trials" : 20,
-                "t" : 20,
-                "test_timesteps" : 20,
-                "n" : 1000,
-        },
-    },
-    "nbody": {
-        "lr_test" : { #sloowwwwww 
-                "L" : [4, 8, 16, 32, 64],
-                "trials" : 20,
-                "t" : 20,
-                "test_timesteps" : 20,
-                "n" : 1000,
-        },
-        
-    },
-    "heat": { #waiting for fix https://github.com/DynaDojo/dynadojo/issues/23
-        "lr_test" : {
-                "L" : [4, 9, 16, 25],
-                "trials" : 20,
-                "t" : 20,
-                "test_timesteps" : 20,
-                "n" : 1000,
-        },
-        
-    },
-    "fbsnn_1": { #waiting for fix.  https://github.com/DynaDojo/dynadojo/issues/22
-        "lr_test" : { 
-                "L" : [4, 8, 16, 32, 64],
-                "trials" : 20,
-                "t" : 20,
-                "test_timesteps" : 20,
-                "n" : 1000,
-        },
-        
-    },
-    "fbsnn_2": {  #waiting for fix.  https://github.com/DynaDojo/dynadojo/issues/22
-        "lr_test" : {
-                "L" : [4, 8, 16, 32, 64],
-                "trials" : 20,
-                "t" : 20,
-                "test_timesteps" : 20,
-                "n" : 1000,
-        },
-        
-    },
-     "ctln": {
-        "lr_test" : { #waiting for fix. seeding error. https://github.com/DynaDojo/dynadojo/issues/21 
-                "L" : [4, 8, 16, 32, 64],
-                "trials" : 20,
-                "t" : 20,
-                "test_timesteps" : 20,
-                "n" : 1000,
-        },
-        
-    },
     "kura": {
-        "lr_test" : { #Times out at L=64 because >2.5 hours
-                "L" : [4, 8, 16, 32, 64],
-                "trials" : 20,
-                "t" : 20,
-                "test_timesteps" : 20,
-                "n" : 1000,
-        },
-        "lr" : { #Running
-                "L" : [4, 8, 16, 32],
-                "trials" : 100,
-                "t" : 20,
-                "test_timesteps" : 20,
-                "n" : 1000,
-        },
-        "gru_long" : { 
+        "dnn" : { 
                 "L" : [4, 8, 16, 32],
                 "trials" : 50,
                 "t" : 20,
                 "test_timesteps" : 20,
                 "n" : 1000,
                 "evaluate": {
-                        "algo_kwargs": {
-                            "num_layers": 5,
-                            "hidden_size": 128,
-                            "lr": 5e-3
-                        },
                         "fit_kwargs": {
-                            "epochs": 20000,
-                            "early_stopping": True,
-                            "patience": 10,
-                            "min_delta": 10
+                            "lr": 1e-2,
+                            "epochs": 10000,
+                            "min_epochs": 1000,
                         }
                 }
         },

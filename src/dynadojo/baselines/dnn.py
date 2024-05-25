@@ -52,7 +52,7 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
             validation_split=0.1,
             patience=15, 
             min_delta=0.0,
-            start_early_stop_from_epoch=1000,
+            min_epochs=1000,
             verbose=0, **kwargs):
         
         optimizer = torch.optim.Adam(self.parameters(), lr=lr) #, weight_decay=1e-2)
