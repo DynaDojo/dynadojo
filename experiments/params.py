@@ -113,8 +113,37 @@ fc_challenge_params_dict = {
             "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
             "t" : 50,
         },
-        "gru_long_l5": {
-            "l": 5,
+        "gru_long_l9": {
+            "l": 9,
+            "trials": 50,
+            "evaluate": {
+                        "algo_kwargs": {
+                            "num_layers": 5,
+                            "hidden_size": 128,
+                            "lr": 5e-3
+                        },
+                        "fit_kwargs": {
+                            "epochs": 20000,
+                            "early_stopping": True,
+                            "patience": 10,
+                            "min_delta": 10,
+                            "min_epochs": 4000
+                        }
+                }
+        }
+    },
+    "kura": {
+        "default" : {
+            "l" : 5, 
+            "N" : [int(n) for n in np.logspace(1, 3, num=10, endpoint=True)],
+            "t" : 100,
+            "test_timesteps" : 100,
+            "system_kwargs": {
+                "COUPLE_range": (0, 1)
+            }
+        },
+        "gru_long_l16": {
+            "l": 16,
             "trials": 50,
             "evaluate": {
                         "algo_kwargs": {
