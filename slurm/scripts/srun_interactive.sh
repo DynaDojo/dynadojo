@@ -2,7 +2,7 @@
 
 #Run the setup script to check the directory and set the environment variables
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source ${__dir}/_setup.sh
+source ${__dir}/_setup_caryn.sh
 
 echo "Running interactive singularity shell."
 chmod +x slurm/jobscripts/interactive.sh

@@ -8,7 +8,7 @@ PARTITION='--partition normal'
 eval "OUTPUT='-o /home/${MY_USER}/logs/out/%A_%a.out'"
 eval "ERROR='-e /home/${MY_USER}/logs/err/%A_%a.err'"
 TIME='-t 0-8:58' # Maximum execution time (D-HH:MM)
-MEM='--mem 4G' #Memory limit
+MEM='--mem-per-cpu 4G' #Memory limit
 
 # # QUEST SLURM SETTINGS
 # ACCOUNT='-A p32141'
