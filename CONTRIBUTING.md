@@ -1,54 +1,61 @@
-# Contributing
+# Contributing to DynaDojo
 
-When contributing to this repository, please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before making a change. 
+## Getting Started
+### Prerequisites
+- [Python](https://www.python.org/) (v3.10 or later). We recommend using `pyenv` for Python version management.
+- [PDM](https://pdm-project.org/en/latest/) (v.2.15.1 or later) for package management and for python environments.
 
-# System Requirements
-For installing [Tensorflow 2](https://www.tensorflow.org/install) as of 4/26/2024,
+### Additional System Requirements
+**Optional Package**: The project can optionally depend on TensorFlow 2 for certain functionalities. Please refer to [Tensorflow 2 install](https://www.tensorflow.org/install) for any system requirements.
 
-- Ubuntu 16.04 or later
-- Windows 7 or later (with C++ redistributable)
-- macOS 10.12.6 (Sierra) or later (no GPU support)
-- WSL2 via Windows 10 19044 or higher including GPUs (Experimental)
+### Recommended Setup
+0. For MacOS:
+    1. **Install xcode tools**: xcode-select --install
+    2. **Install homebrew**: Follow the instructions on [brew](https://brew.sh/)
+1. **Install pyenv**: Follow the instructions on the [pyenv GitHub page](https://github.com/pyenv/pyenv#installation).
+   On macOS:
+   ```sh
+   brew install pyenv
+2. **Install Python 3.10 using pyenv:** 
+   ```sh
+   pyenv install 3.10
+   pyenv shell 3.10   #use the newly installed version
+   ```
+3. **Install pdm:** You can install pdm using brew, pipx, or pip. We recommend using pipx:
+   ```sh
+   pipx install pdm
+   ```
+4. **Fork the Repository:** Fork the repository on GitHub by clicking the "Fork" button on the repository's page.
+5. **Clone your forked repository:**
+   ```sh
+   git clone https://github.com/your-username/dynadojo.git
+   cd dynadojo
+6. **Add the Dynadojo upstream remote to your local Dynadojo clone:**
+   ```sh
+   git remote add upstream https://github.com/DynaDojo/dynadojo.git
+   ```
+7. **Configure git to pull from the upstream remote:**
+   ```sh
+   git switch main # ensure you're on the main branch
+   git fetch upstream --tags
+   git branch --set-upstream-to=upstream/main
+   ```
+8. **Set python version:**
+   ```sh
+   pyenv local 3.10 # set the default python version in current folder
+   ```
+9.
+   ```sh
+   pdm install -G all
+   pre-commit install
+   ```   
+9. **Optional: Install optional dependencies:**
+   ```sh
+   pdm add -G [optional package]
+   ```
+10. **Reload your terminal to activate the pdm venv.**
 
-
-# Setting up your environment
-## Recommended Tools
-1. **for Macs**: xcode-select --install
-2. **for Macs/Linux**: homebrew (for installing pyenv and pdm)
-3. pyenv for managing python versions
-4. pdm (version 2.15.1) for managing virtual environments and packages
-
-## Installing Dependencies locally
-### Python Version
-Make sure you are working with a python version specified in pyproject.toml (3.10, 3.11)
-
-If using pyenv,
-```
-pyenv versions #check installed versions
-pyenv install 3.10
-pyenv local 3.10 #set the current directory default version
-```
-
-### Package Installation 
-
-If you are using a Macbook, please try installing the packages that are in the lock file with 
-```
-pdm sync
-```
-
-If not already included in the lockfile, you can add optional packages such as `tensorflow` or `tensorflow-m1`,  and `rebound`. (Apple Silicon can install `tensorflow-m1`,  see system requirements in https://developer.apple.com/metal/tensorflow-plugin/)
-
-```
-pdm add -G [optional package]
-```
-
-If you are on a different system, to install and relock with any mismatches, run
-```
-pdm install -d -G tensorflow[-m1] -G rebound
-```
-
-Reload your terminal to activate the pdm venv.
+   
 
 # Running Tests
 ```
