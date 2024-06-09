@@ -25,7 +25,7 @@
    ```sh
    pipx install pdm
    ```
-4. **Fork the Repository:** Fork the repository on GitHub by clicking the "Fork" button on the repository's page.
+4. **Fork the Repository:** Fork the repository on GitHub by clicking the "Fork" button on the repository's page. This creates a copy of the code under your GitHub user account
 5. **Clone your forked repository:**
    ```sh
    git clone https://github.com/your-username/dynadojo.git
@@ -55,7 +55,110 @@
    ```
 10. **Reload your terminal to activate the pdm venv.**
 
+### Making Changes
+
+1. Make sure you're on the main branch.
+
+   ```bash
+   git switch main
+   ```
+
+2. Use the git pull command to retrieve content from the DynaDojo Github repository.
+
+   ```bash
+   git pull
+   ```
+3. Create a new branch and switch to it.
+
+   ```bash
+   git switch -c a-descriptive-name-for-my-changes
+   ```
+   Please use branch naming conventions. See [branch naming](#branch-naming) section below.
    
+5. Make your changes!
+
+6. Use the git add command to save the state of files you have changed.
+
+   ```bash
+   git add <names of the files you have changed>
+   ```
+
+7. Commit your changes.
+
+   ```bash
+   git commit
+   ```
+   Please remember to write [good commit messages](https://cbea.ms/git-commit/)
+   
+8. Rebase on upstream/main to keep your fork of the code up to date with the original repository.
+   
+   ```bash
+   git fetch upstream
+   git rebase upstream/main
+   ```
+   Resolve any conflicts, test your code, commit.
+   
+9. Push all changes to your fork of dynadojo (origin) on GitHub.
+   ```bash
+   git push -u origin a-descriptive-name-for-my-changes
+   ```
+   You may have to push with the `--force` flag.
+
+10. Click on Pull Request on Github to open a pull request. Make sure you tick off all the boxes on our [checklist](#pull-request-checklist) below. When you're ready, you can send your changes to the project maintainers for review. Once approved please squash commits and merge.
+
+# Branch Naming
+Please follow the convention of `[prefix]`/`[description]`/`[optional issue #]`/`[optional name]``. 
+So for example `feat/transformer/caryn` or `bug/plotting/100`
+
+## Guidelines:
+- Lowercase and Hyphen-separated: Stick to lowercase for branch names and use hyphens to separate words.
+    - For instance, feature/new-login or bugfix/header-styling.
+- Alphanumeric Characters: Use only alphanumeric characters (a-z, 0–9) and hyphens. Avoid punctuation, spaces, underscores, or any non-alphanumeric character.
+- No Continuous Hyphens: Do not use continuous hyphens. feature--new-login can be confusing and hard to read.
+- No Trailing Hyphens: Do not end your branch name with a hyphen. For example, feature-new-login- is not a good practice.
+- Descriptive: The name should be descriptive and concise, ideally reflecting the work done on the branch.
+
+## Branch Prefixes
+Using prefixes in branch names helps to quickly identify the purpose of the branches. Here are some types of branches with their corresponding prefixes:
+
+- Feature Branches: These branches are used for developing new features.
+    - Use the prefix feat/. For instance, feat/login-system.
+- Bug fix Branches: These branches are used to fix bugs in the code.
+    - Use the prefix bug/. For example, bug/header-styling.
+- Release Branches: These branches are used to prepare for a new production release. They allow for last-minute dotting of i’s and crossing t’s.
+    - Use the prefix release/. For example, release/v1.0.1.
+- Documentation Branches: These branches are used to write, update, or fix documentation.
+    - Use the prefix docs/. For instance, docs/api-endpoints.
+- Experiment Branches: These branches are used for running experiments.
+    - Use the prefix exp/. For instance, exp/neural-ode
+- Works-in-Progress Branches: These branches are for projects that won't be completed any time soon.
+    - Use the prefix wip/.
+- Junk Branches: Throwaway branch.
+    - Use the prefix junk/.
+
+# Pull request checklist
+- The pull request title should summarize your contribution and should start with one of the following prefixes:
+    - feat: (new feature for the user, not a new feature for build script)
+    - fix: (bug fix for the user, not a fix to a build script)
+    - docs: (changes to the documentation)
+    - style: (formatting, missing semicolons, etc; no production code change)
+    - refactor: (refactoring production code, eg. renaming a variable)
+    - perf: (code changes that improve performance)
+    - test: (adding missing tests, refactoring tests; no production code change)
+    - chore: (updating grunt tasks etc; no production code change)
+    - build: (changes that affect the build system or external dependencies)
+    - ci: (changes to configuration files and scripts)
+    - revert: (reverts a previous commit)
+    - **_Example_**: "feat: add support for PyTorch". 
+    - **_Note_**: This is based on the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/#summary)
+- If your pull request addresses an issue, please mention the issue number in the pull
+request description and title to make sure they are linked (and people viewing the issue know you
+are working on it).
+- To indicate a work in progress please prefix the title with `[WIP]`. These are
+useful to avoid duplicated work, and to differentiate it from PRs ready to be merged.
+- Make sure existing tests pass.
+- If adding a new feature, also add tests for it.
+- All public methods must have informative docstrings.
 
 # Running Tests
 ```
