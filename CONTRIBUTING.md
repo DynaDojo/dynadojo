@@ -55,7 +55,7 @@
    ```
 10. **Reload your terminal to activate the pdm venv.**
 
-### Making Changes
+## Making Changes
 
 1. Make sure you're on the main branch.
 
@@ -106,7 +106,7 @@
 
 10. Click on Pull Request on Github to open a pull request. Make sure you tick off all the boxes on our [checklist](#pull-request-checklist) below. When you're ready, you can send your changes to the project maintainers for review. Once approved please squash commits and merge.
 
-# Branch Naming
+## Branch Naming
 Please follow the convention of `[prefix]`/`[description]`/`[optional issue #]`/`[optional name]``. 
 So for example `feat/transformer/caryn` or `bug/plotting/100`
 
@@ -136,7 +136,7 @@ Using prefixes in branch names helps to quickly identify the purpose of the bran
 - Junk Branches: Throwaway branch.
     - Use the prefix junk/.
 
-# Pull request checklist
+## Pull request checklist
 - The pull request title should summarize your contribution and should start with one of the following prefixes:
     - feat: (new feature for the user, not a new feature for build script)
     - fix: (bug fix for the user, not a fix to a build script)
@@ -160,7 +160,7 @@ useful to avoid duplicated work, and to differentiate it from PRs ready to be me
 - If adding a new feature, also add tests for it.
 - All public methods must have informative docstrings.
 
-# Running Tests
+## Running Tests
 ```
 pdm run python -m unittest
 ```
