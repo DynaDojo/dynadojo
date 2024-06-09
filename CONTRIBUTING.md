@@ -106,11 +106,11 @@
 
 10. Click on Pull Request on Github to open a pull request. Make sure you tick off all the boxes on our [checklist](#pull-request-checklist) below. When you're ready, you can send your changes to the project maintainers for review. Once approved please squash commits and merge.
 
-## Branch Naming
+### Branch Naming
 Please follow the convention of `[prefix]`/`[description]`/`[optional issue #]`/`[optional name]``. 
 So for example `feat/transformer/caryn` or `bug/plotting/100`
 
-## Guidelines:
+#### Guidelines:
 - Lowercase and Hyphen-separated: Stick to lowercase for branch names and use hyphens to separate words.
     - For instance, feature/new-login or bugfix/header-styling.
 - Alphanumeric Characters: Use only alphanumeric characters (a-z, 0–9) and hyphens. Avoid punctuation, spaces, underscores, or any non-alphanumeric character.
@@ -118,7 +118,7 @@ So for example `feat/transformer/caryn` or `bug/plotting/100`
 - No Trailing Hyphens: Do not end your branch name with a hyphen. For example, feature-new-login- is not a good practice.
 - Descriptive: The name should be descriptive and concise, ideally reflecting the work done on the branch.
 
-## Branch Prefixes
+#### Branch Prefixes
 Using prefixes in branch names helps to quickly identify the purpose of the branches. Here are some types of branches with their corresponding prefixes:
 
 - Feature Branches: These branches are used for developing new features.
@@ -136,7 +136,7 @@ Using prefixes in branch names helps to quickly identify the purpose of the bran
 - Junk Branches: Throwaway branch.
     - Use the prefix junk/.
 
-## Pull request checklist
+### Pull request checklist
 - The pull request title should summarize your contribution and should start with one of the following prefixes:
     - feat: (new feature for the user, not a new feature for build script)
     - fix: (bug fix for the user, not a fix to a build script)
