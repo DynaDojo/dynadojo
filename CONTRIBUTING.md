@@ -165,6 +165,13 @@ useful to avoid duplicated work, and to differentiate it from PRs ready to be me
 pdm run python -m unittest
 ```
 
+
+<!-- Contributing.md Inspo:
+https://raw.githubusercontent.com/bentoml/BentoML/main/DEVELOPMENT.md
+https://raw.githubusercontent.com/huggingface/transformers/main/CONTRIBUTING.md
+-->
+
+
 <!-- DOCKER INSTRUCTIONS (OUT OF DATE)
 
 # Using Docker Image
