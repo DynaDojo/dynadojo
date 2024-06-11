@@ -52,6 +52,20 @@ dev = [
 ]
 
 [project.optional-dependencies]
+all = [
+    "dynadojo[rebound, tensorflow]",
+]
+rebound = [
+    "rebound>=4.0.1",
+]
+tensorflow = [
+    "tensorflow",
+]
+tensorflow-mac = [
+    "dynadojo[tensorflow]",
+    "tensorflow-metal", 
+]
+
 tensorflow-old = [
     "tensorflow-macos; sys_platform=='darwin' and platform_machine=='arm64'",
     "tensorflow-intel; sys_platform=='win32'",
@@ -59,14 +73,7 @@ tensorflow-old = [
     "tensorflow-cpu-aws; sys_platform=='linux' and (platform_machine=='arm64' or platform_machine=='aarch64')",
     "tensorflow-io-gcs-filesystem; sys_platform!='darwin' or platform_machine!='arm64' or  sys_platform=='win32'"
 ]
-tensorflow-m1 = [
-]
-tensorflow = [
-    "tensorflow",
-]
-rebound = [
-    "rebound>=4.0.1",
-]
+
 
 [project.urls]
 Home = "https://github.com/FlyingWorkshop/dynadojo/"

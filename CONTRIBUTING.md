@@ -2,8 +2,8 @@
 
 ## Getting Started
 ### Prerequisites
-- [Python](https://www.python.org/) (v3.10 or later). We recommend using `pyenv` for Python version management.
-- [PDM](https://pdm-project.org/en/latest/) (v.2.15.1 or later) for package management and for python environments.
+- [Python](https://www.python.org/) (v3.10 or greater). We recommend using `pyenv` for Python version management.
+- [PDM](https://pdm-project.org/en/latest/) (v.2.15.4) for package management and for python environments.
 
 ### Additional System Requirements
 **Optional Package**: The project can optionally depend on TensorFlow 2 for certain functionalities. Please refer to [Tensorflow 2 install](https://www.tensorflow.org/install) for any system requirements.
@@ -18,12 +18,12 @@
    brew install pyenv
 2. **Install Python 3.10 using pyenv:** 
    ```sh
-   pyenv install 3.10
-   pyenv shell 3.10   #use the newly installed version
+   pyenv install 3.10.14
+   pyenv shell 3.10.14   #use the newly installed version
    ```
-3. **Install pdm:** You can install pdm using brew, pipx, or pip. We recommend using pipx:
+3. **Install pdm with brew:**
    ```sh
-   pipx install pdm
+   brew install pdm@2.15.4
    ```
 4. **Fork the Repository:** Fork the repository on GitHub by clicking the "Fork" button on the repository's page. This creates a copy of the code under your GitHub user account
 5. **Clone your forked repository:**
@@ -42,18 +42,28 @@
    ```
 8. **Set python version:**
    ```sh
-   pyenv local 3.10 # set the default python version in current folder
+   pyenv local 3.10.14 # set the default python version in current folder
    ```
-9.
+9. **Install Dynadojo dependencies:**
    ```sh
    pdm install -G all
-   pre-commit install
-   ```   
-9. **Optional: Install optional dependencies:**
+   ``` 
+   If installation fails, please delete `pdm.lock` and try again. 
+
+10. **Optional: Install additional optional dependencies:**
    ```sh
    pdm add -G [optional package]
    ```
-10. **Reload your terminal to activate the pdm venv.**
+   For Macs with Apple Silicon, you might want to add `tensorflow-mac` for Mac GPU support. Please check [Apple](https://developer.apple.com/metal/tensorflow-plugin/) for system requirements.
+11. **Reload your terminal to activate the pdm venv.**
+   or run
+   ```shell
+   $(pdm venv activate)
+   ```
+12. **Check your python path**:
+   ```shell
+   which python # should be [path to project]/DynaDojo/.venv/bin/python
+   ```
 
 ## Making Changes
 
