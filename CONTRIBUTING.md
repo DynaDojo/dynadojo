@@ -2,7 +2,7 @@
 
 ## Getting Started
 ### Prerequisites
-- [Python](https://www.python.org/) (v3.10 or greater). We recommend using `pyenv` for Python version management.
+- [Python](https://www.python.org/) (v3.10 or greater). We recommend using `mise` or `pyenv` for Python version management.
 - [PDM](https://pdm-project.org/en/latest/) (v.2.15.4) for package management and for python environments.
 
 ### Additional System Requirements
@@ -12,45 +12,60 @@
 0. For MacOS:
     1. **Install xcode tools**: xcode-select --install
     2. **Install homebrew**: Follow the instructions on [brew](https://brew.sh/)
-1. **Install pyenv**: Follow the instructions on the [pyenv GitHub page](https://github.com/pyenv/pyenv#installation).
-   On macOS:
-   ```sh
-   brew install pyenv
-2. **Install Python 3.10 using pyenv:** 
-   ```sh
-   pyenv install 3.10.14
-   pyenv shell 3.10.14   #use the newly installed version
-   ```
-3. **Install pdm with brew:**
+1. **Install mise/pyenv**: Follow the instructions on [mise website](https://mise.jdx.dev/getting-started.html) or [pyenv GitHub page](https://github.com/pyenv/pyenv#installation).
+    On macOS:
+    1. **mise:** 
+       ```sh
+       brew install mise
+       echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
+       ```
+    2. **pyenv:** 
+       See steps 1-5 [here](https://ericsysmin.com/2024/02/05/how-to-install-pyenv-on-macos/)
+3. **Install Python 3.10**
+     - **using mise:** 
+       ```sh
+       mise use python@3.10.14
+       ```
+    - **using pyenv:** 
+       ```sh
+       pyenv install 3.10.14
+       pyenv shell 3.10.14   #use the newly installed version
+       ```
+4. **Install pdm with brew:**
    ```sh
    brew install pdm@2.15.4
    ```
-4. **Fork the Repository:** Fork the repository on GitHub by clicking the "Fork" button on the repository's page. This creates a copy of the code under your GitHub user account
-5. **Clone your forked repository:**
+5. **Fork the Repository:** Fork the repository on GitHub by clicking the "Fork" button on the repository's page. This creates a copy of the code under your GitHub user account
+6. **Clone your forked repository:**
    ```sh
    git clone https://github.com/your-username/dynadojo.git
    cd dynadojo
-6. **Add the Dynadojo upstream remote to your local Dynadojo clone:**
+7. **Add the Dynadojo upstream remote to your local Dynadojo clone:**
    ```sh
    git remote add upstream https://github.com/DynaDojo/dynadojo.git
    ```
-7. **Configure git to pull from the upstream remote:**
+8. **Configure git to pull from the upstream remote:**
    ```sh
    git switch main # ensure you're on the main branch
    git fetch upstream --tags
    git branch --set-upstream-to=upstream/main
    ```
-8. **Set python version:**
-   ```sh
-   pyenv local 3.10.14 # set the default python version in current folder
-   ```
-9. **Install Dynadojo dependencies:**
+9. **Set python version:**
+    1. **mise**
+        ```sh
+        echo 3.10.14 > .python-version
+        ``
+    2. **pyenv**
+       ```sh
+       pyenv local 3.10.14 # set the default python version in current folder
+       ```
+10. **Install Dynadojo dependencies:**
    ```sh
    pdm install -G all
    ``` 
    If installation fails, please delete `pdm.lock` and try again. 
 
-10. **Optional: Install additional optional dependencies:**
+11. **Optional: Install additional optional dependencies:**
    ```sh
    pdm add -G [optional package]
    ```
