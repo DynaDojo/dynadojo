@@ -45,7 +45,7 @@
    
 5. **Install pdm with brew:**
    ```sh
-   brew install pdm@2.15.4
+   brew install pdm
    ```
 6. **Fork the Repository:** Fork the repository on GitHub by clicking the "Fork" button on the repository's page. This creates a copy of the code under your GitHub user account
 7. **Clone your forked repository:**
