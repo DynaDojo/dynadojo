@@ -2,7 +2,7 @@
 
 ## Getting Started
 ### Prerequisites
-- [Python](https://www.python.org/) (v3.10 or greater). We recommend using `mise` or `pyenv` for Python version management.
+- [Python](https://www.python.org/) (v3.10 or greater). We recommend using `mise` (or `pyenv`) for Python version management.
 - [PDM](https://pdm-project.org/en/latest/) (v.2.15.4) for package management and for python environments.
 
 ### Additional System Requirements
@@ -13,20 +13,22 @@
     1. **Install xcode tools**: xcode-select --install
     2. **Install homebrew**: Follow the instructions on [brew](https://brew.sh/)
 1. **Install mise/pyenv**: Follow the instructions on [mise website](https://mise.jdx.dev/getting-started.html) or [pyenv GitHub page](https://github.com/pyenv/pyenv#installation).
-    On macOS:
-
-    1. **mise:** 
+    
+    1. **mise** (_Recommended_): 
+       For macOS,
        ```sh
        brew install mise
        echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
        ```
+       Otherwise see [mise documentation](https://mise.jdx.dev/getting-started.html) 
 
     2. **pyenv:** 
-       See steps 1-5 [here](https://ericsysmin.com/2024/02/05/how-to-install-pyenv-on-macos/)
+       For macOS, see steps 1-5 [here](https://ericsysmin.com/2024/02/05/how-to-install-pyenv-on-macos/)
+       Otherwise see [pyenv documentation](https://github.com/pyenv/pyenv#installation)
 
 3. **Install Python 3.10**
 
-    1. **using mise:**
+    1. **using mise** (_Recommended_):
         ```sh
         mise use python@3.10.14
         ```       
@@ -43,37 +45,55 @@
    
     If there are issues with your installation, check your `echo $PATH` variable for any other python installations. Remove them from `~/.zshrc` and `~/.zprofile` for ZSH (or `~/.bashrc` and `~/.bash_profile`) for BASH. 
    
-5. **Install pdm with brew:**
-   ```sh
-   brew install pdm
-   ```
-6. **Fork the Repository:** Fork the repository on GitHub by clicking the "Fork" button on the repository's page. This creates a copy of the code under your GitHub user account
-7. **Clone your forked repository:**
+5. **Install pdm:**
+
+   1. **using mise** (_Recommended_):
+
+      Installing via `mise` will allow for the flexibilty to change `pdm` versions depending on the project.
+
+      ```sh
+       mise plugin install pdm
+       pip install virtualenv # might be necessary
+       mise install pdm 2.15.4
+       mise global pdm 2.15.4
+       ```
+   2. For macOS, **with brew**:
+
+       ```sh
+       brew install pdm
+       ```
+    3. Otherwise, see [pdm documentation](https://pdm-project.org/en/latest/#installation).
+     
+7. **Fork the Repository:** Fork the repository on GitHub by clicking the "Fork" button on the repository's page. This creates a copy of the code under your GitHub user account
+
+8. **Clone your forked repository:**
    ```sh
    git clone https://github.com/your-username/dynadojo.git
    cd dynadojo
-8. **Add the Dynadojo upstream remote to your local Dynadojo clone:**
+
+9. **Add the Dynadojo upstream remote to your local Dynadojo clone:**
    ```sh
    git remote add upstream https://github.com/DynaDojo/dynadojo.git
    ```
-9. **Configure git to pull from the upstream remote:**
+10. **Configure git to pull main from the upstream remote:**
    ```sh
    git switch main # ensure you're on the main branch
    git fetch upstream --tags
    git branch --set-upstream-to=upstream/main
    ```
-10. **Set python version:**
+11. **Set python version:**
 
-    1. **mise**
+    1. **mise** (_Recommended_):
         ```sh
         echo 3.10.14 > .python-version
         ```
         
-    2. **pyenv**
+    3. **pyenv**:
        ```sh
        pyenv local 3.10.14 # set the default python version in current folder
        ```
-11. **Install Dynadojo dependencies:**
+       
+12. **Install Dynadojo dependencies:**
     ```sh
     pdm install -G all
     ``` 
@@ -85,11 +105,12 @@
        ```
        For Macs with Apple Silicon, you might want to add `tensorflow-mac` for Mac GPU support when running tensorflow. Please check [Apple](https://developer.apple.com/metal/tensorflow-plugin/) for system requirements.
 
-12. **Reload your terminal to activate the pdm venv.**
+13. **Reload your terminal to activate the pdm venv.**
    or run
    ```shell
    $(pdm venv activate)
    ```
+
 13. **Check your python path**:
    ```shell
    which python # should be [path to project]/DynaDojo/.venv/bin/python
