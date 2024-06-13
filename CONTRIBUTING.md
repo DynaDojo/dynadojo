@@ -74,22 +74,23 @@
        pyenv local 3.10.14 # set the default python version in current folder
        ```
 11. **Install Dynadojo dependencies:**
-   ```sh
-   pdm install -G all
-   ``` 
-   If installation fails, please delete `pdm.lock` and try again. 
+    ```sh
+    pdm install -G all
+    ``` 
+    If installation fails, please delete `pdm.lock` and try again. 
 
-11. **Optional: Install additional optional dependencies:**
-   ```sh
-   pdm add -G [optional package]
-   ```
-   For Macs with Apple Silicon, you might want to add `tensorflow-mac` for Mac GPU support. Please check [Apple](https://developer.apple.com/metal/tensorflow-plugin/) for system requirements.
-11. **Reload your terminal to activate the pdm venv.**
+    1. **Optional: Install additional optional dependencies:**
+       ```sh
+       pdm add -G [optional package]
+       ```
+       For Macs with Apple Silicon, you might want to add `tensorflow-mac` for Mac GPU support when running tensorflow. Please check [Apple](https://developer.apple.com/metal/tensorflow-plugin/) for system requirements.
+
+12. **Reload your terminal to activate the pdm venv.**
    or run
    ```shell
    $(pdm venv activate)
    ```
-12. **Check your python path**:
+13. **Check your python path**:
    ```shell
    which python # should be [path to project]/DynaDojo/.venv/bin/python
    ```
