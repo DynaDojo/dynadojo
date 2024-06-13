@@ -14,52 +14,66 @@
     2. **Install homebrew**: Follow the instructions on [brew](https://brew.sh/)
 1. **Install mise/pyenv**: Follow the instructions on [mise website](https://mise.jdx.dev/getting-started.html) or [pyenv GitHub page](https://github.com/pyenv/pyenv#installation).
     On macOS:
+
     1. **mise:** 
        ```sh
        brew install mise
        echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
        ```
+
     2. **pyenv:** 
        See steps 1-5 [here](https://ericsysmin.com/2024/02/05/how-to-install-pyenv-on-macos/)
+
 3. **Install Python 3.10**
-     - **using mise:** 
-       ```sh
-       mise use python@3.10.14
-       ```
-    - **using pyenv:** 
+
+    1. **using mise:**
+        ```sh
+        mise use python@3.10.14
+        ```       
+    2. **using pyenv:** 
        ```sh
        pyenv install 3.10.14
        pyenv shell 3.10.14   #use the newly installed version
        ```
-4. **Install pdm with brew:**
+
+   Check your installation by running `which python` which should output something along the lines of:
+   - for mise: `/Users/[user]/.local/share/mise/installs/python/3.10.14/bin/python`
+   
+   - for pyenv: `/Users/[user]/.pyenv/shims/python`
+   
+    If there are issues with your installation, check your `echo $PATH` variable for any other python installations. Remove them from `~/.zshrc` and `~/.zprofile` for ZSH (or `~/.bashrc` and `~/.bash_profile`) for BASH. 
+   
+5. **Install pdm with brew:**
    ```sh
    brew install pdm@2.15.4
    ```
-5. **Fork the Repository:** Fork the repository on GitHub by clicking the "Fork" button on the repository's page. This creates a copy of the code under your GitHub user account
-6. **Clone your forked repository:**
+6. **Fork the Repository:** Fork the repository on GitHub by clicking the "Fork" button on the repository's page. This creates a copy of the code under your GitHub user account
+7. **Clone your forked repository:**
    ```sh
    git clone https://github.com/your-username/dynadojo.git
    cd dynadojo
-7. **Add the Dynadojo upstream remote to your local Dynadojo clone:**
+8. **Add the Dynadojo upstream remote to your local Dynadojo clone:**
    ```sh
    git remote add upstream https://github.com/DynaDojo/dynadojo.git
    ```
-8. **Configure git to pull from the upstream remote:**
+9. **Configure git to pull from the upstream remote:**
    ```sh
    git switch main # ensure you're on the main branch
    git fetch upstream --tags
    git branch --set-upstream-to=upstream/main
    ```
-9. **Set python version:**
+10. **Set python version:**
+
     1. **mise**
         ```sh
         echo 3.10.14 > .python-version
-        ``
+        ```
+        
     2. **pyenv**
        ```sh
        pyenv local 3.10.14 # set the default python version in current folder
        ```
-10. **Install Dynadojo dependencies:**
+11. **Install Dynadojo dependencies:**
    ```sh
    pdm install -G all
    ``` 
