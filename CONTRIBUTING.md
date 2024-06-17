@@ -18,7 +18,7 @@
        For macOS,
        ```sh
        brew install mise
-       echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
+       echo '\neval "$(mise activate zsh)"\n' >> ~/.zshrc
        ```
        Otherwise see [mise documentation](https://mise.jdx.dev/getting-started.html) 
 
@@ -82,7 +82,7 @@
    git branch --set-upstream-to=upstream/main
    ```
 11. **Set python version:**
-
+    
     1. **mise** (_Recommended_):
         ```sh
         echo 3.10.14 > .python-version
