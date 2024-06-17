@@ -19,6 +19,7 @@
        ```sh
        brew install mise
        echo '\neval "$(mise activate zsh)"\n' >> ~/.zshrc
+       exec "$SHELL" #restart shell
        ```
        Otherwise see [mise documentation](https://mise.jdx.dev/getting-started.html) 
 
