@@ -3,12 +3,12 @@ Command line interface for running experiments.
 Arguments for make:
     --algo: which algo, short name, see params.py algo_dict
     --system: which system, short name, see params.py system_dict
-    --challenge: which challenge, one of ["fc", "fts", "fe"]
+    --challenge: which challenge, one of ["fd", "fts", "fe"]
     --output_dir: where to save params, default "experiments/outputs"
     --all: if True, make all params, default False
 Usage:
     python -m experiments make --challenge <challenge_key> --system <system_key> --algo <algo_key> --output_dir <output_dir>
-    python -m experiments make --challenge fc --system lds --algo lr_5
+    python -m experiments make --challenge fd --system lds --algo lr_5
 
 Arguments for run:
     --params_file: which params file to run
@@ -21,29 +21,29 @@ Arguments for run:
 Usage:
     python -m experiments \
         run \
-        --params_file experiments/outputs/fc/lds/fc_lds_lr_l=10/params.json \
+        --params_file experiments/outputs/fd/lds/fd_lds_lr_l=10/params.json \
         --node 2 --total_nodes 10 \
         --num_cpu_parallel -2 \
         --if_missing
 
-    python -m experiments run --num_cpu_parallel -2 --params_file experiments/outputs/fc/lds/fc_lds_lr_5_l=5/params.json 
+    python -m experiments run --num_cpu_parallel -2 --params_file experiments/outputs/fd/lds/fd_lds_lr_5_l=5/params.json 
     
 Arguments for plot:
     --data_dir: where to load results from
     --output_dir: where to save plots, default "experiments/outputs"
 
 Usage:
-    python -m experiments plot --data_dir experiments/outputs/fc/lds/fc_lds_lr_l=10 --output_dir experiments/outputs
+    python -m experiments plot --data_dir experiments/outputs/fd/lds/fd_lds_lr_l=10 --output_dir experiments/outputs
 
 Arguments for check:
     --data_dir: where to load results from
 
 Usage:
-    python -m experiments check --data_dir experiments/outputs/fc/lds/fc_lds_lr_l=10
+    python -m experiments check --data_dir experiments/outputs/fd/lds/fd_lds_lr_l=10
 
 Usage:
     (see dynadojo.sbatch)
-    python -m experiments --challenge fc --algo lr --system lds
+    python -m experiments --challenge fd --algo lr --system lds
     python -m experiments --challenge fts --algo lr --system lds
     python -m experiments --challenge fe --algo lr --system lds
 
@@ -54,7 +54,7 @@ import argparse
 import os
 from .utils import algo_dict, load_from_json, system_dict, challenge_dicts
 from .main import load_data, run_challenge, make_plots, save_params, prGreen, prPink
-from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
+from dynadojo.challenges import  FixedError, FixedDimensionality, FixedTrainSize
 
 
 program = argparse.ArgumentParser(description='DynaDojo Experiment CLI')
@@ -68,7 +68,7 @@ scale_parser = subparsers.add_parser('scale', help='Temporary utility which resc
 # Accept command line arguments
 make_parser.add_argument('--algo', type=str, default='lr', help='Specify which algo to run')
 make_parser.add_argument('--system', type=str, default='lds', choices=system_dict.keys(), help='Specify which system to run')
-make_parser.add_argument('--challenge', type=str, default="fc", choices=["fc", "fts", "fe"], help='Specify which challenge to run')
+make_parser.add_argument('--challenge', type=str, default="fd", choices=["fd", "fts", "fe"], help='Specify which challenge to run')
 make_parser.add_argument('--output_dir', type=str, default="experiments/outputs", help='where to save params')
 make_parser.add_argument('--all', action='store_true', help='if True, make all params')
 make_parser.set_defaults(all=False)
@@ -103,8 +103,8 @@ if args.command == 'make':
                             prPink(f"{params_file} with {total_jobs} jobs")
     else:
         assert args.algo.split("_")[0] in algo_dict.keys(), f"algo {args.algo} must be in algo_dict"
-        if args.challenge == "fc":
-            challenge_cls = FixedComplexity
+        if args.challenge == "fd":
+            challenge_cls = FixedDimensionality
         elif args.challenge == "fts":
             challenge_cls = FixedTrainSize
         else:

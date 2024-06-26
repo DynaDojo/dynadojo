@@ -212,7 +212,7 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="dynadojo.challenges.html">dynadojo.challenges</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of dynadojo.challenges</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedComplexity.html">dynadojo.challenges.FixedComplexity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedDimensionality.html">dynadojo.challenges.FixedDimensionality</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedError.html">dynadojo.challenges.FixedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedTrainSize.html">dynadojo.challenges.FixedTrainSize</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.ScalingChallenge.html">dynadojo.challenges.ScalingChallenge</a></li>
@@ -576,7 +576,7 @@ each configuration.</p>
 <p>This method should return a pandas DataFrame where each row is the result of an algorithm trained and evaluated on a single system for a given training set size.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>A job is very abstractly defined, open an issue and tag &#64;carynbear or &#64;mkanwal for help. You can think of it as a trial for a single unit of computation that you wish to distribute. Sometimes we can do a single trial of multiple runs (see FixedComplexity) in special cases where the system is the same for different training set sizes.</p>
+<p>A job is very abstractly defined, open an issue and tag &#64;carynbear or &#64;mkanwal for help. You can think of it as a trial for a single unit of computation that you wish to distribute. Sometimes we can do a single trial of multiple runs (see FixedDimensionality) in special cases where the system is the same for different training set sizes.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

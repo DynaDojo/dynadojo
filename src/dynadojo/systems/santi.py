@@ -39,13 +39,13 @@ class NBodySystem(SimpleSystem):
 
     .. image:: ../_images/santi.png
 
-    >>> from dynadojo.challenges import FixedComplexity
+    >>> from dynadojo.challenges import FixedDimensionality
     >>> from dynadojo.baselines.dnn import DNN
-    >>> challenge = FixedComplexity(l=4, e=None, t=10, N=[3, 5, 10], trials=3, system_cls=NBodySystem, test_examples=1, test_timesteps=5)
+    >>> challenge = FixedDimensionality(l=4, e=None, t=10, N=[3, 5, 10], trials=3, system_cls=NBodySystem, test_examples=1, test_timesteps=5)
     >>> data = challenge.evaluate(algo_cls=DNN)
     >>> challenge.plot(data)
 
-    .. image:: ../_images/nbody_fixed_complexity.png
+    .. image:: ../_images/nbody_fixed_dimensionality.png
     """
     def __init__(self, latent_dim=4, embed_dim=4, mass=10e-3, plot_data=False,
                  IND_range=(-1, 1), OOD_range=(-1, 1),

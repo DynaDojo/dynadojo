@@ -22,7 +22,7 @@
 # 
 # sbatch <job-options> run.sbatch <path-to-paramsjson-inside-container> <optional-jobs-list>
 #
-# EXAMPLE: sbatch <job-options> run.sbatch experiments/outputs/fc/lds/fc_lds_lr_l=5/params.json 0,1,2,3,4,5,6,7,8,9
+# EXAMPLE: sbatch <job-options> run.sbatch experiments/outputs/fd/lds/fd_lds_lr_l=5/params.json 0,1,2,3,4,5,6,7,8,9
 
 
 # CMDLINE ARGUMENTS

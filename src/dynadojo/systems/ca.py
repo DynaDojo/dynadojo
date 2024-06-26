@@ -29,13 +29,13 @@ class CASystem(AbstractSystem):
 
     .. image:: ../_images/ca.png
 
-    >>> from dynadojo.challenges import FixedComplexity
+    >>> from dynadojo.challenges import FixedDimensionality
     >>> from dynadojo.baselines.cnn import CNN
-    >>> challenge = FixedComplexity(l=2, e=64, t=10, N=[10, 20, 30], trials=3, system_cls=CASystem, test_examples=1, test_timesteps=5)
+    >>> challenge = FixedDimensionality(l=2, e=64, t=10, N=[10, 20, 30], trials=3, system_cls=CASystem, test_examples=1, test_timesteps=5)
     >>> data = challenge.evaluate(algo_cls=CNN)
     >>> challenge.plot(data)
 
-    .. image:: ../_images/ca_fixed_complexity.png
+    .. image:: ../_images/ca_fixed_dimensionality.png
     """
     def __init__(self, latent_dim = 2, embed_dim = 64, in_dist_p=0.25, out_dist_p=0.75, mutation_p=0.00, seed=None):
         """

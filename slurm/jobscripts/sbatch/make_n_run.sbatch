@@ -17,9 +17,9 @@
 #   In order to load the correct environment variables and job params
 #   Otherwise, make sure env vars and job params are appropriate and submit:
 # 
-# sbatch <job-options> make_n_run.sbatch <fc|fts|fe> <system> <model> <optional-jobs-list>
+# sbatch <job-options> make_n_run.sbatch <fd|fts|fe> <system> <model> <optional-jobs-list>
 #
-# EXAMPLE: sbatch <job-options> make_n_run.sbatch fc lds lr_5 0,1,2,3,4,5,6,7,8,9
+# EXAMPLE: sbatch <job-options> make_n_run.sbatch fd lds lr_5 0,1,2,3,4,5,6,7,8,9
 
 CHALLENGE=$1
 SYSTEM=$2

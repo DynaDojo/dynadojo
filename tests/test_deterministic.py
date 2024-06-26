@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import pandas.testing as pd_testing
 
-from dynadojo.challenges import FixedComplexity
+from dynadojo.challenges import FixedDimensionality
 
 # wrappers
 from dynadojo.wrappers import AlgorithmChecker, SystemChecker
@@ -128,8 +128,8 @@ class TestReproducibilityModel(unittest.TestCase):
         self.addTypeEqualityFunc(pd.DataFrame, self.assertDataframeEqual)
 
     @parameterized.expand(algorithms)
-    def test_with_fc(self, algo):
-        challenge = FixedComplexity(N=[4], l=4, t=10,
+    def test_with_fd(self, algo):
+        challenge = FixedDimensionality(N=[4], l=4, t=10,
                                     system_cls=LDSystem, trials=1,
                                     test_examples=2, test_timesteps=2)
         df1 = challenge.evaluate(algo, seed=100, noisy=True,
@@ -148,7 +148,7 @@ class TestReproducibilityModel(unittest.TestCase):
         Test that running a single trial gives the same results as running multiple trials,
         when using filters to select a single trial
         """
-        challenge = FixedComplexity(N=[2], l=2, t=3,
+        challenge = FixedDimensionality(N=[2], l=2, t=3,
                                     system_cls=LDSystem, trials=2,
                                     test_examples=2, test_timesteps=2)
         df1 = challenge.evaluate(algo, seed=100, noisy=True,
@@ -173,7 +173,7 @@ class TestReproducibilityModel(unittest.TestCase):
         error = 11.755511444519389
         ood_error = 40.871378000678895
 
-        challenge = FixedComplexity(N=[n], l=l, e=e, t=t, trials=1,
+        challenge = FixedDimensionality(N=[n], l=l, e=e, t=t, trials=1,
             test_examples=50, test_timesteps=50, 
             system_cls=LDSystem, system_kwargs={'seed':system_seed})
 

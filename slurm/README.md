@@ -28,7 +28,7 @@ The `experiments/params.py` is a parameter template file to help you generate ex
 **IMPORTANT NOTE:** Specifically for making experiments, you want to indicate the full algorithm key that is defined in `experiments/params.py` when calling this helper. So for example, 'lr_5' or 'lr_test' if that is the experiment you are trying to make. In the other helpers, you can simply indicate the base algorithm key since it will try to find all matching experiments. 
 ```
 > ./slurm/scripts/srun_make.sh 
-> Challenge [fc,fts,fe]: fts
+> Challenge [fd,fts,fe]: fts
 > System: kura
 > Algorithm: lr
     Make fts kura lr?
@@ -47,7 +47,7 @@ This will print how many jobs there are! Important for decided how many tasks yo
 
 ```
 > ./slurm/scripts/sbatch_run.sh 
-> Challenge [fc,fts,fe]: fts
+> Challenge [fd,fts,fe]: fts
 > System: kura
 > Algorithm: lr
     Found the following params files:
@@ -67,7 +67,7 @@ Monitor the batch job using `squeue -j [SLURM_JOB_ID]` or `sacct -j [SLURM_JOB_I
 ## 3. Check or plot experiment
 ```
 > ./slurm/scripts/srun_plot_check.sh
-> Challenge [fc,fts,fe]: fts
+> Challenge [fd,fts,fe]: fts
 > System: kura
 > Algorithm: lr
     Found the following results directories:
@@ -94,11 +94,11 @@ Example of running a params file. The supplied path must be relative to inside t
 ```
 ./slurm/scripts/srun_submit.sh \
     slurm/jobscripts/sbatch/run.sbatch \
-    experiments/outputs/fc/lds/fc_lds_lr_l=10/params.json \
+    experiments/outputs/fd/lds/fd_lds_lr_l=10/params.json \
     0,1
 ```
 - Calls srun to...
-- Run jobs 0 and 1 for fc/lds/fc_lds_lr_l=10/params.json
+- Run jobs 0 and 1 for fd/lds/fd_lds_lr_l=10/params.json
 Unless you change how dynadojo/slurm/jobscripts/make.sh works or the CLI, usually the path the params will be the same as if you ran the CLI on your local computer with default output_dir. 
 
 ### Running Batch Jobs
@@ -112,7 +112,7 @@ Unless you change how dynadojo/slurm/jobscripts/make.sh works or the CLI, usuall
 ```
 ./slurm/scripts/sbatch_submit.sh -J dynadojo_run --array=1-100 \
     slurm/jobscripts/sbatch/run.sbatch \
-    experiments/outputs/fc/lds/fc_lds_lr_l=10/params.json \
+    experiments/outputs/fd/lds/fd_lds_lr_l=10/params.json \
     <optional-job-ids>
 ```
 Calls sbatch with --array=1-100 with job name dynadojo_run. To monitor,
@@ -127,15 +127,15 @@ Not recommended.
 ### Testing make & run
 Example of make and run in one command:
 ```
-./slurm/scripts/srun_submit.sh slurm/jobscripts/sbatch/make_n_run.sbatch fc lds lr 0,1
+./slurm/scripts/srun_submit.sh slurm/jobscripts/sbatch/make_n_run.sbatch fd lds lr 0,1
 ```
 - Calls srun to...
-- Make params for fc lds lr
+- Make params for fd lds lr
 - Run jobs 0 and 1
 
 ### Running Batch Jobs
 ```
-./slurm/scripts/sbatch_submit.sh -J dynadojo_mk_run --array=1-100 slurm/jobscripts/sbatch/make_n_run.sbatch fc lds lr <optional-job-ids>
+./slurm/scripts/sbatch_submit.sh -J dynadojo_mk_run --array=1-100 slurm/jobscripts/sbatch/make_n_run.sbatch fd lds lr <optional-job-ids>
 ```
 Calls sbatch with --array=1-100 with job name dynadojo_mk_run. To monitor,
 ```
@@ -149,14 +149,14 @@ squeue -u <user>
 ```
 - Will ask you the path to the data, and whether to plot or check.
 - Path must be relative to the singularity container! Will make an attempt to find matching folders in `$DD_SCRATCH_DIR/$DD_OUTPUT_DIR`
-- For example, if the data is in `$DD_SCRATCH_DIR/$DD_OUTPUT_DIR/fc/lds/fc_lds_lr_5_l=5` then you should say `experiments/outputs/fc/lds/fc_lds_lr_5_l=5` because that is where it is mounted in the container
+- For example, if the data is in `$DD_SCRATCH_DIR/$DD_OUTPUT_DIR/fd/lds/fd_lds_lr_5_l=5` then you should say `experiments/outputs/fd/lds/fd_lds_lr_5_l=5` because that is where it is mounted in the container
 
 ### Rerunning Missing Jobs
 The list printed by check jobs can be supplied as an optional argument to run or makeNrun scripts. 
 
 ### Example Result of Running Check:
 ```
-Loaded 560 rows from experiments/outputs/fc/lds/fc_lds_lr_5_l=5/fc_lds_lr_5_l=5.csv
+Loaded 560 rows from experiments/outputs/fd/lds/fd_lds_lr_5_l=5/fd_lds_lr_5_l=5.csv
 Num of missing jobs:     75 of 100
 Missing jobs: 
 25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99
@@ -166,7 +166,7 @@ Missing jobs:
 You can use the `./slurm/scripts/sbatch_run.sh` utiltity! 
 ```
 > ./slurm/scripts/sbatch_run.sh 
-> Challenge [fc,fts,fe]: fts
+> Challenge [fd,fts,fe]: fts
 > System: kura
 > Algorithm: lr
     Found the following params files:
@@ -188,7 +188,7 @@ First, start an interactive singularity container:
 ```
 Then run whatever CLI commands you want, for example, to make plots:
 ```
-python -u -m experiments plot --data_dir=experiments/outputs/fc/lds/fc_lds_lr_l\=10/
+python -u -m experiments plot --data_dir=experiments/outputs/fd/lds/fd_lds_lr_l\=10/
 ```
 
 # Transfering files to your computer

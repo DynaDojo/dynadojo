@@ -19,7 +19,7 @@ mkdir $SCRATCH/sherput
 Make:
 ```
 chmod +x dynadojo/experiments/sherlock/jobscripts/make.sh #make the script executable
-srun --export=all  -c 1 dynadojo/experiments/sherlock/jobscripts/make.sh fc lds lr
+srun --export=all  -c 1 dynadojo/experiments/sherlock/jobscripts/make.sh fd lds lr
 ```
 AND run:
 ```
@@ -27,7 +27,7 @@ sbatch $HOME/dynadojo/experiments/sherlock/jobscripts/run.sbatch <path-to-params
 ```
 OR all in one:
 ```
-sbatch $HOME/dynadojo/experiments/sherlock/jobscripts/make_n_run.sbatch fc lds lr <optional-job-id-list>
+sbatch $HOME/dynadojo/experiments/sherlock/jobscripts/make_n_run.sbatch fd lds lr <optional-job-id-list>
 ```
 4. Check if all jobs were run
 ```

@@ -441,7 +441,7 @@ class AbstractChallenge(ABC):
 
         Note
         ----
-        A job is very abstractly defined, open an issue and tag @carynbear or @mkanwal for help. You can think of it as a trial for a single unit of computation that you wish to distribute. Sometimes we can do a single trial of multiple runs (see FixedComplexity) in special cases where the system is the same for different training set sizes.
+        A job is very abstractly defined, open an issue and tag @carynbear or @mkanwal for help. You can think of it as a trial for a single unit of computation that you wish to distribute. Sometimes we can do a single trial of multiple runs (see FixedDimensionality) in special cases where the system is the same for different training set sizes.
         
 
         Parameters
