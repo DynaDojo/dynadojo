@@ -9,18 +9,18 @@ import json
 import os
 import sys
 import numpy as np
-from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize, ScalingChallenge
+from dynadojo.challenges import  FixedError, FixedDimensionality, FixedTrainSize, ScalingChallenge
 
-from .params import fc_challenge_params_dict, fts_challenge_params_dict, fe_challenge_params_dict
+from .params import fd_challenge_params_dict, fts_challenge_params_dict, fe_challenge_params_dict
 from .keys import system_dict, algo_dict
 
 challenge_dicts = {
-    "fc" : (FixedComplexity, fc_challenge_params_dict),
+    "fd" : (FixedDimensionality, fd_challenge_params_dict),
     "fts" : (FixedTrainSize, fts_challenge_params_dict),
     "fe" : (FixedError, fe_challenge_params_dict),
 }
 
-def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
+def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedDimensionality):
     """
     Get challenge parameters for a given system, algo, and challenge class, overriding defaults with system and algo specific parameters.
 
@@ -34,8 +34,8 @@ def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
     system = _get_system(s)
     algo = _get_algo(a)
 
-    if challenge_cls == FixedComplexity:
-        challenge_params_dict = fc_challenge_params_dict
+    if challenge_cls == FixedDimensionality:
+        challenge_params_dict = fd_challenge_params_dict
     elif challenge_cls == FixedTrainSize:
         challenge_params_dict = fts_challenge_params_dict
     elif challenge_cls == FixedError:
@@ -77,10 +77,10 @@ def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
     }
     experiment_params["challenge_cls"] = challenge_cls
 
-    if challenge_cls == FixedComplexity:
+    if challenge_cls == FixedDimensionality:
         l = challenge_params["l"]
-        folder_name = f"fc_{s}_{a}_{l=}"
-        folder_path = f"fc/{s}/{folder_name}"
+        folder_name = f"fd_{s}_{a}_{l=}"
+        folder_path = f"fd/{s}/{folder_name}"
     elif challenge_cls == FixedTrainSize:
         n = challenge_params["n"]
         folder_name = f"fts_{s}_{a}_{n=}"

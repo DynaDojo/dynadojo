@@ -212,7 +212,7 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="dynadojo.challenges.html">dynadojo.challenges</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of dynadojo.challenges</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedComplexity.html">dynadojo.challenges.FixedComplexity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedDimensionality.html">dynadojo.challenges.FixedDimensionality</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedError.html">dynadojo.challenges.FixedError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.FixedTrainSize.html">dynadojo.challenges.FixedTrainSize</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dynadojo.challenges.ScalingChallenge.html">dynadojo.challenges.ScalingChallenge</a></li>
@@ -448,14 +448,14 @@ So if we wanted 5 planetary bodies, then our latent dimension would be <span cla
 </pre></div>
 </div>
 <img alt="../_images/santi.png" src="../_images/santi.png" />
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dynadojo.challenges</span> <span class="kn">import</span> <span class="n">FixedComplexity</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dynadojo.challenges</span> <span class="kn">import</span> <span class="n">FixedDimensionality</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">dynadojo.baselines.dnn</span> <span class="kn">import</span> <span class="n">DNN</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">challenge</span> <span class="o">=</span> <span class="n">FixedComplexity</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">trials</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">system_cls</span><span class="o">=</span><span class="n">NBodySystem</span><span class="p">,</span> <span class="n">test_examples</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test_timesteps</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">challenge</span> <span class="o">=</span> <span class="n">FixedDimensionality</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">trials</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">system_cls</span><span class="o">=</span><span class="n">NBodySystem</span><span class="p">,</span> <span class="n">test_examples</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test_timesteps</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">challenge</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">algo_cls</span><span class="o">=</span><span class="n">DNN</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">challenge</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/nbody_fixed_complexity.png" src="../_images/nbody_fixed_complexity.png" />
+<img alt="../_images/nbody_fixed_dimensionality.png" src="../_images/nbody_fixed_dimensionality.png" />
 <p class="rubric">Methods</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">

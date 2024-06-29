@@ -6,7 +6,7 @@ source ${__dir}/_setup.sh
 
 
 #ask for challenge, system, and algorithm
-read -p "Challenge "fc","fts","fe"]: " challenge
+read -p "Challenge "fd","fts","fe"]: " challenge
 read -p "System: " system
 read -p "Algorithm: " algo
 

@@ -6,14 +6,14 @@ import logging
 import os
 import pandas as pd
 import numpy as np
-from dynadojo.challenges import  FixedComplexity, ScalingChallenge
+from dynadojo.challenges import  FixedDimensionality, ScalingChallenge
 from .utils import _get_params, save_to_json, load_from_json
 
 
 def save_params(
         s ="lds",
         a = "lr",
-        challenge_cls:type[ScalingChallenge] = FixedComplexity,
+        challenge_cls:type[ScalingChallenge] = FixedDimensionality,
         output_dir="experiments/outputs"
     ):
     experiment_params = _get_params(s, a, challenge_cls=challenge_cls)
@@ -26,7 +26,7 @@ def save_params(
         save_to_json(experiment_params, os.path.join(output_dir, folder_path, "params.json"))
     return params_file_path, experiment_params['total_jobs']
 
-def get_max_splits(s="lds", m="lr", challenge_cls:type[ScalingChallenge] = FixedComplexity,):
+def get_max_splits(s="lds", m="lr", challenge_cls:type[ScalingChallenge] = FixedDimensionality,):
     params = _get_params(s, m, challenge_cls=challenge_cls)
     return params["total_jobs"]
 
@@ -111,7 +111,7 @@ def run_challenge(
     
 
 def make_plots(
-        data_path="experiments/outputs/fc/lds/fc_lds_dnn_5_l=5",
+        data_path="experiments/outputs/fd/lds/fd_lds_dnn_5_l=5",
         output_dir="experiments/outputs",
         save=True
     ):
@@ -165,7 +165,7 @@ def load_data(data_path):
 def _find_matching_files(path, filename, extended=False):
     """
     Find all files in path that match filename.
-    For example, if filename is "fc_lds_lr_l=5.csv", this will return all files in path that contain "fc_lds_lr_l=5" and end with ".csv"
+    For example, if filename is "fd_lds_lr_l=5.csv", this will return all files in path that contain "fd_lds_lr_l=5" and end with ".csv"
     """
     file_base = ".".join(filename.split(".")[:-1])
     file_ext = filename.split(".")[1]
@@ -181,7 +181,7 @@ def _find_matching_files(path, filename, extended=False):
 def _find_all_csv(path):
     """
     Find all files in path that match filename.
-    For example, if filename is "fc_lds_lr_l=5.csv", this will return all files in path that contain "fc_lds_lr_l=5" and end with ".csv"
+    For example, if filename is "fd_lds_lr_l=5.csv", this will return all files in path that contain "fd_lds_lr_l=5" and end with ".csv"
     """
     if not (os.path.exists(path) and os.path.isdir(path)):
         print(f" Path {path} does not exist or is not a directory")

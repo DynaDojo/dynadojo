@@ -268,7 +268,7 @@ class DNN(TorchBaseClass):
 #         # decoder_layer = torch.nn.TransformerDecoderLayer(d_model=model_dim, nhead=num_heads, dim_feedforward=dim_feedforward, dropout=dropout, 
 #         #                                            activation=activation, batch_first=True)
 #         # self.decoder = torch.nn.TransformerDecoder(decoder_layer, num_layers=num_layers).to(self.device)
-#         # self.fc_out = torch.nn.Linear(model_dim, embed_dim).to(self.device)
+#         # self.fd_out = torch.nn.Linear(model_dim, embed_dim).to(self.device)
 #         self.transformer = torch.nn.Transformer(d_model=model_dim, nhead=num_heads, num_encoder_layers=num_layers, num_decoder_layers=num_layers, 
 #                                                 dim_feedforward=dim_feedforward, dropout=dropout, activation=activation, batch_first=True).to(self.device)
 
@@ -290,6 +290,6 @@ class DNN(TorchBaseClass):
 #         tgt_mask = torch.nn.Transformer.generate_square_subsequent_mask(seq_len)
 #         tgt_mask.to(x.device)
 #         output = self.transformer(x, x, src_mask=tgt_mask) 
-#         # output = self.fc_out(output)
+#         # output = self.fd_out(output)
 #         return output
     

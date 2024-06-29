@@ -1,4 +1,4 @@
-# test_id = 0 is FixedComplexity
+# test_id = 0 is FixedDimensionality
 # test_id = 1 is FixedTrainSize
 # test_id = 2 is FixedError
 

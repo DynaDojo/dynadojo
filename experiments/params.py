@@ -2,7 +2,7 @@
 import numpy as np
 
 
-fc_challenge_params_dict = {
+fd_challenge_params_dict = {
     "default" : {   "l" : 10, 
                     "N" : [int(n) for n in np.logspace(1, 2, num=10, endpoint=True)],
                     "t" : 50,

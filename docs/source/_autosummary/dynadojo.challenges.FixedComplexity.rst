@@ -1,9 +1,9 @@
-dynadojo.challenges.FixedComplexity
+dynadojo.challenges.FixedDimensionality
 ===================================
 
 .. currentmodule:: dynadojo.challenges
 
-.. autoclass:: FixedComplexity
+.. autoclass:: FixedDimensionality
    :members:
    :show-inheritance:
    :inherited-members:
@@ -15,12 +15,12 @@ dynadojo.challenges.FixedComplexity
 
    .. autosummary::
    
-      ~FixedComplexity.__init__
-      ~FixedComplexity.create_job_configs
-      ~FixedComplexity.evaluate
-      ~FixedComplexity.execute_job
-      ~FixedComplexity.get_num_jobs
-      ~FixedComplexity.plot
+      ~FixedDimensionality.__init__
+      ~FixedDimensionality.create_job_configs
+      ~FixedDimensionality.evaluate
+      ~FixedDimensionality.execute_job
+      ~FixedDimensionality.get_num_jobs
+      ~FixedDimensionality.plot
    
    
 
@@ -30,6 +30,6 @@ dynadojo.challenges.FixedComplexity
 
    .. autosummary::
    
-      ~FixedComplexity.base_configs
+      ~FixedDimensionality.base_configs
    
    
