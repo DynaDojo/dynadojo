@@ -29,6 +29,7 @@ class CNN(AbstractAlgorithm):
         loss_BCEL = nn.BCELoss()
         lossMSE = nn.MSELoss()
 
+        losses = []
         for i in range(epochs):
             opt.zero_grad()
             pred_states = state[:, 0, :].unsqueeze(1)
@@ -41,10 +42,15 @@ class CNN(AbstractAlgorithm):
                 next_state = self.lin(self.c1(state_t))  # doesn't even call forward
 
                 loss += lossMSE((next_state * (state[:, t, :].unsqueeze(1))), state[:, t+1, :].unsqueeze(1)) #loss_BCEL(next_state, state[:, t + 1, :].unsqueeze(1))
-
+            
             # print(loss.item())
             loss.backward()
             opt.step()
+            losses.append(loss)
+        
+        return {
+            "train_loss": losses
+        }
 
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         state = torch.tensor(x0, dtype=torch.float32)
