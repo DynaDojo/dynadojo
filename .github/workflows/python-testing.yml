@@ -24,12 +24,12 @@ jobs:
     - name: Setup PDM
       uses: pdm-project/setup-pdm@v3.3
       with: 
-        version: 2.10.4
+        version: 2.15.4
         cache: true
         
     - name: Install dependencies
       run: |
-        pdm install -d -G tensorflow -G rebound
+        pdm install -G all
     - name: Analysing the code with pylint
       run: |
         pdm run pylint $(git ls-files '*.py')
