@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader, TensorDataset, random_split
 import time
 
 from ..abstractions import AbstractAlgorithm
-
+import logging
 
 
 class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
@@ -33,7 +33,8 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
             torch.manual_seed(seed)
 
         self.device = device or "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
-        print(f"Using device: {self.device}")
+        logging.info(f"Using device: {self.device}")
+        # print(f"Using device: {self.device}")
         # self.model = self.create_model()
         self.criterion = torch.nn.MSELoss()
     
@@ -90,7 +91,7 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
         losses = []
         self.train() 
         training_start_time = time.time()
-        print(f'Dataloader length: {len(dataloader)}')
+        # print(f'Dataloader length: {len(dataloader)}')
         for epoch in range(epochs):
             self.train()
             epoch_loss = 0
@@ -170,8 +171,9 @@ class DNN(TorchBaseClass):
     def __init__(self, 
             embed_dim,
             timesteps,
+            max_control_cost,
             **kwargs):
-        super().__init__(embed_dim, timesteps, **kwargs)
+        super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
         self.model = torch.nn.Sequential(
             torch.nn.Linear(self.embed_dim, embed_dim*10),
             torch.nn.ReLU(),
