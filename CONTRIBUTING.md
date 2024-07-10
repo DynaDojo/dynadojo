@@ -53,11 +53,8 @@
       Installing via `mise` will allow for the flexibilty to change `pdm` versions depending on the project.
 
       ```sh
-       mise plugin install pdm
-       pip install virtualenv # might be necessary
-       mise install pdm 2.15.4
-       mise global pdm 2.15.4
-       ```
+       mise use --global pdm@2.15.4
+      ```
    2. For macOS, **with brew**:
 
        ```sh
