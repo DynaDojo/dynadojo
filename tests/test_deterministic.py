@@ -15,7 +15,7 @@ from dynadojo.wrappers import AlgorithmChecker, SystemChecker
 # baselines
 from dynadojo.baselines.aug_ode import AugODE
 from dynadojo.baselines.cnn import CNN
-from dynadojo.baselines.dmd import DMD
+# from dynadojo.baselines.dmd import DMD
 from dynadojo.baselines.dnn import DNN
 from dynadojo.baselines.ode import ODE
 # from dynadojo.baselines.sindy import SINDy
@@ -23,7 +23,7 @@ from dynadojo.baselines.ode import ODE
 ALL_BASELINES = [
     # AugODE,
     # CNN,
-    DMD,
+    # DMD,
     DNN,
     # ODE,
     # SINDy

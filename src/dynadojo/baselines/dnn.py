@@ -170,8 +170,9 @@ class DNN(TorchBaseClass):
     def __init__(self, 
             embed_dim,
             timesteps,
+            max_control_cost,
             **kwargs):
-        super().__init__(embed_dim, timesteps, **kwargs)
+        super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
         self.model = torch.nn.Sequential(
             torch.nn.Linear(self.embed_dim, embed_dim*10),
             torch.nn.ReLU(),
