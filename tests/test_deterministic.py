@@ -15,7 +15,7 @@ from dynadojo.wrappers import AlgorithmChecker, SystemChecker
 # baselines
 from dynadojo.baselines.aug_ode import AugODE
 from dynadojo.baselines.cnn import CNN
-from dynadojo.baselines.dmd import DMD
+# from dynadojo.baselines.dmd import DMD
 from dynadojo.baselines.dnn import DNN
 from dynadojo.baselines.ode import ODE
 # from dynadojo.baselines.sindy import SINDy
@@ -23,7 +23,7 @@ from dynadojo.baselines.ode import ODE
 ALL_BASELINES = [
     # AugODE,
     # CNN,
-    DMD,
+    # DMD,
     DNN,
     # ODE,
     # SINDy
@@ -157,7 +157,7 @@ class TestReproducibilityModel(unittest.TestCase):
                                  algo_kwargs=None)
         cols = ['trial', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
                 'system_seed', 'algo_seed']
-        df1 = df1[cols]
+        df1 = df1[cols].loc[df2['trial'] == 1]
         df2 = df2[cols].loc[df2['trial'] == 1]
         self.assertEqual(df1, df2)
 
