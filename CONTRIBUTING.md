@@ -39,7 +39,7 @@
        pyenv shell 3.10.14   #use the newly installed version
        ```
 
-   Check your installation by running `which python` which should output something along the lines of:
+   Check your installation by running `which python`. Output should be along the lines of:
    - for mise: `/Users/[user]/.local/share/mise/installs/python/3.10.14/bin/python`
    
    - for pyenv: `/Users/[user]/.pyenv/shims/python`
@@ -53,11 +53,8 @@
       Installing via `mise` will allow for the flexibilty to change `pdm` versions depending on the project.
 
       ```sh
-       mise plugin install pdm
-       pip install virtualenv # might be necessary
-       mise install pdm 2.15.4
-       mise global pdm 2.15.4
-       ```
+       mise use --global pdm@2.15.4
+      ```
    2. For macOS, **with brew**:
 
        ```sh
