@@ -4,7 +4,7 @@ import sys
 
 from ..abstractions import AbstractSystem
 from ..baselines import LinearRegression
-from ..challenges import FixedError, FixedComplexity, FixedTrainSize
+from ..challenges import FixedError, FixedDimensionality, FixedTrainSize
 
 
 def get_test_system(module):
@@ -19,14 +19,14 @@ def get_test_system(module):
     print(f"Couldn't find valid System to test in {module}")
 
 
-def test_fixed_complexity(N: list[int], l: int, e: int, t: int, max_control_cost_per_dim: int, control_horizons: int,
+def test_fixed_dimensionality(N: list[int], l: int, e: int, t: int, max_control_cost_per_dim: int, control_horizons: int,
                           system_cls: type[AbstractSystem], trials: int, test_examples: int, test_timesteps: int,
                           system_kwargs: dict = None, model_kwargs: dict = None, 
                           seed:int|None =None,  
                           trials_filter: list[int] | None = None,
                           L_filter: list[int] | None = None):
-    print(f"\n----Testing FixedComplexity----")
-    challenge = FixedComplexity(N=N, l=l, e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
+    print(f"\n----Testing FixedDimensionality----")
+    challenge = FixedDimensionality(N=N, l=l, e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
                                 control_horizons=control_horizons, system_cls=system_cls, trials=trials,
                                 test_examples=test_examples, test_timesteps=test_timesteps, 
                                 system_kwargs=system_kwargs)
@@ -112,12 +112,12 @@ def test_system(system_module: str,
     print(f"System: {system_cls}")
     print(f"Model: {LinearRegression}")
     if 0 in test_ids:
-        data = test_fixed_complexity(N=n, l=L[0], e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
+        data = test_fixed_dimensionality(N=n, l=L[0], e=e, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
                             control_horizons=control_horizons, test_examples=test_examples, model_kwargs=model_kwargs,
                             trials=trials, test_timesteps=test_timesteps, system_kwargs=system_kwargs, system_cls=system_cls, 
                             seed=seed, trials_filter=trials_filter, L_filter=L_filter)
         if plot:
-            FixedComplexity.plot(data, latent_dim=L[0])
+            FixedDimensionality.plot(data, latent_dim=L[0])
     if 1 in test_ids:
         data = test_fixed_training(n=n[0], L=L, t=t, max_control_cost_per_dim=max_control_cost_per_dim,
                           control_horizons=control_horizons, test_examples=test_examples, model_kwargs=model_kwargs,

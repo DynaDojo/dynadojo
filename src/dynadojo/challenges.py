@@ -313,7 +313,7 @@ class ScalingChallenge(AbstractChallenge):
         return data
 
 
-class FixedComplexity(ScalingChallenge):
+class FixedDimensionality(ScalingChallenge):
     """Challenge where complexity is fixed, training set size is varied, and error is measured."""
     def __init__(self,
                  l: int,
@@ -399,7 +399,7 @@ class FixedComplexity(ScalingChallenge):
                 ax.legend()
             else:
                 ax.get_legend().remove()
-        title = "Fixed Complexity"
+        title = "Fixed Dimensionality"
         if latent_dim:
             title += f", latent={latent_dim}"
         if embedding_dim:

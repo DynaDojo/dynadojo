@@ -22,15 +22,15 @@ There are three ways to interact with DynaDojo and users can take on multiple "h
 
 ![toychallenges-chips](https://github.com/FlyingWorkshop/dynadojo/assets/56043296/dcae54df-ef98-48d4-ad2e-e37c4054e67b)
 
-`DynaDojo` comes with three off-the-shelf challenges: [Fixed Error](demos/fixed_error_demo.ipynb), [Fixed Complexity](demos/fixed_complexity_demo.ipynb), and [Fixed Train Size](demos/fixed_train_size_demo.ipynb).
+`DynaDojo` comes with three off-the-shelf challenges: [Fixed Error](demos/fixed_error_demo.ipynb), [Fixed Dimensionality](demos/fixed_dimensionality_demo.ipynb), and [Fixed Train Size](demos/fixed_train_size_demo.ipynb).
 
 ```python
 from dynadojo.systems import LDSSystem
 from dynadojo.baselines import LinearRegression, DNN
-from dynadojo.challenges import FixedComplexity
+from dynadojo.challenges import FixedDimensionality
 import pandas as pd
 
-challenge = FixedComplexity(
+challenge = FixedDimensionality(
     N=[10, 100, 1000],  # number of training examples
     l=3,  # latent dimension
     e=3,  # embed dimension
@@ -48,11 +48,11 @@ data3 = challenge.evaluate(DNN, fit_kwargs={"epochs": 20}, id="linear network")
 data = pd.concat((data1, data2, data3))
 challenge.plot(data)
 ```
-<b>Out (Fixed Complexity, C = latent_dim = 5):</b>
+<b>Out (Fixed Dimensionality, C = latent_dim = 5):</b>
 Note how for this LDSSystem, a linear network learns more from each added sample (larger decreases in error) than a nonlinear network, and how linear regression immediately saturates at very low error. These dynamics help contextualize model performance and comparision.
 
 <p align="center">
-<img src="https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/fixed_complexity.png" alt="DynaDojo FixedComplexity Challenge Graph" />
+<img src="https://github.com/FlyingWorkshop/dynadojo/blob/main/graphics/fixed_dimensionality.png" alt="DynaDojo FixedDimensionality Challenge Graph" />
 </p>
 
 
