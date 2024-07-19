@@ -19,19 +19,19 @@ def save_params(
     experiment_params = _get_params(s, a, challenge_cls=challenge_cls)
     folder_path = experiment_params["folder_path"]
     # don't overwrite existing params
-    params_file_path = os.path.join(output_dir, folder_path, "params.json")
-    if os.path.exists(params_file_path):
+    config_file_path = os.path.join(output_dir, folder_path, "config.json")
+    if os.path.exists(config_file_path):
         prGreen(f"Params already exist for {folder_path}...skipping")
     else:
-        save_to_json(experiment_params, os.path.join(output_dir, folder_path, "params.json"))
-    return params_file_path, experiment_params['total_jobs']
+        save_to_json(experiment_params, os.path.join(output_dir, folder_path, "config.json"))
+    return config_file_path, experiment_params['total_jobs']
 
 def get_max_splits(s="lds", m="lr", challenge_cls:type[ScalingChallenge] = FixedComplexity,):
     params = _get_params(s, m, challenge_cls=challenge_cls)
     return params["total_jobs"]
 
 def run_challenge(
-        params_file_path,
+        config_file_path,
         output_dir="experiments/outputs",
         split=(1,1),
         num_cpu_parallel=None,
@@ -42,7 +42,7 @@ def run_challenge(
 
     Parameters
     ----------
-    params_file_path : str
+    config_file_path : str
         path to params file
     output_dir : str, optional
         base path to save results, by default "experiments/outputs"
@@ -54,7 +54,7 @@ def run_challenge(
         which jobs to run, by default None (run all jobs)
     """
     # Load params
-    experiment_params = load_from_json(params_file_path)
+    experiment_params = load_from_json(config_file_path)
     challenge_params = experiment_params["challenge"]
     evaluate_params = experiment_params["evaluate"]
     challenge_cls = experiment_params["challenge_cls"]
@@ -88,8 +88,8 @@ def run_challenge(
         os.makedirs(folder_path, exist_ok=True)
 
     # Save params if not already saved (in the case we rerun an experiment from renamed folder)
-    if not os.path.exists(f"{folder_path}/params.json"):
-        save_to_json(experiment_params, f"{folder_path}/params.json")
+    if not os.path.exists(f"{folder_path}/config.json"):
+        save_to_json(experiment_params, f"{folder_path}/config.json")
     
     # Get csv file path, specifying split if necessary
     filename = experiment_params["experiment_name"]
@@ -116,7 +116,7 @@ def make_plots(
         save=True
     ):
     
-    experiment_params = load_from_json(f"{data_path}/params.json")
+    experiment_params = load_from_json(f"{data_path}/config.json")
     challenge_cls = experiment_params["challenge_cls"]
 
     filebase = experiment_params["folder_path"].split('/')[-1]
