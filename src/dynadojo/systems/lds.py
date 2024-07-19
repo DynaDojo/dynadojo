@@ -125,6 +125,7 @@ class LDSystem(SimpleSystem):
             y_pred: np.ndarray,
             filepath: str,
             tag: str = "", 
+            savefig: bool = True
         ):
         """
         Plots the trajectories of the system and the predicted trajectories.
@@ -141,5 +142,6 @@ class LDSystem(SimpleSystem):
                        labels=["true", "pred"], 
                        max_lines=10,
                        title=f"LDS l={self.latent_dim}, e={self.embed_dim} - {tag}")
-        fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
+        if savefig:
+            fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
         return fig, ax
