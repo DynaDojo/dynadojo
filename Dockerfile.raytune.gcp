@@ -1,0 +1,23 @@
+# ------------------------------------------------------------------------------------#
+######### Raytune GCP Image #########
+# Build image with: 
+#       docker build -f Dockerfile.raytune.gcp --target=raytune-gcp --tag=dynadojo-raytune-gcp .
+# To build for multiple arch: 
+#       First, Switch to different driver:  docker buildx create --use
+#       Then, Build & Load to test locally: docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=dynadojo --load .
+#       Or Build & Push to dockerhub:       docker buildx build --target=runtime --platform=linux/amd64,linux/arm64 --tag=[username]/dynadojo --push .
+
+
+# run stage
+FROM us-docker.pkg.dev/vertex-ai/training/ray-gpu.2-9.py310:latest as raytune-gcp
+
+RUN mkdir -p /dynadojo
+COPY . /dynadojo
+RUN mkdir -p /dynadojo/experiments/outputs
+
+WORKDIR /dynadojo
+
+RUN pip install -e .
+
+RUN echo "test here"
+# RUN pip install -e .[all]

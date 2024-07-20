@@ -8,16 +8,16 @@ authors = [
     {name = "Caryn Tran", email = "caryn.tran@berkeley.edu"}
 ]
 dependencies = [
-    "numpy",
-    "networkx",
-    "ndlib",
-    "scikit-learn",
-    "torch",
-    "torchdiffeq",
-    "cellpylib",
-    "pysindy",
-    "pydmd",
-    "seaborn"
+    "numpy>=1.26.4",
+    "networkx>=3.3",
+    "ndlib>=5.1.1",
+    "scikit-learn>=1.5.1",
+    "torch>=2.3.1",
+    "torchdiffeq>=0.2.4",
+    "cellpylib>=2.4.0",
+    "pysindy>=1.7.5",
+    "pydmd>=1.0.0",
+    "seaborn>=0.13.2",
 ]
 requires-python = ">=3.10,<=3.11"
 readme = "README.md"
@@ -46,14 +46,14 @@ name = "pytorch"
 
 [tool.pdm.dev-dependencies]
 dev = [
-    "pylint",
+    "pylint>=3.2.5",
     "jupyter>=1.0.0",
     "parameterized>=0.9.0",
 ]
 
 [project.optional-dependencies]
 all = [
-    "dynadojo[rebound, tensorflow]",
+    "dynadojo[rebound,tensorflow]",
 ]
 rebound = [
     "rebound>=4.0.1",

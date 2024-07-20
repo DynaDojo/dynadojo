@@ -1,0 +1,11 @@
+
+# To submit build:  gcloud builds submit  
+
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build',
+    '-t', 'us-west1-docker.pkg.dev/dynadojo-tuning/dynadojo-docker-repo/dynadojo:raytune-gcp', 
+    '-f', 'Dockerfile.raytune.gcp', 
+    '.' ]
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-west1-docker.pkg.dev/dynadojo-tuning/dynadojo-docker-repo/dynadojo:raytune-gcp']
