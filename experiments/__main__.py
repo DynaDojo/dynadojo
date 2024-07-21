@@ -52,6 +52,8 @@ python -m experiments make --challenge fe --algo lr --system lds --output_dir="e
 
 import argparse
 import os
+import json
+
 from .utils import algo_dict, load_from_json, system_dict, challenge_dicts
 from .main import load_data, run_challenge, make_plots, save_params, prGreen, prPink
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
@@ -225,25 +227,23 @@ elif args.command == 'status':
     for dirpath, dirnames, filenames in os.walk(directory_path):
         for file in filenames:
             if file.endswith('config.json'):
-                experiment_list.append(dirpath+'/'+file)
+                #Sort by experiment type
+                f = open(dirpath+'/'+file,'r')
+                experiment = json.load(f)
+                experiment_type = experiment['challenge_cls']['class_name']
+                
+                if experiment_type in experiment_dict.keys():
+                    experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : 0, 'folder_path': dirpath+'/'+file})
+                else:
+                    experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : 0, 'folder_path': dirpath+'/'+file}]
+                
+                #Need to implement complete_jobs
     
-    #Sort by experiment type
-    import json
-    for experiment in experiment_list:
-        file = open(experiment,'r')
-        experiment = json.load(file)
-        experiment_type = experiment['challenge_cls']['class_name']
-        
-        if experiment_type in experiment_dict.keys():
-            experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'folder_path': experiment['folder_path']})
-        else:
-           experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'folder_path': experiment['folder_path']}]
-
     #Print
     for challenge_type in experiment_dict.keys():
         print(challenge_type+':')
         
         #Print Paths
         for path in experiment_dict[challenge_type]:
-            print(' '+directory_path+path['folder_path']+'/config.json')
+            print(' '+path['folder_path'], path['complete_jobs'], '/', path['total_jobs'],'Jobs')
             
