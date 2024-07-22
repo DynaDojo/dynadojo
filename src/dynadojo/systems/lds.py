@@ -4,9 +4,11 @@ Linear Dynamical Systems
 """
 import numpy as np
 import scipy as sp
+import matplotlib.pyplot as plt
 
 from .utils.simple import SimpleSystem
 from ..utils.lds import plot
+
 
 
 class LDSystem(SimpleSystem):
@@ -123,7 +125,7 @@ class LDSystem(SimpleSystem):
     def save_plotted_trajectories( self, 
             y_true:np.ndarray, 
             y_pred: np.ndarray,
-            filepath: str,
+            filepath: str = "LDSystem_plotted_trajectories.pdf",
             tag: str = "", 
             savefig: bool = True
         ):
@@ -144,4 +146,7 @@ class LDSystem(SimpleSystem):
                        title=f"LDS l={self.latent_dim}, e={self.embed_dim} - {tag}")
         if savefig:
             fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
-        return fig, ax
+            plt.close(fig)
+            return None, None
+        else:
+            return fig, ax

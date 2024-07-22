@@ -274,10 +274,6 @@ class ScalingChallenge(AbstractChallenge):
             For a given number of trajectories n, instantiates algo, trains, and evaluates on test set.
             """
             start = time.time()
-            # pickle_filename = f"n={n}_l={latent_dim}_trial={trial}.pickle"
-            # pickle_path = os.path.join(kwargs['intermediate_plots_dir'], pickle_filename)
-            # with open(pickle_path, "rb") as f:
-            #     algo = pickle.load(f)
 
             # Create algo. Seed in algo_kwargs takes precedence over the seed passed to this function.
             algo = algo_cls(embed_dim, self._t, max_control_cost, **{"seed": algo_seed, **algo_kwargs})
@@ -295,18 +291,19 @@ class ScalingChallenge(AbstractChallenge):
 
             # check if system has save_plotted_trajectories method 
             #TODO HACKY INTERMEDIATE PLOTTING should fix
-            if hasattr(system._system, 'save_plotted_trajectories') and kwargs.get('intermediate_plots_dir', False):
-                system._system.save_plotted_trajectories(
-                    test_set, 
-                    pred, 
-                    os.path.join(kwargs['intermediate_plots_dir'], f"n={n}_l={latent_dim}_trial={trial}_e={error:.3e}.pdf"),
-                    tag = f"n={n}_trial={trial}_e={error:.3f}")
+            if kwargs.get('intermediate_dir', False): 
+                if hasattr(system._system, 'save_plotted_trajectories'):
+                    system._system.save_plotted_trajectories(
+                        test_set, 
+                        pred, 
+                        os.path.join(kwargs['intermediate_dir'], f"n={n}_l={latent_dim}_trial={trial}_e={error:.3e}.pdf"),
+                        tag = f"n={n}_trial={trial}_e={error:.3f}")
+                
                 pickle_filename = f"n={n}_l={latent_dim}_trial={trial}.pickle"
-                pickle_path = os.path.join(kwargs['intermediate_plots_dir'], pickle_filename)
+                pickle_path = os.path.join(kwargs['intermediate_dir'], pickle_filename)
 
                 with open(pickle_path, "wb") as f:
                     pickle.dump(algo, f)
-
 
             end = time.time()
             duration = end - start
