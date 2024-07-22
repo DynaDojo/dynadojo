@@ -8,6 +8,45 @@ import dysts
 from dysts.utils import generate_ic_ensemble
 
 class GilpinFlowsSystem(AbstractSystem):
+    """
+    Gilpin Flows System for modeling chaotic attractors using systems from the dysts library.
+
+    Attributes
+    ----------
+    base_path : str
+        Base path for the dysts library.
+    json_file_path : str
+        Path to the JSON file containing chaotic attractors data.
+    all_systems : list
+        List of all available systems from the chaotic attractors data.
+
+    Example
+    -------
+    >>> from dynadojo.systems.gilpin_flows import GilpinFlowsSystem
+    >>> latent_dim = 3
+    >>> embed_dim = 3
+    >>> system_name = 'Lorenz'
+    >>> system = GilpinFlowsSystem(latent_dim, embed_dim, system_name)
+    >>> n = 10
+    >>> init_conds = system.make_init_conds(n, in_dist=True)
+    >>> timesteps = 100
+    >>> trajectories = system.make_data(init_conds, timesteps)
+    >>> error = system.calc_error(trajectories[0], trajectories[1])
+    >>> control_cost = system.calc_control_cost(np.zeros((n, timesteps, embed_dim)))
+
+    Methods
+    -------
+    __init__(self, latent_dim, embed_dim, system_name: str, seed=None)
+        Initializes the system with given dimensions and system name.
+    make_init_conds(self, n: int, in_dist=True) -> np.ndarray
+        Generates initial conditions for the system.
+    make_data(self, init_conds: np.ndarray, timesteps: int, control=None, noisy=False) -> np.ndarray
+        Generates trajectories from initial conditions.
+    calc_error(self, x: np.ndarray, y: np.ndarray) -> float
+        Calculates the mean squared error between two arrays.
+    calc_control_cost(self, control: np.ndarray) -> float
+        Calculates the control cost.
+    """
     base_path = os.path.dirname(dysts.__file__)
     json_file_path = os.path.join(base_path, 'data', 'chaotic_attractors.json')
 
@@ -17,9 +56,22 @@ class GilpinFlowsSystem(AbstractSystem):
     all_systems = list(systems_data.keys())
 
     def __init__(self, latent_dim, embed_dim, system_name: str, seed=None):
+        """
+        Initialize the GilpinFlowsSystem class.
+
+        Parameters
+        ----------
+        latent_dim : int
+            Dimension of the latent space. 
+        embed_dim : int
+            Embedding dimension of the system. Fixed to Gilpin's set dimensionality for the particular system.
+        system_name : str
+            The name of the system to be used.
+        seed : int or None, optional
+            Seed for random number generation. Default is None.
+        """
         super().__init__(latent_dim, embed_dim, seed=seed)
         self.system_name = system_name
-        self.trajectories = None
         
         try:
             module = importlib.import_module('dysts.flows')
@@ -82,7 +134,7 @@ class GilpinFlowsSystem(AbstractSystem):
 
     def make_data(self, init_conds: np.ndarray, timesteps: int, control=None, noisy=False):
         n = init_conds.shape[0]
-        self.trajectories = np.zeros((n, timesteps, self._embed_dim))
+        trajectories = np.zeros((n, timesteps, self._embed_dim))
 
         for i in range(n):
             self.system.ic = init_conds[i]
@@ -90,9 +142,9 @@ class GilpinFlowsSystem(AbstractSystem):
             if trajectory.shape[0] < timesteps:
                 trajectory = self.system.make_trajectory(timesteps, resample=False)
             assert trajectory.shape == (timesteps, self._embed_dim)
-            self.trajectories[i] = trajectory
+            trajectories[i] = trajectory
 
-        return self.trajectories
+        return trajectories
 
     def calc_error(self, x, y) -> float:
         error = x - y
