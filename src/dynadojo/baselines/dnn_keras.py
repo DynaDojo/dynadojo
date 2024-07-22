@@ -57,7 +57,14 @@ class DNN(AbstractAlgorithm):
         head = x[:, :-1, :]
         tail = x[:, 1:, :]
         callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
-        self.model.fit(head, tail, validation_split=0.2, epochs=epochs, callbacks=[callback], verbose=verbose)
+        history = self.model.fit(head, tail, validation_split=0.2, epochs=epochs, callbacks=[callback], verbose=verbose)
+        # print(history.history.keys())
+        train_losses = history.history['loss']
+        val_losses = history.history['val_loss']
+        return {
+	            "train_loss": train_losses,
+	            "val_loss": val_losses
+        }
 
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         preds = [x0]
