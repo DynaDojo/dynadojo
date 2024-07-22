@@ -122,7 +122,7 @@ class SimpleSystem(AbstractSystem):
     def calc_error(self, x, y) -> float:
         """Returns the MSE error normalized by the embedded dimension."""
         error = x - y
-        return np.mean(error ** 2) / self.embed_dim
+        return np.mean(error ** 2)
 
     def calc_control_cost(self, control: np.ndarray) -> float:
         """Calculates the L2 norm / dimension of every vector in the control"""
