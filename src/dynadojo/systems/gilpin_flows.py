@@ -63,15 +63,18 @@ class GilpinFlowsSystem(AbstractSystem):
         x_centered = x - mean
         U, s, _ = np.linalg.svd(x_centered, full_matrices=False)
             
+        variance_explained = np.cumsum(s**2) / np.sum(s**2)
+        num_components = np.argmax(variance_explained >= 0.90) + 1
+        num_components = min(num_components, x.shape[1] - 1)
+
+        U_remaining = U[:, num_components:]
+
         scale = 10.0
         ood_points = []
 
-        smallest_indices = np.argsort(s)[:n]
-        U_least_var = U[:, smallest_indices]
-
         for _ in range(n):
-            random_projection = np.random.randn(len(smallest_indices))
-            projection = U_least_var @ random_projection
+            random_projection = np.random.randn(x.shape[1] - num_components)
+            projection = U_remaining @ random_projection
             ood_point = mean + scale * projection[:mean.shape[0]]
             ood_points.append(ood_point)
 
