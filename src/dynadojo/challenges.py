@@ -7,6 +7,7 @@ import logging
 import math
 import os
 import time
+import pickle
 
 import numpy as np
 import pandas as pd
@@ -257,11 +258,13 @@ class ScalingChallenge(AbstractChallenge):
         # Seed in system_kwargs takes precedence over the seed passed to this function.
         system = SystemChecker(self._system_cls(latent_dim, embed_dim, **{"seed": system_seed, **self._system_kwargs}))
 
+
         # Create all data
         test_set = self._gen_testset(system, in_dist=True, noisy=noisy)
         ood_test_set = self._gen_testset(system, in_dist=False, noisy=noisy)
         largest_N = max(self._N)
         training_set = self._gen_trainset(system, largest_N, self._t, noisy)
+
 
         max_control_cost = self._max_control_cost_per_dim * latent_dim
 
@@ -271,6 +274,7 @@ class ScalingChallenge(AbstractChallenge):
             For a given number of trajectories n, instantiates algo, trains, and evaluates on test set.
             """
             start = time.time()
+
             # Create algo. Seed in algo_kwargs takes precedence over the seed passed to this function.
             algo = algo_cls(embed_dim, self._t, max_control_cost, **{"seed": algo_seed, **algo_kwargs})
             algo = AlgorithmChecker(algo)
@@ -279,20 +283,28 @@ class ScalingChallenge(AbstractChallenge):
                                         act_kwargs, noisy)
             pred = algo.predict(test_set[:, 0], self._test_timesteps)
             error = system.calc_error(pred, test_set)
-
-            # check if system has save_plotted_trajectories method 
-            #TODO HACKY INTERMEDIATE PLOTTING should fix
-            if hasattr(system._system, 'save_plotted_trajectories') and kwargs.get('intermediate_plots_dir', False):
-                system._system.save_plotted_trajectories(
-                    test_set, 
-                    pred, 
-                    os.path.join(kwargs['intermediate_plots_dir'], f"n={n}_l={latent_dim}_trial={trial}_e={error:.3e}.pdf"),
-                    tag = f"n={n}_trial={trial}_e={error:.3f}")
-
             ood_error = None
             if ood: 
                 ood_pred = algo.predict(ood_test_set[:, 0], self._test_timesteps)
                 ood_error = system.calc_error(ood_pred, ood_test_set)
+
+
+            # check if system has save_plotted_trajectories method 
+            #TODO HACKY INTERMEDIATE PLOTTING should fix
+            if kwargs.get('intermediate_dir', False): 
+                if hasattr(system._system, 'save_plotted_trajectories'):
+                    system._system.save_plotted_trajectories(
+                        test_set, 
+                        pred, 
+                        os.path.join(kwargs['intermediate_dir'], f"n={n}_l={latent_dim}_trial={trial}_e={error:.3e}.pdf"),
+                        tag = f"n={n}_trial={trial}_e={error:.3f}")
+                
+                pickle_filename = f"n={n}_l={latent_dim}_trial={trial}.pickle"
+                pickle_path = os.path.join(kwargs['intermediate_dir'], pickle_filename)
+
+                with open(pickle_path, "wb") as f:
+                    pickle.dump(algo, f)
+
             end = time.time()
             duration = end - start
             ood_error_str = f"{ood_error=:0.3}" if ood else "ood_error=NA"
@@ -311,6 +323,7 @@ class ScalingChallenge(AbstractChallenge):
         data['algo_seed'] = algo_seed
         data['id'] = id
         return data
+
 
 
 class FixedComplexity(ScalingChallenge):
