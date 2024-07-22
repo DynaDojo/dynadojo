@@ -6,7 +6,9 @@ import ndlib.models.epidemics as ep
 import networkx as nx
 
 from ..utils.epidemic import EpidemicSystem
+from ...utils.opinion import plot
 
+import numpy as np
 
 class SEISSystem(EpidemicSystem):
     """
@@ -103,3 +105,19 @@ class SEISSystem(EpidemicSystem):
         self.model.set_initial_status(self.config)
         self.model.status = x0
         self.model.initial_status = x0
+
+
+    def save_plotted_trajectories( self, 
+            y_true:np.ndarray, 
+            y_pred: np.ndarray,
+            filepath: str,
+            tag: str = "", 
+        ):
+        
+        fig, ax = plot([y_true, y_pred], 
+                       target_dim=min(self._embed_dim, 3), 
+                       labels=["true", "pred"], 
+                       max_lines=10,
+                       title=f"Epidemic l={self.latent_dim}, e={self._embed_dim} - {tag}")
+        fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
+        return fig, ax
