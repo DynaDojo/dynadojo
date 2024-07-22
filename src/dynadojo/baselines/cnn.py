@@ -46,7 +46,7 @@ class CNN(AbstractAlgorithm):
             # print(loss.item())
             loss.backward()
             opt.step()
-            losses.append(loss)
+            losses.append(loss.item())
         
         return {
             "train_loss": losses
