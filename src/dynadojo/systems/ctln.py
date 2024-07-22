@@ -69,7 +69,7 @@ class CTLNSystem(AbstractSystem):
 
     def calc_error(self, x, y) -> float:
         error = x - y
-        return np.mean(error ** 2) / self.embed_dim
+        return np.mean(error ** 2)
 
     def calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)
