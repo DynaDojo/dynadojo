@@ -2,9 +2,11 @@
 The base class for Epidemic systems
 """
 import numpy as np
+import matplotlib.pyplot as plt
 
 from ...abstractions import AbstractSystem
 from collections import Counter
+from ...utils.opinion import plot 
 
 
 class EpidemicSystem(AbstractSystem):
@@ -169,4 +171,23 @@ class EpidemicSystem(AbstractSystem):
 
     def calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)
-
+    
+    def save_plotted_trajectories( self, 
+            y_true:np.ndarray, 
+            y_pred: np.ndarray,
+            filepath: str = "EpidemicSystem_plotted_trajectories.pdf",
+            tag: str = "", 
+            savefig: bool = True
+        ):
+        
+        fig, ax = plot([y_true, y_pred], 
+                       target_dim=min(self._embed_dim, 3), 
+                       labels=["true", "pred"], 
+                       max_lines=10,
+                       title=f"Epidemic l={self.latent_dim}, e={self._embed_dim} - {tag}")
+        if savefig:
+            fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
+            plt.close(fig)
+            return None, None
+        else:
+            return fig, ax
