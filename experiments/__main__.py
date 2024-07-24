@@ -73,7 +73,7 @@ make_parser.add_argument('--output_dir', type=str, default="experiments/outputs"
 make_parser.add_argument('--all', action='store_true', help='if True, make all params')
 make_parser.set_defaults(all=False)
 
-run_parser.add_argument('--config_file', type=str, help='what params file to run')
+run_parser.add_argument('--config_file', type=str, help='what config file to run')
 run_parser.add_argument('--node', type=int, default=None, help='which node is being run in [1, total_nodes], if None, run on splits')
 run_parser.add_argument('--total_nodes', type=int, default=1, help='how many machines to run on')
 run_parser.add_argument('--num_cpu_parallel', type=int, default=None, help='number of cpus to use for parallelization')
@@ -119,12 +119,12 @@ if args.command == 'make':
                 exit(0)
 
 if args.command == 'run':
-    assert args.config_file is not None, "must specify params file"
+    assert args.config_file is not None, "must specify config file"
     
     if args.if_missing:
-        params = load_from_json(args.config_file)
-        total_jobs = params["total_jobs"]
-        _, data = load_data(os.path.join(args.output_dir, params["folder_path"]))
+        config = load_from_json(args.config_file)
+        total_jobs = config["total_jobs"]
+        _, data = load_data(os.path.join(args.output_dir, config["folder_path"]))
         if data is None:
             prGreen("No previous jobs found.")
             args.jobs = None
@@ -169,8 +169,8 @@ elif args.command == 'check':
     assert args.data_dir is not None, "must specify data directory"
     assert os.path.exists(args.data_dir + "/config.json"), f"config.json not found in {args.data_dir}"
 
-    params = load_from_json(args.data_dir + "/config.json")
-    total_jobs = params["total_jobs"]
+    config = load_from_json(args.data_dir + "/config.json")
+    total_jobs = config["total_jobs"]
     _, data = load_data(args.data_dir)
     if data is None:
         completed_jobs = []
