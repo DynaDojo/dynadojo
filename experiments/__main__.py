@@ -64,7 +64,6 @@ run_parser = subparsers.add_parser('run', help='Run an experiment param file')
 plot_parser = subparsers.add_parser('plot', help='Plot an experiment results')
 check_parser = subparsers.add_parser('check', help='Check for missing jobs')
 scale_parser = subparsers.add_parser('scale', help='Temporary utility which rescales losses by dimensionality')
-status_parser =subparsers.add_parser('status', help='List all available config.json files that you have already made') 
 
 # Accept command line arguments
 make_parser.add_argument('--algo', type=str, default='lr', help='Specify which algo to run')
@@ -208,42 +207,3 @@ elif args.command == 'scale':
     # save the new data as csv file in data_dir
     data.to_csv(args.data_dir + "/data.csv", index=False)
     prGreen(f"Rescaled data saved to {args.data_dir}/data.csv")
-
-elif args.command == 'status':
-    #code for 1 experiment (Belongs in a loop)
-    #Note to self - figure out how and where to load data from
-    experiment_list = [] #all the config.json files in the outputs folder
-    
-    #Use load_from_json() for each item in list
-    
-    #Loop and sort into dict but type (e.g. fixed complexity, fixed error, etc)
-    experiment_dict = {}
-    
-    directory_path = 'experiments/outputs'
-    
-    #Find all 'config.json' files, add filepath to a list
-    for dirpath, dirnames, filenames in os.walk(directory_path):
-        for file in filenames:
-            if file.endswith('config.json'):
-                experiment_list.append(dirpath+'/'+file)
-    
-    #Sort by experiment type
-    import json
-    for experiment in experiment_list:
-        file = open(experiment,'r')
-        experiment = json.load(file)
-        experiment_type = experiment['challenge_cls']['class_name']
-        
-        if experiment_type in experiment_dict.keys():
-            experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'folder_path': experiment['folder_path']})
-        else:
-           experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'folder_path': experiment['folder_path']}]
-
-    #Print
-    for challenge_type in experiment_dict.keys():
-        print(challenge_type+':')
-        
-        #Print Paths
-        for path in experiment_dict[challenge_type]:
-            print(' '+directory_path+path['folder_path']+'/config.json')
-            
