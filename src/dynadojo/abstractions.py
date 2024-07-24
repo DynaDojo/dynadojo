@@ -493,9 +493,9 @@ class AbstractChallenge(ABC):
         # Add a plots subdirectory to the output directory and to kwargs 
         #TODO HACKY INTERMEDIATE PLOTTING should fix
         if csv_output_path:
-            plots_dir = os.path.join(os.path.dirname(csv_output_path), "plots")
-            os.makedirs(plots_dir, exist_ok=True)
-            kwargs["intermediate_plots_dir"] = plots_dir
+            intermediate_dir = os.path.join(os.path.dirname(csv_output_path), "intermediate")
+            os.makedirs(intermediate_dir, exist_ok=True)
+            kwargs["intermediate_dir"] = intermediate_dir
         
         jobs = self.create_job_configs(trials, seed)
         logging.info(f"Created {len(jobs)} jobs")

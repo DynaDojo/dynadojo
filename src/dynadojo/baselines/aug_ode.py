@@ -29,7 +29,8 @@ class AugODE(AbstractAlgorithm):
         x = torch.tensor(x, dtype=torch.float32)
         state = x[:, 0, :]
         step = end = epochs / self._timesteps
-
+        losses = []
+        
         for _ in range(epochs):
             if _ % step == 0:
                 t = torch.linspace(0.0, end, self._timesteps)
@@ -40,6 +41,10 @@ class AugODE(AbstractAlgorithm):
             loss = self.mse_loss(pred, x).float()
             loss.backward()
             self.opt.step()
+            losses.append(loss)
+        return {
+            "train_losses": losses
+        }
 
     def predict(self, x0, timesteps):
         x0 = torch.tensor(x0, dtype=torch.float32)

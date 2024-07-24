@@ -3,6 +3,7 @@ Generalized Lorenz System
 ==========================
 """
 import numpy as np
+import matplotlib.pyplot as plt
 
 from .utils.simple import SimpleSystem
 from ..utils.lds import plot
@@ -97,8 +98,9 @@ class LorenzSystem(SimpleSystem):
     def save_plotted_trajectories( self, 
             y_true:np.ndarray, 
             y_pred: np.ndarray,
-            filepath: str,
+            filepath: str = "LorenzSystem_plotted_trajectories.pdf",
             tag: str = "", 
+            savefig: bool = True
         ):
         """
         Plots the trajectories of the system and the predicted trajectories.
@@ -115,5 +117,9 @@ class LorenzSystem(SimpleSystem):
                        labels=["true", "pred"], 
                        max_lines=10,
                        title=f"Lorenz l={self.latent_dim}, e={self._embed_dim} - {tag}")
-        fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
-        return fig, ax
+        if savefig:
+            fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
+            plt.close(fig)
+            return None, None
+        else:
+            return fig, ax
