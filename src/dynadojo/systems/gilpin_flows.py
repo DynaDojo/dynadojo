@@ -55,7 +55,7 @@ class GilpinFlowsSystem(AbstractSystem):
 
     all_systems = list(systems_data.keys())
 
-    def __init__(self, latent_dim, embed_dim, system_name: str, seed=None):
+    def __init__(self, latent_dim, embed_dim, system_name: str, pts_per_period=100, seed=None):
         """
         Initialize the GilpinFlowsSystem class.
 
@@ -67,11 +67,14 @@ class GilpinFlowsSystem(AbstractSystem):
             Embedding dimension of the system. Fixed to Gilpin's set dimensionality for the particular system.
         system_name : str
             The name of the system to be used.
+        pts_per_period: int
+            For reasampled trajectories, the number of points per period. Default is 100.
         seed : int or None, optional
             Seed for random number generation. Default is None.
         """
         super().__init__(latent_dim, embed_dim, seed=seed)
         self.system_name = system_name
+        self.pts_per_period = pts_per_period
         
         try:
             module = importlib.import_module('dysts.flows')
@@ -109,6 +112,7 @@ class GilpinFlowsSystem(AbstractSystem):
             x0 = trajectories[:, :, 0]
             return x0
         
+        # Use principal component analysis to generate out-of-distribution points. Perturbs OOD points with same method as used in generate_ic_ensemble.
         x = self.system.make_trajectory(10000, resample = True)
 
         mean = np.mean(x, axis=0)
@@ -116,18 +120,23 @@ class GilpinFlowsSystem(AbstractSystem):
         U, s, _ = np.linalg.svd(x_centered, full_matrices=False)
             
         variance_explained = np.cumsum(s**2) / np.sum(s**2)
-        num_components = np.argmax(variance_explained >= 0.90) + 1
+        num_components = np.argmax(variance_explained >= 0.9) + 1
         num_components = min(num_components, x.shape[1] - 1)
 
         U_remaining = U[:, num_components:]
 
-        scale = 10.0
+        scale = 1
+        frac_perturb = 0.1
         ood_points = []
 
         for _ in range(n):
-            random_projection = np.random.randn(x.shape[1] - num_components)
+            random_projection = np.random.uniform(-1, 1, (x.shape[1] - num_components)) * scale
             projection = U_remaining @ random_projection
-            ood_point = mean + scale * projection[:mean.shape[0]]
+            ood_point = mean + projection[:mean.shape[0]]
+            
+            perturbation = 1 + frac_perturb * (2 * np.random.random(len(ood_point)) - 1)
+            ood_point = ood_point * perturbation
+
             ood_points.append(ood_point)
 
         return np.array(ood_points)
@@ -138,7 +147,7 @@ class GilpinFlowsSystem(AbstractSystem):
 
         for i in range(n):
             self.system.ic = init_conds[i]
-            trajectory = self.system.make_trajectory(timesteps, resample=True)
+            trajectory = self.system.make_trajectory(timesteps, resample=True, pts_per_period=self.pts_per_period)
             if trajectory.shape[0] < timesteps:
                 trajectory = self.system.make_trajectory(timesteps, resample=False)
             assert trajectory.shape == (timesteps, self._embed_dim)
