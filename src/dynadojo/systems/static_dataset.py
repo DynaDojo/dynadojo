@@ -24,8 +24,7 @@ class StaticDatasetSystem(AbstractSystem):
         if data.ndim != 3:
             raise ValueError("Data should be a 3-D numpy array.")
         
-        self.trajectories, self.timesteps, D = data.shape
-        if embed_dim != D:
+        if embed_dim != data.shape[2]:
             raise ValueError(f"Embed dimension should be equal to the dimension of the data. Expected {D}, but got {embed_dim}.")
         
         super().__init__(latent_dim, embed_dim, seed=seed)
@@ -38,22 +37,42 @@ class StaticDatasetSystem(AbstractSystem):
             self.in_dist_data = self.data
             self.ood_data = None
 
+    def extract_trajectory_features(self):
+        num_trajectories, num_timesteps, num_features = self.data.shape
+        
+        features = np.zeros((num_trajectories, num_features * 3)) 
+
+        for i in range(num_trajectories):
+            trajectory = self.data[i]
+            mean = np.mean(trajectory, axis=0)
+            variance = np.var(trajectory, axis=0)
+            velocities = np.diff(trajectory, axis=0)
+            mean_velocity = np.mean(velocities, axis=0)
+            
+            features[i, :num_features] = mean
+            features[i, num_features:num_features * 2] = variance
+            features[i, num_features * 2:] = mean_velocity
+        
+        return features
+
     def split_dataset(self, in_dist_ratio: float):
         if not (.5 < in_dist_ratio < 1):
             raise ValueError("in_dist_ratio must be between 0.5 and 1")
 
         np.random.seed(self._seed)
 
-        flattened_data = self.data.reshape(self.trajectories, -1)
+        # Split data into IND and OOD points using Kmeans clustering on trajectory features
+        features = self.extract_trajectory_features()
 
-        num_in_dist = round(in_dist_ratio * self.trajectories)
-        num_ood = self.trajectories - num_in_dist
+        num_trajectories = features.shape[0]
+        num_in_dist = round(in_dist_ratio * num_trajectories)
+        num_ood = num_trajectories - num_in_dist
 
         if num_ood <= 0:
             raise ValueError(f"Not enough data to generate OOD points. Use dataset with more trajectories or adjust in_dist_ratio.")
 
         kmeans = KMeans(n_clusters=2, random_state=self._seed)
-        labels = kmeans.fit_predict(flattened_data)
+        labels = kmeans.fit_predict(features)
 
         cluster_0_size = np.sum(labels == 0)
         cluster_1_size = np.sum(labels == 1)
@@ -63,13 +82,10 @@ class StaticDatasetSystem(AbstractSystem):
         in_dist_indices = np.where(labels == in_dist_cluster)[0]
         smaller_cluster_indices = np.where(labels == smaller_cluster)[0]
 
-        in_dist_indices = np.where(labels == in_dist_cluster)[0]
-        smaller_cluster_indices = np.where(labels == smaller_cluster)[0]
-
         if len(in_dist_indices) > num_in_dist:
             smaller_cluster_center = kmeans.cluster_centers_[smaller_cluster]
-            in_dist_flattened = flattened_data[in_dist_indices]
-            distances = euclidean_distances(in_dist_flattened, smaller_cluster_center.reshape(1, -1))
+            in_dist_features = features[in_dist_indices]
+            distances = euclidean_distances(in_dist_features, smaller_cluster_center.reshape(1, -1))
 
             num_to_move = len(in_dist_indices) - num_in_dist
 
@@ -79,8 +95,8 @@ class StaticDatasetSystem(AbstractSystem):
             ood_indices = np.concatenate([smaller_cluster_indices, ood_indices_to_move])
         elif len(in_dist_indices) < num_in_dist:
             cluster_center = kmeans.cluster_centers_[in_dist_cluster]
-            smaller_cluster_flattened = flattened_data[smaller_cluster_indices]
-            distances = euclidean_distances(smaller_cluster_flattened, cluster_center.reshape(1, -1))
+            smaller_cluster_features = features[smaller_cluster_indices]
+            distances = euclidean_distances(smaller_cluster_features, cluster_center.reshape(1, -1))
 
             num_to_move = num_in_dist - len(in_dist_indices)
 
@@ -91,7 +107,7 @@ class StaticDatasetSystem(AbstractSystem):
             ood_indices = smaller_cluster_indices
 
         assert len(in_dist_indices) == num_in_dist
-        assert len(ood_indices)== num_ood
+        assert len(ood_indices) == num_ood
 
         np.random.shuffle(ood_indices)
         np.random.shuffle(in_dist_indices)
@@ -123,14 +139,15 @@ class StaticDatasetSystem(AbstractSystem):
         return x0
 
     def make_data(self, init_conds: np.ndarray, timesteps: int, control=None, noisy=False):
-        if timesteps > self.timesteps:
-            raise ValueError(f"Requested timesteps ({timesteps}) exceed the available timesteps ({self.timesteps}).")
+        num_trajectories, num_timesteps, dimension = self.data.shape
+        if timesteps > num_timesteps:
+            raise ValueError(f"Requested timesteps ({timesteps}) exceed the available timesteps ({num_timesteps}).")
     
         n = init_conds.shape[0]
-        
+
         matched_indices = []
         for init_cond in init_conds:
-            for i in range(self.trajectories):
+            for i in range(num_trajectories):
                 if np.allclose(self.data[i, 0, :], init_cond):
                     matched_indices.append(i)
                     break
