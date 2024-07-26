@@ -7,43 +7,43 @@ import os
 import pandas as pd
 import numpy as np
 from dynadojo.challenges import  FixedComplexity, ScalingChallenge
-from .utils import _get_params, save_to_json, load_from_json
+from .utils import _get_config, save_to_json, load_from_json
 
 
-def save_params(
+def save_config(
         s ="lds",
         a = "lr",
         challenge_cls:type[ScalingChallenge] = FixedComplexity,
         output_dir="experiments/outputs"
     ):
-    experiment_params = _get_params(s, a, challenge_cls=challenge_cls)
-    folder_path = experiment_params["folder_path"]
-    # don't overwrite existing params
-    params_file_path = os.path.join(output_dir, folder_path, "params.json")
-    if os.path.exists(params_file_path):
-        prGreen(f"Params already exist for {folder_path}...skipping")
+    experiment_config = _get_config(s, a, challenge_cls=challenge_cls)
+    folder_path = experiment_config["folder_path"]
+    # don't overwrite existing config
+    config_file_path = os.path.join(output_dir, folder_path, "config.json")
+    if os.path.exists(config_file_path):
+        prGreen(f"Config already exist for {folder_path}...skipping")
     else:
-        save_to_json(experiment_params, os.path.join(output_dir, folder_path, "params.json"))
-    return params_file_path, experiment_params['total_jobs']
+        save_to_json(experiment_config, os.path.join(output_dir, folder_path, "config.json"))
+    return config_file_path, experiment_config['total_jobs']
 
 def get_max_splits(s="lds", m="lr", challenge_cls:type[ScalingChallenge] = FixedComplexity,):
-    params = _get_params(s, m, challenge_cls=challenge_cls)
-    return params["total_jobs"]
+    config = _get_config(s, m, challenge_cls=challenge_cls)
+    return config["total_jobs"]
 
 def run_challenge(
-        params_file_path,
+        config_file_path,
         output_dir="experiments/outputs",
         split=(1,1),
         num_cpu_parallel=None,
         jobs_filter=None
         ):
     """
-    Run an experiment given a params file.
+    Run an experiment given a config file.
 
     Parameters
     ----------
-    params_file_path : str
-        path to params file
+    config_file_path : str
+        path to config file
     output_dir : str, optional
         base path to save results, by default "experiments/outputs"
     split : tuple, optional
@@ -54,16 +54,16 @@ def run_challenge(
         which jobs to run, by default None (run all jobs)
     """
     # Load params
-    experiment_params = load_from_json(params_file_path)
-    challenge_params = experiment_params["challenge"]
-    evaluate_params = experiment_params["evaluate"]
-    challenge_cls = experiment_params["challenge_cls"]
+    experiment_config = load_from_json(config_file_path)
+    challenge_params = experiment_config["challenge"]
+    evaluate_params = experiment_config["evaluate"]
+    challenge_cls = experiment_config["challenge_cls"]
 
     # Override num_cpu_parallel
     if num_cpu_parallel:
         evaluate_params['num_parallel_cpu'] = num_cpu_parallel
 
-    all_jobs = list(range(experiment_params["total_jobs"]))
+    all_jobs = list(range(experiment_config["total_jobs"]))
     if jobs_filter:
         all_jobs = jobs_filter
 
@@ -83,16 +83,16 @@ def run_challenge(
     )
 
     # Make output directory 
-    folder_path = os.path.join(output_dir, experiment_params["folder_path"])
+    folder_path = os.path.join(output_dir, experiment_config["folder_path"])
     if not os.path.exists(folder_path):
         os.makedirs(folder_path, exist_ok=True)
 
-    # Save params if not already saved (in the case we rerun an experiment from renamed folder)
-    if not os.path.exists(f"{folder_path}/params.json"):
-        save_to_json(experiment_params, f"{folder_path}/params.json")
+    # Save config if not already saved (in the case we rerun an experiment from renamed folder)
+    if not os.path.exists(f"{folder_path}/config.json"):
+        save_to_json(experiment_config, f"{folder_path}/config.json")
     
     # Get csv file path, specifying split if necessary
-    filename = experiment_params["experiment_name"]
+    filename = experiment_config["experiment_name"]
     if split is not None:
         filename += f"_{split_num}-of-{total_splits}"
     filename += ".csv"
@@ -116,10 +116,10 @@ def make_plots(
         save=True
     ):
     
-    experiment_params = load_from_json(f"{data_path}/params.json")
-    challenge_cls = experiment_params["challenge_cls"]
+    experiment_config = load_from_json(f"{data_path}/config.json")
+    challenge_cls = experiment_config["challenge_cls"]
 
-    filebase = experiment_params["folder_path"].split('/')[-1]
+    filebase = experiment_config["folder_path"].split('/')[-1]
     csv_filename = filebase + ".csv"
     figure_filename = filebase + ".pdf"
 

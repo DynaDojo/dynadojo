@@ -20,7 +20,7 @@ challenge_dicts = {
     "fe" : (FixedError, fe_challenge_params_dict),
 }
 
-def _get_params(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
+def _get_config(s, a, challenge_cls: type[ScalingChallenge]=FixedComplexity):
     """
     Get challenge parameters for a given system, algo, and challenge class, overriding defaults with system and algo specific parameters.
 
