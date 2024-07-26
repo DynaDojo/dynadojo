@@ -5,7 +5,7 @@
 groups = ["default", "all", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:7b82e4a8f5fcc9e70310055a2172b8fdf5e64e6898128cdd61e4e391304d06bd"
+content_hash = "sha256:e3f66d45c90c7abad31fe2d1324c6860218d2906a0874e219999a6df5e99d5d4"
 
 [[package]]
 name = "absl-py"
@@ -520,6 +520,21 @@ dependencies = [
 files = [
     {file = "dynetx-0.3.2-py3-none-any.whl", hash = "sha256:349fa6e55d6a1fc1ef694539bc6056d93990d9fa77e9640228703d591285172c"},
     {file = "dynetx-0.3.2.tar.gz", hash = "sha256:b933c1246b05af0edfac724349bb8b8ad0403f34f8fc6cf69c7b525ab28032be"},
+]
+
+[[package]]
+name = "dysts"
+version = "0.85"
+summary = ""
+groups = ["all", "default"]
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+]
+files = [
+    {file = "dysts-0.85-py3-none-any.whl", hash = "sha256:4897cddf00e9d2434a9fa3a946aaf18f4f01effba9883102e6bdc055c200eb04"},
+    {file = "dysts-0.85.tar.gz", hash = "sha256:532419a64bba4374582135ad321900845997fd9ad465f6fe64a78c92456f359a"},
 ]
 
 [[package]]
@@ -2654,7 +2669,7 @@ files = [
 
 [[package]]
 name = "tensorboard"
-version = "2.16.2"
+version = "2.17.0"
 requires_python = ">=3.9"
 summary = "TensorBoard lets you watch Tensors Flow"
 groups = ["all"]
@@ -2663,14 +2678,14 @@ dependencies = [
     "grpcio>=1.48.2",
     "markdown>=2.6.8",
     "numpy>=1.12.0",
-    "protobuf!=4.24.0,>=3.19.6",
+    "protobuf!=4.24.0,<5.0.0,>=3.19.6",
     "setuptools>=41.0.0",
     "six>1.9",
     "tensorboard-data-server<0.8.0,>=0.7.0",
     "werkzeug>=1.0.1",
 ]
 files = [
-    {file = "tensorboard-2.16.2-py3-none-any.whl", hash = "sha256:9f2b4e7dad86667615c0e5cd072f1ea8403fc032a299f0072d6f74855775cc45"},
+    {file = "tensorboard-2.17.0-py3-none-any.whl", hash = "sha256:859a499a9b1fb68a058858964486627100b71fcb21646861c61d31846a6478fb"},
 ]
 
 [[package]]
@@ -2687,21 +2702,21 @@ files = [
 
 [[package]]
 name = "tensorflow"
-version = "2.16.1"
+version = "2.17.0"
 requires_python = ">=3.9"
 summary = "TensorFlow is an open source machine learning framework for everyone."
 groups = ["all"]
 dependencies = [
     "absl-py>=1.0.0",
     "astunparse>=1.6.0",
-    "flatbuffers>=23.5.26",
+    "flatbuffers>=24.3.25",
     "gast!=0.5.0,!=0.5.1,!=0.5.2,>=0.2.1",
     "google-pasta>=0.1.1",
     "grpcio<2.0,>=1.24.3",
     "h5py>=3.10.0",
-    "keras>=3.0.0",
+    "keras>=3.2.0",
     "libclang>=13.0.0",
-    "ml-dtypes~=0.3.1",
+    "ml-dtypes<0.5.0,>=0.3.1",
     "numpy<2.0.0,>=1.23.5; python_version <= \"3.11\"",
     "opt-einsum>=2.3.2",
     "packaging",
@@ -2709,23 +2724,58 @@ dependencies = [
     "requests<3,>=2.21.0",
     "setuptools",
     "six>=1.12.0",
-    "tensorboard<2.17,>=2.16",
+    "tensorboard<2.18,>=2.17",
+    "tensorflow-intel==2.17.0; platform_system == \"Windows\"",
     "tensorflow-io-gcs-filesystem>=0.23.1; python_version < \"3.12\"",
     "termcolor>=1.1.0",
     "typing-extensions>=3.6.6",
     "wrapt>=1.11.0",
 ]
 files = [
-    {file = "tensorflow-2.16.1-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:ab79f156dd746c2dae906e3b4c5daac3855742941752e5a2c28f094c56eed466"},
-    {file = "tensorflow-2.16.1-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:8e376ab46fb1df18a1f927d77011d36ecf7b717a81cbfe4a941c7bf5236939b3"},
-    {file = "tensorflow-2.16.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ae0554471d472b8095f8a5204d878389d0d4bc88f6ef6edcd477b952dff5cfab"},
-    {file = "tensorflow-2.16.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1e96047657c64459a36a0cc211a3d003df96c7be3f95a84f7b705715f5697270"},
-    {file = "tensorflow-2.16.1-cp310-cp310-win_amd64.whl", hash = "sha256:21a3c6d76a39f52754c389326f6bef8aef3c26b5bc89ca365add4a69483e569e"},
-    {file = "tensorflow-2.16.1-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:f8a5b83ca4bf1813da158f63479cfdf848c0761e5120258417b3a96074a489f5"},
-    {file = "tensorflow-2.16.1-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:cc2065d1d27f9f89fea8a0fe8fdf6c437ae60987cd7f2928e0d00e532e79e44d"},
-    {file = "tensorflow-2.16.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:617df9fa2d697c4bc22fa3ee87eb01d580ab1bd0438fea15c4ec2f2870c40bb0"},
-    {file = "tensorflow-2.16.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:930c61100cce3a5cb63d30fe6776504405214e8398a26ca968222ecb8b8f9404"},
-    {file = "tensorflow-2.16.1-cp311-cp311-win_amd64.whl", hash = "sha256:093573a8eb93ef9511e7015b8de9659ed27156f2f05e6d1211f8f4cb76407ee1"},
+    {file = "tensorflow-2.17.0-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:515fe5ae8a9bc50312575412b08515f3ca66514c155078e0707bdffbea75d783"},
+    {file = "tensorflow-2.17.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b36683ac28af20abc3a548c72bf4537b00df1b1f3dd39d59df3873fefaf26f15"},
+    {file = "tensorflow-2.17.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:147c93ded4cb7e500a65d3c26d74744ff41660db7a8afe2b00d1d08bf329b4ec"},
+    {file = "tensorflow-2.17.0-cp310-cp310-win_amd64.whl", hash = "sha256:e46090587f69e33637d17d7c3d94a790cac7d4bc5ff5ecbf3e71fdc6982fe96e"},
+    {file = "tensorflow-2.17.0-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:e8d26d6c24ccfb139db1306599257ca8f5cfe254ef2d023bfb667f374a17a64d"},
+    {file = "tensorflow-2.17.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ca82f98ea38fa6c9e08ccc69eb6c2fab5b35b30a8999115b8b63b6f02fc69d9d"},
+    {file = "tensorflow-2.17.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8339777b1b5ebd8ffadaa8196f786e65fbb081a371d8e87b52f24563392d8552"},
+    {file = "tensorflow-2.17.0-cp311-cp311-win_amd64.whl", hash = "sha256:ef615c133cf4d592a073feda634ccbeb521a554be57de74f8c318d38febbeab5"},
+]
+
+[[package]]
+name = "tensorflow-intel"
+version = "2.17.0"
+requires_python = ">=3.9"
+summary = "TensorFlow is an open source machine learning framework for everyone."
+groups = ["all"]
+marker = "platform_system == \"Windows\""
+dependencies = [
+    "absl-py>=1.0.0",
+    "astunparse>=1.6.0",
+    "flatbuffers>=24.3.25",
+    "gast!=0.5.0,!=0.5.1,!=0.5.2,>=0.2.1",
+    "google-pasta>=0.1.1",
+    "grpcio<2.0,>=1.24.3",
+    "h5py>=3.10.0",
+    "keras>=3.2.0",
+    "libclang>=13.0.0",
+    "ml-dtypes<0.5.0,>=0.3.1",
+    "numpy<2.0.0,>=1.23.5; python_version <= \"3.11\"",
+    "opt-einsum>=2.3.2",
+    "packaging",
+    "protobuf!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<5.0.0dev,>=3.20.3",
+    "requests<3,>=2.21.0",
+    "setuptools",
+    "six>=1.12.0",
+    "tensorboard<2.18,>=2.17",
+    "tensorflow-io-gcs-filesystem>=0.23.1; python_version < \"3.12\"",
+    "termcolor>=1.1.0",
+    "typing-extensions>=3.6.6",
+    "wrapt>=1.11.0",
+]
+files = [
+    {file = "tensorflow_intel-2.17.0-cp310-cp310-win_amd64.whl", hash = "sha256:f61144e1dc8d19971a6765d35c29c61b9582eb767606613cbc383926ecb0f002"},
+    {file = "tensorflow_intel-2.17.0-cp311-cp311-win_amd64.whl", hash = "sha256:3f13d4f82e8ca7a217b2e8ff98ce5e396a68cfce9607a13d31c9ba0ce66ba5ce"},
 ]
 
 [[package]]
