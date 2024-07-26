@@ -17,8 +17,6 @@ class GilpinFlowsSystem(AbstractSystem):
         Base path for the dysts library.
     json_file_path : str
         Path to the JSON file containing chaotic attractors data.
-    all_systems : list
-        List of all available systems from the chaotic attractors data.
 
     Example
     -------
@@ -46,14 +44,24 @@ class GilpinFlowsSystem(AbstractSystem):
         Calculates the mean squared error between two arrays.
     calc_control_cost(self, control: np.ndarray) -> float
         Calculates the control cost.
+    _all_systems(cls) -> list
+        Class method that loads systems data and returns the list of available systems, excluding missing systems.
     """
     base_path = os.path.dirname(dysts.__file__)
     json_file_path = os.path.join(base_path, 'data', 'chaotic_attractors.json')
 
-    with open(json_file_path, 'r') as file:
-        systems_data = json.load(file)
+    @classmethod
+    def _all_systems(cls):
+        """Load systems data and return the list of ll available systems."""
+        with open(cls.json_file_path, 'r') as file:
+            systems_data = json.load(file)
 
-    all_systems = list(systems_data.keys())
+        system_list = list(systems_data.keys())
+        
+        module = importlib.import_module('dysts.flows')
+        all_systems = [system_name for system_name in system_list if hasattr(module, system_name)]
+        
+        return all_systems
 
     def __init__(self, latent_dim, embed_dim, system_name: str, pts_per_period=100, seed=None):
         """
@@ -145,6 +153,7 @@ class GilpinFlowsSystem(AbstractSystem):
         n = init_conds.shape[0]
         trajectories = np.zeros((n, timesteps, self._embed_dim))
 
+        # Call Gilpin's make_trajectory function for each initial condition. By default, resample trajectories to have dominant Fourier components. If trajectory is cut short, disable resampling.
         for i in range(n):
             self.system.ic = init_conds[i]
             trajectory = self.system.make_trajectory(timesteps, resample=True, pts_per_period=self.pts_per_period)

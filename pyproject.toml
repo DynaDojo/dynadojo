@@ -74,6 +74,9 @@ tensorflow-old = [
     "tensorflow-io-gcs-filesystem; sys_platform!='darwin' or platform_machine!='arm64' or  sys_platform=='win32'"
 ]
 
+gilpin = [
+    "dysts",
+]
 
 [project.urls]
 Home = "https://github.com/FlyingWorkshop/dynadojo/"
