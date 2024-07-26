@@ -36,7 +36,7 @@ class ODE(AbstractAlgorithm):
             self.opt.step()
             losses.append(loss)
         return {
-            "train_losses": losses
+            "train_loss": losses
         }
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         x0 = torch.tensor(x0, dtype=torch.float32)
