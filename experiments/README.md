@@ -11,20 +11,20 @@ python -m experiments --help
     - She's a bit hacky. >_<
     - Algorithm keys can include suffixes separated by an underscore. So `lr_test` is a valid key for `lr`.
     - And suffixed algorithms inherit and override params from the algorithm dict. So `lr_test` gets all of `lr` params.
-    - Try using the `make` CLI command and examining the params file if you want to check what's going on. 
+    - Try using the `make` CLI command and examining the config file if you want to check what's going on. 
 - System and algorithm keys should be specified in keys.py
 
 # Commands
 
 ## `make`
-To create params file for experiment.
+To create config file for experiment.
 
 Arguments for make:
 ```
     --algo: which algo, short name, see params.py algo_dict
     --system: which system, short name, see params.py system_dict
     --challenge: which challenge, one of ["fc", "fts", "fe"]
-    --output_dir: where to save params, default "experiments/outputs"
+    --output_dir: where to save config, default "experiments/outputs"
     --all: if True, make all params, default False
 ```
 
@@ -35,11 +35,11 @@ Usage:
     ```
 
 ## `run`
-To run experiment, given params file. Can split jobs over multiple compute nodes.
+To run experiment, given config file. Can split jobs over multiple compute nodes.
 
 Arguments for run:
 ```
-    --params_file: which params file to run
+    --config_file: which config file to run
     --total_nodes: how many machines to run on (default 1, for running locally)
     --node: which node is being run, [1, total_nodes], default None which runs the whole challenge
     --output_dir: where to save results, default "experiments/outputs"
@@ -51,23 +51,23 @@ Usage:
 ```
     python -m experiments \
         run \
-        --params_file experiments/outputs/fc/lds/fc_lds_lr_l=10/params.json \
+        --config_file experiments/outputs/fc/lds/fc_lds_lr_l=10/config.json \
         --node 2 --total_nodes 10 \
         --num_cpu_parallel -2 \
         --if_missing
 
-    python -m experiments run --num_cpu_parallel -2 --params_file experiments/outputs/fc/lds/fc_lds_lr_5_l=5/params.json 
+    python -m experiments run --num_cpu_parallel -2 --config_file experiments/outputs/fc/lds/fc_lds_lr_5_l=5/config.json 
 ```
 
 ## Chaining `make` and `run`
-You can specifically chain `make` and `run` commands to make a params.json file and immediately run said file.
+You can specifically chain `make` and `run` commands to make a config.json file and immediately run said file.
 
 ```
 python -m experiments \
         make \
             <make args>
         run \
-            <run args except --params_file>
+            <run args except --config_file>
 ```
 
 ## `plot`
