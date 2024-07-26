@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader, TensorDataset, random_split
 import time
 
 from ..abstractions import AbstractAlgorithm
-
+import logging
 
 
 class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
@@ -33,7 +33,8 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
             torch.manual_seed(seed)
 
         self.device = device or "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
-        print(f"Using device: {self.device}")
+        logging.info(f"Using device: {self.device}")
+        # print(f"Using device: {self.device}")
         # self.model = self.create_model()
         self.criterion = torch.nn.MSELoss()
     
@@ -63,6 +64,7 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
             train = np.array(x)
             train_size = len(x)
             early_stopper = None
+            val_losses = None
         else:
             if verbose > 0:
                 print(f'Training on {1-validation_split} of the data, validating on the rest')
@@ -72,7 +74,7 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
             train, val = random_split(x, [len(x)-validation_size, validation_size])
             train = np.array(train)
             val = np.array(train)
-
+            val_losses = []
             #Validation dataset
             x_val = torch.tensor(np.array(val[:, :-1, :]), dtype=torch.float32).to(self.device) 
             y_val = torch.tensor(np.array(val[:, 1:, :]), dtype=torch.float32).to(self.device) 
@@ -90,7 +92,7 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
         losses = []
         self.train() 
         training_start_time = time.time()
-        print(f'Dataloader length: {len(dataloader)}')
+        # print(f'Dataloader length: {len(dataloader)}')
         for epoch in range(epochs):
             self.train()
             epoch_loss = 0
@@ -119,6 +121,9 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
                     if verbose > 0 and (epoch+1) % 10 == 0:
                         print(f'Epoch [{epoch+1}/{epochs}], Loss: {epoch_loss/len(dataloader):.4f}, Val Loss: {val_loss:.4f}, , took {time.time() - training_start_time:.2f}s')
                         training_start_time = time.time()
+
+                    val_losses.append(val_loss)
+
                 if early_stopper.early_stop(epoch, val_loss, self.state_dict()):
                     if verbose > 0:
                         print(f'Early stopping at epoch {epoch+1}')
@@ -126,7 +131,10 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
                     break
         if early_stopper is not None:
             self.load_state_dict(early_stopper.best_weights)
-        return losses
+        return {
+	            "train_loss": losses,
+	            "val_loss": val_losses 
+                }
 
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         self.eval()
@@ -170,8 +178,9 @@ class DNN(TorchBaseClass):
     def __init__(self, 
             embed_dim,
             timesteps,
+            max_control_cost,
             **kwargs):
-        super().__init__(embed_dim, timesteps, **kwargs)
+        super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
         self.model = torch.nn.Sequential(
             torch.nn.Linear(self.embed_dim, embed_dim*10),
             torch.nn.ReLU(),

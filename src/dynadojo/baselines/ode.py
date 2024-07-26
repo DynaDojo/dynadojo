@@ -26,6 +26,7 @@ class ODE(AbstractAlgorithm):
         x = torch.tensor(x, dtype=torch.float32)
         state = x[:, 0, :]
         t = torch.linspace(0.0, self._timesteps, self._timesteps)
+        losses = []
         for _ in range(epochs):
             self.opt.zero_grad()
             pred = odeint(self.forward, state, t, method='rk4')
@@ -33,7 +34,10 @@ class ODE(AbstractAlgorithm):
             loss = self.mse_loss(pred, x).float()
             loss.backward()
             self.opt.step()
-    
+            losses.append(loss)
+        return {
+            "train_loss": losses
+        }
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         x0 = torch.tensor(x0, dtype=torch.float32)
         t = torch.linspace(0.0, timesteps, timesteps)

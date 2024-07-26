@@ -7,6 +7,7 @@ import networkx as nx
 
 from ..utils.epidemic import EpidemicSystem
 
+import numpy as np
 
 class SEISSystem(EpidemicSystem):
     """
@@ -103,3 +104,6 @@ class SEISSystem(EpidemicSystem):
         self.model.set_initial_status(self.config)
         self.model.status = x0
         self.model.initial_status = x0
+
+
+    
