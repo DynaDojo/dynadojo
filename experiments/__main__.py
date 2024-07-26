@@ -4,7 +4,7 @@ Arguments for make:
     --algo: which algo, short name, see params.py algo_dict
     --system: which system, short name, see params.py system_dict
     --challenge: which challenge, one of ["fc", "fts", "fe"]
-    --output_dir: where to save params, default "experiments/outputs"
+    --output_dir: where to save config, default "experiments/outputs"
     --all: if True, make all params, default False
 Usage:
     python -m experiments make --challenge <challenge_key> --system <system_key> --algo <algo_key> --output_dir <output_dir>
@@ -53,7 +53,7 @@ python -m experiments make --challenge fe --algo lr --system lds --output_dir="e
 import argparse
 import os
 from .utils import algo_dict, load_from_json, system_dict, challenge_dicts
-from .main import load_data, run_challenge, make_plots, save_params, prGreen, prPink
+from .main import load_data, run_challenge, make_plots, save_config, prGreen, prPink
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 
 
@@ -69,7 +69,7 @@ scale_parser = subparsers.add_parser('scale', help='Temporary utility which resc
 make_parser.add_argument('--algo', type=str, default='lr', help='Specify which algo to run')
 make_parser.add_argument('--system', type=str, default='lds', choices=system_dict.keys(), help='Specify which system to run')
 make_parser.add_argument('--challenge', type=str, default="fc", choices=["fc", "fts", "fe"], help='Specify which challenge to run')
-make_parser.add_argument('--output_dir', type=str, default="experiments/outputs", help='where to save params')
+make_parser.add_argument('--output_dir', type=str, default="experiments/outputs", help='where to save config')
 make_parser.add_argument('--all', action='store_true', help='if True, make all params')
 make_parser.set_defaults(all=False)
 
@@ -99,7 +99,7 @@ if args.command == 'make':
                     for a in chall_dict[s].keys():
                         if a != "default":
                             print(f"Making {c.__name__} {s} {a}")
-                            config_file, total_jobs = save_params(s, a, challenge_cls=c, output_dir=args.output_dir)
+                            config_file, total_jobs = save_config(s, a, challenge_cls=c, output_dir=args.output_dir)
                             prPink(f"{config_file} with {total_jobs} jobs")
     else:
         assert args.algo.split("_")[0] in algo_dict.keys(), f"algo {args.algo} must be in algo_dict"
@@ -109,7 +109,7 @@ if args.command == 'make':
             challenge_cls = FixedTrainSize
         else:
             challenge_cls = FixedError
-        config_file, total_jobs = save_params(args.system, args.algo, challenge_cls, output_dir=args.output_dir)
+        config_file, total_jobs = save_config(args.system, args.algo, challenge_cls, output_dir=args.output_dir)
         prPink(f"{config_file} with {total_jobs} jobs")
         if rest: #maybe parse more args
             args = program.parse_args(rest) 

@@ -10,7 +10,7 @@ from dynadojo.challenges import  FixedComplexity, ScalingChallenge
 from .utils import _get_config, save_to_json, load_from_json
 
 
-def save_params(
+def save_config(
         s ="lds",
         a = "lr",
         challenge_cls:type[ScalingChallenge] = FixedComplexity,
@@ -18,7 +18,7 @@ def save_params(
     ):
     experiment_config = _get_config(s, a, challenge_cls=challenge_cls)
     folder_path = experiment_config["folder_path"]
-    # don't overwrite existing params
+    # don't overwrite existing config
     config_file_path = os.path.join(output_dir, folder_path, "config.json")
     if os.path.exists(config_file_path):
         prGreen(f"Config already exist for {folder_path}...skipping")
@@ -38,12 +38,12 @@ def run_challenge(
         jobs_filter=None
         ):
     """
-    Run an experiment given a params file.
+    Run an experiment given a config file.
 
     Parameters
     ----------
     config_file_path : str
-        path to params file
+        path to config file
     output_dir : str, optional
         base path to save results, by default "experiments/outputs"
     split : tuple, optional
