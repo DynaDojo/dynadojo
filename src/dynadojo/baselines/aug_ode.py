@@ -43,7 +43,7 @@ class AugODE(AbstractAlgorithm):
             self.opt.step()
             losses.append(loss)
         return {
-            "train_losses": losses
+            "train_loss": losses
         }
 
     def predict(self, x0, timesteps):
