@@ -4,6 +4,7 @@ Kuramoto Oscillators
 
 import numpy as np
 from scipy.integrate import ode
+import matplotlib.pyplot as plt
 
 import numpy as np
 import scipy as sp
@@ -180,7 +181,7 @@ class KuramotoSystem(AbstractSystem):
 
     def calc_error(self, x, y) -> float:
         error = x - y
-        return np.mean(error ** 2) / self.latent_dim
+        return np.mean(error ** 2)
 
     def calc_control_cost(self, control: np.ndarray) -> float:
         return np.linalg.norm(control, axis=(1, 2), ord=2)
@@ -188,8 +189,9 @@ class KuramotoSystem(AbstractSystem):
     def save_plotted_trajectories( self, 
             y_true:np.ndarray, 
             y_pred: np.ndarray,
-            filepath: str,
+            filepath: str = "KuramotoSystem_plotted_trajectories.pdf",
             tag: str = "", 
+            savefig: bool = True
         ):
         """
         Plots the trajectories of the system and the predicted trajectories.
@@ -208,5 +210,10 @@ class KuramotoSystem(AbstractSystem):
                        max_oscillators=3,
                        max_lines=1,
                        title=f"Kuramoto l={self.latent_dim}, e={self._embed_dim} - {tag}")
-        fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
-        return fig, ax
+        
+        if savefig:
+            fig.savefig(filepath, bbox_inches='tight', dpi=300, transparent=True, format='pdf')
+            plt.close(fig)
+            return None, None
+        else:
+            return fig, ax

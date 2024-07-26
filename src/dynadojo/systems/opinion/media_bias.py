@@ -93,7 +93,7 @@ class MediaBiasSystem(OpinionSystem):
         self.config.add_model_parameter("gamma_media", bias_media)
 
     def create_model(self, x0):
-        self.model = op.AlgorithmicBiasMediaModel(self.g)
+        self.model = op.AlgorithmicBiasModel(self.g)
         self.model.set_initial_status(self.config)
         self.model.status = x0
         self.model.initial_status = x0

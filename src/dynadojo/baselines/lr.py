@@ -29,6 +29,13 @@ class LinearRegression(AbstractAlgorithm):
 
         self.model.fit(X_train, y_train)
         self.A_hat = self.model.coef_
+        
+        pred = self.model.predict(X_train)
+        loss = self.mse(y_train, pred)
+        # print(loss)
+        return{
+            "train_loss": loss
+        }
 
     def act(self, x, **kwargs):
         self.U = self._rng.uniform(-1, 1, [len(x[0]), self._timesteps, self.embed_dim])
@@ -45,3 +52,7 @@ class LinearRegression(AbstractAlgorithm):
         preds = np.squeeze(np.array(preds), 0)
         preds = np.transpose(preds, (2, 0, 1))
         return preds
+
+    def mse(self, actual, pred): 
+        actual, pred = np.array(actual), np.array(pred)
+        return np.square(np.subtract(actual,pred)).mean() 

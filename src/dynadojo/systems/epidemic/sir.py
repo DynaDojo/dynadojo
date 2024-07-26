@@ -7,6 +7,8 @@ import networkx as nx
 
 from ..utils.epidemic import EpidemicSystem
 
+import numpy as np
+
 
 class SIRSystem(EpidemicSystem):
     """
