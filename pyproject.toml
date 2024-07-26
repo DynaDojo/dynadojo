@@ -53,7 +53,7 @@ dev = [
 
 [project.optional-dependencies]
 all = [
-    "dynadojo[rebound, tensorflow]",
+    "dynadojo[rebound, tensorflow]", gilpin,
 ]
 rebound = [
     "rebound>=4.0.1",
