@@ -219,3 +219,11 @@ def prGreen(skk): print("\033[92m{}\033[00m" .format(skk))
 def prCyan(skk): print("\033[96m{}\033[00m" .format(skk))
 
 def prPink(skk): print("\033[95m{}\033[00m" .format(skk))
+
+#Helper function for status bar:
+def loadingBar(num_complete : int, num_total : int, length : int, color : str = '\033[32m') -> str:
+    #Colors:
+    RESET = '\033[0m'
+
+    num_status = int(((num_complete/num_total)*length)//1)
+    return (color+'━'*num_status + RESET + '━'*(length-num_status))
