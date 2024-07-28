@@ -70,6 +70,7 @@ status_parser =subparsers.add_parser('status', help='List all available config.j
 # Accept command line arguments
 make_parser.add_argument('--algo', type=str, default='lr', help='Specify which algo to run')
 make_parser.add_argument('--system', type=str, default='lds', choices=system_dict.keys(), help='Specify which system to run')
+
 make_parser.add_argument('--challenge', type=str, default="fc", choices=["fc", "fts", "fe"], help='Specify which challenge to run')
 make_parser.add_argument('--output_dir', type=str, default="experiments/outputs", help='where to save config')
 make_parser.add_argument('--all', action='store_true', help='if True, make all params')
@@ -91,6 +92,7 @@ check_parser.add_argument('--data_dir', type=str, help='where to load results fr
 
 scale_parser.add_argument('--data_dir', type=str, help='where to load results from')
 
+status_parser.add_argument('--make', type=str, help='lists all experiment configs available')
 args, rest = program.parse_known_args()
 
 if args.command == 'make':
