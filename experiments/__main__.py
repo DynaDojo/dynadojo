@@ -251,11 +251,15 @@ elif args.command == 'status':
     
     #Determine max length for formatting
     max_length = 0
+    max_length_job = 0
+    
     for challenge_type in experiment_dict.keys():
         output_list = [path for path in experiment_dict[challenge_type]]
-        if max_length < max(len(' '+path['folder_path']+' '+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list):
-            max_length = max(len(' '+path['folder_path']+' '+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list)
-    
+        if max_length < max(len(' '+path['folder_path']) for path in output_list):
+            max_length = max(len(' '+path['folder_path']) for path in output_list)
+        if max_length_job < max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list):
+            max_length_job = max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list)
+            
     for challenge_type in experiment_dict.keys():
         print(challenge_type+':')
             
@@ -263,7 +267,7 @@ elif args.command == 'status':
         output_list = [path for path in experiment_dict[challenge_type]]
 
         for path in output_list:
-            output = ' '+path['folder_path']+' '+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs'
-            print(output+' '*(max_length-len(output)), end = ' ')
+            output = ' '+path['folder_path']
+            print(output+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs'))))+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs', end = ' ')
             print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
         print()
