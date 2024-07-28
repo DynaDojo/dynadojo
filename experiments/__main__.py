@@ -216,10 +216,6 @@ elif args.command == 'status':
     experiment_dict = {}
 
     directory_path = 'experiments/outputs'
-
-    #All jobs WIP
-    all_jobs = 0
-    all_finished_jobs = 0
     
     #Find all 'config.json' files, add filepath to a list
     for dirpath, dirnames, filenames in os.walk(directory_path):
@@ -244,14 +240,13 @@ elif args.command == 'status':
                 else:
                     experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file}]
             
-    #Print
-    print('Experiment configs available:',all_jobs)
-    # print(loadingBar(all_finished_jobs, all_jobs, 50))
-    print('To run an experiment:\n  python -m experiments run --config_file <name>\n')
     
-    #Determine max length for formatting
+    #Determine max length for formatting, and count total jobs
     max_length = 0
     max_length_job = 0
+    
+    all_jobs = 0
+    all_finished_jobs = 0
     
     for challenge_type in experiment_dict.keys():
         output_list = [path for path in experiment_dict[challenge_type]]
@@ -259,9 +254,18 @@ elif args.command == 'status':
             max_length = max(len(' '+path['folder_path']) for path in output_list)
         if max_length_job < max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list):
             max_length_job = max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list)
+        all_jobs += sum(jobs['total_jobs'] for jobs in experiment_dict[challenge_type])
+        all_finished_jobs += sum(jobs['complete_jobs'] for jobs in experiment_dict[challenge_type])
             
+      
+    max_title = max(len(challenge_type) for challenge_type in experiment_dict.keys())
+    #Print
+    print('Experiment configs available:',all_jobs,end = ' ')
+    print(loadingBar(all_finished_jobs, all_jobs, 50))
+    print('To run an experiment:\n  python -m experiments run --config_file <name>\n')
+    
     for challenge_type in experiment_dict.keys():
-        print(challenge_type+':')
+        print(challenge_type+':',' '*(max_title-len(challenge_type))+str(len(experiment_dict[challenge_type])))
             
         #Print formatted
         output_list = [path for path in experiment_dict[challenge_type]]
