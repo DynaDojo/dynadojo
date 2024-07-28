@@ -54,7 +54,7 @@ import argparse
 import os
 import json
 from .utils import algo_dict, load_from_json, system_dict, challenge_dicts
-from .main import load_data, run_challenge, make_plots, save_config, prGreen, prPink
+from .main import load_data, run_challenge, make_plots, save_config, prGreen, prPink, loadingBar
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 
 
@@ -217,6 +217,10 @@ elif args.command == 'status':
 
     directory_path = 'experiments/outputs'
 
+    #All jobs WIP
+    all_jobs = 0
+    all_finished_jobs = 0
+    
     #Find all 'config.json' files, add filepath to a list
     for dirpath, dirnames, filenames in os.walk(directory_path):
         for file in filenames:
@@ -224,17 +228,35 @@ elif args.command == 'status':
                 f = open(dirpath+'/'+file,'r')
                 experiment = json.load(f)
                 experiment_type = experiment['challenge_cls']['class_name']
-
-                if experiment_type in experiment_dict.keys():
-                    experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : 0, 'folder_path': dirpath+'/'+file})
+                
+                config = load_from_json(dirpath+'/'+file)
+                total_jobs = config["total_jobs"]
+                _, data = load_data(dirpath, print_status = False)
+                if data is None:
+                    completed_jobs = []
                 else:
-                    experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : 0, 'folder_path': dirpath+'/'+file}]
+                    completed_jobs = data['job_id'].drop_duplicates().to_list()
 
 
+                #Sort
+                if experiment_type in experiment_dict.keys():
+                    experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
+                else:
+                    experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file}]
+            
     #Print
+    print('Experiment configs available:',all_jobs)
+    # print(loadingBar(all_finished_jobs, all_jobs, 50))
+    print('To run an experiment:\n  python -m experiments run --config_file <name>\n')
     for challenge_type in experiment_dict.keys():
         print(challenge_type+':')
+            
+        #Print formatted
+        output_list = [path for path in experiment_dict[challenge_type]]
+        max_length = max(len(' '+path['folder_path']+' '+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list)
 
-        #Print Paths
-        for path in experiment_dict[challenge_type]:
-            print(' '+path['folder_path'], path['complete_jobs'], '/', path['total_jobs'],'Jobs')
+        for path in output_list:
+            output = ' '+path['folder_path']+' '+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs'
+            print(output+' '*(max_length-len(output)), end = ' ')
+            print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
+        print()

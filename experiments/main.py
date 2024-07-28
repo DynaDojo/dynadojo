@@ -140,11 +140,12 @@ def make_plots(
     #     print(f"\t- {file}")
     return g, data
 
-def load_data(data_path):
+def load_data(data_path, print_status = True):
     files = _find_all_csv(data_path) 
     if len(files) <= 0:
         # print(f"No plot created: No files matching {csv_filename} found in {data_path}")
-        prGreen(f"No CSV files found in {data_path}")
+        if print_status:
+            prGreen(f"No CSV files found in {data_path}")
         return [], None
 
     data = pd.DataFrame()
@@ -152,9 +153,11 @@ def load_data(data_path):
     # Concatenate all files into one dataframe and drop duplicates
     for file in files:
         try:
-            print(file)
+            if print_status:
+                print(file)
             df = pd.read_csv(file)
-            prCyan(f"Loaded {len(df)} rows from {file}")
+            if print_status:
+                prCyan(f"Loaded {len(df)} rows from {file}")
         except:
             continue
         data = pd.concat([data, df])
