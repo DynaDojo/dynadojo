@@ -54,7 +54,7 @@ import argparse
 import os
 import json
 from .utils import algo_dict, load_from_json, system_dict, challenge_dicts
-from .main import load_data, run_challenge, make_plots, save_config, prGreen, prPink, loadingBar
+from .main import load_data, run_challenge, make_plots, save_config, prGreen, prPink, prCyan, loadingBar, bold
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 
 
@@ -263,12 +263,13 @@ elif args.command == 'status':
       
     max_title = max(len(challenge_type) for challenge_type in experiment_dict.keys())
     #Print
-    print('Experiment configs available:',all_jobs,end = ' ')
+    print(bold('Experiment configs available: '+str(all_jobs)),end = ' ')
     print(loadingBar(all_finished_jobs, all_jobs, 30))
-    print('\nTo run an experiment:\n  python -m experiments run --config_file <name>\n')
+    print('\033[1;31m'+'To run an experiment:'+'\033[0m')
+    print('\033[0;31m'+'    python -m experiments run --config_file <name>\n'+'\033[0m')
     
     for challenge_type in experiment_dict.keys():
-        print(challenge_type+':',' '*(max_title-len(challenge_type))+str(len(experiment_dict[challenge_type])),end = ' ')
+        print(bold(challenge_type+': '+' '*(max_title-len(challenge_type))+str(len(experiment_dict[challenge_type]))),end = ' ')
         print(loadingBar(job_dict[challenge_type]['all_completed_jobs'],job_dict[challenge_type]['all_jobs'],20))
         
         #Print formatted
@@ -276,6 +277,7 @@ elif args.command == 'status':
 
         for path in output_list:
             output = ' '+path['folder_path']
-            print(output+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs'))))+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs', end = ' ')
+            prCyan(output+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end_str = '')
+            print(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs', end = ' ')
             print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
         print()

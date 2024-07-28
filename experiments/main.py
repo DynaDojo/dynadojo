@@ -217,11 +217,11 @@ def _get_jobs(all_jobs:list[int], split_num:int, total_splits:int):
     splits = [all_jobs[i*k+min(i, mod):(i+1)*k+min(i+1, mod)] for i in range(total_splits)]
     return splits[split_num-1]
 
-def prGreen(skk): print("\033[92m{}\033[00m" .format(skk))
+def prGreen(skk, end_str = '\n'): print("\033[92m{}\033[00m".format(skk), end = end_str)
 
-def prCyan(skk): print("\033[96m{}\033[00m" .format(skk))
+def prCyan(skk, end_str = '\n'): print("\033[96m{}\033[00m" .format(skk), end = end_str)
 
-def prPink(skk): print("\033[95m{}\033[00m" .format(skk))
+def prPink(skk, end_str = '\n'): print("\033[95m{}\033[00m" .format(skk), end = end_str)
 
 #Helper function for status bar:
 def loadingBar(num_complete : int, num_total : int, length : int, color : str = '\033[32m') -> str:
@@ -230,3 +230,6 @@ def loadingBar(num_complete : int, num_total : int, length : int, color : str = 
 
     num_status = int(((num_complete/num_total)*length)//1)
     return (color+'━'*num_status + RESET + '━'*(length-num_status))
+
+def bold(text : str):
+    return('\033[1m'+text+'\033[0m')
