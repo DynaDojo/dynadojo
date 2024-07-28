@@ -268,16 +268,25 @@ elif args.command == 'status':
     print('\033[1;31m'+'To run an experiment:'+'\033[0m')
     print('\033[0;31m'+'    python -m experiments run --config_file <name>\n'+'\033[0m')
     
+    #Print formatted
     for challenge_type in experiment_dict.keys():
         print(bold(challenge_type+': '+' '*(max_title-len(challenge_type))+str(len(experiment_dict[challenge_type]))),end = ' ')
         print(loadingBar(job_dict[challenge_type]['all_completed_jobs'],job_dict[challenge_type]['all_jobs'],20))
         
-        #Print formatted
         output_list = [path for path in experiment_dict[challenge_type]]
-
+        #Print paths by Challenge Type
         for path in output_list:
             output = path['folder_path']
-            prCyan('    '+output+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end_str = '')
+            
+            #Bolding
+            output_bold = str(output).split('/')
+            output_bold[-2] = bold(output_bold[-2],color = '\033[96m')
+            output_str = ''
+            for out in output_bold:
+                output_str += out+'/'
+            output_str = output_str[0:-1]
+            
+            prCyan('    '+output_str+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end_str = '')
             print(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs', end = ' ')
             print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
         print()
