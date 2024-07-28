@@ -217,7 +217,7 @@ elif args.command == 'status':
 
     directory_path = 'experiments/outputs'
     
-    #Find all 'config.json' files, add filepath to a list
+    #Find all 'config.json' files, add filepath to a list, sorted by challenge type
     for dirpath, dirnames, filenames in os.walk(directory_path):
         for file in filenames:
             if file.endswith('config.json'):
@@ -250,35 +250,41 @@ elif args.command == 'status':
     
     job_dict = {}
     
+    #Get max length for formatting
+    #Get all jobs for each experiment type (for progress bar)
     for challenge_type in experiment_dict.keys():
         output_list = [path for path in experiment_dict[challenge_type]]
+        
+        #Format job numbers red or green depending on status
         if max_length < max(len(' '+path['folder_path']) for path in output_list):
             max_length = max(len(' '+path['folder_path']) for path in output_list)
         if max_length_job < max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list):
             max_length_job = max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list)
+        
         all_jobs += sum(jobs['total_jobs'] for jobs in experiment_dict[challenge_type])
         all_finished_jobs += sum(jobs['complete_jobs'] for jobs in experiment_dict[challenge_type])
         job_dict[challenge_type]= {'all_jobs': all_jobs, 'all_completed_jobs' : all_finished_jobs}
             
-      
     max_title = max(len(challenge_type) for challenge_type in experiment_dict.keys())
-    #Print
+    
+    #Print Title
     print(bold('Experiment configs available: '+str(all_jobs)),end = ' ')
     print(loadingBar(all_finished_jobs, all_jobs, 30))
     print('\033[1;31m'+'To run an experiment:'+'\033[0m')
     print('\033[0;31m'+'    python -m experiments run --config_file <name>\n'+'\033[0m')
     
-    #Print formatted
+    #Print paths by Challenge Type
     for challenge_type in experiment_dict.keys():
         print(bold(challenge_type+': '+' '*(max_title-len(challenge_type))+str(len(experiment_dict[challenge_type]))),end = ' ')
         print(loadingBar(job_dict[challenge_type]['all_completed_jobs'],job_dict[challenge_type]['all_jobs'],20))
         
         output_list = [path for path in experiment_dict[challenge_type]]
-        #Print paths by Challenge Type
+        
+        #Print paths
         for path in output_list:
             output = path['folder_path']
             
-            #Bolding
+            #Bolding experiment part of the filepath
             output_bold = str(output).split('/')
             output_bold[-2] = bold(output_bold[-2],color = '\033[96m')
             output_str = ''
@@ -288,6 +294,7 @@ elif args.command == 'status':
             
             prCyan('    '+output_str+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end_str = '')
             
+            #Print number of jobs + progress bar
             if path['complete_jobs'] == path['total_jobs']:
                 print('\033[0;32m'+str(path['complete_jobs'])+'\033[0m'+' / '+'\033[0;32m'+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
             else:
