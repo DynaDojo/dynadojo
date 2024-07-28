@@ -248,12 +248,19 @@ elif args.command == 'status':
     print('Experiment configs available:',all_jobs)
     # print(loadingBar(all_finished_jobs, all_jobs, 50))
     print('To run an experiment:\n  python -m experiments run --config_file <name>\n')
+    
+    #Determine max length for formatting
+    max_length = 0
+    for challenge_type in experiment_dict.keys():
+        output_list = [path for path in experiment_dict[challenge_type]]
+        if max_length < max(len(' '+path['folder_path']+' '+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list):
+            max_length = max(len(' '+path['folder_path']+' '+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list)
+    
     for challenge_type in experiment_dict.keys():
         print(challenge_type+':')
             
         #Print formatted
         output_list = [path for path in experiment_dict[challenge_type]]
-        max_length = max(len(' '+path['folder_path']+' '+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list)
 
         for path in output_list:
             output = ' '+path['folder_path']+' '+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs'
