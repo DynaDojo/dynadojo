@@ -248,6 +248,8 @@ elif args.command == 'status':
     all_jobs = 0
     all_finished_jobs = 0
     
+    job_dict = {}
+    
     for challenge_type in experiment_dict.keys():
         output_list = [path for path in experiment_dict[challenge_type]]
         if max_length < max(len(' '+path['folder_path']) for path in output_list):
@@ -256,17 +258,19 @@ elif args.command == 'status':
             max_length_job = max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list)
         all_jobs += sum(jobs['total_jobs'] for jobs in experiment_dict[challenge_type])
         all_finished_jobs += sum(jobs['complete_jobs'] for jobs in experiment_dict[challenge_type])
+        job_dict[challenge_type]= {'all_jobs': all_jobs, 'all_completed_jobs' : all_finished_jobs}
             
       
     max_title = max(len(challenge_type) for challenge_type in experiment_dict.keys())
     #Print
     print('Experiment configs available:',all_jobs,end = ' ')
-    print(loadingBar(all_finished_jobs, all_jobs, 50))
-    print('To run an experiment:\n  python -m experiments run --config_file <name>\n')
+    print(loadingBar(all_finished_jobs, all_jobs, 30))
+    print('\nTo run an experiment:\n  python -m experiments run --config_file <name>\n')
     
     for challenge_type in experiment_dict.keys():
-        print(challenge_type+':',' '*(max_title-len(challenge_type))+str(len(experiment_dict[challenge_type])))
-            
+        print(challenge_type+':',' '*(max_title-len(challenge_type))+str(len(experiment_dict[challenge_type])),end = ' ')
+        print(loadingBar(job_dict[challenge_type]['all_completed_jobs'],job_dict[challenge_type]['all_jobs'],20))
+        
         #Print formatted
         output_list = [path for path in experiment_dict[challenge_type]]
 
