@@ -276,8 +276,8 @@ elif args.command == 'status':
         output_list = [path for path in experiment_dict[challenge_type]]
 
         for path in output_list:
-            output = ' '+path['folder_path']
-            prCyan(output+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end_str = '')
+            output = path['folder_path']
+            prCyan('    '+output+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end_str = '')
             print(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs', end = ' ')
             print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
         print()
