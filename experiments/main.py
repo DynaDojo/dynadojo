@@ -231,5 +231,5 @@ def loadingBar(num_complete : int, num_total : int, length : int, color : str = 
     num_status = int(((num_complete/num_total)*length)//1)
     return (color+'━'*num_status + RESET + '━'*(length-num_status))
 
-def bold(text : str):
-    return('\033[1m'+text+'\033[0m')
+def bold(text : str, color = ''):
+    return('\033[1m'+text+'\033[0m'+color)
