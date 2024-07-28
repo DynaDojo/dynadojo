@@ -289,9 +289,9 @@ elif args.command == 'status':
             prCyan('    '+output_str+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end_str = '')
             
             if path['complete_jobs'] == path['total_jobs']:
-                print('\033[0;32m'+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
+                print('\033[0;32m'+str(path['complete_jobs'])+'\033[0m'+' / '+'\033[0;32m'+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
             else:
-               print('\033[0;31m'+str(path['complete_jobs'])+' / '+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
+               print('\033[0;31m'+str(path['complete_jobs'])+'\033[0m'+' / '+'\033[0;31m'+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
                
             print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
         print()
