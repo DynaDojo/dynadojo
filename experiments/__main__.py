@@ -274,7 +274,7 @@ elif args.command == 'status':
     #Print Title
     if args.make == False:
         print(bold('Experiment configs available: '+str(all_jobs)),end = ' ')
-        print(loadingBar(all_finished_jobs, all_jobs, 30))
+        print(loadingBar(all_finished_jobs, all_jobs, max_length+max_length_job-len('Experiment configs available: '+str(all_jobs))+14))
         print('\033[1;31m'+'To run an experiment:'+'\033[0m')
         print('\033[0;31m'+'    python -m experiments run --config_file <name>\n'+'\033[0m')
     
