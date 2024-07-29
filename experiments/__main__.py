@@ -295,7 +295,7 @@ elif args.command == 'status':
             if args.make:
                 info = output_bold[-2] 
                 info = info.split('_')
-                print('--challenge = '+info[0]+' --system = '+info[1]+' --algo = '+info[2]+'_'+info[3].split('=')[0])
+                print('    --challenge = '+info[0]+' --system = '+info[1]+' --algo = '+info[2]+'_'+info[3].split('=')[0])
             else:
                 output_bold[-2] = bold(output_bold[-2],color = '\033[96m')
                 output_str = ''
@@ -312,4 +312,5 @@ elif args.command == 'status':
                     print('\033[0;31m'+str(path['complete_jobs'])+'\033[0m'+' / '+'\033[0;31m'+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
                 
                 print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
-        print()
+        if args.make == False:
+            print()
