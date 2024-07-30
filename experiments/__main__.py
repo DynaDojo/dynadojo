@@ -243,74 +243,83 @@ elif args.command == 'status':
                     experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
                 else:
                     experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file}]
-            
-    
-    #Determine max length for formatting, and count total jobs
-    max_length = 0
-    max_length_job = 0
-    
-    all_jobs = 0
-    all_finished_jobs = 0
-    
-    job_dict = {}
-    
-    #Get max length for formatting
-    #Get all jobs for each experiment type (for progress bar)
-    for challenge_type in experiment_dict.keys():
-        output_list = [path for path in experiment_dict[challenge_type]]
+    #Check if experiments made
+    if experiment_dict == {}:
+        prCyan(bold('No experiments made'))
+        print(bold('Experiment configs available: 0'), end = ' ')
+        print(loadingBar(0, 1, 40))
         
-        #Format job numbers red or green depending on status
-        if max_length < max(len(' '+path['folder_path']) for path in output_list):
-            max_length = max(len(' '+path['folder_path']) for path in output_list)
-        if max_length_job < max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list):
-            max_length_job = max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list)
+        #Hints to make experiments
+        print('\033[1;31m'+'To make an experiment:'+'\033[0m')
+        print('\033[0;31m'+'    python -m experiments make'+'\033[0m')
         
-        all_jobs += sum(jobs['total_jobs'] for jobs in experiment_dict[challenge_type])
-        all_finished_jobs += sum(jobs['complete_jobs'] for jobs in experiment_dict[challenge_type])
-        job_dict[challenge_type]= {'all_jobs': all_jobs, 'all_completed_jobs' : all_finished_jobs}
+    else:
+        #Determine max length for formatting, and count total jobs
+        max_length = 0
+        max_length_job = 0
+        
+        all_jobs = 0
+        all_finished_jobs = 0
+        
+        job_dict = {}
+        
+        #Get max length for formatting
+        #Get all jobs for each experiment type (for progress bar)
+        for challenge_type in experiment_dict.keys():
+            output_list = [path for path in experiment_dict[challenge_type]]
             
-    max_title = max(len(challenge_type) for challenge_type in experiment_dict.keys())
-    
-    #Print Title
-    if args.make == False:
-        print(bold('Experiment configs available: '+str(all_jobs)),end = ' ')
-        print(loadingBar(all_finished_jobs, all_jobs, max_length+max_length_job-len('Experiment configs available: '+str(all_jobs))+14))
-        print('\033[1;31m'+'To run an experiment:'+'\033[0m')
-        print('\033[0;31m'+'    python -m experiments run --config_file <name>\n'+'\033[0m')
-    
-    #Print paths by Challenge Type
-    for challenge_type in experiment_dict.keys():
+            #Format job numbers red or green depending on status
+            if max_length < max(len(' '+path['folder_path']) for path in output_list):
+                max_length = max(len(' '+path['folder_path']) for path in output_list)
+            if max_length_job < max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list):
+                max_length_job = max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list)
+            
+            all_jobs += sum(jobs['total_jobs'] for jobs in experiment_dict[challenge_type])
+            all_finished_jobs += sum(jobs['complete_jobs'] for jobs in experiment_dict[challenge_type])
+            job_dict[challenge_type]= {'all_jobs': all_jobs, 'all_completed_jobs' : all_finished_jobs}
+                
+        max_title = max(len(challenge_type) for challenge_type in experiment_dict.keys())
+        
+        #Print Title
         if args.make == False:
-            print(bold(challenge_type+': '+' '*(max_title-len(challenge_type))+str(len(experiment_dict[challenge_type]))),end = ' ')
-            print(loadingBar(job_dict[challenge_type]['all_completed_jobs'],job_dict[challenge_type]['all_jobs'],20))
-            
-        output_list = [path for path in experiment_dict[challenge_type]]
+            print(bold('Experiment configs available: '+str(all_jobs)),end = ' ')
+            print(loadingBar(all_finished_jobs, all_jobs, max_length+max_length_job-len('Experiment configs available: '+str(all_jobs))+14))
+            print('\033[1;31m'+'To run an experiment:'+'\033[0m')
+            print('\033[0;31m'+'    python -m experiments run --config_file <name>\n'+'\033[0m')
         
-        #Print paths
-        for path in output_list:
-            output = path['folder_path']
+        #Print paths by Challenge Type
+        for challenge_type in experiment_dict.keys():
+            if args.make == False:
+                print(bold(challenge_type+': '+' '*(max_title-len(challenge_type))+str(len(experiment_dict[challenge_type]))),end = ' ')
+                print(loadingBar(job_dict[challenge_type]['all_completed_jobs'],job_dict[challenge_type]['all_jobs'],20))
+                
+            output_list = [path for path in experiment_dict[challenge_type]]
             
-            #Bolding experiment part of the filepath
-            output_bold = str(output).split('/')
-            if args.make:
-                info = output_bold[-2] 
-                info = info.split('_')
-                print('    --challenge = '+info[0]+' --system = '+info[1]+' --algo = '+info[2]+'_'+info[3].split('=')[0])
-            else:
-                output_bold[-2] = bold(output_bold[-2],color = '\033[96m')
-                output_str = ''
-                for out in output_bold:
-                    output_str += out+'/'
-                output_str = output_str[0:-1]
+            #Print paths
+            for path in output_list:
+                output = path['folder_path']
                 
-                prCyan('    '+output_str+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end_str = '')
-                
-                #Print number of jobs + progress bar
-                if path['complete_jobs'] == path['total_jobs']:
-                    print('\033[0;32m'+str(path['complete_jobs'])+'\033[0m'+' / '+'\033[0;32m'+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
+                #Bolding experiment part of the filepath
+                output_bold = str(output).split('/')
+                if args.make:
+                    info = output_bold[-2] 
+                    info = info.split('_')
+                    print('    --challenge = '+info[0]+' --system = '+info[1]+' --algo = '+info[2]+'_'+info[3].split('=')[0])
                 else:
-                    print('\033[0;31m'+str(path['complete_jobs'])+'\033[0m'+' / '+'\033[0;31m'+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
-                
-                print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
-        if args.make == False:
-            print()
+                    output_bold[-2] = bold(output_bold[-2],color = '\033[96m')
+                    output_str = ''
+                    for out in output_bold:
+                        output_str += out+'/'
+                    output_str = output_str[0:-1]
+                    
+                    prCyan('    '+output_str+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end_str = '')
+                    
+                    #Print number of jobs + progress bar
+                    if path['complete_jobs'] == path['total_jobs']:
+                        print('\033[0;32m'+str(path['complete_jobs'])+'\033[0m'+' / '+'\033[0;32m'+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
+                    else:
+                        print('\033[0;31m'+str(path['complete_jobs'])+'\033[0m'+' / '+'\033[0;31m'+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
+                    
+                    print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
+            if args.make == False:
+                print()
