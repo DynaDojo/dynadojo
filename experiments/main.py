@@ -224,12 +224,12 @@ def prCyan(skk, end_str = '\n'): print("\033[96m{}\033[00m" .format(skk), end = 
 def prPink(skk, end_str = '\n'): print("\033[95m{}\033[00m" .format(skk), end = end_str)
 
 #Helper function for status bar:
-def loadingBar(num_complete : int, num_total : int, length : int, color : str = '\033[32m') -> str:
+def loadingBar(num_complete : int, num_total : int, length : int, color : str = '\x1b[38;5;48m',alt_color : str = '\x1b[38;5;237m') -> str:
     #Colors:
     RESET = '\033[0m'
 
     num_status = int(((num_complete/num_total)*length)//1)
-    return (color+'━'*num_status + RESET + '━'*(length-num_status))
+    return (color+'━'*num_status + RESET + alt_color+ '━'*(length-num_status)+RESET)
 
 def bold(text : str, color = ''):
     return('\033[1m'+text+'\033[0m'+color)
