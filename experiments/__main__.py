@@ -92,6 +92,8 @@ check_parser.add_argument('--data_dir', type=str, help='where to load results fr
 
 scale_parser.add_argument('--data_dir', type=str, help='where to load results from')
 
+status_parser.add_argument('--system', type=str, default=None, choices=system_dict.keys(), help='filter by system')
+
 args, rest = program.parse_known_args()
 
 if args.command == 'make':
@@ -211,6 +213,10 @@ elif args.command == 'scale':
     data.to_csv(args.data_dir + "/data.csv", index=False)
     prGreen(f"Rescaled data saved to {args.data_dir}/data.csv")
 elif args.command == 'status':
+    experiment_sort_type = []
+    if type(args.system) == str:
+        experiment_sort_type = [args.system]
+        
     experiment_list = [] #all the config.json files in the outputs folder
     
     #Loop and sort into dict but type (e.g. fixed complexity, fixed error, etc)
