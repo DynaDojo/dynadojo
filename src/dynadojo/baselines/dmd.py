@@ -44,6 +44,11 @@ class DMD(AbstractAlgorithm):
 
     def fit(self, x: np.ndarray, **kwargs) -> None:
         self._model = self._model.fit(x[0].T)
+        pred = self._model.predict(x[0].T)
+        loss = self.mse(x[0].T, pred)
+        return {
+            "train_loss": loss
+        }
 
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:
         result = [x0.T]
@@ -52,3 +57,7 @@ class DMD(AbstractAlgorithm):
         result = np.array(result)
         result = np.transpose(result, axes=(2, 0, 1))
         return result
+    
+    def mse(self, actual, pred): 
+        actual, pred = np.array(actual), np.array(pred)
+        return np.square(np.subtract(actual,pred)).mean() 
