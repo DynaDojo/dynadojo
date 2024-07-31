@@ -93,7 +93,7 @@ check_parser.add_argument('--data_dir', type=str, help='where to load results fr
 scale_parser.add_argument('--data_dir', type=str, help='where to load results from')
 
 status_parser.add_argument('--system', type=str, default=None, choices=system_dict.keys(), help='filter by system')
-
+status_parser.add_argument('--is_complete', type=str, choices=['true','false'],help='filter by completed experiments')
 args, rest = program.parse_known_args()
 
 if args.command == 'make':
@@ -188,7 +188,6 @@ elif args.command == 'check':
     print(f"Num of missing jobs: \t {len(missing_jobs)} of {total_jobs}")
     print(f"Missing jobs: \n{','.join(map(str, missing_jobs))}")
 
-    
 elif args.command == 'scale': 
     assert args.data_dir is not None, "must specify data directory"
     files, data = load_data(args.data_dir)
@@ -212,10 +211,8 @@ elif args.command == 'scale':
     # save the new data as csv file in data_dir
     data.to_csv(args.data_dir + "/data.csv", index=False)
     prGreen(f"Rescaled data saved to {args.data_dir}/data.csv")
+
 elif args.command == 'status':
-    experiment_sort_type = []
-    if type(args.system) == str:
-        experiment_sort_type = [args.system]
         
     experiment_list = [] #all the config.json files in the outputs folder
     
@@ -239,13 +236,26 @@ elif args.command == 'status':
                     completed_jobs = []
                 else:
                     completed_jobs = data['job_id'].drop_duplicates().to_list()
-
-
-                #Sort
-                if experiment_type in experiment_dict.keys():
-                    experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
-                else:
-                    experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file}]
+                
+                #Check for filter
+                if args.is_complete.lower() == 'true':
+                    if experiment['total_jobs'] == len(completed_jobs):
+                        if experiment_type in experiment_dict.keys():
+                            experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
+                        else:
+                            experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file}]
+                elif args.is_complete.lower() == 'false':
+                    if experiment['total_jobs'] != len(completed_jobs):
+                        if experiment_type in experiment_dict.keys():
+                            experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
+                        else:
+                            experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file}]
+                else:        
+                    #Sort
+                    if experiment_type in experiment_dict.keys():
+                        experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
+                    else:
+                        experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file}]
     #Check if experiments made
     if experiment_dict == {}:
         prCyan(bold('No experiments made'))
