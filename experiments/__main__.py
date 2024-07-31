@@ -238,13 +238,13 @@ elif args.command == 'status':
                     completed_jobs = data['job_id'].drop_duplicates().to_list()
                 
                 #Check for filter
-                if args.is_complete.lower() == 'true':
+                if args.is_complete == 'true':
                     if experiment['total_jobs'] == len(completed_jobs):
                         if experiment_type in experiment_dict.keys():
                             experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
                         else:
                             experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file}]
-                elif args.is_complete.lower() == 'false':
+                elif args.is_complete == 'false':
                     if experiment['total_jobs'] != len(completed_jobs):
                         if experiment_type in experiment_dict.keys():
                             experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
