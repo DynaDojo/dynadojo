@@ -242,14 +242,23 @@ elif args.command == 'status':
                 else:
                     experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file}]
                 
-                #Check for filter
+                #Check for filters
+                
+                #Filter by Completeness
                 if args.is_complete == 'true':
                     if experiment['total_jobs'] != len(completed_jobs):
                         experiment_dict[experiment['challenge_cls']['class_name']].remove({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
                 elif args.is_complete == 'false':
                     if experiment['total_jobs'] == len(completed_jobs):
                         experiment_dict[experiment['challenge_cls']['class_name']].remove({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
-                print(experiment_dict)
+                #Filter by system
+                if type(args.system) == str: #Basically, does args.system exist
+                    if dirpath.split('/')[3] != args.system:
+                        #Need try except in case the first filter has already deleted the list index
+                        try:
+                            experiment_dict[experiment['challenge_cls']['class_name']].remove({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
+                        except:
+                            pass
     #Check if Experiment Type list is empty, and delete:
     for experiment_type in list(experiment_dict.keys()): #need the list() function, otherwise the loop bugs out
         if experiment_dict[experiment_type] == []:
