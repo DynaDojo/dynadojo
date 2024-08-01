@@ -70,6 +70,7 @@ status_parser =subparsers.add_parser('status', help='List all available config.j
 # Accept command line arguments
 make_parser.add_argument('--algo', type=str, default='lr', help='Specify which algo to run')
 make_parser.add_argument('--system', type=str, default='lds', choices=system_dict.keys(), help='Specify which system to run')
+make_parser.add_argument('--make-status', help='list all the available experiments you can call the "make" command on')
 
 make_parser.add_argument('--challenge', type=str, default="fc", choices=["fc", "fts", "fe"], help='Specify which challenge to run')
 make_parser.add_argument('--output_dir', type=str, default="experiments/outputs", help='where to save config')
