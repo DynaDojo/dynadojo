@@ -47,7 +47,7 @@ class DMD(AbstractAlgorithm):
         pred = self._model.predict(x[0].T)
         loss = self.mse(x[0].T, pred)
         return {
-            "train_losses": loss
+            "train_loss": loss
         }
 
     def predict(self, x0: np.ndarray, timesteps: int, **kwargs) -> np.ndarray:

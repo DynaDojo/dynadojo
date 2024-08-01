@@ -34,7 +34,7 @@ class LinearRegression(AbstractAlgorithm):
         loss = self.mse(y_train, pred)
         # print(loss)
         return{
-            "train_losses": loss
+            "train_loss": loss
         }
 
     def act(self, x, **kwargs):
