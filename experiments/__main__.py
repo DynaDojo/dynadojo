@@ -70,7 +70,8 @@ status_parser =subparsers.add_parser('status', help='List all available config.j
 # Accept command line arguments
 make_parser.add_argument('--algo', type=str, default='lr', help='Specify which algo to run')
 make_parser.add_argument('--system', type=str, default='lds', choices=system_dict.keys(), help='Specify which system to run')
-make_parser.add_argument('--make-status', help='list all the available experiments you can call the "make" command on')
+make_parser.add_argument('--make_status', action='store_true', help='list all the available experiments you can call the "make" command on')
+status_parser.set_defaults(make_status=True)
 
 make_parser.add_argument('--challenge', type=str, default="fc", choices=["fc", "fts", "fe"], help='Specify which challenge to run')
 make_parser.add_argument('--output_dir', type=str, default="experiments/outputs", help='where to save config')
@@ -103,31 +104,37 @@ status_parser.set_defaults(make=False)
 args, rest = program.parse_known_args()
 
 if args.command == 'make':
-    if args.all:
-        for c, chall_dict in challenge_dicts.values():
-            for s in chall_dict.keys():
-                if s != "default":
-                    for a in chall_dict[s].keys():
-                        if a != "default":
-                            print(f"Making {c.__name__} {s} {a}")
-                            config_file, total_jobs = save_config(s, a, challenge_cls=c, output_dir=args.output_dir)
-                            prPink(f"{config_file} with {total_jobs} jobs")
-    else:
-        assert args.algo.split("_")[0] in algo_dict.keys(), f"algo {args.algo} must be in algo_dict"
-        if args.challenge == "fc":
-            challenge_cls = FixedComplexity
-        elif args.challenge == "fts":
-            challenge_cls = FixedTrainSize
+    if args.make_status:
+        for challenge in challenge_dicts.keys():
+            for system in system_dict.keys():
+                for algo in algo_dict.keys():
+                    print('--challenge =',challenge,'--system =', system, '--algo =',algo)
+    else:     
+        if args.all:
+            for c, chall_dict in challenge_dicts.values():
+                for s in chall_dict.keys():
+                    if s != "default":
+                        for a in chall_dict[s].keys():
+                            if a != "default":
+                                print(f"Making {c.__name__} {s} {a}")
+                                config_file, total_jobs = save_config(s, a, challenge_cls=c, output_dir=args.output_dir)
+                                prPink(f"{config_file} with {total_jobs} jobs")
         else:
-            challenge_cls = FixedError
-        config_file, total_jobs = save_config(args.system, args.algo, challenge_cls, output_dir=args.output_dir)
-        prPink(f"{config_file} with {total_jobs} jobs")
-        if rest: #maybe parse more args
-            args = program.parse_args(rest) 
-            if args.command == 'run':
-                args.config_file = config_file
+            assert args.algo.split("_")[0] in algo_dict.keys(), f"algo {args.algo} must be in algo_dict"
+            if args.challenge == "fc":
+                challenge_cls = FixedComplexity
+            elif args.challenge == "fts":
+                challenge_cls = FixedTrainSize
             else:
-                exit(0)
+                challenge_cls = FixedError
+            config_file, total_jobs = save_config(args.system, args.algo, challenge_cls, output_dir=args.output_dir)
+            prPink(f"{config_file} with {total_jobs} jobs")
+            if rest: #maybe parse more args
+                args = program.parse_args(rest) 
+                if args.command == 'run':
+                    args.config_file = config_file
+                else:
+                    exit(0)
 
 if args.command == 'run':
     assert args.config_file is not None, "must specify config file"
