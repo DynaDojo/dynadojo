@@ -373,9 +373,9 @@ elif args.command == 'status':
                 output_str = ''
                 for out in output_bold:
                     output_str += out + '/'
-                output_str = output_str[0:-1]
+                output_str = cyan(output_str[0:-1])
 
-                print(cyan('    '+output_str+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs'))))), end ='')
+                print('    '+output_str+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end ='')
 
                 # Print number of jobs + progress bar
                 if path['complete_jobs'] == path['total_jobs']:
