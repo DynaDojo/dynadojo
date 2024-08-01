@@ -19,6 +19,7 @@ dependencies = [
     "pydmd",
     "seaborn",
     "dysts>=0.85",
+    "neurokit2>=0.2.9",
 ]
 requires-python = ">=3.10,<=3.11"
 readme = "README.md"

@@ -132,10 +132,24 @@ class GilpinFlowsSystem(AbstractSystem):
 
         return np.array(ood_points)
 
-    def make_data(self, init_conds: np.ndarray, timesteps: int, control=None, noisy=False):
+    def make_data(self, init_conds: np.ndarray, timesteps: int, control=None, noisy=False, return_times=False):
         n = init_conds.shape[0]
         trajectories = np.zeros((n, timesteps, self._embed_dim))
 
+        if return_times: 
+            timepoints = np.zeros((n, timesteps))
+            for i in range(n):
+                self.system.ic = init_conds[i]
+                timepoint, trajectory = self.system.make_trajectory(timesteps, resample=True, return_times=True)
+                if trajectory.shape[0] < timesteps:
+                    timepoint, trajectory = self.system.make_trajectory(timesteps, resample=False, return_times=True)
+                assert trajectory.shape == (timesteps, self._embed_dim)
+                trajectories[i] = trajectory
+                timepoints[i] = timepoint
+
+
+            return timepoints, trajectories
+        
         for i in range(n):
             self.system.ic = init_conds[i]
             trajectory = self.system.make_trajectory(timesteps, resample=True)

@@ -5,7 +5,7 @@
 groups = ["default", "all", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:e3f66d45c90c7abad31fe2d1324c6860218d2906a0874e219999a6df5e99d5d4"
+content_hash = "sha256:ebab403f642b25a13ff6dd445e0029f2c54e0aa781c8cf4ab3b7e03d077ae915"
 
 [[package]]
 name = "absl-py"
@@ -256,7 +256,7 @@ name = "certifi"
 version = "2024.6.2"
 requires_python = ">=3.6"
 summary = "Python package for providing Mozilla's CA Bundle."
-groups = ["all", "dev"]
+groups = ["all", "default", "dev"]
 files = [
     {file = "certifi-2024.6.2-py3-none-any.whl", hash = "sha256:ddc6c8ce995e6987e7faf5e3f1b02b302836a0e5d98ece18392cb1a36c72ad56"},
     {file = "certifi-2024.6.2.tar.gz", hash = "sha256:3cd43f1c6fa7dedc5899d69d3ad0398fd018ad1a17fba83ddaf78aa46c747516"},
@@ -302,7 +302,7 @@ name = "charset-normalizer"
 version = "3.3.2"
 requires_python = ">=3.7.0"
 summary = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
-groups = ["all", "dev"]
+groups = ["all", "default", "dev"]
 files = [
     {file = "charset-normalizer-3.3.2.tar.gz", hash = "sha256:f30c3cb33b24454a82faecaf01b19c18562b1e89558fb6c56de4d9118a032fd5"},
     {file = "charset_normalizer-3.3.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:25baf083bf6f6b341f4121c2f3c548875ee6f5339300e08be3f2b2ba1721cdd3"},
@@ -773,7 +773,7 @@ name = "idna"
 version = "3.7"
 requires_python = ">=3.5"
 summary = "Internationalized Domain Names in Applications (IDNA)"
-groups = ["all", "dev"]
+groups = ["all", "default", "dev"]
 files = [
     {file = "idna-3.7-py3-none-any.whl", hash = "sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0"},
     {file = "idna-3.7.tar.gz", hash = "sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc"},
@@ -1677,6 +1677,24 @@ files = [
 ]
 
 [[package]]
+name = "neurokit2"
+version = "0.2.9"
+summary = "The Python Toolbox for Neurophysiological Signal Processing."
+groups = ["all", "default"]
+dependencies = [
+    "matplotlib",
+    "numpy",
+    "pandas",
+    "requests",
+    "scikit-learn>=1.0.0",
+    "scipy",
+]
+files = [
+    {file = "neurokit2-0.2.9-py2.py3-none-any.whl", hash = "sha256:65e2274dddc41a652dedb5f9633dbd2accf306f615f6df3a6afa106a1d3e3ef3"},
+    {file = "neurokit2-0.2.9.tar.gz", hash = "sha256:48b485e6c4770d643a1681ec57ac6d30f904224772cfbe47511b02b306c73e52"},
+]
+
+[[package]]
 name = "notebook"
 version = "7.2.1"
 requires_python = ">=3.8"
@@ -2360,7 +2378,7 @@ name = "requests"
 version = "2.32.3"
 requires_python = ">=3.8"
 summary = "Python HTTP for Humans."
-groups = ["all", "dev"]
+groups = ["all", "default", "dev"]
 dependencies = [
     "certifi>=2017.4.17",
     "charset-normalizer<4,>=2",
@@ -3022,7 +3040,7 @@ name = "urllib3"
 version = "2.2.1"
 requires_python = ">=3.8"
 summary = "HTTP library with thread-safe connection pooling, file post, and more."
-groups = ["all", "dev"]
+groups = ["all", "default", "dev"]
 files = [
     {file = "urllib3-2.2.1-py3-none-any.whl", hash = "sha256:450b20ec296a467077128bff42b73080516e71b56ff59a60a02bef2232c4fa9d"},
     {file = "urllib3-2.2.1.tar.gz", hash = "sha256:d0570876c61ab9e520d776c38acbbb5b05a776d3f9ff98a5c8fd5162a444cf19"},
