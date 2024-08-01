@@ -352,7 +352,7 @@ elif args.command == 'status':
 
         # Print Title
         print(bold(f'Experiment configs available: {all_jobs}'), end=' ')
-        print(loadingBar(all_finished_jobs, all_jobs, max_length + max_length_job - len(f'Experiment configs available: {all_jobs}') + 14))
+        print(loadingBar(all_finished_jobs, all_jobs, max_length + max_length_job - len(f'Experiment configs available: {all_jobs}') + 9))
         print('\033[1;31m'+'To run an experiment:'+'\033[0m')
         print('\033[0;31m'+'    python -m experiments run --config_file <name>\n'+'\033[0m')
 
