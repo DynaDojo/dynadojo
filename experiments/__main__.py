@@ -223,6 +223,7 @@ elif args.command == 'status':
     algo_filter = args.algo
     system_filter = args.system
     challenge_filter = args.challenge
+    complete_filter = args.is_complete
 
     directory_path = 'experiments/outputs'
 
@@ -277,7 +278,8 @@ elif args.command == 'status':
                     }.get(challenge_filter, '')
                     if challenge_cls_name != challenge_filter_name:
                         continue
-
+                
+                
                 experiment_type = experiment['challenge_cls']['class_name']
                 total_jobs = experiment.get("total_jobs", 0)
                 _, data = load_data(dirpath, print_status=False)
@@ -286,6 +288,13 @@ elif args.command == 'status':
                 else:
                     completed_jobs = data['job_id'].drop_duplicates().to_list()
 
+                complete_cls = str(len(completed_jobs) == total_jobs).lower()
+                
+                #Check complete if filter is set 
+                if complete_filter:
+                    if complete_cls != complete_filter:
+                        continue
+                
                 # Sort
                 if experiment_type in experiment_dict.keys():
                     experiment_dict[experiment_type].append({
