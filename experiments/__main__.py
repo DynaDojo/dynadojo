@@ -92,8 +92,13 @@ check_parser.add_argument('--data_dir', type=str, help='where to load results fr
 
 scale_parser.add_argument('--data_dir', type=str, help='where to load results from')
 
-status_parser.add_argument('--system', type=str, default=None, choices=system_dict.keys(), help='filter by system')
+# status_parser.add_argument('--system', type=str, default=None, choices=system_dict.keys(), help='filter by system')
 status_parser.add_argument('--is_complete', type=str, choices=['true','false'],help='filter by completed experiments')
+status_parser.add_argument('--algo', type=str, help='Specify which algo to filter through')
+status_parser.add_argument('--system', type=str, help='Specify which system to filter through')
+status_parser.add_argument('--challenge', type=str, choices=["fc", "fts", "fe"], help='Specify which challenge to filter through')
+status_parser.set_defaults(make=False)
+
 args, rest = program.parse_known_args()
 
 if args.command == 'make':
@@ -213,126 +218,153 @@ elif args.command == 'scale':
     prGreen(f"Rescaled data saved to {args.data_dir}/data.csv")
 
 elif args.command == 'status':
-        
-    experiment_list = [] #all the config.json files in the outputs folder
-    
-    #Loop and sort into dict but type (e.g. fixed complexity, fixed error, etc)
+    experiment_list = []  # all the config.json files in the outputs folder
     experiment_dict = {}
+    algo_filter = args.algo
+    system_filter = args.system
+    challenge_filter = args.challenge
 
     directory_path = 'experiments/outputs'
-    
-    #Find all 'config.json' files, add filepath to a list, sorted by challenge type
+
+    # Find all 'config.json' files, add filepath to a list, sorted by challenge type
     for dirpath, dirnames, filenames in os.walk(directory_path):
         for file in filenames:
             if file.endswith('config.json'):
-                f = open(dirpath+'/'+file,'r')
+                file_path = os.path.join(dirpath, file)
+                f = open(file_path, 'r')
                 experiment = json.load(f)
-                experiment_type = experiment['challenge_cls']['class_name']
                 
-                config = load_from_json(dirpath+'/'+file)
-                total_jobs = config["total_jobs"]
-                _, data = load_data(dirpath, print_status = False)
+                algo_cls = experiment.get('evaluate', {}).get('algo_cls', {})
+                algo_cls_name = algo_cls.get('class_name', '')
+                system_cls = experiment.get('challenge', {}).get('system_cls', {})
+                system_cls_name = system_cls.get('class_name', '')
+                challenge_cls = experiment.get('challenge_cls', {})
+                challenge_cls_name = challenge_cls.get('class_name', '')
+
+                # Check algorithm if filter is set
+                if algo_filter:
+                    algo_filter_name = {
+                        'lr': 'LinearRegression',
+                        'dnn': 'DNN',
+                        'sindy': 'SINDy'
+                    }.get(algo_filter, '')
+                    if algo_cls_name != algo_filter_name:
+                        continue
+                
+                # Check system if filter is set
+                if system_filter:
+                    system_filter_name = {
+                        'lds': 'LDSystem',
+                        'lorenz': 'LorenzSystem',
+                        'lv_p': 'PreyPredatorSystem',
+                        'epi_1': 'LorenzSystem',
+                        'nbody': 'LorenzSystem',
+                        'heat': 'LorenzSystem',
+                        'fbsnn_1': 'LorenzSystem',
+                        'fbsnn_2': 'LorenzSystem',
+                        'ctln': 'LorenzSystem',
+                        'kura': 'LorenzSystem'
+                    }.get(system_filter, '')
+                    if system_cls_name != system_filter_name:
+                        continue
+
+                # Check challenge if filter is set
+                if challenge_filter:
+                    challenge_filter_name = {
+                        'fc': 'FixedComplexity',
+                        'fts': 'FixedTrainSize',
+                        'fe': 'FixedError'
+                    }.get(challenge_filter, '')
+                    if challenge_cls_name != challenge_filter_name:
+                        continue
+
+                experiment_type = experiment['challenge_cls']['class_name']
+                total_jobs = experiment.get("total_jobs", 0)
+                _, data = load_data(dirpath, print_status=False)
                 if data is None:
                     completed_jobs = []
                 else:
                     completed_jobs = data['job_id'].drop_duplicates().to_list()
-                
+
+                # Sort
                 if experiment_type in experiment_dict.keys():
-                    experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
+                    experiment_dict[experiment_type].append({
+                        'total_jobs': total_jobs,
+                        'complete_jobs': len(completed_jobs),
+                        'folder_path': file_path
+                    })
                 else:
-                    experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file}]
-                
-                #Check for filters
-                
-                #Filter by Completeness
-                if args.is_complete == 'true':
-                    if experiment['total_jobs'] != len(completed_jobs):
-                        experiment_dict[experiment['challenge_cls']['class_name']].remove({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
-                elif args.is_complete == 'false':
-                    if experiment['total_jobs'] == len(completed_jobs):
-                        experiment_dict[experiment['challenge_cls']['class_name']].remove({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
-                #Filter by system
-                if type(args.system) == str: #Basically, does args.system exist
-                    if dirpath.split('/')[3] != args.system:
-                        #Need try except in case the first filter has already deleted the list index
-                        try:
-                            experiment_dict[experiment['challenge_cls']['class_name']].remove({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : len(completed_jobs), 'folder_path': dirpath+'/'+file})
-                        except:
-                            pass
-    #Check if Experiment Type list is empty, and delete:
-    for experiment_type in list(experiment_dict.keys()): #need the list() function, otherwise the loop bugs out
-        if experiment_dict[experiment_type] == []:
-            del experiment_dict[experiment_type] 
-    
-    #Check if experiments made
-    if experiment_dict == {}:
+                    experiment_dict[experiment['challenge_cls']['class_name']] = [{
+                        'total_jobs': total_jobs,
+                        'complete_jobs': len(completed_jobs),
+                        'folder_path': file_path
+                    }]
+
+    # Check if experiments made
+    if not experiment_dict:
         prCyan(bold('No experiments made'))
-        print(bold('Experiment configs available: 0'), end = ' ')
+        print(bold('Experiment configs available: 0'), end=' ')
         print(loadingBar(0, 1, 40))
-        
-        #Hints to make experiments
+
+        # Hints to make experiments
         print('\033[1;31m'+'To make an experiment:'+'\033[0m')
         print('\033[0;31m'+'    python -m experiments make'+'\033[0m')
-        
+
     else:
-        #Determine max length for formatting, and count total jobs
+        # Determine max length for formatting, and count total jobs
         max_length = 0
         max_length_job = 0
-        
         all_jobs = 0
         all_finished_jobs = 0
-        
         job_dict = {}
-        
-        #Get max length for formatting
-        #Get all jobs for each experiment type (for progress bar)
+
+        # Get max length for formatting
+        # Get all jobs for each experiment type (for progress bar)
         for challenge_type in experiment_dict.keys():
             output_list = [path for path in experiment_dict[challenge_type]]
-            
-            #Format job numbers red or green depending on status
-            if max_length < max(len(' '+path['folder_path']) for path in output_list):
-                max_length = max(len(' '+path['folder_path']) for path in output_list)
-            if max_length_job < max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list):
-                max_length_job = max(len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs') for path in output_list)
-            
+
+            # Format job numbers red or green depending on status
+            max_length = max(max_length, max(len(' ' + path['folder_path']) for path in output_list))
+            max_length_job = max(max_length_job, max(len(f"{path['complete_jobs']} / {path['total_jobs']} Jobs") for path in output_list))
+
             all_jobs += sum(jobs['total_jobs'] for jobs in experiment_dict[challenge_type])
             all_finished_jobs += sum(jobs['complete_jobs'] for jobs in experiment_dict[challenge_type])
-            job_dict[challenge_type]= {'all_jobs': all_jobs, 'all_completed_jobs' : all_finished_jobs}
-                
+            job_dict[challenge_type] = {'all_jobs': all_jobs, 'all_completed_jobs': all_finished_jobs}
+
         max_title = max(len(challenge_type) for challenge_type in experiment_dict.keys())
-        
-        #Print Title
-        print(bold('Experiment configs available: '+str(all_jobs)),end = ' ')
-        print(loadingBar(all_finished_jobs, all_jobs, max_length+max_length_job-len('Experiment configs available: '+str(all_jobs))+14))
+
+        # Print Title
+        print(bold(f'Experiment configs available: {all_jobs}'), end=' ')
+        print(loadingBar(all_finished_jobs, all_jobs, max_length + max_length_job - len(f'Experiment configs available: {all_jobs}') + 14))
         print('\033[1;31m'+'To run an experiment:'+'\033[0m')
         print('\033[0;31m'+'    python -m experiments run --config_file <name>\n'+'\033[0m')
-        
-        #Print paths by Challenge Type
+
+        # Print paths by Challenge Type
         for challenge_type in experiment_dict.keys():
-            print(bold(challenge_type+': '+' '*(max_title-len(challenge_type))+str(len(experiment_dict[challenge_type]))),end = ' ')
-            print(loadingBar(job_dict[challenge_type]['all_completed_jobs'],job_dict[challenge_type]['all_jobs'],20))
-                
+            print(bold(f"{challenge_type}: " + ' ' * (max_title - len(challenge_type)) + str(len(experiment_dict[challenge_type]))), end=' ')
+            print(loadingBar(job_dict[challenge_type]['all_completed_jobs'], job_dict[challenge_type]['all_jobs'], 20))
+
             output_list = [path for path in experiment_dict[challenge_type]]
-            
-            #Print paths
+
+            # Print paths
             for path in output_list:
                 output = path['folder_path']
-                
-                #Bolding experiment part of the filepath
+
+                # Bolding experiment part of the filepath
                 output_bold = str(output).split('/')
-                output_bold[-2] = bold(output_bold[-2],color = '\033[96m')
+                output_bold[-2] = bold(output_bold[-2], color='\033[96m')
                 output_str = ''
                 for out in output_bold:
-                    output_str += out+'/'
+                    output_str += out + '/'
                 output_str = output_str[0:-1]
-                    
+
                 prCyan('    '+output_str+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end_str = '')
-                    
-                #Print number of jobs + progress bar
+
+                # Print number of jobs + progress bar
                 if path['complete_jobs'] == path['total_jobs']:
-                    print('\033[0;32m'+str(path['complete_jobs'])+'\033[0m'+' / '+'\033[0;32m'+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
+                    print(f'\033[0;32m{path["complete_jobs"]}\033[0m / \033[0;32m{path["total_jobs"]}\033[0m Jobs', end=' ')
                 else:
-                    print('\033[0;31m'+str(path['complete_jobs'])+'\033[0m'+' / '+'\033[0;31m'+str(path['total_jobs'])+'\033[0m'+' Jobs', end = ' ')
-                    
+                    print(f'\033[0;31m{path["complete_jobs"]}\033[0m / \033[0;31m{path["total_jobs"]}\033[0m Jobs', end=' ')
+
                 print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
             print()
