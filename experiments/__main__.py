@@ -54,7 +54,7 @@ import argparse
 import os
 import json
 from .utils import algo_dict, load_from_json, system_dict, challenge_dicts
-from .main import load_data, run_challenge, make_plots, save_config, prGreen, prPink, prCyan, loadingBar, bold
+from .main import load_data, run_challenge, make_plots, save_config, green, pink, cyan, red, loadingBar, bold
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 
 
@@ -118,7 +118,7 @@ if args.command == 'make':
                             if a != "default":
                                 print(f"Making {c.__name__} {s} {a}")
                                 config_file, total_jobs = save_config(s, a, challenge_cls=c, output_dir=args.output_dir)
-                                prPink(f"{config_file} with {total_jobs} jobs")
+                                print(pink(f"{config_file} with {total_jobs} jobs"))
         else:
             assert args.algo.split("_")[0] in algo_dict.keys(), f"algo {args.algo} must be in algo_dict"
             if args.challenge == "fc":
@@ -128,7 +128,7 @@ if args.command == 'make':
             else:
                 challenge_cls = FixedError
             config_file, total_jobs = save_config(args.system, args.algo, challenge_cls, output_dir=args.output_dir)
-            prPink(f"{config_file} with {total_jobs} jobs")
+            print(pink(f"{config_file} with {total_jobs} jobs"))
             if rest: #maybe parse more args
                 args = program.parse_args(rest) 
                 if args.command == 'run':
@@ -144,15 +144,15 @@ if args.command == 'run':
         total_jobs = config["total_jobs"]
         _, data = load_data(os.path.join(args.output_dir, config["folder_path"]))
         if data is None:
-            prGreen("No previous jobs found.")
+            print(green("No previous jobs found."))
             args.jobs = None
         else:
             completed_jobs = data['job_id'].drop_duplicates().to_list()
             missing_jobs = [i for i in range(total_jobs) if i not in completed_jobs]
             if len(missing_jobs) == 0:
-                prGreen("All jobs already completed. Exiting.")
+                print(green("All jobs already completed. Exiting."))
                 exit(0)
-            prGreen(f"{len(missing_jobs)} missing jobs found. Only running missing jobs.")
+            print(green(f"{len(missing_jobs)} missing jobs found. Only running missing jobs."))
             args.jobs = ','.join(map(str, missing_jobs))
         
     if args.node is not None and args.total_nodes > 1:
@@ -165,7 +165,7 @@ if args.command == 'run':
             jobs_filter=[int(j) for j in args.jobs.split(",")] if args.jobs else None
         )
     else: # run the whole challenge
-        prGreen(f"Running {len(args.jobs.split(',')) if args.jobs else 'all'} jobs.")
+        print(green(f"Running {len(args.jobs.split(',')) if args.jobs else 'all'} jobs."))
         run_challenge(
             config_file_path=args.config_file,
             output_dir=args.output_dir,
@@ -196,7 +196,7 @@ elif args.command == 'check':
         completed_jobs = data['job_id'].drop_duplicates().to_list()
     missing_jobs = [i for i in range(total_jobs) if i not in completed_jobs]
     if len(missing_jobs) == 0:
-        prGreen("All jobs completed.")
+        print(green("All jobs completed."))
         exit(0)
     print(f"Num of missing jobs: \t {len(missing_jobs)} of {total_jobs}")
     print(f"Missing jobs: \n{','.join(map(str, missing_jobs))}")
@@ -209,13 +209,13 @@ elif args.command == 'scale':
     try:
         os.makedirs(data_dir_unscaled, exist_ok=False)
     except FileExistsError:
-        prPink(f"Exiting...Already scaled data. {data_dir_unscaled} already exists. ")
+        print(pink(f"Exiting...Already scaled data. {data_dir_unscaled} already exists. "))
         exit(0)
 
     # move all csv files in data_dir to data_dir_unscaled
     for filepath in files:
         os.rename(filepath, data_dir_unscaled + "/" + os.path.basename(filepath))
-    prGreen(f"Original data moved to {data_dir_unscaled}")
+    print(green(f"Original data moved to {data_dir_unscaled}"))
     
     # rescale all losses by dimensionality
     data['error'] = data['error'] * data['latent_dim']
@@ -223,7 +223,7 @@ elif args.command == 'scale':
 
     # save the new data as csv file in data_dir
     data.to_csv(args.data_dir + "/data.csv", index=False)
-    prGreen(f"Rescaled data saved to {args.data_dir}/data.csv")
+    print(green(f"Rescaled data saved to {args.data_dir}/data.csv"))
 
 elif args.command == 'status':
     experiment_list = []  # all the config.json files in the outputs folder
@@ -319,7 +319,7 @@ elif args.command == 'status':
 
     # Check if experiments made
     if not experiment_dict:
-        prCyan(bold('No experiments made'))
+        print(cyan(bold('No experiments made')))
         print(bold('Experiment configs available: 0'), end=' ')
         print(loadingBar(0, 1, 40))
 
@@ -375,13 +375,13 @@ elif args.command == 'status':
                     output_str += out + '/'
                 output_str = output_str[0:-1]
 
-                prCyan('    '+output_str+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end_str = '')
+                print(cyan('    '+output_str+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs'))))), end ='')
 
                 # Print number of jobs + progress bar
                 if path['complete_jobs'] == path['total_jobs']:
-                    print(f'\033[0;32m{path["complete_jobs"]}\033[0m / \033[0;32m{path["total_jobs"]}\033[0m Jobs', end=' ')
+                    print(green(f'{path["complete_jobs"]}'), '/', green(f'{path["total_jobs"]}'), end=' ')
                 else:
-                    print(f'\033[0;31m{path["complete_jobs"]}\033[0m / \033[0;31m{path["total_jobs"]}\033[0m Jobs', end=' ')
+                    print(red(f'{path["complete_jobs"]}'), '/', red(f'{path["total_jobs"]}'), end=' ')
 
                 print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
             print()

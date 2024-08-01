@@ -217,12 +217,14 @@ def _get_jobs(all_jobs:list[int], split_num:int, total_splits:int):
     splits = [all_jobs[i*k+min(i, mod):(i+1)*k+min(i+1, mod)] for i in range(total_splits)]
     return splits[split_num-1]
 
-def prGreen(skk, end_str = '\n'): print("\033[92m{}\033[00m".format(skk), end = end_str)
+#Colors
+def green(skk): return("\033[92m{}\033[00m".format(skk))
 
-def prCyan(skk, end_str = '\n'): print("\033[96m{}\033[00m" .format(skk), end = end_str)
+def cyan(skk): return("\033[96m{}\033[00m" .format(skk))
 
-def prPink(skk, end_str = '\n'): print("\033[95m{}\033[00m" .format(skk), end = end_str)
+def pink(skk): return("\033[95m{}\033[00m" .format(skk))
 
+def red(skk): return("\033[0;31m{}\033[00m" .format(skk))
 #Helper function for status bar:
 def loadingBar(num_complete : int, num_total : int, length : int, color : str = '\x1b[38;5;48m',alt_color : str = '\x1b[38;5;237m') -> str:
     #Colors:
