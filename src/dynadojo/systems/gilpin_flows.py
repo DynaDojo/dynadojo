@@ -132,7 +132,7 @@ class GilpinFlowsSystem(AbstractSystem):
 
         return np.array(ood_points)
 
-    def make_data(self, init_conds: np.ndarray, timesteps: int, control=None, noisy=False, return_times=False):
+    def make_data(self, init_conds: np.ndarray, timesteps: int, dt=0.05, control=None, noisy=False, return_times=False):
         n = init_conds.shape[0]
         trajectories = np.zeros((n, timesteps, self._embed_dim))
 
@@ -140,9 +140,9 @@ class GilpinFlowsSystem(AbstractSystem):
             timepoints = np.zeros((n, timesteps))
             for i in range(n):
                 self.system.ic = init_conds[i]
-                timepoint, trajectory = self.system.make_trajectory(timesteps, resample=True, return_times=True)
+                timepoint, trajectory = self.system.make_trajectory(timesteps, resample=True, pts_per_period = self.period / dt, return_times=True)
                 if trajectory.shape[0] < timesteps:
-                    timepoint, trajectory = self.system.make_trajectory(timesteps, resample=False, return_times=True)
+                    timepoint, trajectory = self.system.make_trajectory(timesteps, resample=False, pts_per_period = self.period / dt, return_times=True)
                 assert trajectory.shape == (timesteps, self._embed_dim)
                 trajectories[i] = trajectory
                 timepoints[i] = timepoint
@@ -152,9 +152,9 @@ class GilpinFlowsSystem(AbstractSystem):
         
         for i in range(n):
             self.system.ic = init_conds[i]
-            trajectory = self.system.make_trajectory(timesteps, resample=True)
+            trajectory = self.system.make_trajectory(timesteps, resample=True, pts_per_period = self.period / dt)
             if trajectory.shape[0] < timesteps:
-                trajectory = self.system.make_trajectory(timesteps, resample=False)
+                trajectory = self.system.make_trajectory(timesteps, resample=False, pts_per_period = self.period / dt)
             assert trajectory.shape == (timesteps, self._embed_dim)
             trajectories[i] = trajectory
 

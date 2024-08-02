@@ -40,7 +40,8 @@ file_path = 'docs/gilpin_complexity_data.JSON'
 if os.path.isfile(file_path):
     df_old = pd.read_json(file_path, orient='records', lines=True) #loads pre-existing data
 else:
-    pd.DataFrame(columns=column_names).to_json(file, orient='records', lines=True)
+    pd.DataFrame(columns=column_names).to_json(file_path, orient='records', lines=True)
+    df_old = pd.read_json(file_path, orient='records', lines=True) #loads newly created data file
 
 for system_name in all_systems:
     print()
@@ -68,10 +69,11 @@ for system_name in all_systems:
                       timesteps, "###")
                 print()
 
-                exists = ((df_old['system'] == system_name) & (df_old['D'] == dimension) & 
-                          (df_old['seed'] == seed) & (df_old['timesteps'] == timesteps)).any()
-                if exists: #skips calculation if already exists in pre-existing data
-                    continue
+                if df_old.empty == False: # guard against indexing into empty file
+                    exists = ((df_old['system'] == system_name) & (df_old['D'] == dimension) & 
+                            (df_old['seed'] == seed) & (df_old['timesteps'] == timesteps)).any()
+                    if exists: #skips calculation if already exists in pre-existing data
+                        continue
 
                 X = x[:timesteps]
                 Y = y[:timesteps]

@@ -176,7 +176,7 @@ class SystemChecker:
         assert init_conds.shape == (n, self.embed_dim)
         return init_conds
 
-    def make_data(self, init_conds: np.ndarray, control: np.ndarray = None, timesteps: int = 1,
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray = None, timesteps: int = 1, dt = 0.05,
                   noisy=False) -> np.ndarray:
         """
         Checks that trajectories tensor has the proper shape.
@@ -203,7 +203,7 @@ class SystemChecker:
         if control is None:
             control = np.zeros((n, timesteps, self.embed_dim))
         assert control.shape == (n, timesteps, self.embed_dim), f"control has shape {control.shape}, but it should be ({n}, {timesteps}, {self.embed_dim})"
-        data = self._system.make_data(init_conds=init_conds, control=control, timesteps=timesteps, noisy=noisy)
+        data = self._system.make_data(init_conds=init_conds, control=control, timesteps=timesteps, dt=dt, noisy=noisy)
         assert data.shape == (n, timesteps, self.embed_dim), f"data has shape {data.shape}, but it should be ({n}, {timesteps}, {self.embed_dim})"
         return data
 
