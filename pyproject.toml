@@ -75,7 +75,7 @@ tensorflow-old = [
 ]
 
 staticdatasets = [
-    "pywt",
+    "pywavelets",
 ]
 
 [project.urls]
