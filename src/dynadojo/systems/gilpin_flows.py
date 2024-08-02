@@ -11,13 +11,6 @@ class GilpinFlowsSystem(AbstractSystem):
     """
     Gilpin Flows System for modeling chaotic attractors using systems from the dysts library.
 
-    Attributes
-    ----------
-    base_path : str
-        Base path for the dysts library.
-    json_file_path : str
-        Path to the JSON file containing chaotic attractors data.
-
     Example
     -------
     >>> from dynadojo.systems.gilpin_flows import GilpinFlowsSystem
@@ -63,18 +56,18 @@ class GilpinFlowsSystem(AbstractSystem):
         
         return all_systems
 
-    def __init__(self, latent_dim, embed_dim, system_name: str, pts_per_period=100, seed=None):
+    def __init__(self, latent_dim=3, embed_dim=3, system_name="Lorenz", pts_per_period=100, seed=None):
         """
         Initialize the GilpinFlowsSystem class.
 
         Parameters
         ----------
         latent_dim : int
-            Dimension of the latent space. 
+            Dimension of the latent space. Fixed to Gilpin's set dimensionality for the particular system.
         embed_dim : int
             Embedding dimension of the system. Fixed to Gilpin's set dimensionality for the particular system.
         system_name : str
-            The name of the system to be used.
+            The name of the system to be used. Defaults to Lorenz.
         pts_per_period: int
             For reasampled trajectories, the number of points per period. Default is 100.
         seed : int or None, optional
