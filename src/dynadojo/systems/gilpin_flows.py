@@ -37,15 +37,15 @@ class GilpinFlowsSystem(AbstractSystem):
         Calculates the mean squared error between two arrays.
     calc_control_cost(self, control: np.ndarray) -> float
         Calculates the control cost.
-    _all_systems(cls) -> list
+    all_systems(cls) -> list
         Class method that loads systems data and returns the list of available systems, excluding missing systems.
     """
     base_path = os.path.dirname(dysts.__file__)
     json_file_path = os.path.join(base_path, 'data', 'chaotic_attractors.json')
 
     @classmethod
-    def _all_systems(cls):
-        """Load systems data and return the list of ll available systems."""
+    def all_systems(cls):
+        """Load systems data and return the list of all available systems."""
         with open(cls.json_file_path, 'r') as file:
             systems_data = json.load(file)
 
@@ -85,8 +85,17 @@ class GilpinFlowsSystem(AbstractSystem):
             raise ValueError(f"Unsupported system: {self.system_name}") from e
         
         data = self.system._load_data()
-        self._embed_dim = data.get("embedding_dimension")
-        self._latent_dim = self._embed_dim
+
+        data_embed_dim = data.get("embedding_dimension")
+
+        if self._embed_dim != data_embed_dim:
+            print(f"Inputted embedded dimension of {self._embed_dim}, but Gilpin's system has an embedded dimension of {data_embed_dim}. Adjusting the embedded dimension to {data_embed_dim}.")
+            self._embed_dim = data_embed_dim
+
+        if self._latent_dim != data_embed_dim:
+            print(f"Inputted latent dimension of {self._latent_dim}, but Gilpin's system has a dimension of {data_embed_dim}. Adjusting the latent dimension to {data_embed_dim}.")
+            self._latent_dim = data_embed_dim
+
 
         attributes = [
             "embedding_dimension", "bifurcation_parameter", "citation", 
