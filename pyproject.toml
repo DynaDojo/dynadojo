@@ -53,7 +53,7 @@ dev = [
 
 [project.optional-dependencies]
 all = [
-    "dynadojo[rebound, tensorflow]",
+    "dynadojo[rebound, tensorflow, staticdatasets]",
 ]
 rebound = [
     "rebound>=4.0.1",
@@ -74,6 +74,9 @@ tensorflow-old = [
     "tensorflow-io-gcs-filesystem; sys_platform!='darwin' or platform_machine!='arm64' or  sys_platform=='win32'"
 ]
 
+staticdatasets = [
+    "pywt",
+]
 
 [project.urls]
 Home = "https://github.com/FlyingWorkshop/dynadojo/"

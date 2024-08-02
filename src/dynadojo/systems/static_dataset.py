@@ -1,4 +1,5 @@
 import numpy as np
+import pywt
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import euclidean_distances
 from ..abstractions import AbstractSystem
@@ -6,63 +7,107 @@ from ..abstractions import AbstractSystem
 
 class StaticDatasetSystem(AbstractSystem):
     """
-    System for handling static datasets formatted in a numpy three dimensional array of (N trajectories, T timesteps, and D dimensions).
+    System for handling static datasets formatted in a numpy three dimensional array of N trajectories, T timesteps, and D dimensions.
     """
 
-    def __init__(self, latent_dim, embed_dim, data: np.ndarray, seed=None, in_dist_ratio=0.8):
+    def __init__(self, latent_dim=3, embed_dim=3, data: np.ndarray = None, seed=None, in_dist_ratio=0.8):
         """
         Initialize the StaticDatasetSystem.
 
         Args:
             latent_dim (int): Dimension of the latent space.
             embed_dim (int): Dimension of the embedding space.
-            data (np.ndarray): 3-D numpy array of shape (N, T, D) where N is the number of trajectories,
+            data (np.ndarray): 3-D numpy array with shape (N, T, D), where N is the number of trajectories,
                                T is the number of timesteps, and D is the dimension of the data.
             seed (int, optional): Random seed. Defaults to None.
             in_dist_ratio (float, optional): Ratio of in-distribution data. Defaults to 0.8.
         """
+        if data is None or (isinstance(data, np.ndarray) and data.size == 0):
+            raise ValueError("No data was inputted or an empty array was provided. Please provide a valid 3D numpy array.")
+        
         if data.ndim != 3:
             raise ValueError("Data should be a 3-D numpy array.")
         
-        if embed_dim != data.shape[2]:
-            raise ValueError(f"Embed dimension should be equal to the dimension of the data. Expected {D}, but got {embed_dim}.")
+        data_dim = data.shape[2]
+
+        if embed_dim != data_dim:
+            print(f"Embed dimension {embed_dim} is different from the data dimension {data_dim}. Adjusting embed_dim to {data_dim}.")
+            embed_dim = data_dim
+
+        if latent_dim != data_dim:
+            print(f"Latent dimension {latent_dim} is different from the data dimension {data_dim}. Adjusting latent_dim to {data_dim}.")
+            latent_dim = data_dim
         
         super().__init__(latent_dim, embed_dim, seed=seed)
         self.data = data
         self.in_dist_ratio = in_dist_ratio
 
         if in_dist_ratio != 1:
-            self.in_dist_data, self.ood_data = self.split_dataset(in_dist_ratio=self.in_dist_ratio)
+            self.in_dist_data, self.ood_data = self._split_dataset(in_dist_ratio=self.in_dist_ratio)
         else:
             self.in_dist_data = self.data
             self.ood_data = None
 
-    def extract_trajectory_features(self):
-        num_trajectories, num_timesteps, num_features = self.data.shape
-        
-        features = np.zeros((num_trajectories, num_features * 3)) 
+    def _extract_wavelet_features(self, wavelet_name='db1', level=3) -> np.ndarray:
+        """
+        Extracts wavelet features from the dataset.
+
+        This method decomposes each trajectory using wavelet transforms and flattens the coefficients into feature vectors.
+
+        Args:
+            wavelet_name (str): The name of the wavelet to use for decomposition (default is 'db1').
+            level (int): The level of decomposition (default is 3).
+
+        Returns:
+            np.ndarray: A 2D array of shape (N, M) where N is the number of trajectories and M is the length of the flattened feature vectors.
+        """
+        num_trajectories, _, dimension = self.data.shape
+
+        all_features = []
 
         for i in range(num_trajectories):
             trajectory = self.data[i]
-            mean = np.mean(trajectory, axis=0)
-            variance = np.var(trajectory, axis=0)
-            velocities = np.diff(trajectory, axis=0)
-            mean_velocity = np.mean(velocities, axis=0)
-            
-            features[i, :num_features] = mean
-            features[i, num_features:num_features * 2] = variance
-            features[i, num_features * 2:] = mean_velocity
-        
+            trajectory_features = []
+
+            for j in range(dimension):
+                coeffs = pywt.wavedec(trajectory[:, j], wavelet_name, level=level)
+
+                flat_coeffs = np.concatenate([coeff.flatten() for coeff in coeffs])
+                trajectory_features.append(flat_coeffs)
+
+            all_features.append(np.concatenate(trajectory_features))
+
+        max_feature_length = max(len(f) for f in all_features)
+
+        features = np.zeros((num_trajectories, max_feature_length))
+
+        for i, f in enumerate(all_features):
+            features[i, :len(f)] = f
+
         return features
 
-    def split_dataset(self, in_dist_ratio: float):
-        if not (.5 < in_dist_ratio < 1):
-            raise ValueError("in_dist_ratio must be between 0.5 and 1")
+
+    def _split_dataset(self, in_dist_ratio: float)-> tuple[np.ndarray, np.ndarray]:
+        """
+        Splits the dataset into in-distribution (IND) and out-of-distribution (OOD) points.
+
+        This method uses KMeans clustering to separate the data into IND and OOD points based on the given ratio.
+
+        Args:
+            in_dist_ratio (float): Ratio of in-distribution data to be used (between 0.5 and 1).
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: A tuple containing two numpy arrays:
+                - The first array contains the in-distribution data.
+                - The second array contains the out-of-distribution data.
+        """
+        if not (.5 <= in_dist_ratio < 1):
+            raise ValueError("in_dist_ratio must be between 0.5 and 1 (inclusive).")
 
         np.random.seed(self._seed)
 
         # Split data into IND and OOD points using Kmeans clustering on trajectory features
-        features = self.extract_trajectory_features()
+        features = self._extract_wavelet_features()
 
         num_trajectories = features.shape[0]
         num_in_dist = round(in_dist_ratio * num_trajectories)
@@ -138,8 +183,8 @@ class StaticDatasetSystem(AbstractSystem):
         
         return x0
 
-    def make_data(self, init_conds: np.ndarray, timesteps: int, control=None, noisy=False):
-        num_trajectories, num_timesteps, dimension = self.data.shape
+    def make_data(self, init_conds: np.ndarray, timesteps: int, control=None, noisy=False) -> np.ndarray:
+        num_trajectories, num_timesteps, _ = self.data.shape
         if timesteps > num_timesteps:
             raise ValueError(f"Requested timesteps ({timesteps}) exceed the available timesteps ({num_timesteps}).")
     
