@@ -21,7 +21,7 @@ def save_config(
     # don't overwrite existing config
     config_file_path = os.path.join(output_dir, folder_path, "config.json")
     if os.path.exists(config_file_path):
-        prGreen(f"Config already exist for {folder_path}...skipping")
+        print(green(f"Config already exist for {folder_path}...skipping"))
     else:
         save_to_json(experiment_config, os.path.join(output_dir, folder_path, "config.json"))
     return config_file_path, experiment_config['total_jobs']
@@ -71,9 +71,9 @@ def run_challenge(
         assert isinstance(split, tuple), "split must be a tuple, (split_num, total_splits)"
         split_num, total_splits = split
         jobs = _get_jobs(all_jobs, split_num, total_splits) # list[tuples(trial, l)]
-        prGreen(f"Running split {split_num} of {total_splits} with jobs {jobs}")
+        print(green(f"Running split {split_num} of {total_splits} with jobs {jobs}"))
         if jobs == []:
-            prGreen(f"Split {split_num} of {total_splits} has no jobs...skipping")
+            print(green(f"Split {split_num} of {total_splits} has no jobs...skipping"))
             return
     else:
         jobs = all_jobs
@@ -105,9 +105,9 @@ def run_challenge(
         csv_output_path = file_path #will save to csv in parallel
     )
     if split:
-        prGreen(f"COMPLETED SPLIT -- {split_num=} / {total_splits=}")
+        print(green(f"COMPLETED SPLIT -- {split_num=} / {total_splits=}"))
     else:
-        prGreen(f"COMPLETED ALL JOBS -- see {folder_path}")
+        print(green(f"COMPLETED ALL JOBS -- see {folder_path}"))
     
 
 def make_plots(
@@ -135,7 +135,7 @@ def make_plots(
     # g.set(xscale="linear", yscale="linear")
     if save:
         g.figure.savefig(f"{output_dir}/{figure_filename}", bbox_inches='tight')
-    prGreen(f"Plot created with {len(files)} files in {data_path} and {len(filtered_data)}/{len(data)} rows: {output_dir}/{figure_filename} ")
+    print(green(f"Plot created with {len(files)} files in {data_path} and {len(filtered_data)}/{len(data)} rows: {output_dir}/{figure_filename} "))
     # for file in files:
     #     print(f"\t- {file}")
     return g, data
@@ -145,7 +145,7 @@ def load_data(data_path, print_status = True):
     if len(files) <= 0:
         # print(f"No plot created: No files matching {csv_filename} found in {data_path}")
         if print_status:
-            prGreen(f"No CSV files found in {data_path}")
+            print(green(f"No CSV files found in {data_path}"))
         return [], None
 
     data = pd.DataFrame()
@@ -157,7 +157,7 @@ def load_data(data_path, print_status = True):
                 print(file)
             df = pd.read_csv(file)
             if print_status:
-                prCyan(f"Loaded {len(df)} rows from {file}")
+                print(cyan(f"Loaded {len(df)} rows from {file}"))
         except:
             continue
         data = pd.concat([data, df])
