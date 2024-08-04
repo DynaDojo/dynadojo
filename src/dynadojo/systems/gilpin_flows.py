@@ -127,22 +127,22 @@ class GilpinFlowsSystem(AbstractSystem):
 
         mean = np.mean(x, axis=0)
         x_centered = x - mean
-        U, s, _ = np.linalg.svd(x_centered, full_matrices=False)
+        U, s, Vt = np.linalg.svd(x_centered, full_matrices=False)
             
         variance_explained = np.cumsum(s**2) / np.sum(s**2)
         num_components = np.argmax(variance_explained >= 0.9) + 1
         num_components = min(num_components, x.shape[1] - 1)
 
-        U_remaining = U[:, num_components:]
+        Vt_remaining = Vt[num_components:, :]
 
         scale = 1
         frac_perturb = 0.1
         ood_points = []
 
         for _ in range(n):
-            random_projection = np.random.uniform(-1, 1, (x.shape[1] - num_components)) * scale
-            projection = U_remaining @ random_projection
-            ood_point = mean + projection[:mean.shape[0]]
+            random_projection = np.random.uniform(-1, 1, Vt_remaining.shape[0]) * scale
+            projection = Vt_remaining.T @ random_projection
+            ood_point = mean + projection
             
             perturbation = 1 + frac_perturb * (2 * np.random.random(len(ood_point)) - 1)
             ood_point = ood_point * perturbation
