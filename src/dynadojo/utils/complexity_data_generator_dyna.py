@@ -67,7 +67,7 @@ for system_name in all_systems:
 
                 data.append([system_name, dimension, seed, x0, False, timesteps, gp_dim(X), 
                             mse_mv(X), pca(X), None, None, None])
-                data.append([system_name, dimension, seed, x0, True, timesteps, gp_dim(Y), 
+                data.append([system_name, dimension, seed, y0, True, timesteps, gp_dim(Y), 
                             mse_mv(Y), pca(Y), None, None, None])
                 
             if int_counter % save_interval == 0:

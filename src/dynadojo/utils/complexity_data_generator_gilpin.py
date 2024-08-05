@@ -19,21 +19,27 @@ with open(json_file_path, 'r') as file:
     systems_data = json.load(file)
 all_systems = list(systems_data.keys())
 
-problematic_systems = ["IkedaDelay", "MackeyGlass", "PiecewiseCircuit", "ScrollDelay", "SprottDelay", "SprottJerk", "SprottL", "VossDelay", "Torus"]
+
+problematic_systems = ["IkedaDelay", "MackeyGlass", "PiecewiseCircuit", 'RabinovichFabrikant', 
+                       "ScrollDelay", "SprottDelay", "SprottJerk", "SprottL", 'SprottM', "VossDelay", "Torus"]
+#rabinovich 4th seed fail #sprottM 3rd seed fail #sprott Q 3rd seed #turkinhansky 2nd seed
 for problematic_system in problematic_systems:
     all_systems.remove(problematic_system)
+
+all_systems = ['VallisElNino', 'WangSun', 
+               'WindmiReduced', 'YuWang', 'YuWang2', 'ZhouChen']    
 
 #prep dataframe specs
 column_names = ["system", "D", "seed", "x0", "OOD", "timesteps", 
                 "gp_dim", "mse_mv", "pca", "lyapunov_spectrum", "kaplan_yorke_dimension", "pesin"] # noise?
 
-seeds = [2]
+seeds = [1, 2, 3, 4, 5]
 dimensions = [3]#, 5, 7, 9]
-timesteps_list = [100, 500]#, 1000]#, 2500, 5000, 10000]
-max_timesteps = 500#0
+timesteps_list = [100, 500, 1000, 2500, 5000]
+max_timesteps = 5000
 data = []
 
-save_interval = 10
+save_interval = 2
 int_counter = 0
 
 file_path = 'docs/gilpin_complexity_data.JSON'
@@ -82,7 +88,7 @@ for system_name in all_systems:
                 data.append([system_name, dimension, seed, x0, False, timesteps, gp_dim(X), 
                              mse_mv(X), pca(X), xlyapunov_spectrum, 
                              kaplan_yorke_dimension(xlyapunov_spectrum), pesin(xlyapunov_spectrum)])
-                data.append([system_name, dimension, seed, x0, True, timesteps, gp_dim(Y), 
+                data.append([system_name, dimension, seed, y0, True, timesteps, gp_dim(Y), 
                              mse_mv(Y), pca(Y), ylyapunov_spectrum, 
                              kaplan_yorke_dimension(ylyapunov_spectrum), pesin(ylyapunov_spectrum)])
                 
