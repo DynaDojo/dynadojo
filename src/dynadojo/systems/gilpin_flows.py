@@ -6,6 +6,7 @@ import os
 import json
 import dysts
 from dysts.utils import generate_ic_ensemble
+import logging
 
 class GilpinFlowsSystem(AbstractSystem):
     """
@@ -76,11 +77,13 @@ class GilpinFlowsSystem(AbstractSystem):
         super().__init__(latent_dim, embed_dim, seed=seed)
         self.system_name = system_name
         self.pts_per_period = pts_per_period
+        self._rng = np.random.default_rng(seed)
         
         try:
             module = importlib.import_module('dysts.flows')
             SystemClass = getattr(module, self.system_name)
             self.system = SystemClass()
+            self.system.random_state = seed
         except (ModuleNotFoundError, AttributeError) as e:
             raise ValueError(f"Unsupported system: {self.system_name}") from e
         
@@ -122,8 +125,11 @@ class GilpinFlowsSystem(AbstractSystem):
             x0 = trajectories[:, :, 0]
             return x0
         
+        logging.debug("Gilpin's seed is: %s", self.system.random_state)
+        logging.debug("Gilpin's init conditions: %s", self.system.ic)
         # Use principal component analysis to generate out-of-distribution points. Perturbs OOD points with same method as used in generate_ic_ensemble.
-        x = self.system.make_trajectory(10000, resample = True)
+        x = self.system.make_trajectory(10000, resample = True, method="BDF")
+        logging.debug(f"Gilpin's make_trajectory x: {x[-1]}")
 
         mean = np.mean(x, axis=0)
         x_centered = x - mean
@@ -140,11 +146,11 @@ class GilpinFlowsSystem(AbstractSystem):
         ood_points = []
 
         for _ in range(n):
-            random_projection = np.random.uniform(-1, 1, Vt_remaining.shape[0]) * scale
+            random_projection = self._rng.uniform(-1, 1, Vt_remaining.shape[0]) * scale
             projection = Vt_remaining.T @ random_projection
             ood_point = mean + projection
             
-            perturbation = 1 + frac_perturb * (2 * np.random.random(len(ood_point)) - 1)
+            perturbation = 1 + frac_perturb * (2 * self._rng.random(len(ood_point)) - 1)
             ood_point = ood_point * perturbation
 
             ood_points.append(ood_point)

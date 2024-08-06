@@ -8,16 +8,14 @@ authors = [
     {name = "Caryn Tran", email = "caryn.tran@berkeley.edu"}
 ]
 dependencies = [
-    "numpy",
-    "networkx",
-    "ndlib",
-    "scikit-learn",
-    "torch",
-    "torchdiffeq",
-    "cellpylib",
-    "pysindy",
-    "pydmd",
-    "seaborn"
+    "numpy>=1.26.4",
+    "networkx>=3.3",
+    "ndlib>=5.1.1",
+    "scikit-learn>=1.5.1",
+    "cellpylib>=2.4.0",
+    "pysindy>=1.7.5",
+    "pydmd>=1.0.0",
+    "seaborn>=0.13.2",
 ]
 requires-python = ">=3.10,<=3.11"
 readme = "README.md"
@@ -40,43 +38,45 @@ name = "pypi"
 type = "find_links"
 url = "https://download.pytorch.org/whl/cpu/torch_stable.html"
 name = "pytorch"
+include_packages = ["torch"]
 
 # Tensorflow Wheel Issues https://github.com/python-poetry/poetry/issues/8271
 # Specifying Env Markers https://peps.python.org/pep-0508/#environment-markers
 
 [tool.pdm.dev-dependencies]
 dev = [
-    "pylint",
+    "pylint>=3.2.6",
     "jupyter>=1.0.0",
     "parameterized>=0.9.0",
 ]
 
 [project.optional-dependencies]
 all = [
-    "dynadojo[rebound, tensorflow, gilpin]",
+    "dynadojo[gilpin,rebound,tensorflow,torch]",
 ]
 rebound = [
-    "rebound>=4.0.1",
+    "rebound>=4.4.2",
+]
+torch = [
+    "torchdiffeq>=0.2.4",
+    "torch==2.2.2; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", # MacOS Intel Chipset
+    "torch>=2.3.1; sys_platform != \"darwin\" or platform_machine != \"x86_64\"",
 ]
 tensorflow = [
-    "tensorflow",
+    "tensorflow>=2.17.0",
+    "tensorflow-metal>=1.1.0; sys_platform == \"darwin\" and platform_machine == \"arm64\"",
 ]
-tensorflow-mac = [
-    "dynadojo[tensorflow]",
-    "tensorflow-metal", 
-]
-
-tensorflow-old = [
-    "tensorflow-macos; sys_platform=='darwin' and platform_machine=='arm64'",
-    "tensorflow-intel; sys_platform=='win32'",
-    "tensorflow-cpu; (sys_platform=='linux' or sys_platform=='darwin') and (platform_machine!='arm64' and platform_machine!='aarch64')",
-    "tensorflow-cpu-aws; sys_platform=='linux' and (platform_machine=='arm64' or platform_machine=='aarch64')",
-    "tensorflow-io-gcs-filesystem; sys_platform!='darwin' or platform_machine!='arm64' or  sys_platform=='win32'"
-]
-
 gilpin = [
-    "dysts",
+    "dysts>=0.85",
 ]
+
+# tensorflow-old = [
+#     "tensorflow-macos; sys_platform=='darwin' and platform_machine=='arm64'",
+#     "tensorflow-intel; sys_platform=='win32'",
+#     "tensorflow-cpu; (sys_platform=='linux' or sys_platform=='darwin') and (platform_machine!='arm64' and platform_machine!='aarch64')",
+#     "tensorflow-cpu-aws; sys_platform=='linux' and (platform_machine=='arm64' or platform_machine=='aarch64')",
+#     "tensorflow-io-gcs-filesystem; sys_platform!='darwin' or platform_machine!='arm64' or  sys_platform=='win32'"
+# ]
 
 [project.urls]
 Home = "https://github.com/FlyingWorkshop/dynadojo/"

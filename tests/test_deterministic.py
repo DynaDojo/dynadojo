@@ -87,7 +87,7 @@ class TestReproducibility(unittest.TestCase):
         np.testing.assert_array_equal(d1, d2)
 
     @parameterized.expand(systems)
-    def test_make_initial_conditions_less_more(self, system):
+    def test_initial_conditions_less_more(self, system):
         """
         Test that if we make data with more initial conditions, 
         the data starts the same as when we made data with less initial conditions
@@ -97,6 +97,31 @@ class TestReproducibility(unittest.TestCase):
 
         s2 = SystemChecker(system(seed=100))
         i2 = s2.make_init_conds(n=10)
+        np.testing.assert_array_equal(i1, i2[:5])
+    
+    @parameterized.expand(systems)
+    def test_initial_conditions_ood_1(self, system):
+        """
+        For out-of-distribution, test that initial conditions remain the same
+        """
+        s1 = SystemChecker(system(seed=100))
+        i1 = s1.make_init_conds(n=5, in_dist=False)
+
+        s2 = SystemChecker(system(seed=100))
+        i2 = s2.make_init_conds(n=5, in_dist=False)
+        np.testing.assert_array_equal(i1, i2)
+    
+    @parameterized.expand(systems)
+    def test_initial_conditions_ood_2(self, system):
+        """
+        For out-of-distribution, test that if we make data with more initial conditions, 
+        the data starts the same as when we made data with less initial conditions
+        """
+        s1 = SystemChecker(system(seed=100))
+        i1 = s1.make_init_conds(n=5, in_dist=False)
+
+        s2 = SystemChecker(system(seed=100))
+        i2 = s2.make_init_conds(n=10, in_dist=False)
         np.testing.assert_array_equal(i1, i2[:5])
 
     # TODO: Reproducibility test w/ control
