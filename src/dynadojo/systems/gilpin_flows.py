@@ -6,7 +6,6 @@ import os
 import json
 import dysts
 from dysts.utils import generate_ic_ensemble
-import logging
 
 class GilpinFlowsSystem(AbstractSystem):
     """
@@ -125,11 +124,8 @@ class GilpinFlowsSystem(AbstractSystem):
             x0 = trajectories[:, :, 0]
             return x0
         
-        logging.debug("Gilpin's seed is: %s", self.system.random_state)
-        logging.debug("Gilpin's init conditions: %s", self.system.ic)
         # Use principal component analysis to generate out-of-distribution points. Perturbs OOD points with same method as used in generate_ic_ensemble.
         x = self.system.make_trajectory(10000, resample = True, method="BDF")
-        logging.debug(f"Gilpin's make_trajectory x: {x[-1]}")
 
         mean = np.mean(x, axis=0)
         x_centered = x - mean
