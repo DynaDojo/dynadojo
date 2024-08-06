@@ -130,10 +130,10 @@ Adding new models is simple with DynaDojo. The developer simply needs to impleme
 ```python
 import numpy as np
 
-from dynadojo.abstractions import AbstractModel
+from dynadojo.abstractions import AbstractAlgorithm
 
 
-class MyModel(AbstractModel):
+class MyModel(AbstractAlgorithm):
     def __init__(self, embed_dim: int, timesteps: int, max_control_cost: float, **kwargs):
         super().__init__(embed_dim, timesteps, max_control_cost, **kwargs)
         
