@@ -21,7 +21,7 @@ def save_config(
     # don't overwrite existing config
     config_file_path = os.path.join(output_dir, folder_path, "config.json")
     if os.path.exists(config_file_path):
-        prGreen(f"Config already exist for {folder_path}...skipping")
+        print(green(f"Config already exist for {folder_path}...skipping"))
     else:
         save_to_json(experiment_config, os.path.join(output_dir, folder_path, "config.json"))
     return config_file_path, experiment_config['total_jobs']
@@ -71,9 +71,9 @@ def run_challenge(
         assert isinstance(split, tuple), "split must be a tuple, (split_num, total_splits)"
         split_num, total_splits = split
         jobs = _get_jobs(all_jobs, split_num, total_splits) # list[tuples(trial, l)]
-        prGreen(f"Running split {split_num} of {total_splits} with jobs {jobs}")
+        print(green(f"Running split {split_num} of {total_splits} with jobs {jobs}"))
         if jobs == []:
-            prGreen(f"Split {split_num} of {total_splits} has no jobs...skipping")
+            print(green(f"Split {split_num} of {total_splits} has no jobs...skipping"))
             return
     else:
         jobs = all_jobs
@@ -105,9 +105,9 @@ def run_challenge(
         csv_output_path = file_path #will save to csv in parallel
     )
     if split:
-        prGreen(f"COMPLETED SPLIT -- {split_num=} / {total_splits=}")
+        print(green(f"COMPLETED SPLIT -- {split_num=} / {total_splits=}"))
     else:
-        prGreen(f"COMPLETED ALL JOBS -- see {folder_path}")
+        print(green(f"COMPLETED ALL JOBS -- see {folder_path}"))
     
 
 def make_plots(
@@ -135,16 +135,17 @@ def make_plots(
     # g.set(xscale="linear", yscale="linear")
     if save:
         g.figure.savefig(f"{output_dir}/{figure_filename}", bbox_inches='tight')
-    prGreen(f"Plot created with {len(files)} files in {data_path} and {len(filtered_data)}/{len(data)} rows: {output_dir}/{figure_filename} ")
+    print(green(f"Plot created with {len(files)} files in {data_path} and {len(filtered_data)}/{len(data)} rows: {output_dir}/{figure_filename} "))
     # for file in files:
     #     print(f"\t- {file}")
     return g, data
 
-def load_data(data_path):
+def load_data(data_path, print_status = True):
     files = _find_all_csv(data_path) 
     if len(files) <= 0:
         # print(f"No plot created: No files matching {csv_filename} found in {data_path}")
-        prGreen(f"No CSV files found in {data_path}")
+        if print_status:
+            print(green(f"No CSV files found in {data_path}"))
         return [], None
 
     data = pd.DataFrame()
@@ -152,9 +153,11 @@ def load_data(data_path):
     # Concatenate all files into one dataframe and drop duplicates
     for file in files:
         try:
-            print(file)
+            if print_status:
+                print(file)
             df = pd.read_csv(file)
-            prCyan(f"Loaded {len(df)} rows from {file}")
+            if print_status:
+                print(cyan(f"Loaded {len(df)} rows from {file}"))
         except:
             continue
         data = pd.concat([data, df])
@@ -214,8 +217,21 @@ def _get_jobs(all_jobs:list[int], split_num:int, total_splits:int):
     splits = [all_jobs[i*k+min(i, mod):(i+1)*k+min(i+1, mod)] for i in range(total_splits)]
     return splits[split_num-1]
 
-def prGreen(skk): print("\033[92m{}\033[00m" .format(skk))
+#Colors
+def green(skk): return("\033[92m{}\033[00m".format(skk))
 
-def prCyan(skk): print("\033[96m{}\033[00m" .format(skk))
+def cyan(skk): return("\033[96m{}\033[00m" .format(skk))
 
-def prPink(skk): print("\033[95m{}\033[00m" .format(skk))
+def pink(skk): return("\033[95m{}\033[00m" .format(skk))
+
+def red(skk): return("\033[0;31m{}\033[00m" .format(skk))
+#Helper function for status bar:
+def loadingBar(num_complete : int, num_total : int, length : int, color : str = '\x1b[38;5;48m',alt_color : str = '\x1b[38;5;237m') -> str:
+    #Colors:
+    RESET = '\033[0m'
+
+    num_status = int(((num_complete/num_total)*length)//1)
+    return (color+'━'*num_status + RESET + alt_color+ '━'*(length-num_status)+RESET)
+
+def bold(text : str, color = ''):
+    return('\033[1m'+text+'\033[0m'+color)
