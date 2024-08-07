@@ -134,7 +134,7 @@ class SimpleSystem(AbstractSystem):
         """
         raise NotImplementedError
 
-    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, dt = 0.05, noisy=False) -> np.ndarray:
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, dt = 0.015, noisy=False) -> np.ndarray:
         r"""
         Uses the :func:`~calc_dynamics` method to generate data. Mathematically, data is generated like :math:`\dot{x} = f(x) + Bu`.
         Where :math:`f(x)` is given by :func:`~calc_dynamics`.
@@ -147,6 +147,8 @@ class SimpleSystem(AbstractSystem):
             (n, timesteps, embed_dim) Controls tensor.
         timesteps : int
             Timesteps per training trajectory (per action horizon).
+        dt: float, optional
+            If specified, changes the size of dt between each timestep.
         noisy : bool, optional
             If True, add noise to trajectories. Defaults to False. If False, no noise is added.
 

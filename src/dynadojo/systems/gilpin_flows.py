@@ -132,7 +132,7 @@ class GilpinFlowsSystem(AbstractSystem):
 
         return np.array(ood_points)
 
-    def make_data(self, init_conds: np.ndarray, timesteps: int, pts_per_period=500, control=None, noisy=False, return_times=False):
+    def make_data(self, init_conds: np.ndarray, timesteps: int, pts_per_period=100, control=None, noisy=False, return_times=False):
         n = init_conds.shape[0]
         trajectories = np.zeros((n, timesteps, self._embed_dim))
 
