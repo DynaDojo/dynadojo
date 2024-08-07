@@ -217,7 +217,7 @@ class AbstractSystem(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, dt=0.05, noisy=False) -> np.ndarray:
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
         """
         Makes trajectories from initial conditions.
 

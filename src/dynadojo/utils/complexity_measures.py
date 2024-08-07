@@ -4,6 +4,7 @@ from dysts.utils import jac_fd
 from sklearn.decomposition import PCA
 from scipy.spatial.distance import cdist
 from dysts.utils import standardize_ts
+import pandas as pd
 
 try:
     import neurokit2 # Used for computing multiscale entropy
@@ -110,7 +111,7 @@ def gp_dim(data, y_data=None, rvals=None, nmax=100):
     # return fit_vals[0][1]
 
 ## Multiscale Entropy
-def mse_mv(traj):
+def mse_mv(traj, return_info=False):
     """
     Generate an estimate of the multivariate multiscale entropy. The current version 
     computes the entropy separately for each channel and then averages. It therefore 
@@ -132,16 +133,26 @@ def mse_mv(traj):
     #mmse_opts = {"composite": True, "refined": False, "fuzzy": True}
     mmse_opts = {"composite": True, "fuzzy": True}
     if len(traj.shape) == 1:
-        mmse = neurokit2.entropy_multiscale(dimension=2, **mmse_opts)[0]
-        return mmse
+        mmse, info = neurokit2.entropy_multiscale(traj, dimension=2, **mmse_opts)
+        return mmse, info
 
-    traj = standardize_ts(traj)
+    traj = standardize_ts(traj) # traj is TxD
     all_mse = list()
+    all_info = []
+
+    # now D by T, where sol_coord is one dimension across all time
     for sol_coord in traj.T:
         all_mse.append(
             neurokit2.entropy_multiscale(sol_coord, dimension=2, **mmse_opts)[0]
         )
-    return np.median(all_mse)
+        all_info.append(
+            neurokit2.entropy_multiscale(sol_coord, dimension=2, **mmse_opts)[1]["Value"]
+        )
+    
+    if return_info == True:
+        return np.sum(all_mse), pd.DataFrame(all_info)
+    
+    return np.sum(all_mse)
 
 ## Principal Component Analysis
 def pca(data, threshold=0.80):
@@ -152,7 +163,7 @@ def pca(data, threshold=0.80):
     # Calculate cumulative explained variance
     cumulative_explained_variance = np.cumsum(pca.explained_variance_ratio_)
 
-    # Find the number of components that explain at least 90% of the variance
+    # Find the number of components that explain at least 80% of the variance
     n_components = np.argmax(cumulative_explained_variance >= threshold) + 1
 
     return n_components
