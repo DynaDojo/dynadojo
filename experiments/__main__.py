@@ -52,6 +52,7 @@ python -m experiments make --challenge fe --algo lr --system lds --output_dir="e
 
 import argparse
 import os
+import json
 from .utils import algo_dict, load_from_json, system_dict, challenge_dicts
 from .main import load_data, run_challenge, make_plots, save_config, prGreen, prPink
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
@@ -64,6 +65,7 @@ run_parser = subparsers.add_parser('run', help='Run an experiment param file')
 plot_parser = subparsers.add_parser('plot', help='Plot an experiment results')
 check_parser = subparsers.add_parser('check', help='Check for missing jobs')
 scale_parser = subparsers.add_parser('scale', help='Temporary utility which rescales losses by dimensionality')
+status_parser =subparsers.add_parser('status', help='List all available config.json files that you have already made')
 
 # Accept command line arguments
 make_parser.add_argument('--algo', type=str, default='lr', help='Specify which algo to run')
@@ -207,3 +209,32 @@ elif args.command == 'scale':
     # save the new data as csv file in data_dir
     data.to_csv(args.data_dir + "/data.csv", index=False)
     prGreen(f"Rescaled data saved to {args.data_dir}/data.csv")
+elif args.command == 'status':
+    experiment_list = [] #all the config.json files in the outputs folder
+    
+    #Loop and sort into dict but type (e.g. fixed complexity, fixed error, etc)
+    experiment_dict = {}
+
+    directory_path = 'experiments/outputs'
+
+    #Find all 'config.json' files, add filepath to a list
+    for dirpath, dirnames, filenames in os.walk(directory_path):
+        for file in filenames:
+            if file.endswith('config.json'):
+                f = open(dirpath+'/'+file,'r')
+                experiment = json.load(f)
+                experiment_type = experiment['challenge_cls']['class_name']
+
+                if experiment_type in experiment_dict.keys():
+                    experiment_dict[experiment_type].append({'total_jobs' : experiment['total_jobs'], 'complete_jobs' : 0, 'folder_path': dirpath+'/'+file})
+                else:
+                    experiment_dict[experiment['challenge_cls']['class_name']]  = [{'total_jobs' : experiment['total_jobs'], 'complete_jobs' : 0, 'folder_path': dirpath+'/'+file}]
+
+
+    #Print
+    for challenge_type in experiment_dict.keys():
+        print(challenge_type+':')
+
+        #Print Paths
+        for path in experiment_dict[challenge_type]:
+            print(' '+path['folder_path'], path['complete_jobs'], '/', path['total_jobs'],'Jobs')
