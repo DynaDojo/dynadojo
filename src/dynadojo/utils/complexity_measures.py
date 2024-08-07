@@ -1,18 +1,13 @@
 import numpy as np
+import pandas as pd
 import warnings
-from dysts.utils import jac_fd
+import neurokit2
 from sklearn.decomposition import PCA
+from dysts.utils import jac_fd
 from scipy.spatial.distance import cdist
 from dysts.utils import standardize_ts
-import pandas as pd
 
-try:
-    import neurokit2 # Used for computing multiscale entropy
-    has_neurokit = True
-except:
-    warnings.warn("Neurokit2 must be installed before computing multiscale entropy")
-    has_neurokit = False
-
+## Helper function for correlation dimension (Gilpin Unmodified)
 def estimate_powerlaw(data0):
     """
     Given a 1D array of continuous-valued data, estimate the power law exponent using the 
@@ -30,7 +25,7 @@ def estimate_powerlaw(data0):
     ahat = 1 + n / np.sum(np.log(data / xmin), axis=0)
     return ahat
 
-## Correlation Dimension
+## Correlation dimension (Gilpin Unmodified)
 def gp_dim(data, y_data=None, rvals=None, nmax=100):
     """
     Estimate the Grassberger-Procaccia dimension for a numpy array using the 
@@ -50,11 +45,9 @@ def gp_dim(data, y_data=None, rvals=None, nmax=100):
         corr_sum (np.array): The estimates of the correlation integral at each bin
 
     """
-
     data = np.asarray(data)
-    # data = embed(data)
 
-    ## For self-correlation
+    # Makes a copy of original data for self correlation
     if y_data is None:
         y_data = data.copy()
 
@@ -63,17 +56,6 @@ def gp_dim(data, y_data=None, rvals=None, nmax=100):
         rvals = np.logspace(np.log10(0.1 * std), np.log10(0.5 * std), nmax)
 
     n = len(data)
-    
-    # dists = cdist(data, y_data)
-    # corr_sum = []
-    # for r in rvals:
-    #     corr_sum.append(np.sum(dists < r))
-    # corr_sum = np.array(corr_sum) / (n * (n - 1))
-
-    # dists = cdist(data, y_data)
-    # hist, _ = np.histogram(dists, bins=np.hstack([0, rvals])) # can we skip this and direct fit?
-    # corr_sum = np.cumsum(hist).astype(float)
-    # corr_sum /= n * (n - 1)
     
     dists = cdist(data, y_data)
     rvals = dists.ravel()
@@ -86,32 +68,8 @@ def gp_dim(data, y_data=None, rvals=None, nmax=100):
     
     return estimate_powerlaw(rvals)
 
-    # dists = cdist(data, y_data)
-    # rvals = np.sort(dists.ravel())
-    # corr_sum = np.arange(len(rvals)).astype(float)
-    # corr_sum /= n * (n - 1)
-    # std = np.std(data)
-    # sel_inds = rvals > 0.1 * std
-    # rvals = rvals[sel_inds]
-    # corr_sum = corr_sum[sel_inds]
-    # sel_inds = rvals < 0.5 * std
-    # rvals = rvals[sel_inds]
-    # corr_sum = corr_sum[sel_inds]
-
-    # ## Drop zeros before regression
-    # sel_inds = corr_sum > 0
-    # rvals = rvals[sel_inds]
-    # corr_sum = corr_sum[sel_inds]
-    
-    # # poly = np.polyfit(np.log(rvals), np.log(corr_sum), 1)
-    # # return poly[0]
-
-    # power_law = lambda x, a, b: a * (x ** b)
-    # fit_vals = curve_fit(power_law, rvals, corr_sum)
-    # return fit_vals[0][1]
-
-## Multiscale Entropy
-def mse_mv(traj, return_info=False):
+## Multiscale Entropy (Gilpin Modified)
+def mse_mv(traj, return_info=False, gilpin=False):
     """
     Generate an estimate of the multivariate multiscale entropy. The current version 
     computes the entropy separately for each channel and then averages. It therefore 
@@ -126,21 +84,19 @@ def mse_mv(traj, return_info=False):
     TODO:
         Implement algorithm from Ahmed and Mandic PRE 2011
     """
-
-    if not has_neurokit:
-        raise Exception("NeuroKit not installed; multiscale entropy cannot be computed.")
-
-    #mmse_opts = {"composite": True, "refined": False, "fuzzy": True}
     mmse_opts = {"composite": True, "fuzzy": True}
+
+    # For univariate data, just calculates once
     if len(traj.shape) == 1:
         mmse, info = neurokit2.entropy_multiscale(traj, dimension=2, **mmse_opts)
         return mmse, info
-
-    traj = standardize_ts(traj) # traj is TxD
+    
+    # traj has shape T by D
+    traj = standardize_ts(traj) 
     all_mse = list()
     all_info = []
 
-    # now D by T, where sol_coord is one dimension across all time
+    # Now D by T, where sol_coord is one dimension across all timepoints
     for sol_coord in traj.T:
         all_mse.append(
             neurokit2.entropy_multiscale(sol_coord, dimension=2, **mmse_opts)[0]
@@ -150,12 +106,26 @@ def mse_mv(traj, return_info=False):
         )
     
     if return_info == True:
+        # Additionally returns a dataframe containing all SampEn values across all dimensions and coarse grainings
         return np.sum(all_mse), pd.DataFrame(all_info)
+    
+    if gilpin == True:
+        # If we want to return Gilpin's original version
+        return np.median(all_mse)
     
     return np.sum(all_mse)
 
-## Principal Component Analysis
+## Principal Component Analysis (Original)
 def pca(data, threshold=0.80):
+    """
+    Calculates the minimum number of components needed to explain 80% of the data's variance
+
+    Args:
+        data (ndarray): a trajectory of shape (n_timesteps, n_channels)
+
+    Returns:
+        n_components (int): minimum number of components
+    """
     # Perform PCA
     pca = PCA()
     pca.fit(data)
@@ -168,30 +138,17 @@ def pca(data, threshold=0.80):
 
     return n_components
 
-"""
-change params:
-model -> trajectory data array, timepoints data array, rhs equations
-see if we can bypass tpts and rhs, by working only with trajectory data.
-
-tpts needed for: 
- 1. calculating an average timestep dt for Euler
- 2. accessing the RHS/Jacobian at a trajectory point
- 3. normalizing the sum of each dimension's lyapunov exponent over time to find an average
-
- rhs needed for:
- 1. 
- New Args:
- trajectory (ndarray): (n, timesteps, embed_dim) Trajectories tensor.
-"""
-#def find_lyapunov_exponents(
-#    model, traj_length, pts_per_period=500, tol=1e-8, min_tpts=10, **kwargs
-#):
+## Lyapunov Spectrum (Gilpin Modified)
 def find_lyapunov_exponents(
     trajectory, tpts, traj_length, model, pts_per_period=500, tol=1e-8, min_tpts=10, **kwargs
 ):
     """
     Given a dynamical system, compute its spectrum of Lyapunov exponents.
     Args:
+        trajectory (ndarray): an NxD array where T is number of timesteps and D is the dimensionality
+            of a trajectory (each row is a datapoint in D-dimensional space)
+        tpts (ndarray): an array with T entries, where the ith entry corresponds to the time of the ith
+            datapoint in the trajectory array
         model (callable): the right hand side of a differential equation, in format 
             func(X, t)
         traj_length (int): the length of each trajectory used to calulate Lyapunov
@@ -207,29 +164,28 @@ def find_lyapunov_exponents(
         Christiansen & Rugh (1997). Computing Lyapunov spectra with continuous
             Gram-Schmidt orthonormalization
 
-    Example:
-        >>> import dysts
-        >>> model = dysts.Lorenz()
-        >>> lyap = dysts.find_lyapunov_exponents(model, 1000, pts_per_period=1000)
-        >>> print(lyap)
+    TODO: Change params
+        model -> trajectory data array, timepoints data array, rhs equations
+        see if we can bypass tpts and rhs, by working only with trajectory data.
 
+        tpts needed for: 
+        1. calculating an average timestep dt for Euler
+        2. accessing the RHS/Jacobian at a trajectory point
+        3. normalizing the sum of each dimension's lyapunov exponent over time to find an average
+
+        rhs needed for:
+        1. finding the Jacobian
     """
-#/    d = np.asarray(model.seed).shape[-1]
 
-    # get the dimensionality
+    # get the dimensionality of the system from the trajectory (Gilpin's gets it from the model)
     d = np.asarray(trajectory).shape[-1]
 
-#/    tpts, traj = model.make_trajectory(
-#/        traj_length, pts_per_period=pts_per_period, resample=True, return_times=True,
-#/        postprocessing=False,
-#/        **kwargs
-#/    )
+    # Gilpin's original calls the "make_trajectory" method of his model here, with resampling
+    # and return times enabled. To adapt to dynadojo, generation of the trajectectory and timepoints 
+    # were moved outside of the function
 
     #dt is actually the average timestep of the system (Gilpin Typo) used for Backward Euler
     dt = np.median(np.diff(tpts))
-#/    # traj has shape (traj_length, d), where d is the dimension of the system
-#/    # tpts has shape (traj_length,)
-#/    # dt is the dimension of the system
 
     # make an identity matrix of dimension d
     u = np.identity(d)
@@ -242,6 +198,8 @@ def find_lyapunov_exponents(
     # If the model does not provide a Jacobian (model.jac), 
     # it computes the Jacobian numerically using jac_fd
     # using the righthand side (Gilpin's systems have an RHS property)
+    # This code is modified from Gilpin, who originally used his model's Jacobian method
+    # directly when it was available (Dynadojo does not have a Jacobian method so this was removed)
         
     for i in range(traj_length): # Compute the Jacobian numerically at time t and state x
         t = tpts[0][i] # for some reason, gilpin's makedata returns a single array of
@@ -249,17 +207,8 @@ def find_lyapunov_exponents(
         x = trajectory[i]
         rhsy = lambda a: np.array(model.rhs(a, t)) # define a function 'rhsy', using the model's right hand side diffeq
         jacval = jac_fd(rhsy, x) # 'a' is a dummy variable that jac_fd plugs values into when it calls rhys.
-        
-#/    # for i in range(traj_length):
-#/    for i, (t, X) in enumerate(zip(tpts, traj)):
-#/        X = traj[i]
-#/
-#/        if model.jac(model.ic, 0) is None: 
-#/            rhsy = lambda x: np.array(model.rhs(x, t)) 
-#/            jacval = jac_fd(rhsy, X)
-#/        else: # If the model provides a Jacobian method, use it directly
-#/            jacval = np.array(model.jac(X, t))
 
+        # NOTE: no idea what this does. Unmodified from Gilpin.
         # If postprocessing is applied to a trajectory, transform the jacobian into the
         # new coordinates.
         if hasattr(model, "_postprocessing"):
@@ -269,21 +218,8 @@ def find_lyapunov_exponents(
             dydh = np.linalg.inv(dhdy)  # dy/dh
             ## Alternate version if good second-order fd is ever available
             # dydh = jac_fd(y2h, X0, m=2, eps=1e-2) @ rhsy(X0) + jac_fd(y2h, y0) @ jac_fd(rhsy, X0))
+            jacval = dhdy @ jacval @ dydh
 
-#/       # If postprocessing is applied to a trajectory, transform the jacobian into the
-#/       # new coordinates.
-#/       if hasattr(model, "_postprocessing"):
-#/           X0 = np.copy(X)
-#/           y2h = lambda y: model._postprocessing(*y)
-#/           dhdy = jac_fd(y2h, X0)
-#/           dydh = np.linalg.inv(dhdy)  # dy/dh
-#/           ## Alternate version if good second-order fd is ever available
-#/           # dydh = jac_fd(y2h, X0, m=2, eps=1e-2) @ rhsy(X0) + jac_fd(y2h, y0) @ jac_fd(rhsy, X0))
-#/           jacval = dhdy @ jacval @ dydh
-
-        ## Forward Euler update
-        # u_n = np.matmul(np.eye(d) + jacval * dt, u)
-        
         ## Backward Euler update
         if i < 1: continue
         u_n = np.matmul(np.linalg.inv(np.eye(d) - jacval * dt), u)
@@ -305,102 +241,33 @@ def find_lyapunov_exponents(
     final_lyap = np.sum(all_lyap, axis=0) / (dt * traj_length)
     return np.sort(final_lyap)[::-1] # return the average exponents in descending order
 
-def find_lyapunov_exponents_og(
-    model, traj_length, pts_per_period=500, tol=1e-8, min_tpts=10, **kwargs
-):
+## Maximum Lyapunov Exponent (Original)
+def find_max_lyapunov(spectrum0):
     """
-    Given a dynamical system, compute its spectrum of Lyapunov exponents.
+    Given a spectrum of Lyapunov exponents, find the maximum exponent
     Args:
-        model (callable): the right hand side of a differential equation, in format 
-            func(X, t)
-        traj_length (int): the length of each trajectory used to calulate Lyapunov
-            exponents
-        pts_per_period (int): the sampling density of the trajectory
-        kwargs: additional keyword arguments to pass to the model's make_trajectory 
-            method
+        spectrum0 (ndarray): A list of computed Lyapunov exponents
 
     Returns:
-        final_lyap (ndarray): A list of computed Lyapunov exponents
-
-    References:
-        Christiansen & Rugh (1997). Computing Lyapunov spectra with continuous
-            Gram-Schmidt orthonormalization
-
-    Example:
-        >>> import dysts
-        >>> model = dysts.Lorenz()
-        >>> lyap = dysts.find_lyapunov_exponents(model, 1000, pts_per_period=1000)
-        >>> print(lyap)
-
+        max_exp (float): Maximum Lyapunov exponent
     """
-    d = np.asarray(model.ic).shape[-1]
-    tpts, traj = model.make_trajectory(
-        traj_length, pts_per_period=pts_per_period, resample=True, return_times=True,
-        postprocessing=False,
-        **kwargs
-    )
-    dt = np.median(np.diff(tpts))
-    # traj has shape (traj_length, d), where d is the dimension of the system
-    # tpts has shape (traj_length,)
-    # dt is the dimension of the system
-
-    u = np.identity(d)
-    all_lyap = list()
-    # for i in range(traj_length):
-    for i, (t, X) in enumerate(zip(tpts, traj)):
-        X = traj[i]
-
-        if model.jac(model.ic, 0) is None:
-            rhsy = lambda x: np.array(model.rhs(x, t))
-            jacval = jac_fd(rhsy, X)
-        else:
-            jacval = np.array(model.jac(X, t))
-
-        # If postprocessing is applied to a trajectory, transform the jacobian into the
-        # new coordinates.
-        if hasattr(model, "_postprocessing"):
-            X0 = np.copy(X)
-            y2h = lambda y: model._postprocessing(*y)
-            dhdy = jac_fd(y2h, X0)
-            dydh = np.linalg.inv(dhdy)  # dy/dh
-            ## Alternate version if good second-order fd is ever available
-            # dydh = jac_fd(y2h, X0, m=2, eps=1e-2) @ rhsy(X0) + jac_fd(y2h, y0) @ jac_fd(rhsy, X0))
-            jacval = dhdy @ jacval @ dydh
-
-        ## Forward Euler update
-        # u_n = np.matmul(np.eye(d) + jacval * dt, u)
-        
-        ## Backward Euler update
-        if i < 1: continue
-        u_n = np.matmul(np.linalg.inv(np.eye(d) - jacval * dt), u)
-        
-        q, r = np.linalg.qr(u_n)
-        lyap_estimate = np.log(abs(r.diagonal()))
-        all_lyap.append(lyap_estimate)
-        u = q  # post-iteration update axes
-
-        ## early stopping if middle exponents are close to zero, a requirement for
-        ## continuous-time dynamical systems
-        if (np.min(np.abs(lyap_estimate)) < tol) and (i > min_tpts):
-            traj_length = i
-
-    all_lyap = np.array(all_lyap)
-    final_lyap = np.sum(all_lyap, axis=0) / (dt * traj_length)
-    return np.sort(final_lyap)[::-1]
-
-## Maximum Lyapunov Exponent
-def find_max_lyapunov(spectrum0):
     max_exp = spectrum0[0]
     for exp in spectrum0[1:]:
-        if abs(exp) > abs(max_exp):
+        if exp > max_exp:
             max_exp = exp
     return max_exp
 
-## Kaplan Yorke Dimension
+## Kaplan Yorke Dimension (Gilpin Unmodified)
 def kaplan_yorke_dimension(spectrum0):
-    """Calculate the Kaplan-Yorke dimension, given a list of
-    Lyapunov exponents"""
+    """
+    Calculate the Kaplan-Yorke dimension, given a list of
+    Lyapunov exponents
+    Args:
+        spectrum0 (ndarray): A list of computed Lyapunov exponents
 
+    Returns:
+        dky (float): Kaplan Yorke dimension
+    """
     if np.all(spectrum0 < 0):
         return 0
 
@@ -417,8 +284,17 @@ def kaplan_yorke_dimension(spectrum0):
 
     return dky
 
-## Pesin Entropy
+## Pesin Entropy (Gilpin Unmodified)
 def pesin(lyapval):
+    """
+    Calculate the pesin entropy, given a list of
+    Lyapunov exponents
+    Args:
+        spectrum0 (ndarray): A list of computed Lyapunov exponents
+
+    Returns:
+        pesin_entropy (float): Pesin entropy
+    """
     all_estimates_lyap = list()
     all_estimates_lyap.append(lyapval)
     

@@ -3,31 +3,36 @@ from dynadojo.utils.complexity_measures import gp_dim, mse_mv, pca
 import pandas as pd
 import os
 
+# NOTE: very similar to data generation for Gilpin systems
+
+# only Lorenz is standardized in timesteps definiton (i.e. number of timesteps)
+# can use others, but timesteps will be ill-defined
 from dynadojo.systems.lorenz import LorenzSystem
 all_systems = ["LorenzSystem"]
 def system_selector (system, dimension, seed):
     if system == "LorenzSystem":
         return SystemChecker(LorenzSystem(latent_dim=dimension, embed_dim=dimension, seed=seed))
 
-#prep dataframe specs
+# prep dataframe columns
 column_names = ["system", "D", "seed", "x0", "OOD", "timesteps", 
                 "gp_dim", "mse_mv", "pca", "lyapunov_spectrum", "kaplan_yorke_dimension", "pesin"] # noise?
-                
-seeds = [2]
-dimensions = [3, 5, 7] #, 9]
-timesteps_list = [100, 500, 1000]#, 2500, 5000, 10000]
-max_timesteps = 1000#0
-data = []
 
+# NOTE: specify sweep parameters here  
+seeds = [2]
+dimensions = [3, 5, 7]
+timesteps_list = [100, 500, 1000]
+max_timesteps = 1000
+
+data = []
 save_interval = 10
 int_counter = 0
 
 file_path = 'docs/dyna_complexity_data.JSON'
 if os.path.isfile(file_path):
-    df_old = pd.read_json(file_path, orient='records', lines=True) #loads pre-existing data
+    df_old = pd.read_json(file_path, orient='records', lines=True) # loads pre-existing data
 else:
     pd.DataFrame(columns=column_names).to_json(file_path, orient='records', lines=True)
-    df_old = pd.read_json(file_path, orient='records', lines=True) #loads newly created data file
+    df_old = pd.read_json(file_path, orient='records', lines=True) # loads newly created data file
 
 for system_name in all_systems:
 
@@ -59,7 +64,7 @@ for system_name in all_systems:
                 if df_old.empty == False: # guard against indexing into empty file
                     exists = ((df_old['system'] == system_name) & (df_old['D'] == dimension) & 
                             (df_old['seed'] == seed) & (df_old['timesteps'] == timesteps)).any()
-                    if exists: #skips calculation if already exists in pre-existing data
+                    if exists: # skips calculation if already exists in pre-existing data
                         continue
 
                 X = x[:timesteps]
