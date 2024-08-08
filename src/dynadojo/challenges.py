@@ -2,6 +2,7 @@
 Contains a `ScalingChallenge` class and several commonly used subclasses. The `ScalingChallenge` class is a stand-alone class that
 can also be extended.
 """
+from __future__ import annotations
 import itertools
 import logging
 import math
