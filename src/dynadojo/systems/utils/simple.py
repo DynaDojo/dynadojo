@@ -134,7 +134,7 @@ class SimpleSystem(AbstractSystem):
         """
         raise NotImplementedError
 
-    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, noisy=False) -> np.ndarray:
+    def make_data(self, init_conds: np.ndarray, control: np.ndarray, timesteps: int, dt = 0.015, noisy=False) -> np.ndarray:
         r"""
         Uses the :func:`~calc_dynamics` method to generate data. Mathematically, data is generated like :math:`\dot{x} = f(x) + Bu`.
         Where :math:`f(x)` is given by :func:`~calc_dynamics`.
@@ -147,6 +147,8 @@ class SimpleSystem(AbstractSystem):
             (n, timesteps, embed_dim) Controls tensor.
         timesteps : int
             Timesteps per training trajectory (per action horizon).
+        dt: float, optional
+            If specified, changes the size of dt between each timestep.
         noisy : bool, optional
             If True, add noise to trajectories. Defaults to False. If False, no noise is added.
 
@@ -157,7 +159,7 @@ class SimpleSystem(AbstractSystem):
         """
         data = []
         init_conds = init_conds @ np.linalg.pinv(self.embedder)
-        time = np.linspace(self._t_range[0], self._t_range[1], num=timesteps)
+        time = np.linspace(self._t_range[0], self._t_range[1] * dt * timesteps, num=timesteps)
 
         def dynamics(t, x, u):
             i = np.argmin(np.abs(t - time))
@@ -167,7 +169,7 @@ class SimpleSystem(AbstractSystem):
             return dx
 
         for x0, u in zip(init_conds, control):
-            sol = solve_ivp(dynamics, t_span=[self._t_range[0], self._t_range[1]], y0=x0, t_eval=time,
+            sol = solve_ivp(dynamics, t_span=[self._t_range[0], self._t_range[1] * dt * timesteps], y0=x0, t_eval=time,
                             dense_output=True, args=(u,))
             data.append(sol.y)
 
