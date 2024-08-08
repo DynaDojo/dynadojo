@@ -1,35 +1,28 @@
 [project]
 name = "DynaDojo"
 authors = [
-    {name = "Logan Mondal Bhamidipaty", email = "loganmb@stanford.edu"},
-    {name = "Tommy Anthony Bruzzese", email = "tbru@stanford.edu"},
     {name = "Max Kanwal", email = "mkanwal@stanford.edu"},
-    {name = "Rami Ratl Mrad", email = "ramiratlmrad@berkeley.edu"},
     {name = "Caryn Tran", email = "caryn.tran@berkeley.edu"}
 ]
 dependencies = [
-    "numpy",
-    "networkx",
-    "ndlib",
-    "scikit-learn",
-    "torch",
-    "torchdiffeq",
-    "cellpylib",
-    "pysindy",
-    "pydmd",
-    "seaborn"
+    "numpy>=1.24.4",
+    "scikit-learn>=1.3.2", #PCA
+    "seaborn>=0.13.2",
 ]
-requires-python = ">=3.10,<=3.11"
+
+requires-python = ">=3.9"
 readme = "README.md"
-license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
-dynamic = ["version", "description"]
+version = "0.1.0"
+description = "An Extensible Benchmarking Platform for Scalable Dynamical System Identification"
 
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
 [tool.pdm]
+distribution = true
+
 [[tool.pdm.source]]
 url = "https://pypi.org/simple"
 verify_ssl = true
@@ -40,40 +33,82 @@ name = "pypi"
 type = "find_links"
 url = "https://download.pytorch.org/whl/cpu/torch_stable.html"
 name = "pytorch"
+include_packages = ["torch"]
+
 
 # Tensorflow Wheel Issues https://github.com/python-poetry/poetry/issues/8271
 # Specifying Env Markers https://peps.python.org/pep-0508/#environment-markers
-
 [tool.pdm.dev-dependencies]
 dev = [
-    "pylint",
+    "pylint>=3.2.6",
     "jupyter>=1.0.0",
     "parameterized>=0.9.0",
 ]
 
 [project.optional-dependencies]
 all = [
-    "dynadojo[rebound, tensorflow]",
+    "dynadojo[alg-all,sys-all]",
 ]
-rebound = [
-    "rebound>=4.0.1",
+alg-all = [
+    "dynadojo[alg-dmd,alg-sindy,alg-torch]",
+]
+sys-all = [
+    "dynadojo[sys-ca,sys-ctln,sys-epidemic,sys-fbsnn,sys-gilpin,sys-opinion,sys-santi]",
+]
+############ Algorithms ############
+alg-torch = [
+    "torchdiffeq>=0.2.4",
+    "torch==2.2.2; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", # MacOS Intel Chipset
+    "torch>=2.2.2; sys_platform != \"darwin\" or platform_machine != \"x86_64\"",
+]
+alg-sindy = [
+    "pysindy>=1.7.5",
+]
+alg-dmd = [
+    "pydmd>=1.0.0",
+]
+############ Systems ############
+sys-ca = [
+    "cellpylib>=2.4.0",
+]
+sys-fbsnn = [
+    "dynadojo[tensorflow]",
+]
+sys-gilpin = [
+    "dysts>=0.86",
+]
+sys-ctln = [
+    "dynadojo[networkx]",
+]
+sys-epidemic = [
+    "dynadojo[networkx, ndlib]",
+]
+sys-opinion = [
+    "dynadojo[networkx, ndlib]",
+]
+sys-santi = [
+    "rebound>=4.4.2",
+]
+############ Libraries ############
+ndlib = [
+    "ndlib>=5.1.1",
+]
+networkx = [
+     "networkx>=3.2.1", 
 ]
 tensorflow = [
-    "tensorflow",
+    "tensorflow>=2.16.2; sys_platform != \"darwin\" or platform_machine != \"x86_64\"", 
+    "tensorflow==2.16.2; sys_platform == \"darwin\" and platform_machine == \"x86_64\"", # MacOS Intel Chipset
+    "tensorflow-metal>=1.1.0; sys_platform == \"darwin\" and platform_machine == \"arm64\"", # MacOS M Series Chipset
+    
 ]
-tensorflow-mac = [
-    "dynadojo[tensorflow]",
-    "tensorflow-metal", 
-]
-
-tensorflow-old = [
-    "tensorflow-macos; sys_platform=='darwin' and platform_machine=='arm64'",
-    "tensorflow-intel; sys_platform=='win32'",
-    "tensorflow-cpu; (sys_platform=='linux' or sys_platform=='darwin') and (platform_machine!='arm64' and platform_machine!='aarch64')",
-    "tensorflow-cpu-aws; sys_platform=='linux' and (platform_machine=='arm64' or platform_machine=='aarch64')",
-    "tensorflow-io-gcs-filesystem; sys_platform!='darwin' or platform_machine!='arm64' or  sys_platform=='win32'"
-]
-
 
 [project.urls]
-Home = "https://github.com/FlyingWorkshop/dynadojo/"
+Home = "https://github.com/DynaDojo/dynadojo/"
+
+
+# TO LOCK 
+# pdm lock -G all  --platform=macos_arm64 --python="==3.10.*" --lockfile=py310-macos_arm64.lock
+
+# TO INSTALL FROM GITHUB
+# pip install "dynadojo[sys-gilpin] @ git+https://github.com/carynbear/dynadojo.git@release/slim"
