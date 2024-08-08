@@ -49,10 +49,12 @@ class GilpinFlowsSystem(AbstractSystem):
         with open(cls.json_file_path, 'r') as file:
             systems_data = json.load(file)
 
-        system_list = list(systems_data.keys())
-        
         module = importlib.import_module('dysts.flows')
-        all_systems = [system_name for system_name in system_list if hasattr(module, system_name)]
+        all_systems = []
+        for system_name, attributes in systems_data.items():
+            if hasattr(module, system_name):
+                if attributes.get('delay') == False:
+                    all_systems.append(system_name)
         
         return all_systems
 
@@ -91,11 +93,11 @@ class GilpinFlowsSystem(AbstractSystem):
         data_embed_dim = data.get("embedding_dimension")
 
         if self._embed_dim != data_embed_dim:
-            print(f"Inputted embedded dimension of {self._embed_dim}, but Gilpin's system has an embedded dimension of {data_embed_dim}. Adjusting the embedded dimension to {data_embed_dim}.")
+            # print(f"Inputted embedded dimension of {self._embed_dim}, but Gilpin's system has an embedded dimension of {data_embed_dim}. Adjusting the embedded dimension to {data_embed_dim}.")
             self._embed_dim = data_embed_dim
 
         if self._latent_dim != data_embed_dim:
-            print(f"Inputted latent dimension of {self._latent_dim}, but Gilpin's system has a dimension of {data_embed_dim}. Adjusting the latent dimension to {data_embed_dim}.")
+            # print(f"Inputted latent dimension of {self._latent_dim}, but Gilpin's system has a dimension of {data_embed_dim}. Adjusting the latent dimension to {data_embed_dim}.")
             self._latent_dim = data_embed_dim
 
 
@@ -118,40 +120,51 @@ class GilpinFlowsSystem(AbstractSystem):
                 )
 
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
-        if in_dist:
-            tpts0 = np.arange(0, 2, 1)
-            trajectories = generate_ic_ensemble(self.system, tpts0, n, random_state=self._seed)
-            x0 = trajectories[:, :, 0]
-            return x0
-        
-        # Use principal component analysis to generate out-of-distribution points. Perturbs OOD points with same method as used in generate_ic_ensemble.
-        x = self.system.make_trajectory(10000, resample = True, method="BDF")
 
+        x = self.system.make_trajectory(10000)
+
+        # Use principal component analysis to generate out-of-distribution points.
         mean = np.mean(x, axis=0)
+        variance = np.var(x, axis=0)
         x_centered = x - mean
         U, s, Vt = np.linalg.svd(x_centered, full_matrices=False)
             
         variance_explained = np.cumsum(s**2) / np.sum(s**2)
-        num_components = np.argmax(variance_explained >= 0.9) + 1
-        num_components = min(num_components, x.shape[1] - 1)
+        min_var_idx = np.argmax(variance_explained >= 0.8) + 1
+        min_var_idx = min(min_var_idx, x.shape[1] - 1) # Ensure at least one component remains
 
-        Vt_remaining = Vt[num_components:, :]
+        Vt_remaining = Vt[min_var_idx:, :]
 
-        scale = 1
-        frac_perturb = 0.1
-        ood_points = []
+        mean_magnitude = np.linalg.norm(mean)
+        std = np.sqrt(np.mean(variance))
+        
+        # Weights for mean and variance contributions
+        mean_weight = .25
+        variance_weight = .75
 
+        # Calculate scale and frac_perturb based on a weighted sum of mean and std
+        scale = 0.001 * (mean_weight * mean_magnitude + variance_weight * std)
+        frac_perturb = 0.001 * (mean_weight * mean_magnitude + variance_weight * std)
+        points = []
+
+        print(scale)
+        print(frac_perturb)
         for _ in range(n):
-            random_projection = self._rng.uniform(-1, 1, Vt_remaining.shape[0]) * scale
-            projection = Vt_remaining.T @ random_projection
-            ood_point = mean + projection
+            # Randomly select a point on the sample trajectory
+            random_index = self._rng.integers(0, 10000)
+            point = x[random_index]
+
+            if not in_dist: 
+                random_projection = self._rng.uniform(-1, 1, Vt_remaining.shape[0]) * scale
+                projection = Vt_remaining.T @ random_projection
+                point = point + projection
             
-            perturbation = 1 + frac_perturb * (2 * self._rng.random(len(ood_point)) - 1)
-            ood_point = ood_point * perturbation
+            perturbation = 1 + frac_perturb * (2 * self._rng.random(len(point)) - 1)
+            point = point * perturbation
 
-            ood_points.append(ood_point)
+            points.append(point)
 
-        return np.array(ood_points)
+        return np.array(points)
 
     def make_data(self, init_conds: np.ndarray, timesteps: int, control=None, noisy=False):
         n = init_conds.shape[0]
@@ -160,9 +173,11 @@ class GilpinFlowsSystem(AbstractSystem):
         # Call Gilpin's make_trajectory function for each initial condition. By default, resample trajectories to have dominant Fourier components. If trajectory is cut short, disable resampling.
         for i in range(n):
             self.system.ic = init_conds[i]
-            trajectory = self.system.make_trajectory(timesteps, resample=True, pts_per_period=self.pts_per_period)
-            if trajectory.shape[0] < timesteps:
-                trajectory = self.system.make_trajectory(timesteps, resample=False)
+            trajectory = self.system.make_trajectory(timesteps, pts_per_period=self.pts_per_period)
+            # if trajectory.shape[0] < timesteps:
+            #     trajectory = self.system.make_trajectory(timesteps, resample=False)
+            if trajectory.shape != (timesteps, self._embed_dim):
+                print(trajectory.shape)
             assert trajectory.shape == (timesteps, self._embed_dim)
             trajectories[i] = trajectory
 
