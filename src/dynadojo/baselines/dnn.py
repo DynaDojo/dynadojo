@@ -32,7 +32,9 @@ class TorchBaseClass(AbstractAlgorithm, torch.nn.Module):
         if seed:
             torch.manual_seed(seed)
 
-        self.device = device or "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+        self.device = device 
+        if not self.device:
+            self.device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
         logging.info(f"Using device: {self.device}")
         # print(f"Using device: {self.device}")
         # self.model = self.create_model()
