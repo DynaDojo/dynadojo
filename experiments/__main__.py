@@ -65,7 +65,8 @@ run_parser = subparsers.add_parser('run', help='Run an experiment param file')
 plot_parser = subparsers.add_parser('plot', help='Plot an experiment results')
 check_parser = subparsers.add_parser('check', help='Check for missing jobs')
 scale_parser = subparsers.add_parser('scale', help='Temporary utility which rescales losses by dimensionality')
-status_parser =subparsers.add_parser('status', help='List all available config.json files that you have already made')
+status_parser = subparsers.add_parser('status', help='List all available config.json files that you have already made')
+make_status_parser = subparsers.add_parser('make_status', help='List all the available experiments you can call ‘make’ on.')
 
 # Accept command line arguments
 make_parser.add_argument('--algo', type=str, default='lr', help='Specify which algo to run')
@@ -377,3 +378,12 @@ elif args.command == 'status':
 
                 print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
             print()
+            
+elif args.command == 'make_status':
+    
+    challenge = ''
+    system = ''
+    algo = ''
+    
+    #Final Print
+    print(f'--chalenge = {challenge} --system = {system} --algo = {algo}')
