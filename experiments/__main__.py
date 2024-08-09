@@ -380,20 +380,53 @@ elif args.command == 'status':
             print()
             
 elif args.command == 'make_status':
+    experiment_list = []  # all the config.json files in the outputs folder
+    experiment_dict = {}
+    
+    directory_path = 'experiments/outputs'
+
+    # Find all 'config.json' files, add filepath to a list, sorted by challenge type
+    for dirpath, dirnames, filenames in os.walk(directory_path):
+        for file in filenames:
+            if file.endswith('config.json'):
+                file_path = os.path.join(dirpath, file)
+                split_path = file_path.split('/')
+                challenge = split_path[2]
+                system = split_path[3]
+                algo_split = split_path[4].split('_')
+                algo_split1 = algo_split[3].split('=')[0]
+                algo = f'{algo_split[2]}_{algo_split1}'
+                experiment_list.append({
+                    'challenge' : challenge,
+                    'system' : system,
+                    'algo' : algo
+                })
     
     chall_list = challenge_dicts.keys()
     for challenge in chall_list:
         _, sys_dict = challenge_dicts[challenge]
         sys_list = sys_dict.keys()
         for system in sys_list:
-            algo_list = sys_dict.keys()
+            if system == 'default':
+                continue
+            algo_list = sys_dict[system].keys()
             for algo in algo_list:
                 #Final Print
                 out_str = ''
                 if challenge != 'default':
-                    out_str += f'--challenge = {challenge}'
+                    out_str += f'--challenge = {challenge} '
                 if system != 'default':
-                    out_str += f'--system = {system}'
+                    out_str += f'--system = {system} '
                 if algo != 'default':
                     out_str += f'--algo = {algo}'
-                print(out_str)
+                
+                pr = True
+                for experiment in experiment_list:
+                    if challenge == experiment['challenge'] and system == experiment['system'] and algo == experiment['algo']:
+                        pr = False
+                #Makes experiments that already exist highlighted red (proof of concept to show - in the future red ones will be deleted)
+                if pr:
+                    print(out_str)
+                else:
+                    print(red(out_str))
+                    
