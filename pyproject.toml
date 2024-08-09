@@ -46,6 +46,11 @@ dev = [
 ]
 
 [project.optional-dependencies]
+dev = [
+    "pylint>=3.2.6",
+    "jupyter>=1.0.0",
+    "parameterized>=0.9.0",
+]
 all = [
     "dynadojo[alg-all,sys-all]",
 ]
@@ -94,7 +99,7 @@ ndlib = [
     "ndlib>=5.1.1",
 ]
 networkx = [
-     "networkx>=3.2.1", 
+    "networkx>=3.2.1", 
 ]
 tensorflow = [
     "tensorflow>=2.16.2; sys_platform != \"darwin\" or platform_machine != \"x86_64\"", 
