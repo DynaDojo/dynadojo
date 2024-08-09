@@ -385,7 +385,7 @@ elif args.command == 'make_status':
     
     directory_path = 'experiments/outputs'
 
-    # Find all 'config.json' files, add filepath to a list, sorted by challenge type
+    #Pull challenge, system, and algos using same os.walk method from the status command
     for dirpath, dirnames, filenames in os.walk(directory_path):
         for file in filenames:
             if file.endswith('config.json'):
@@ -402,6 +402,7 @@ elif args.command == 'make_status':
                     'algo' : algo
                 })
     
+    #Fetch experiment information from params.py and utils.py, loop through the various lists and dictionaries to pull out all possible combinations of experiments
     chall_list = challenge_dicts.keys()
     for challenge in chall_list:
         _, sys_dict = challenge_dicts[challenge]
@@ -424,9 +425,6 @@ elif args.command == 'make_status':
                 for experiment in experiment_list:
                     if challenge == experiment['challenge'] and system == experiment['system'] and algo == experiment['algo']:
                         pr = False
-                #Makes experiments that already exist highlighted red (proof of concept to show - in the future red ones will be deleted)
                 if pr:
                     print(out_str)
-                else:
-                    print(red(out_str))
                     
