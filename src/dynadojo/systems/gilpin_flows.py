@@ -119,21 +119,12 @@ class GilpinFlowsSystem(AbstractSystem):
                     UserWarning
                 )
 
+        self.reference_traj = self.system.make_trajectory(1000, method="Radau")
+
     def make_init_conds(self, n: int, in_dist=True) -> np.ndarray:
 
-        x = self.system.make_trajectory(10000)
-
-        # Use principal component analysis to generate out-of-distribution points.
-        mean = np.mean(x, axis=0)
-        variance = np.var(x, axis=0)
-        x_centered = x - mean
-        U, s, Vt = np.linalg.svd(x_centered, full_matrices=False)
-            
-        variance_explained = np.cumsum(s**2) / np.sum(s**2)
-        min_var_idx = np.argmax(variance_explained >= 0.8) + 1
-        min_var_idx = min(min_var_idx, x.shape[1] - 1) # Ensure at least one component remains
-
-        Vt_remaining = Vt[min_var_idx:, :]
+        mean = np.mean(self.reference_traj, axis=0)
+        variance = np.var(self.reference_traj, axis=0)
 
         mean_magnitude = np.linalg.norm(mean)
         std = np.sqrt(np.mean(variance))
@@ -143,18 +134,28 @@ class GilpinFlowsSystem(AbstractSystem):
         variance_weight = .75
 
         # Calculate scale and frac_perturb based on a weighted sum of mean and std
-        scale = 0.001 * (mean_weight * mean_magnitude + variance_weight * std)
-        frac_perturb = 0.001 * (mean_weight * mean_magnitude + variance_weight * std)
+        scale = std #0.001 * (mean_weight * mean_magnitude + variance_weight * std)
+        frac_perturb = 0.1 #0.001 * (mean_weight * mean_magnitude + variance_weight * std)
         points = []
 
-        print(scale)
-        print(frac_perturb)
+        #print(scale)
+        #print(frac_perturb)
         for _ in range(n):
-            # Randomly select a point on the sample trajectory
-            random_index = self._rng.integers(0, 10000)
-            point = x[random_index]
+            # Randomly select a point on the reference trajectory
+            random_index = self._rng.integers(0, len(self.reference_traj))
+            point = self.reference_traj[random_index]
 
-            if not in_dist: 
+            # Use principal component analysis to generate out-of-distribution points.
+            if not in_dist:
+                centered = self.reference_traj - mean
+                U, s, Vt = np.linalg.svd(centered, full_matrices=False)
+                    
+                variance_explained = np.cumsum(s**2) / np.sum(s**2)
+                min_var_idx = np.argmax(variance_explained >= 0.8) + 1
+                min_var_idx = min(min_var_idx, self.reference_traj.shape[1] - 1) # Ensure at least one component remains
+
+                Vt_remaining = Vt[min_var_idx:, :]
+
                 random_projection = self._rng.uniform(-1, 1, Vt_remaining.shape[0]) * scale
                 projection = Vt_remaining.T @ random_projection
                 point = point + projection
@@ -173,12 +174,15 @@ class GilpinFlowsSystem(AbstractSystem):
         # Call Gilpin's make_trajectory function for each initial condition. By default, resample trajectories to have dominant Fourier components. If trajectory is cut short, disable resampling.
         for i in range(n):
             self.system.ic = init_conds[i]
-            trajectory = self.system.make_trajectory(timesteps, pts_per_period=self.pts_per_period)
+            trajectory = self.system.make_trajectory(timesteps, pts_per_period=self.pts_per_period, method="Radau")
             # if trajectory.shape[0] < timesteps:
             #     trajectory = self.system.make_trajectory(timesteps, resample=False)
-            if trajectory.shape != (timesteps, self._embed_dim):
-                print(trajectory.shape)
-            assert trajectory.shape == (timesteps, self._embed_dim)
+            while trajectory.shape != (timesteps, self._embed_dim):
+                self.system.ic = self.make_init_conds(1)[0]
+                trajectory = self.system.make_trajectory(timesteps, pts_per_period=self.pts_per_period, method="Radau")
+                #print(trajectory.shape)
+                #continue
+            #assert trajectory.shape == (timesteps, self._embed_dim)
             trajectories[i] = trajectory
 
         return trajectories
