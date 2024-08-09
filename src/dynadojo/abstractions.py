@@ -2,6 +2,7 @@
 
 This module contains abstract base classes for systems, algorithms, and challenges.
 """
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from functools import cache, cached_property
 from multiprocessing import Manager, Process

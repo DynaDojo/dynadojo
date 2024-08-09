@@ -129,13 +129,20 @@ class TestReproducibilityModel(unittest.TestCase):
 
     @parameterized.expand(algorithms)
     def test_with_fc(self, algo):
+        """
+        Test that running the same algorithm twice gives the same results.
+        """
+        algo_kwargs = None
+        if algo.__name__ == 'DNN':
+            algo_kwargs = {'device':'cpu'}
+            
         challenge = FixedComplexity(N=[4], l=4, t=10,
                                     system_cls=LDSystem, trials=1,
                                     test_examples=2, test_timesteps=2)
         df1 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 algo_kwargs=None)
+                                 algo_kwargs=algo_kwargs)
         df2 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 algo_kwargs=None)
+                                 algo_kwargs=algo_kwargs)
         cols = ['trial', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
                 'system_seed', 'algo_seed']
         df1 = df1[cols]
@@ -148,13 +155,16 @@ class TestReproducibilityModel(unittest.TestCase):
         Test that running a single trial gives the same results as running multiple trials,
         when using filters to select a single trial
         """
+        algo_kwargs = None
+        if algo.__name__ == 'DNN':
+            algo_kwargs = {'device':'cpu'}
         challenge = FixedComplexity(N=[2], l=2, t=3,
                                     system_cls=LDSystem, trials=2,
                                     test_examples=2, test_timesteps=2)
         df1 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 algo_kwargs=None)
+                                 algo_kwargs=algo_kwargs)
         df2 = challenge.evaluate(algo, seed=100, noisy=True,
-                                 algo_kwargs=None)
+                                 algo_kwargs=algo_kwargs)
         cols = ['trial', 'latent_dim', 'embed_dim', 'timesteps', 'n', 'error', 'ood_error', 'total_cost',
                 'system_seed', 'algo_seed']
         df1 = df1[cols].loc[df2['trial'] == 1]
