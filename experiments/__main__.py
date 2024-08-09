@@ -404,6 +404,7 @@ elif args.command == 'make_status':
     
     #Fetch experiment information from params.py and utils.py, loop through the various lists and dictionaries to pull out all possible combinations of experiments
     chall_list = challenge_dicts.keys()
+    print(cyan(bold('List of all possible experiments that can be made:')))
     for challenge in chall_list:
         _, sys_dict = challenge_dicts[challenge]
         sys_list = sys_dict.keys()
@@ -426,5 +427,5 @@ elif args.command == 'make_status':
                     if challenge == experiment['challenge'] and system == experiment['system'] and algo == experiment['algo']:
                         pr = False
                 if pr:
-                    print(out_str)
+                    print(cyan(f'    {out_str}'))
                     
