@@ -381,9 +381,19 @@ elif args.command == 'status':
             
 elif args.command == 'make_status':
     
-    challenge = ''
-    system = ''
-    algo = ''
-    
-    #Final Print
-    print(f'--chalenge = {challenge} --system = {system} --algo = {algo}')
+    chall_list = challenge_dicts.keys()
+    for challenge in chall_list:
+        _, sys_dict = challenge_dicts[challenge]
+        sys_list = sys_dict.keys()
+        for system in sys_list:
+            algo_list = sys_dict.keys()
+            for algo in algo_list:
+                #Final Print
+                out_str = ''
+                if challenge != 'default':
+                    out_str += f'--challenge = {challenge}'
+                if system != 'default':
+                    out_str += f'--system = {system}'
+                if algo != 'default':
+                    out_str += f'--algo = {algo}'
+                print(out_str)
