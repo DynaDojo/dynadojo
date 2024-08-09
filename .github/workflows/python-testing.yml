@@ -5,7 +5,7 @@ name: Test Python
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 
 jobs:
   testing:
@@ -13,27 +13,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10'] #3.11
-        os: [ubuntu-latest] #, macOS-latest] #,windows-latest]
+        python-version: ['3.9', '3.10'] #3.11
+        os: [ubuntu-latest, macOS-latest] #,windows-latest]
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Setup PDM
-      uses: pdm-project/setup-pdm@v3.3
-      with: 
-        version: 2.15.4
-        cache: true
-        
     - name: Install dependencies
       run: |
-        pdm install -G all
-    - name: Analysing the code with pylint
-      run: |
-        pdm run pylint $(git ls-files '*.py')
+        pip install .[all]
+    # - name: Analysing the code with pylint
+    #   run: |
+    #     pylint $(git ls-files '*.py')
       continue-on-error: true
     - name: Test with unittest
       run: |
-        pdm run python -m unittest 
+        python -m unittest 
