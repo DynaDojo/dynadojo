@@ -52,8 +52,9 @@ python -m experiments make --challenge fe --algo lr --system lds --output_dir="e
 
 import argparse
 import os
+import json
 from .utils import algo_dict, load_from_json, system_dict, challenge_dicts
-from .main import load_data, run_challenge, make_plots, save_config, prGreen, prPink
+from .main import load_data, run_challenge, make_plots, save_config, green, pink, cyan, red, loadingBar, bold
 from dynadojo.challenges import  FixedError, FixedComplexity, FixedTrainSize
 
 
@@ -64,10 +65,13 @@ run_parser = subparsers.add_parser('run', help='Run an experiment param file')
 plot_parser = subparsers.add_parser('plot', help='Plot an experiment results')
 check_parser = subparsers.add_parser('check', help='Check for missing jobs')
 scale_parser = subparsers.add_parser('scale', help='Temporary utility which rescales losses by dimensionality')
+status_parser = subparsers.add_parser('status', help='List all available config.json files that you have already made')
+make_status_parser = subparsers.add_parser('make_status', help='List all the available experiments you can call ‘make’ on.')
 
 # Accept command line arguments
 make_parser.add_argument('--algo', type=str, default='lr', help='Specify which algo to run')
 make_parser.add_argument('--system', type=str, default='lds', choices=system_dict.keys(), help='Specify which system to run')
+
 make_parser.add_argument('--challenge', type=str, default="fc", choices=["fc", "fts", "fe"], help='Specify which challenge to run')
 make_parser.add_argument('--output_dir', type=str, default="experiments/outputs", help='where to save config')
 make_parser.add_argument('--all', action='store_true', help='if True, make all params')
@@ -89,9 +93,16 @@ check_parser.add_argument('--data_dir', type=str, help='where to load results fr
 
 scale_parser.add_argument('--data_dir', type=str, help='where to load results from')
 
+# status_parser.add_argument('--system', type=str, default=None, choices=system_dict.keys(), help='filter by system')
+status_parser.add_argument('--is_complete', type=str, choices=['true','false'],help='filter by completed experiments')
+status_parser.add_argument('--algo', type=str, help='Specify which algo to filter through')
+status_parser.add_argument('--system', type=str, help='Specify which system to filter through')
+status_parser.add_argument('--challenge', type=str, choices=["fc", "fts", "fe"], help='Specify which challenge to filter through')
+status_parser.set_defaults(make=False)
+
 args, rest = program.parse_known_args()
 
-if args.command == 'make':
+if args.command == 'make':    
     if args.all:
         for c, chall_dict in challenge_dicts.values():
             for s in chall_dict.keys():
@@ -100,7 +111,7 @@ if args.command == 'make':
                         if a != "default":
                             print(f"Making {c.__name__} {s} {a}")
                             config_file, total_jobs = save_config(s, a, challenge_cls=c, output_dir=args.output_dir)
-                            prPink(f"{config_file} with {total_jobs} jobs")
+                            print(pink(f"{config_file} with {total_jobs} jobs"))
     else:
         assert args.algo.split("_")[0] in algo_dict.keys(), f"algo {args.algo} must be in algo_dict"
         if args.challenge == "fc":
@@ -110,7 +121,7 @@ if args.command == 'make':
         else:
             challenge_cls = FixedError
         config_file, total_jobs = save_config(args.system, args.algo, challenge_cls, output_dir=args.output_dir)
-        prPink(f"{config_file} with {total_jobs} jobs")
+        print(pink(f"{config_file} with {total_jobs} jobs"))
         if rest: #maybe parse more args
             args = program.parse_args(rest) 
             if args.command == 'run':
@@ -126,15 +137,15 @@ if args.command == 'run':
         total_jobs = config["total_jobs"]
         _, data = load_data(os.path.join(args.output_dir, config["folder_path"]))
         if data is None:
-            prGreen("No previous jobs found.")
+            print(green("No previous jobs found."))
             args.jobs = None
         else:
             completed_jobs = data['job_id'].drop_duplicates().to_list()
             missing_jobs = [i for i in range(total_jobs) if i not in completed_jobs]
             if len(missing_jobs) == 0:
-                prGreen("All jobs already completed. Exiting.")
+                print(green("All jobs already completed. Exiting."))
                 exit(0)
-            prGreen(f"{len(missing_jobs)} missing jobs found. Only running missing jobs.")
+            print(green(f"{len(missing_jobs)} missing jobs found. Only running missing jobs."))
             args.jobs = ','.join(map(str, missing_jobs))
         
     if args.node is not None and args.total_nodes > 1:
@@ -147,7 +158,7 @@ if args.command == 'run':
             jobs_filter=[int(j) for j in args.jobs.split(",")] if args.jobs else None
         )
     else: # run the whole challenge
-        prGreen(f"Running {len(args.jobs.split(',')) if args.jobs else 'all'} jobs.")
+        print(green(f"Running {len(args.jobs.split(',')) if args.jobs else 'all'} jobs."))
         run_challenge(
             config_file_path=args.config_file,
             output_dir=args.output_dir,
@@ -178,12 +189,11 @@ elif args.command == 'check':
         completed_jobs = data['job_id'].drop_duplicates().to_list()
     missing_jobs = [i for i in range(total_jobs) if i not in completed_jobs]
     if len(missing_jobs) == 0:
-        prGreen("All jobs completed.")
+        print(green("All jobs completed."))
         exit(0)
     print(f"Num of missing jobs: \t {len(missing_jobs)} of {total_jobs}")
     print(f"Missing jobs: \n{','.join(map(str, missing_jobs))}")
 
-    
 elif args.command == 'scale': 
     assert args.data_dir is not None, "must specify data directory"
     files, data = load_data(args.data_dir)
@@ -192,13 +202,13 @@ elif args.command == 'scale':
     try:
         os.makedirs(data_dir_unscaled, exist_ok=False)
     except FileExistsError:
-        prPink(f"Exiting...Already scaled data. {data_dir_unscaled} already exists. ")
+        print(pink(f"Exiting...Already scaled data. {data_dir_unscaled} already exists. "))
         exit(0)
 
     # move all csv files in data_dir to data_dir_unscaled
     for filepath in files:
         os.rename(filepath, data_dir_unscaled + "/" + os.path.basename(filepath))
-    prGreen(f"Original data moved to {data_dir_unscaled}")
+    print(green(f"Original data moved to {data_dir_unscaled}"))
     
     # rescale all losses by dimensionality
     data['error'] = data['error'] * data['latent_dim']
@@ -206,4 +216,216 @@ elif args.command == 'scale':
 
     # save the new data as csv file in data_dir
     data.to_csv(args.data_dir + "/data.csv", index=False)
-    prGreen(f"Rescaled data saved to {args.data_dir}/data.csv")
+    print(green(f"Rescaled data saved to {args.data_dir}/data.csv"))
+
+elif args.command == 'status':
+    experiment_list = []  # all the config.json files in the outputs folder
+    experiment_dict = {}
+    algo_filter = args.algo
+    system_filter = args.system
+    challenge_filter = args.challenge
+    complete_filter = args.is_complete
+
+    directory_path = 'experiments/outputs'
+
+    # Find all 'config.json' files, add filepath to a list, sorted by challenge type
+    for dirpath, dirnames, filenames in os.walk(directory_path):
+        for file in filenames:
+            if file.endswith('config.json'):
+                file_path = os.path.join(dirpath, file)
+                f = open(file_path, 'r')
+                experiment = json.load(f)
+                
+                algo_cls = experiment.get('evaluate', {}).get('algo_cls', {})
+                algo_cls_name = algo_cls.get('class_name', '')
+                system_cls = experiment.get('challenge', {}).get('system_cls', {})
+                system_cls_name = system_cls.get('class_name', '')
+                challenge_cls = experiment.get('challenge_cls', {})
+                challenge_cls_name = challenge_cls.get('class_name', '')
+
+                # Check algorithm if filter is set
+                if algo_filter:
+                    algo_filter_name = {
+                        'lr': 'LinearRegression',
+                        'dnn': 'DNN',
+                        'sindy': 'SINDy'
+                    }.get(algo_filter, '')
+                    if algo_cls_name != algo_filter_name:
+                        continue
+                
+                # Check system if filter is set
+                if system_filter:
+                    system_filter_name = {
+                        'lds': 'LDSystem',
+                        'lorenz': 'LorenzSystem',
+                        'lv_p': 'PreyPredatorSystem',
+                        'epi_1': 'LorenzSystem',
+                        'nbody': 'LorenzSystem',
+                        'heat': 'LorenzSystem',
+                        'fbsnn_1': 'LorenzSystem',
+                        'fbsnn_2': 'LorenzSystem',
+                        'ctln': 'LorenzSystem',
+                        'kura': 'LorenzSystem'
+                    }.get(system_filter, '')
+                    if system_cls_name != system_filter_name:
+                        continue
+
+                # Check challenge if filter is set
+                if challenge_filter:
+                    challenge_filter_name = {
+                        'fc': 'FixedComplexity',
+                        'fts': 'FixedTrainSize',
+                        'fe': 'FixedError'
+                    }.get(challenge_filter, '')
+                    if challenge_cls_name != challenge_filter_name:
+                        continue
+                
+                
+                experiment_type = experiment['challenge_cls']['class_name']
+                total_jobs = experiment.get("total_jobs", 0)
+                _, data = load_data(dirpath, print_status=False)
+                if data is None:
+                    completed_jobs = []
+                else:
+                    completed_jobs = data['job_id'].drop_duplicates().to_list()
+
+                complete_cls = str(len(completed_jobs) == total_jobs).lower()
+                
+                #Check complete if filter is set 
+                if complete_filter:
+                    if complete_cls != complete_filter:
+                        continue
+                
+                # Sort
+                if experiment_type in experiment_dict.keys():
+                    experiment_dict[experiment_type].append({
+                        'total_jobs': total_jobs,
+                        'complete_jobs': len(completed_jobs),
+                        'folder_path': file_path
+                    })
+                else:
+                    experiment_dict[experiment['challenge_cls']['class_name']] = [{
+                        'total_jobs': total_jobs,
+                        'complete_jobs': len(completed_jobs),
+                        'folder_path': file_path
+                    }]
+
+    # Check if experiments made
+    if not experiment_dict:
+        print(cyan(bold('No experiments made')))
+        print(bold('Experiment configs available: 0'), end=' ')
+        print(loadingBar(0, 1, 40))
+
+        # Hints to make experiments
+        print('\033[1;31m'+'To make an experiment:'+'\033[0m')
+        print('\033[0;31m'+'    python -m experiments make'+'\033[0m')
+
+    else:
+        # Determine max length for formatting, and count total jobs
+        max_length = 0
+        max_length_job = 0
+        all_jobs = 0
+        all_finished_jobs = 0
+        job_dict = {}
+
+        # Get max length for formatting
+        # Get all jobs for each experiment type (for progress bar)
+        for challenge_type in experiment_dict.keys():
+            output_list = [path for path in experiment_dict[challenge_type]]
+
+            # Format job numbers red or green depending on status
+            max_length = max(max_length, max(len(' ' + path['folder_path']) for path in output_list))
+            max_length_job = max(max_length_job, max(len(f"{path['complete_jobs']} / {path['total_jobs']} Jobs") for path in output_list))
+
+            all_jobs += sum(jobs['total_jobs'] for jobs in experiment_dict[challenge_type])
+            all_finished_jobs += sum(jobs['complete_jobs'] for jobs in experiment_dict[challenge_type])
+            job_dict[challenge_type] = {'all_jobs': all_jobs, 'all_completed_jobs': all_finished_jobs}
+
+        max_title = max(len(challenge_type) for challenge_type in experiment_dict.keys())
+
+        # Print Title
+        print(bold(f'Experiment configs available: {all_jobs}'), end=' ')
+        print(loadingBar(all_finished_jobs, all_jobs, max_length + max_length_job - len(f'Experiment configs available: {all_jobs}') + 9))
+        print('\033[1;31m'+'To run an experiment:'+'\033[0m')
+        print('\033[0;31m'+'    python -m experiments run --config_file <name>\n'+'\033[0m')
+
+        # Print paths by Challenge Type
+        for challenge_type in experiment_dict.keys():
+            print(bold(f"{challenge_type}: " + ' ' * (max_title - len(challenge_type)) + str(len(experiment_dict[challenge_type]))), end=' ')
+            print(loadingBar(job_dict[challenge_type]['all_completed_jobs'], job_dict[challenge_type]['all_jobs'], 20))
+
+            output_list = [path for path in experiment_dict[challenge_type]]
+
+            # Print paths
+            for path in output_list:
+                output = path['folder_path']
+
+                # Bolding experiment part of the filepath
+                output_bold = str(output).split('/')
+                output_bold[-2] = bold(output_bold[-2], color='\033[96m')
+                output_str = ''
+                for out in output_bold:
+                    output_str += out + '/'
+                output_str = cyan(output_str[0:-1])
+
+                print('    '+output_str+' '*((max_length-len(output)+(max_length_job-len(str(path['complete_jobs'])+' / '+str(path['total_jobs'])+' Jobs')))), end ='')
+
+                # Print number of jobs + progress bar
+                if path['complete_jobs'] == path['total_jobs']:
+                    print(green(f'{path["complete_jobs"]}'), '/', green(f'{path["total_jobs"]}'), end=' ')
+                else:
+                    print(red(f'{path["complete_jobs"]}'), '/', red(f'{path["total_jobs"]}'), end=' ')
+
+                print(loadingBar(path['complete_jobs'], path['total_jobs'], 10))
+            print()
+            
+elif args.command == 'make_status':
+    experiment_list = []  # all the config.json files in the outputs folder
+    experiment_dict = {}
+    
+    directory_path = 'experiments/outputs'
+
+    #Pull challenge, system, and algos using same os.walk method from the status command
+    for dirpath, dirnames, filenames in os.walk(directory_path):
+        for file in filenames:
+            if file.endswith('config.json'):
+                file_path = os.path.join(dirpath, file)
+                split_path = file_path.split('/')
+                challenge = split_path[2]
+                system = split_path[3]
+                algo_split = split_path[4].split('_')
+                algo_split1 = algo_split[3].split('=')[0]
+                algo = f'{algo_split[2]}_{algo_split1}'
+                experiment_list.append({
+                    'challenge' : challenge,
+                    'system' : system,
+                    'algo' : algo
+                })
+    
+    #Fetch experiment information from params.py and utils.py, loop through the various lists and dictionaries to pull out all possible combinations of experiments
+    chall_list = challenge_dicts.keys()
+    print(cyan(bold('List of all possible experiments that can be made:')))
+    for challenge in chall_list:
+        _, sys_dict = challenge_dicts[challenge]
+        sys_list = sys_dict.keys()
+        for system in sys_list:
+            if system == 'default':
+                continue
+            algo_list = sys_dict[system].keys()
+            for algo in algo_list:
+                #Final Print
+                out_str = ''
+                if challenge != 'default':
+                    out_str += f'--challenge = {challenge} '
+                if system != 'default':
+                    out_str += f'--system = {system} '
+                if algo != 'default':
+                    out_str += f'--algo = {algo}'
+                
+                pr = True
+                for experiment in experiment_list:
+                    if challenge == experiment['challenge'] and system == experiment['system'] and algo == experiment['algo']:
+                        pr = False
+                if pr:
+                    print(cyan(f'    {out_str}'))
+                    
